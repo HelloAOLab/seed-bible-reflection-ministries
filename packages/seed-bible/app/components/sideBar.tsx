@@ -119,14 +119,17 @@ const CircleCounter = ({ data, book, chapter }) => {
                 border: `1px solid ${color}`,
               }}
             >
-               {masks[`${value[0]}-photo`] ? (
-            <img
-              style={{
-                "border-radius":"50%",
-                width:'16px'
-              }}
-              src={masks[`${value[0]}-photo`]}
-            />):<IconComponent style={{ width: "12px", height: "12px" }} />}
+              {masks[`${value[0]}-photo`] ? (
+                <img
+                  style={{
+                    "border-radius": "50%",
+                    width: "16px",
+                  }}
+                  src={masks[`${value[0]}-photo`]}
+                />
+              ) : (
+                <IconComponent style={{ width: "12px", height: "12px" }} />
+              )}
             </div>
           );
         })}
@@ -260,14 +263,17 @@ const CircleCounter = ({ data, book, chapter }) => {
                         flexShrink: 0,
                       }}
                     >
-                       {masks[`${value[0]}-photo`] ? (
-                    <img
-                      style={{
-                        "border-radius":"50%",
-                        width:'16px'
-                      }}
-              src={masks[`${value[0]}-photo`]}
-            />):<Icon style={{ width: "18px", height: "18px" }} />}
+                      {masks[`${value[0]}-photo`] ? (
+                        <img
+                          style={{
+                            "border-radius": "50%",
+                            width: "16px",
+                          }}
+                          src={masks[`${value[0]}-photo`]}
+                        />
+                      ) : (
+                        <Icon style={{ width: "18px", height: "18px" }} />
+                      )}
                     </div>
                     <div style={{ flex: 1 }}>
                       <div
@@ -552,12 +558,12 @@ function Tab({
   };
   const circles = onlineUsers
     ? Object.fromEntries(
-        Object.entries(onlineUsers).filter(
-          ([k, v]) => {
-            // console.log('Filtering user:', k, 'v:', v, 'el.data:', el?.data);
-            return v?.bookId === el?.data?.bookId && v?.chapter === el?.data?.chapter;
-          }
-        )
+        Object.entries(onlineUsers).filter(([k, v]) => {
+          // console.log('Filtering user:', k, 'v:', v, 'el.data:', el?.data);
+          return (
+            v?.bookId === el?.data?.bookId && v?.chapter === el?.data?.chapter
+          );
+        })
       )
     : {};
   // console.log('circles result:', circles, 'for tab:', el?.data?.book, el?.data?.chapter);
@@ -792,12 +798,13 @@ function SideBar({ panelsNumber }) {
     setSelectedTabs,
     sharedTab,
   } = useTabsContext();
+  console.log(globalThis.ThemeCSS);
   globalThis.AddTab = addTab;
   const { screens, setScreens, fullScreen, setFullScreen, ReSeed, setReSeed } =
     useBibleContext();
-    // globalThis.setScreens = setScreens
+  // globalThis.setScreens = setScreens
   const [customScreens, setCustomScreens] = useState({ value: 1 });
-  globalThis.setCustomScreens =setCustomScreens 
+  globalThis.setCustomScreens = setCustomScreens;
   const [onlineUsers, setOnlineUsers] = useState(false);
   globalThis.SetOnlineUsers = setOnlineUsers;
   const [showSearch, setShowSearch] = useState(false); // New state for search visibility
@@ -1253,6 +1260,9 @@ function SideBar({ panelsNumber }) {
 
   const { moveMultipleTabs } = useTabsContext();
   const holdTimeout = useRef({ time: null, clicked: null });
+  const handleOpenKenBoa = () => {
+    window.open("https://www.kenboa.org/");
+  };
 
   return (
     <>
@@ -1353,40 +1363,56 @@ function SideBar({ panelsNumber }) {
         <div className="headbar">
           {!collapsed ? (
             <>
-              <div className="menuOptions">
-                <span
-                  onClick={() => {
-                    const mob = window.innerWidth < 768;
-                    if (!mob) {
-                      setSidebarWidth(60);
-                      setCollapsed(true);
-                      setMultiSelectMode(false);
-                    } else {
-                      setMultiSelectMode(false);
-                      setSidebarWidth(0);
-                      setOpenOnMobile(false);
-                    }
-                  }}
-                  className="material-symbols-outlined"
-                  style={{ color: "var(--openCloseMenuIcon, var(--text1))" }}
-                >
-                  menu_open
-                </span>
-                <div>
-                  {customIcon ? (
-                    <span
-                      onClick={() =>
-                        customIcon.link && os.openURL(customIcon.link)
+              <div className="menuandlogo">
+                <div className="menuOptions">
+                  <span
+                    onClick={() => {
+                      const mob = window.innerWidth < 768;
+                      if (!mob) {
+                        setSidebarWidth(60);
+                        setCollapsed(true);
+                        setMultiSelectMode(false);
+                      } else {
+                        setMultiSelectMode(false);
+                        setSidebarWidth(0);
+                        setOpenOnMobile(false);
                       }
-                      className="material-symbols-outlined"
-                    >
-                      {customIcon.icon}
-                    </span>
-                  ) : (
-                    <span></span>
-                  )}
+                    }}
+                    className="material-symbols-outlined"
+                    style={{ color: "var(--openCloseMenuIcon, var(--text1))" }}
+                  >
+                    menu_open
+                  </span>
+                  <div>
+                    {customIcon ? (
+                      <span
+                        onClick={() =>
+                          customIcon.link && os.openURL(customIcon.link)
+                        }
+                        className="material-symbols-outlined"
+                      >
+                        {customIcon.icon}
+                      </span>
+                    ) : (
+                      <span></span>
+                    )}
+                  </div>
                 </div>
+                <img
+                  onClick={handleOpenKenBoa}
+                  alt="logo"
+                  src="https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png"
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    cursor: "pointer",
+                  }}
+                />
               </div>
+
               <div className="canvasOptions">
                 <span
                   style={{
@@ -1516,7 +1542,7 @@ function SideBar({ panelsNumber }) {
                     clearTimeout(holdTimeout.current.time);
                     holdTimeout.current.clicked = false;
                   }}
-                  className="material-symbols-outlined addIcon"
+                  className="addIcon material-symbols-outlined "
                 >
                   add
                 </span>
@@ -1633,6 +1659,20 @@ function SideBar({ panelsNumber }) {
               cursor: "pointer",
             }}
           >
+            <img
+              onClick={handleOpenKenBoa}
+              alt="logo"
+              src="https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png"
+              style={{
+                width: "36px",
+                height: "36px",
+                backgroundColor: "white",
+                borderRadius: "50%",
+                overflow: "hidden",
+                cursor: "pointer",
+              }}
+            />
+            <div className="sidebarLine"></div>
             <div
               onClick={() => {
                 setSidebarWidth(280);
@@ -1713,7 +1753,7 @@ function SideBar({ panelsNumber }) {
                 clearTimeout(holdTimeout.current.time);
                 holdTimeout.current.clicked = false;
               }}
-              class="material-symbols-outlined addIconCollapsed"
+              className="addIconCollapsed material-symbols-outlined "
             >
               add
             </span>
@@ -1927,7 +1967,12 @@ export const UserProfile = ({ collapsed }) => {
     if (data.success) {
       const payload = data.data;
       setUserData(payload);
-         setTagMask(thisBot,`${configBot.id}-photo`,payload?.photoLink,'shared');
+      setTagMask(
+        thisBot,
+        `${configBot.id}-photo`,
+        payload?.photoLink,
+        "shared"
+      );
       globalThis.SetGlobalProfilePic(payload?.photoLink);
     }
   };
@@ -1945,7 +1990,10 @@ export const UserProfile = ({ collapsed }) => {
     "#10B981",
     "#F59E0B",
   ];
-  const { colorIndex, iconIndex } = GetOrSetVisualInTags(configBot.id,userData);
+  const { colorIndex, iconIndex } = GetOrSetVisualInTags(
+    configBot.id,
+    userData
+  );
   const Icon = icons[iconIndex];
   return (
     <div

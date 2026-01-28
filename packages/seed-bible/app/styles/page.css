@@ -129,7 +129,7 @@
     --scripture-chapterHeading-font,
     var(--text-heading-font, "Plus Jakarta Sans", sans-serif)
   );
-  color: var(--chapterHeadingColor, var(--pageTextColor)) !important;
+  color: var(--chapterHeadingColor) !important;
   font-size: var(--scripture-chapterHeading-size, 18px);
   font-style: var(--text-heading-font-style);
   font-weight: var(--text-heading-weight);

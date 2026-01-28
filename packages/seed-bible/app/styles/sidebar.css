@@ -106,6 +106,12 @@
   font-family: var(--sideMenu-spaceName-font, "Satoshi", sans-serif);
   font-size: var(--sideMenu-spaceName-size, 14px);
 }
+.menuandlogo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
 
 .collapsedMenu {
   display: flex;
@@ -183,12 +189,14 @@
   overflow-x: hidden;
   max-height: calc(100vh - 200px);
 }
-
-.material-symbols-outlined.addIconCollapsed {
+.addIconCollapsed.material-symbols-outlined {
+  color: #2e4879 !important;
+  filter: none !important;
   width: 50px;
-  background: var(--whitegray-color);
+  background: white; /*var(--whitegray-color)*/
   border-radius: 5px;
   cursor: pointer;
+
   height: 45px;
   align-items: center;
   justify-content: center;
@@ -291,6 +299,10 @@
   color: var(--addButtonIcon, var(--primaryButtonColor)) !important;
   border-radius: 5px;
   cursor: pointer;
+}
+.addIcon.material-symbols-outlined {
+  color: white !important;
+  filter: none !important;
 }
 
 .profileSection {

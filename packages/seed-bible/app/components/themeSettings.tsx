@@ -109,23 +109,23 @@ const ADVANCED_SETTINGS_SECTIONS = {
 // Based on the design mockup with orange accent colors
 const defaultTheme = {
   // Main colors
-  firstToolbarbutton:'#dfdede',
+  firstToolbarbutton: "#dfdede",
   primaryColor: "#E07B4C",
   secondaryColor: "#D2691E",
   tertiaryColor: "#CD853F",
   // Container backgrounds
   themeSideMenu: "#FFFFFF",
-  panelBackground: "#F8FAFC",
+  panelBackground: "#F4F4F4",
   // Tab
-  tabSelection: "#E07B4C",
+  tabSelection: "#2E4879",
   activeTabBackground: "#FADDD1",
-  activeTabText: "#E07B4C",
-  activeTabBorder: "#E07B4C",
-  activeTabFill: "#FADDD1",
+  activeTabText: "#262626",
+  activeTabBorder: "#2E4879",
+  activeTabFill: "#2E48791A",
   simpleTabText: "#333333",
   inactiveTabText: "#333333",
   // Buttons
-  primaryButton: "#E07B4C",
+  primaryButton: "#2E4879",
   primaryButtonColor: "#FFFFFF",
   primaryButtonBorder: "#E07B4C",
   primaryButtonFill: "#E07B4C",
@@ -136,8 +136,8 @@ const defaultTheme = {
   tertiaryButtonColor: "#333333",
   buttonBorder: "#E1E3EA",
   // Scripture text
-  bookHeadingColor: "#333333",
-  chapterHeadingColor: "#333333",
+  bookHeadingColor: "#2E4879",
+  chapterHeadingColor: "#000000",
   verseNumberColor: "#000000",
   verseTextColor: "#333333",
   pageBackground: "#FFFFFF",
@@ -155,7 +155,7 @@ const defaultTheme = {
   selectedSpaceColor: "#E07B4C",
   unselectedSpaceColor: "#E1E3EA",
   spaceNameText: "#333333",
-  addButtonBackground: "#E07B4C",
+  addButtonBackground: "#2E4879",
   addButtonIcon: "#FFFFFF",
   selectPanelIcon: "#333333",
   openCloseMenuIcon: "#333333",
@@ -232,8 +232,7 @@ const READY_THEMES = [
   {
     name: "Dark Mode",
     colors: {
-  firstToolbarbutton:'#5C5C5C',
-
+      firstToolbarbutton: "#5C5C5C",
 
       // Main colors
       primaryColor: "#5A67D8",
@@ -242,7 +241,7 @@ const READY_THEMES = [
       // Container backgrounds
       themeSideMenu: "#2D2D2D",
       panelBackground: "#1A1A1A",
-      
+
       // Tab
       tabSelection: "#5A67D8",
       activeTabBackground: "#404040",
@@ -351,7 +350,7 @@ const READY_THEMES = [
   {
     name: "Purple Serenity",
     colors: {
-      firstToolbarbutton:'#dfdede',
+      firstToolbarbutton: "#dfdede",
       "filter-mode": "invert(0)",
       "secondary-filter-mode": "invert(0%)",
       // Main colors
@@ -467,7 +466,7 @@ const READY_THEMES = [
   {
     name: "Green Nature",
     colors: {
-      firstToolbarbutton:'#dfdede',
+      firstToolbarbutton: "#dfdede",
       "filter-mode": "invert(0)",
       "secondary-filter-mode": "invert(100%)",
       // Main colors
@@ -583,7 +582,7 @@ const READY_THEMES = [
   {
     name: "Ocean Blue",
     colors: {
-      firstToolbarbutton:'#dfdede',
+      firstToolbarbutton: "#dfdede",
       "filter-mode": "invert(0)",
       "secondary-filter-mode": "invert(100%)",
       // Main colors
@@ -699,7 +698,7 @@ const READY_THEMES = [
   {
     name: "Warm Amber",
     colors: {
-      firstToolbarbutton:'#dfdede',
+      firstToolbarbutton: "#dfdede",
       "filter-mode": "invert(0)",
       "secondary-filter-mode": "invert(100%)",
       // Main colors
@@ -713,7 +712,7 @@ const READY_THEMES = [
       tabSelection: "#D97706",
       activeTabBackground: "#FFFFFF",
       activeTabText: "#78350F",
-      activeTabBorder: "#D97706",
+      activeTabBorder: "#2E4879",
       activeTabFill: "#D9770694",
       simpleTabText: "#6B7280",
       inactiveTabText: "#6B7280",
@@ -1093,8 +1092,7 @@ const CollapsibleSection = ({ title, isExpanded, onToggle, children }) => {
             fontSize: 14,
             fontWeight: 400,
             // color: "#000000"
-            color:"var(--heading1Color)",
-            
+            color: "var(--heading1Color)",
           }}
         >
           {title}
@@ -1215,8 +1213,8 @@ const CompactColorRow = ({ label, value, onChange }) => {
         style={{
           fontFamily: "Open Sans, sans-serif",
           fontSize: 13,
-         
-          color:'var(--heading2Color)',
+
+          color: "var(--heading2Color)",
         }}
       >
         {label}
@@ -4367,7 +4365,7 @@ const ThemeSettings = () => {
 
   const applyMainColors = () => {
     const primary = colors.primaryColor || "#FFFFFF";
-    const secondary = colors.secondaryColor || "#D36433";
+    const secondary = colors.secondaryColor || "#2E4879";
     const tertiary = colors.tertiaryColor || "#F98564";
 
     // Create updated colors object with cascaded values
@@ -5369,7 +5367,7 @@ const SettingsUI = () => {
             onClick={handleDecreaseFontSize}
           >
             <svg
-              style={{ filter: "none",stroke:"var(--heading1Color)" }}
+              style={{ filter: "none", stroke: "var(--heading1Color)" }}
               width="12"
               height="12"
               viewBox="0 0 12 12"
@@ -5395,7 +5393,7 @@ const SettingsUI = () => {
             onClick={handleIncreaseFontSize}
           >
             <svg
-              style={{ filter: "none",stroke:"var(--heading1Color)" }}
+              style={{ filter: "none", stroke: "var(--heading1Color)" }}
               width="20"
               height="20"
               viewBox="0 0 20 20"
@@ -5428,7 +5426,7 @@ const SettingsUI = () => {
             onClick={handleCycleLineHeight}
           >
             <svg
-              style={{ filter: "none",stroke:"var(--heading1Color)" }}
+              style={{ filter: "none", stroke: "var(--heading1Color)" }}
               width="18"
               height="18"
               viewBox="0 0 18 18"
