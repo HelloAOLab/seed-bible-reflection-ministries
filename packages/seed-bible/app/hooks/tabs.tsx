@@ -16,7 +16,7 @@ export function TabsProvider({ children }) {
   const [spaces, setSpaces] = useState([
     {
       id: "1",
-      name: "(Optional) Add space name",
+      /* name: "(Optional) Add space name",*/
       settings: {
         theme: {},
         toolbar: {
@@ -45,7 +45,7 @@ export function TabsProvider({ children }) {
     },
     {
       id: "2",
-      name: "(Optional) Add space name",
+      /* name: "(Optional) Add space name",*/
       settings: {
         theme: {},
         toolbar: {
@@ -72,7 +72,8 @@ export function TabsProvider({ children }) {
     },
     {
       id: "3",
-      name: "(Optional) Add space name",
+      /* name: "(Optional) Add space name",*/
+
       settings: {
         theme: {},
         toolbar: {

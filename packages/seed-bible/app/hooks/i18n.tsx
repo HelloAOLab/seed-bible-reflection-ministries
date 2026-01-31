@@ -51,7 +51,7 @@ const resources = {
       generalSettings: "General Settings",
       spaceSettings: "Space Settings",
       advancedSettings: "Advanced settings",
-      manageAccountDesc: "Manage your account, profile, and preferences.",
+      manageAccountDesc: "Manage your preferences.",
 
       // Settings - Categories
       themeAndText: "Theme & Text",
@@ -1084,7 +1084,8 @@ const resources = {
       // Playlist.
       preview: "Vista previa",
       bookmarkUpdatedSuccessfully: "Marcado actualizado exitosamente.",
-      failedToUpdateBookmark: "Error al actualizar el marcado. Por favor, inténtalo de nuevo.",
+      failedToUpdateBookmark:
+        "Error al actualizar el marcado. Por favor, inténtalo de nuevo.",
       search_tags: "Buscar etiquetas",
       annotate: "Anotar",
       addToQueue: "Agregar a cola",
@@ -2000,7 +2001,7 @@ const resources = {
       regenerate: "إعادة الإنشاء",
       playlistSettings: "إعدادات القائمة",
       publishSettings: "إعدادات النشر",
-      
+
       privateAccess: "وصول خاص",
       publicAccess: "وصول عام",
       checklist: "قائمة تحقق",
@@ -2511,7 +2512,8 @@ const resources = {
       preview: "पूर्वावलोकन",
       annotate: "टिप्पणी",
       bookmarkUpdatedSuccessfully: "टिप्पणी सफलतापूर्वक अपडेट की गई है।",
-      failedToUpdateBookmark: "टिप्पणी अपडेट करने में विफल। कृपया पुनः कोशिश करें।",
+      failedToUpdateBookmark:
+        "टिप्पणी अपडेट करने में विफल। कृपया पुनः कोशिश करें।",
       addToQueue: "कूद में जोड़ें",
       bookmark: "टिप्पणी",
       unbookmark: "टिप्पणी",
