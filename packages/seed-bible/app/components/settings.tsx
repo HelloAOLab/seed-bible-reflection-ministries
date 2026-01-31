@@ -410,6 +410,19 @@ const SettingsSidebar = () => {
       labelKey: "manageAccountDesc",
     },
     {
+      key: "theme",
+      labelKey: "themeAndText",
+      icon: <ThemeIcon />,
+      expandable: false,
+      onClick: () => setSideBarMode("themeSettings"),
+    },
+    {
+      key: "language",
+      labelKey: "language",
+      icon: "language",
+      type: "language",
+    },
+    /* {
       key: "yourAccount",
       type: "account",
       labelKey: "yourAccount",
@@ -440,7 +453,7 @@ const SettingsSidebar = () => {
       labelKey: "permissions",
       icon: "action_key",
       style: "disabled",
-    },
+    },*/
     {
       key: "notifications",
       labelKey: "notifications",
@@ -451,29 +464,23 @@ const SettingsSidebar = () => {
     // { key: 'dividerG2', type: 'divider' },
 
     // Subscriptions "section"
-    {
+    /* {
       key: "subscriptions",
       type: "section",
       labelKey: "subscriptions", // header text; content rendered below
-    },
+    },*/
 
     // { key: 'dividerG3', type: 'divider' },
 
     // Language selector
-    {
-      key: "language",
-      labelKey: "language",
-      icon: "language",
-      type: "language",
-    },
 
     // ReSeed toggle item
-    {
+    /* {
       key: "reseedToggle",
       labelKey: ReSeed ? "exit" : "propagate",
       icon: "face",
       onClick: () => setReSeed((prev) => !prev),
-    },
+    },*/
   ];
 
   // Load saved changes from globalThis and initialize visibility and labels
@@ -789,9 +796,10 @@ const SettingsSidebar = () => {
           </button>
         </div>
       </div>
+      <div className="setting-line"></div>
 
-      <div className="settings-tabs">
-        <button
+      {/* <div className="settings-tabs">
+       <button
           className={`tab-button ${activeTab === "space" ? "active" : ""}`}
           onClick={() => setActiveTab("space")}
         >
@@ -803,9 +811,9 @@ const SettingsSidebar = () => {
         >
           {t("generalSettings")}
         </button>
-      </div>
+      </div>*/}
 
-      {activeTab === "space" ? (
+      {/* activeTab === "space" ? (
         <div className="settings-content">
           {spaceContentVisibility.spaceIcon !== false && (
             <div
@@ -1179,67 +1187,243 @@ const SettingsSidebar = () => {
             })}
           </div>
         </div>
-      ) : activeTab === "general" ? (
-        <div className="settings-content">
-          {generalSections.map(({ divider, items }) => {
-            // hide the entire section (and its top divider) if every item is hidden when not in edit mode
-            const hasVisibleItem = editMode
-              ? items.length > 0
-              : items.some((i) => !i.hidden);
-            if (!hasVisibleItem) return null;
+      ) : activeTab === "general" ?*/}
+      <div className="settings-content">
+        {generalSections.map(({ divider, items }) => {
+          // hide the entire section (and its top divider) if every item is hidden when not in edit mode
+          const hasVisibleItem = editMode
+            ? items.length > 0
+            : items.some((i) => !i.hidden);
+          if (!hasVisibleItem) return null;
 
-            return (
-              <div
-                key={
-                  (divider && divider.key) || items.map((i) => i.key).join("_")
-                }
-              >
-                {divider && (
-                  <div className="settings-divider">
-                    <div className="sidebarLine"></div>
-                  </div>
-                )}
+          return (
+            <div
+              key={
+                (divider && divider.key) || items.map((i) => i.key).join("_")
+              }
+            >
+              {divider && (
+                <div className="settings-divider">
+                  <div className="sidebarLine"></div>
+                </div>
+              )}
 
-                {items.map((item) => {
-                  // normalize helpers
-                  const hidden = !!item.hidden;
-                  const label = item.label;
+              {items.map((item) => {
+                // normalize helpers
+                const hidden = !!item.hidden;
+                const label = item.label;
 
-                  // Handle the "Your account" section at the top
-                  if (item.type === "account") {
-                    if (hidden && !editMode) return null;
-                    return (
-                      <div
-                        key={item.key}
-                        className={`activeAccount ${
-                          hidden ? "hidden-item" : ""
-                        }`}
-                        style={{ position: "relative" }}
-                      >
-                        {editMode && (
-                          <button
-                            className="hide-button"
-                            onClick={() => toggleVisibility(item.key)}
-                            title={hidden ? "Show account" : "Hide account"}
-                          >
-                            <span className="material-symbols-outlined">
-                              {hidden ? "visibility" : "visibility_off"}
-                            </span>
-                          </button>
-                        )}
-                        {userData && userData?.photoLink ? (
-                          <img
-                            style={{
-                              borderRadius: "50%",
-                              height: "40px",
-                              width: "40px",
-                              border: "1px solid #4459F3",
-                            }}
-                            src={userData.photoLink}
+                // Handle the "Your account" section at the top
+                if (item.type === "account") {
+                  if (hidden && !editMode) return null;
+                  return (
+                    <div
+                      key={item.key}
+                      className={`activeAccount ${hidden ? "hidden-item" : ""}`}
+                      style={{ position: "relative" }}
+                    >
+                      {editMode && (
+                        <button
+                          className="hide-button"
+                          onClick={() => toggleVisibility(item.key)}
+                          title={hidden ? "Show account" : "Hide account"}
+                        >
+                          <span className="material-symbols-outlined">
+                            {hidden ? "visibility" : "visibility_off"}
+                          </span>
+                        </button>
+                      )}
+                      {userData && userData?.photoLink ? (
+                        <img
+                          style={{
+                            borderRadius: "50%",
+                            height: "40px",
+                            width: "40px",
+                            border: "1px solid #4459F3",
+                          }}
+                          src={userData.photoLink}
+                        />
+                      ) : (
+                        <UserAvatar />
+                      )}
+                      <div className="softText">
+                        {editMode && editingLabel === item.key ? (
+                          <input
+                            type="text"
+                            value={label}
+                            onChange={(e) =>
+                              handleLabelEdit(item.key, "", e.target.value)
+                            }
+                            onBlur={finishEditingLabel}
+                            onKeyPress={(e) =>
+                              e.key === "Enter" && finishEditingLabel()
+                            }
+                            className="label-edit-input"
+                            autoFocus
                           />
                         ) : (
-                          <UserAvatar />
+                          <span
+                            onClick={
+                              editMode
+                                ? () => startEditingLabel(item.key)
+                                : undefined
+                            }
+                            className={editMode ? "editable-label" : ""}
+                          >
+                            {label}
+                          </span>
                         )}
+                      </div>
+
+                      {!userData && (
+                        <div
+                          style={{ justifyContent: "center" }}
+                          className="activeAccount"
+                        >
+                          <button
+                            onClick={() => {
+                              globalThis.AccountSettingsEnteredFrom =
+                                "settings";
+                              setSideBarMode("createAccountSettings");
+                            }}
+                            className="create-profile-btn"
+                          >
+                            {userData
+                              ? "Open account settings"
+                              : " + Create profile"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                // 1) headers
+                if (item.type === "header") {
+                  if (hidden && !editMode) return null;
+                  return (
+                    <div
+                      key={item.key}
+                      className={`space-details ${hidden ? "hidden-item" : ""}`}
+                      style={{ position: "relative" }}
+                    >
+                      {editMode && (
+                        <button
+                          className="hide-button"
+                          onClick={() => toggleVisibility(item.key)}
+                          title={hidden ? "Show section" : "Hide section"}
+                        >
+                          <span className="material-symbols-outlined">
+                            {hidden ? "visibility" : "visibility_off"}
+                          </span>
+                        </button>
+                      )}
+                      <div className="space-name">
+                        {editMode && editingLabel === item.key ? (
+                          <input
+                            type="text"
+                            value={label}
+                            onChange={(e) =>
+                              handleLabelEdit(item.key, "", e.target.value)
+                            }
+                            onBlur={finishEditingLabel}
+                            onKeyPress={(e) =>
+                              e.key === "Enter" && finishEditingLabel()
+                            }
+                            className="label-edit-input"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            onClick={
+                              editMode
+                                ? () => startEditingLabel(item.key)
+                                : undefined
+                            }
+                            className={editMode ? "editable-label" : ""}
+                          >
+                            {label}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+
+                // 2) descriptions
+                if (item.type === "desc") {
+                  if (hidden && !editMode) return null;
+                  return (
+                    <div
+                      key={item.key}
+                      className={`space-description ${
+                        hidden ? "hidden-item" : ""
+                      }`}
+                      style={{ position: "relative" }}
+                    >
+                      {editMode && (
+                        <button
+                          className="hide-button"
+                          onClick={() => toggleVisibility(item.key)}
+                          title={hidden ? "Show text" : "Hide text"}
+                        >
+                          <span className="material-symbols-outlined">
+                            {hidden ? "visibility" : "visibility_off"}
+                          </span>
+                        </button>
+                      )}
+                      {editMode && editingLabel === item.key ? (
+                        <textarea
+                          value={label}
+                          onChange={(e) =>
+                            handleLabelEdit(item.key, "", e.target.value)
+                          }
+                          onBlur={finishEditingLabel}
+                          className="space-description-edit"
+                          autoFocus
+                          rows="2"
+                        />
+                      ) : (
+                        <div
+                          onClick={
+                            editMode
+                              ? () => startEditingLabel(item.key)
+                              : undefined
+                          }
+                          className={editMode ? "editable-text" : ""}
+                        >
+                          {label}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                // 3) sections (Subscriptions block)
+                if (item.type === "section" && item.key === "subscriptions") {
+                  if (hidden && !editMode) return null;
+                  return (
+                    <div
+                      key={item.key}
+                      className={`general-section ${
+                        hidden ? "hidden-item" : ""
+                      }`}
+                      style={{ position: "relative" }}
+                    >
+                      {editMode && (
+                        <button
+                          className="hide-button"
+                          onClick={() => toggleVisibility(item.key)}
+                          title={hidden ? "Show section" : "Hide section"}
+                        >
+                          <span className="material-symbols-outlined">
+                            {hidden ? "visibility" : "visibility_off"}
+                          </span>
+                        </button>
+                      )}
+
+                      <div className="activeAccount" style={{ gap: "8px" }}>
+                        <MenuIcon name={"bookmark_check"} />
                         <div className="softText">
                           {editMode && editingLabel === item.key ? (
                             <input
@@ -1268,326 +1452,43 @@ const SettingsSidebar = () => {
                             </span>
                           )}
                         </div>
-
-                        {!userData && (
-                          <div
-                            style={{ justifyContent: "center" }}
-                            className="activeAccount"
-                          >
-                            <button
-                              onClick={() => {
-                                globalThis.AccountSettingsEnteredFrom =
-                                  "settings";
-                                setSideBarMode("createAccountSettings");
-                              }}
-                              className="create-profile-btn"
-                            >
-                              {userData
-                                ? "Open account settings"
-                                : " + Create profile"}
-                            </button>
-                          </div>
-                        )}
                       </div>
-                    );
-                  }
 
-                  // 1) headers
-                  if (item.type === "header") {
-                    if (hidden && !editMode) return null;
-                    return (
-                      <div
-                        key={item.key}
-                        className={`space-details ${
-                          hidden ? "hidden-item" : ""
-                        }`}
-                        style={{ position: "relative" }}
-                      >
-                        {editMode && (
-                          <button
-                            className="hide-button"
-                            onClick={() => toggleVisibility(item.key)}
-                            title={hidden ? "Show section" : "Hide section"}
-                          >
-                            <span className="material-symbols-outlined">
-                              {hidden ? "visibility" : "visibility_off"}
-                            </span>
-                          </button>
-                        )}
-                        <div className="space-name">
-                          {editMode && editingLabel === item.key ? (
-                            <input
-                              type="text"
-                              value={label}
-                              onChange={(e) =>
-                                handleLabelEdit(item.key, "", e.target.value)
-                              }
-                              onBlur={finishEditingLabel}
-                              onKeyPress={(e) =>
-                                e.key === "Enter" && finishEditingLabel()
-                              }
-                              className="label-edit-input"
-                              autoFocus
-                            />
-                          ) : (
-                            <span
-                              onClick={
-                                editMode
-                                  ? () => startEditingLabel(item.key)
-                                  : undefined
-                              }
-                              className={editMode ? "editable-label" : ""}
-                            >
-                              {label}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  // 2) descriptions
-                  if (item.type === "desc") {
-                    if (hidden && !editMode) return null;
-                    return (
-                      <div
-                        key={item.key}
-                        className={`space-description ${
-                          hidden ? "hidden-item" : ""
-                        }`}
-                        style={{ position: "relative" }}
-                      >
-                        {editMode && (
-                          <button
-                            className="hide-button"
-                            onClick={() => toggleVisibility(item.key)}
-                            title={hidden ? "Show text" : "Hide text"}
-                          >
-                            <span className="material-symbols-outlined">
-                              {hidden ? "visibility" : "visibility_off"}
-                            </span>
-                          </button>
-                        )}
-                        {editMode && editingLabel === item.key ? (
-                          <textarea
-                            value={label}
-                            onChange={(e) =>
-                              handleLabelEdit(item.key, "", e.target.value)
-                            }
-                            onBlur={finishEditingLabel}
-                            className="space-description-edit"
-                            autoFocus
-                            rows="2"
-                          />
-                        ) : (
-                          <div
-                            onClick={
-                              editMode
-                                ? () => startEditingLabel(item.key)
-                                : undefined
-                            }
-                            className={editMode ? "editable-text" : ""}
-                          >
-                            {label}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-
-                  // 3) sections (Subscriptions block)
-                  if (item.type === "section" && item.key === "subscriptions") {
-                    if (hidden && !editMode) return null;
-                    return (
-                      <div
-                        key={item.key}
-                        className={`general-section ${
-                          hidden ? "hidden-item" : ""
-                        }`}
-                        style={{ position: "relative" }}
-                      >
-                        {editMode && (
-                          <button
-                            className="hide-button"
-                            onClick={() => toggleVisibility(item.key)}
-                            title={hidden ? "Show section" : "Hide section"}
-                          >
-                            <span className="material-symbols-outlined">
-                              {hidden ? "visibility" : "visibility_off"}
-                            </span>
-                          </button>
-                        )}
-
-                        <div className="activeAccount" style={{ gap: "8px" }}>
-                         <MenuIcon name={'bookmark_check'}/>
-                          <div className="softText">
-                            {editMode && editingLabel === item.key ? (
-                              <input
-                                type="text"
-                                value={label}
-                                onChange={(e) =>
-                                  handleLabelEdit(item.key, "", e.target.value)
-                                }
-                                onBlur={finishEditingLabel}
-                                onKeyPress={(e) =>
-                                  e.key === "Enter" && finishEditingLabel()
-                                }
-                                className="label-edit-input"
-                                autoFocus
-                              />
-                            ) : (
-                              <span
-                                onClick={
-                                  editMode
-                                    ? () => startEditingLabel(item.key)
-                                    : undefined
-                                }
-                                className={editMode ? "editable-label" : ""}
-                              >
-                                {label}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Subscribed Users List */}
-                        {loadingSubs ? (
-                          <div
-                            style={{
-                              justifyContent: "center",
-                              padding: "20px",
-                            }}
-                            className="activeAccount"
-                          >
-                            <div className="softText">Loading...</div>
-                          </div>
-                        ) : subscribedUsers.length > 0 ? (
-                          <div style={{ width: "100%" }}>
-                            <div
-                              className="softText"
-                              style={{
-                                marginBottom: "8px",
-                                textAlign: "center",
-                              }}
-                            >
-                              {`You have ${subscribedUsers.length} subscription${subscribedUsers.length > 1 ? "s" : ""}`}
-                            </div>
-                            {subscribedUsers.map((user) => (
-                              <div
-                                key={user.id}
-                                className="activeAccount"
-                                style={{
-                                  justifyContent: "space-between",
-                                  padding: "8px 12px",
-                                  marginBottom: "6px",
-                                  borderRadius: "8px",
-                                  // backgroundColor: "var(--pageBackground)",
-                                  opacity:
-                                    unsubscribingId === user.id ? 0.5 : 1,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "10px",
-                                  }}
-                                >
-                                  {user.photoLink ? (
-                                    <img
-                                      style={{
-                                        borderRadius: "50%",
-                                        height: "32px",
-                                        width: "32px",
-                                        objectFit: "cover",
-                                      }}
-                                      src={user.photoLink}
-                                      title={user.name || "User"}
-                                    />
-                                  ) : (
-                                    <UserAvatar />
-                                  )}
-                                  <div>
-                                    <div
-                                      style={{
-                                        fontWeight: "500",
-                                        fontSize: "14px",
-                                      }}
-                                    >
-                                      {user.name || "Unknown User"}
-                                    </div>
-                                    <div
-                                      className="softText"
-                                      style={{ fontSize: "11px" }}
-                                    >
-                                      {user.id.slice(0, 16)}...
-                                    </div>
-                                  </div>
-                                </div>
-                                <button
-                                  onClick={() => handleUnsubscribe(user.id)}
-                                  disabled={unsubscribingId === user.id}
-                                  style={{
-                                    background: "transparent",
-                                    border: "1px solid #e0e0e0",
-                                    borderRadius: "6px",
-                                    cursor:
-                                      unsubscribingId === user.id
-                                        ? "wait"
-                                        : "pointer",
-                                    padding: "4px 8px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "4px",
-                                  }}
-                                  title="Unsubscribe"
-                                >
-                                  <span
-                                    className="material-symbols-outlined"
-                                    style={{ fontSize: "16px", color: "#666" }}
-                                  >
-                                    {unsubscribingId === user.id
-                                      ? "hourglass_empty"
-                                      : "person_remove"}
-                                  </span>
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div
-                            style={{ justifyContent: "center" }}
-                            className="activeAccount"
-                          >
-                            <div className="softText">
-                              You haven't subscribed to anyone yet.
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Subscribe Form */}
+                      {/* Subscribed Users List */}
+                      {loadingSubs ? (
                         <div
                           style={{
                             justifyContent: "center",
-                            marginTop: "12px",
+                            padding: "20px",
                           }}
                           className="activeAccount"
                         >
-                          {!subscribe ? (
-                            <button
-                              onClick={() => setSubscribe(true)}
-                              className="create-profile-btn"
+                          <div className="softText">Loading...</div>
+                        </div>
+                      ) : subscribedUsers.length > 0 ? (
+                        <div style={{ width: "100%" }}>
+                          <div
+                            className="softText"
+                            style={{
+                              marginBottom: "8px",
+                              textAlign: "center",
+                            }}
+                          >
+                            {`You have ${subscribedUsers.length} subscription${subscribedUsers.length > 1 ? "s" : ""}`}
+                          </div>
+                          {subscribedUsers.map((user) => (
+                            <div
+                              key={user.id}
+                              className="activeAccount"
+                              style={{
+                                justifyContent: "space-between",
+                                padding: "8px 12px",
+                                marginBottom: "6px",
+                                borderRadius: "8px",
+                                // backgroundColor: "var(--pageBackground)",
+                                opacity: unsubscribingId === user.id ? 0.5 : 1,
+                              }}
                             >
-                              + Add Subscription
-                            </button>
-                          ) : (
-                            <div style={{ width: "100%" }}>
-                              <div
-                                style={{ marginBottom: "8px" }}
-                                className="blackText"
-                              >
-                                Enter User ID
-                              </div>
                               <div
                                 style={{
                                   display: "flex",
@@ -1595,92 +1496,101 @@ const SettingsSidebar = () => {
                                   gap: "10px",
                                 }}
                               >
-                                <input
-                                  style={{ height: "32px", flex: 1 }}
-                                  placeholder="Enter user ID..."
-                                  className="selectInput"
-                                  value={searchFor}
-                                  disabled={subscribing}
-                                  onChange={(e) => setSearchFor(e.target.value)}
-                                />
-                                <button
-                                  disabled={subscribing || !searchFor}
-                                  onClick={async () => {
-                                    if (searchFor) {
-                                      setSubscribing(true);
-                                      // Fetch user details before subscribing
-                                      const userDataResult = await os.getData(
-                                        tags.key,
-                                        searchFor
-                                      );
-                                      const userData = userDataResult.success
-                                        ? userDataResult.data
-                                        : null;
-                                      const userDetails = {
-                                        id: searchFor,
-                                        name: userData?.name,
-                                        photoLink: userData?.photoLink,
-                                      };
-                                      await subscribeToUsers([userDetails]);
-                                      setSearchFor("");
-                                      setSubscribe(false);
-                                      setSubscribing(false);
-                                      getSubs();
-                                    }
-                                  }}
-                                  style={{
-                                    borderRadius: "8px",
-                                    padding: "8px 12px",
-                                    cursor: subscribing ? "wait" : "pointer",
-                                    opacity:
-                                      subscribing || !searchFor ? 0.6 : 1,
-                                  }}
-                                  className="create-profile-btn"
-                                >
-                                  <span className="material-symbols-outlined">
-                                    {subscribing
-                                      ? "hourglass_empty"
-                                      : "person_add"}
-                                  </span>
-                                </button>
+                                {user.photoLink ? (
+                                  <img
+                                    style={{
+                                      borderRadius: "50%",
+                                      height: "32px",
+                                      width: "32px",
+                                      objectFit: "cover",
+                                    }}
+                                    src={user.photoLink}
+                                    title={user.name || "User"}
+                                  />
+                                ) : (
+                                  <UserAvatar />
+                                )}
+                                <div>
+                                  <div
+                                    style={{
+                                      fontWeight: "500",
+                                      fontSize: "14px",
+                                    }}
+                                  >
+                                    {user.name || "Unknown User"}
+                                  </div>
+                                  <div
+                                    className="softText"
+                                    style={{ fontSize: "11px" }}
+                                  >
+                                    {user.id.slice(0, 16)}...
+                                  </div>
+                                </div>
                               </div>
+                              <button
+                                onClick={() => handleUnsubscribe(user.id)}
+                                disabled={unsubscribingId === user.id}
+                                style={{
+                                  background: "transparent",
+                                  border: "1px solid #e0e0e0",
+                                  borderRadius: "6px",
+                                  cursor:
+                                    unsubscribingId === user.id
+                                      ? "wait"
+                                      : "pointer",
+                                  padding: "4px 8px",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                }}
+                                title="Unsubscribe"
+                              >
+                                <span
+                                  className="material-symbols-outlined"
+                                  style={{ fontSize: "16px", color: "#666" }}
+                                >
+                                  {unsubscribingId === user.id
+                                    ? "hourglass_empty"
+                                    : "person_remove"}
+                                </span>
+                              </button>
                             </div>
-                          )}
+                          ))}
                         </div>
-                      </div>
-                    );
-                  }
+                      ) : (
+                        <div
+                          style={{ justifyContent: "center" }}
+                          className="activeAccount"
+                        >
+                          <div className="softText">
+                            You haven't subscribed to anyone yet.
+                          </div>
+                        </div>
+                      )}
 
-                  // 4) Language selector
-                  if (item.type === "language") {
-                    if (hidden && !editMode) return null;
-                    return (
+                      {/* Subscribe Form */}
                       <div
-                        key={item.key}
-                        className={`settings-item-container ${
-                          hidden ? "hidden-item" : ""
-                        }`}
+                        style={{
+                          justifyContent: "center",
+                          marginTop: "12px",
+                        }}
+                        className="activeAccount"
                       >
-                        <div className="settings-item-wrapper">
-                          {editMode && (
-                            <button
-                              className="hide-button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleVisibility(item.key);
-                              }}
-                              title={hidden ? "Show item" : "Hide item"}
-                            >
-                              <span className="material-symbols-outlined">
-                                {hidden ? "visibility" : "visibility_off"}
-                              </span>
-                            </button>
-                          )}
-
-                          <div
-                            className={`settings-item ${hidden ? "hidden" : ""}`}
-                            style={{ justifyContent: "space-between" }}
+                        {!subscribe ? (
+                          <button
+                            onClick={() => setSubscribe(true)}
+                            className="create-profile-btn"
                           >
+                            + Add Subscription
+                          </button>
+                        ) : (
+                          <div style={{ width: "100%" }}>
+                            <div
+                              style={{ marginBottom: "8px" }}
+                              className="blackText"
+                            >
+                              Enter User ID
+                            </div>
                             <div
                               style={{
                                 display: "flex",
@@ -1688,40 +1598,63 @@ const SettingsSidebar = () => {
                                 gap: "10px",
                               }}
                             >
-                              <div className="item-icon">
+                              <input
+                                style={{ height: "32px", flex: 1 }}
+                                placeholder="Enter user ID..."
+                                className="selectInput"
+                                value={searchFor}
+                                disabled={subscribing}
+                                onChange={(e) => setSearchFor(e.target.value)}
+                              />
+                              <button
+                                disabled={subscribing || !searchFor}
+                                onClick={async () => {
+                                  if (searchFor) {
+                                    setSubscribing(true);
+                                    // Fetch user details before subscribing
+                                    const userDataResult = await os.getData(
+                                      tags.key,
+                                      searchFor
+                                    );
+                                    const userData = userDataResult.success
+                                      ? userDataResult.data
+                                      : null;
+                                    const userDetails = {
+                                      id: searchFor,
+                                      name: userData?.name,
+                                      photoLink: userData?.photoLink,
+                                    };
+                                    await subscribeToUsers([userDetails]);
+                                    setSearchFor("");
+                                    setSubscribe(false);
+                                    setSubscribing(false);
+                                    getSubs();
+                                  }
+                                }}
+                                style={{
+                                  borderRadius: "8px",
+                                  padding: "8px 12px",
+                                  cursor: subscribing ? "wait" : "pointer",
+                                  opacity: subscribing || !searchFor ? 0.6 : 1,
+                                }}
+                                className="create-profile-btn"
+                              >
                                 <span className="material-symbols-outlined">
-                                  {item.icon}
+                                  {subscribing
+                                    ? "hourglass_empty"
+                                    : "person_add"}
                                 </span>
-                              </div>
-                              <div className="item-text">{label}</div>
+                              </button>
                             </div>
-                            <select
-                              value={language}
-                              onChange={(e) => changeLanguage(e.target.value)}
-                              style={{
-                                padding: "6px 12px",
-                                borderRadius: "6px",
-                                border: "1px solid #ddd",
-                                backgroundColor: "var(--pageBackground)",
-                                color: "var(--text1)",
-                                fontSize: "14px",
-                                cursor: "pointer",
-                                outline: "none",
-                              }}
-                            >
-                              {availableLanguages.map((lang) => (
-                                <option key={lang.code} value={lang.code}>
-                                  {lang.nativeName}
-                                </option>
-                              ))}
-                            </select>
                           </div>
-                        </div>
+                        )}
                       </div>
-                    );
-                  }
+                    </div>
+                  );
+                }
 
-                  // 5) regular clickable rows
+                // 4) Language selector
+                if (item.type === "language") {
                   if (hidden && !editMode) return null;
                   return (
                     <div
@@ -1747,64 +1680,133 @@ const SettingsSidebar = () => {
                         )}
 
                         <div
-                          onClick={item.onClick}
-                          className={`settings-item ${item.style || ""} ${
-                            hidden ? "hidden" : ""
-                          }`}
+                          className={`settings-item ${hidden ? "hidden" : ""}`}
+                          style={{ justifyContent: "space-between" }}
                         >
-                          <div className="item-icon">
-                            <span className="material-symbols-outlined">
-                              {item.icon}
-                            </span>
-                          </div>
                           <div
-                            className={`item-text ${
-                              item.style === "disabled" ? "disabled" : ""
-                            }`}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
                           >
-                            {editMode && editingLabel === item.key ? (
-                              <input
-                                type="text"
-                                value={label}
-                                onChange={(e) =>
-                                  handleLabelEdit(item.key, "", e.target.value)
-                                }
-                                onBlur={finishEditingLabel}
-                                onKeyPress={(e) =>
-                                  e.key === "Enter" && finishEditingLabel()
-                                }
-                                className="label-edit-input"
-                                autoFocus
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                            ) : (
-                              <span
-                                onClick={
-                                  editMode
-                                    ? (e) => {
-                                        e.stopPropagation();
-                                        startEditingLabel(item.key);
-                                      }
-                                    : undefined
-                                }
-                                className={editMode ? "editable-label" : ""}
-                              >
-                                {label}
+                            <div className="item-icon">
+                              <span className="material-symbols-outlined">
+                                {item.icon}
                               </span>
-                            )}
+                            </div>
+                            <div className="item-text">{label}</div>
                           </div>
+                          <select
+                            value={language}
+                            onChange={(e) => changeLanguage(e.target.value)}
+                            style={{
+                              padding: "6px 12px",
+                              borderRadius: "6px",
+                              border: "1px solid #ddd",
+                              backgroundColor: "var(--pageBackground)",
+                              color: "var(--text1)",
+                              fontSize: "14px",
+                              cursor: "pointer",
+                              outline: "none",
+                            }}
+                          >
+                            {availableLanguages.map((lang) => (
+                              <option key={lang.code} value={lang.code}>
+                                {lang.nativeName}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                     </div>
                   );
-                })}
-              </div>
-            );
-          })}
+                }
 
-          <div style={{ height: "80px" }}></div>
-        </div>
-      ) : null}
+                // 5) regular clickable rows
+                if (hidden && !editMode) return null;
+                return (
+                  <div
+                    key={item.key}
+                    className={`settings-item-container ${
+                      hidden ? "hidden-item" : ""
+                    }`}
+                  >
+                    <div className="settings-item-wrapper">
+                      {editMode && (
+                        <button
+                          className="hide-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleVisibility(item.key);
+                          }}
+                          title={hidden ? "Show item" : "Hide item"}
+                        >
+                          <span className="material-symbols-outlined">
+                            {hidden ? "visibility" : "visibility_off"}
+                          </span>
+                        </button>
+                      )}
+
+                      <div
+                        onClick={item.onClick}
+                        className={`settings-item ${item.style || ""} ${
+                          hidden ? "hidden" : ""
+                        }`}
+                      >
+                        <div className="item-icon">
+                          <span className="material-symbols-outlined">
+                            {item.icon}
+                          </span>
+                        </div>
+                        <div
+                          className={`item-text ${
+                            item.style === "disabled" ? "disabled" : ""
+                          }`}
+                        >
+                          {editMode && editingLabel === item.key ? (
+                            <input
+                              type="text"
+                              value={label}
+                              onChange={(e) =>
+                                handleLabelEdit(item.key, "", e.target.value)
+                              }
+                              onBlur={finishEditingLabel}
+                              onKeyPress={(e) =>
+                                e.key === "Enter" && finishEditingLabel()
+                              }
+                              className="label-edit-input"
+                              autoFocus
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          ) : (
+                            <span
+                              onClick={
+                                editMode
+                                  ? (e) => {
+                                      e.stopPropagation();
+                                      startEditingLabel(item.key);
+                                    }
+                                  : undefined
+                              }
+                              className={editMode ? "editable-label" : ""}
+                            >
+                              {label}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+
+        <div style={{ height: "80px" }}></div>
+      </div>
+
       <style>{`
                 ${getStyleOf("settings.css")}
                 

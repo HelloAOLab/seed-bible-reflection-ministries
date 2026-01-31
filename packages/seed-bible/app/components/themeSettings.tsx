@@ -5147,9 +5147,9 @@ const SettingsUI = () => {
 
   const sectionTitleStyle = {
     fontSize: "16px",
-    color: "var(--text2)",
+    color: "black",
     fontWeight: "500",
-    marginBottom: "12px",
+    marginBottom: "17px",
   };
 
   const cardContainerStyle = {
@@ -5345,134 +5345,153 @@ const SettingsUI = () => {
       <div style={{ marginTop: "20px" }}>
         <div className="routerTitle blackText">
           <div className="blackText">
-            <ThemeIcon />
+            <ThemeIcon colorCode={"#727272"} />
           </div>
-          <div>
-            {currentSpace.name} {t("theme")}
-          </div>
+          <div style={{ fontWeight: "400" }}>{t("Theme & Text")}</div>
         </div>
-        <div style={{ display: "flex", gap: "7px", marginBottom: "30px" }}>
+        <div
+          style={{
+            marginTop: "-10px",
+            marginBottom: "24px",
+            color: "#5F5E5C",
+            fontSize: "12px",
+          }}
+        >
+          Edit theme for your page and everything...
+        </div>
+        <div>
           <div
             style={{
-              width: "80px",
-              height: "43px",
-              backgroundColor: "var(--panelBackground) !important",
-              border: "1px solid #E1E3EA",
-              borderRadius: "4px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
+              fontWeight: "500",
+              fontSize: "16px",
+              marginBottom: "17px",
             }}
-            onClick={handleDecreaseFontSize}
           >
-            <svg
-              style={{ filter: "none", stroke: "var(--heading1Color)" }}
-              width="12"
-              height="12"
-              viewBox="0 0 12 12"
-              fill="none"
-            >
-              <text x="6" y="9" fontSize="8" textAnchor="middle" fill="black">
-                A
-              </text>
-            </svg>
+            Text Settings
           </div>
-          <div
-            style={{
-              width: "80px",
-              height: "43px",
-              backgroundColor: "var(--panelBackground) !important",
-              border: "1px solid #E1E3EA",
-              borderRadius: "4px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-            onClick={handleIncreaseFontSize}
-          >
-            <svg
-              style={{ filter: "none", stroke: "var(--heading1Color)" }}
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
+          <div style={{ display: "flex", gap: "7px", marginBottom: "30px" }}>
+            <div
+              style={{
+                width: "80px",
+                height: "43px",
+                backgroundColor: "var(--panelBackground) !important",
+                border: "1px solid #E1E3EA",
+                borderRadius: "4px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+              onClick={handleDecreaseFontSize}
             >
-              <text
-                x="10"
-                y="14"
-                fontSize="14"
-                textAnchor="middle"
-                fill="black"
+              <svg
+                style={{ filter: "none", stroke: "var(--heading1Color)" }}
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
               >
-                A
-              </text>
-            </svg>
-          </div>
-          <div
-            style={{
-              width: "80px",
-              height: "43px",
-              backgroundColor: "var(--panelBackground) !important",
-              border: "1px solid #E1E3EA",
-              borderRadius: "4px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              position: "relative",
-            }}
-            onClick={handleCycleLineHeight}
-          >
-            <svg
-              style={{ filter: "none", stroke: "var(--heading1Color)" }}
-              width="18"
-              height="18"
-              viewBox="0 0 18 18"
-              fill="none"
+                <text x="6" y="9" fontSize="8" textAnchor="middle" fill="black">
+                  A
+                </text>
+              </svg>
+            </div>
+            <div
+              style={{
+                width: "80px",
+                height: "43px",
+                backgroundColor: "var(--panelBackground) !important",
+                border: "1px solid #E1E3EA",
+                borderRadius: "4px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+              onClick={handleIncreaseFontSize}
             >
-              {(() => {
-                const level = LINE_HEIGHTS[lineHeightIndex]; // -1, 0, +1
+              <svg
+                style={{ filter: "none", stroke: "var(--heading1Color)" }}
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+              >
+                <text
+                  x="10"
+                  y="14"
+                  fontSize="14"
+                  textAnchor="middle"
+                  fill="black"
+                >
+                  A
+                </text>
+              </svg>
+            </div>
+            <div
+              style={{
+                width: "80px",
+                height: "43px",
+                backgroundColor: "var(--panelBackground) !important",
+                border: "1px solid #E1E3EA",
+                borderRadius: "4px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+                position: "relative",
+              }}
+              onClick={handleCycleLineHeight}
+            >
+              <svg
+                style={{ filter: "none", stroke: "var(--heading1Color)" }}
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+              >
+                {(() => {
+                  const level = LINE_HEIGHTS[lineHeightIndex]; // -1, 0, +1
 
-                // base gap is 4.5 inside the 18px box
-                const baseGap = 4.5;
+                  // base gap is 4.5 inside the 18px box
+                  const baseGap = 4.5;
 
-                // each level adjusts the gap slightly
-                const gap = baseGap + level * 2;
+                  // each level adjusts the gap slightly
+                  const gap = baseGap + level * 2;
 
-                const startY = 3;
+                  const startY = 3;
 
-                return (
-                  <>
-                    <rect
-                      x="3"
-                      y={startY}
-                      width="12"
-                      height="2"
-                      rx="1"
-                      fill="black"
-                    />
-                    <rect
-                      x="3"
-                      y={startY + gap}
-                      width="12"
-                      height="2"
-                      rx="1"
-                      fill="black"
-                    />
-                    <rect
-                      x="3"
-                      y={startY + 2 * gap}
-                      width="12"
-                      height="2"
-                      rx="1"
-                      fill="black"
-                    />
-                  </>
-                );
-              })()}
-            </svg>
+                  return (
+                    <>
+                      <rect
+                        x="3"
+                        y={startY}
+                        width="12"
+                        height="2"
+                        rx="1"
+                        fill="black"
+                      />
+                      <rect
+                        x="3"
+                        y={startY + gap}
+                        width="12"
+                        height="2"
+                        rx="1"
+                        fill="black"
+                      />
+                      <rect
+                        x="3"
+                        y={startY + 2 * gap}
+                        width="12"
+                        height="2"
+                        rx="1"
+                        fill="black"
+                      />
+                    </>
+                  );
+                })()}
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -5710,12 +5729,6 @@ const SettingsUI = () => {
           )
         )}
       </div>
-      <button
-        style={buttonStyle}
-        onClick={() => setSideBarMode("advancedThemeSettings")}
-      >
-        {t("advancedSettings")}
-      </button>
       <div style={separatorStyle}></div>
     </div>
   );
