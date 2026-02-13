@@ -18,6 +18,7 @@ import {
   TheNewSettingsIcon,
   GoPrivateIcon,
   BurgerMenuIcon,
+  ClientLogo,
 } from "app.components.icons";
 import { useBibleContext } from "app.hooks.bibleVariables";
 import { useSideBarContext } from "app.hooks.sideBar";
@@ -645,6 +646,14 @@ function Tab({
                   : el?.data?.book
                     ? `${el?.data?.book} - ${el?.data?.chapter}`
                     : el?.data?.title}
+              {el?.data?.shortName && (
+                <span
+                  style={{
+                    fontSize: "14px",
+                    color: "color-mix(in srgb, var(--text1), transparent 40%)",
+                  }}
+                >{` · ${el?.data?.shortName}`}</span>
+              )}
             </span>
             <CircleCounter
               data={Object.entries(circles)}
@@ -798,7 +807,6 @@ function SideBar({ panelsNumber }) {
     setSelectedTabs,
     sharedTab,
   } = useTabsContext();
-  console.log(globalThis.ThemeCSS);
   globalThis.AddTab = addTab;
   const { screens, setScreens, fullScreen, setFullScreen, ReSeed, setReSeed } =
     useBibleContext();
@@ -809,6 +817,7 @@ function SideBar({ panelsNumber }) {
   globalThis.SetOnlineUsers = setOnlineUsers;
   const [showSearch, setShowSearch] = useState(false); // New state for search visibility
   const [editMode, setEditMode] = useState(false); // New state for edit mode
+  const [keepAwake, setKeepAwake] = useState(false); // New state for keep device awaken
   useEffect(() => {
     setEditMode(ReSeed);
   }, [ReSeed]);
@@ -995,6 +1004,27 @@ function SideBar({ panelsNumber }) {
     }
   };
 
+  // Toggle keep device awaken function
+  const toggleKeepAwake = async () => {
+    if (keepAwake) {
+      // Release the wake lock
+      try {
+        await os.disableWakeLock();
+        setKeepAwake(false);
+      } catch (err: any) {
+        os.toast("Could not disable keep awake: " + err?.message);
+      }
+    } else {
+      // Request a wake lock
+      try {
+        await os.requestWakeLock();
+        setKeepAwake(true);
+      } catch (err: any) {
+        os.toast("Could not enable keep awake: " + err?.message);
+      }
+    }
+  };
+
   const ScreenOptions = ({ setCustomScreens }) => {
     return (
       <div
@@ -1123,7 +1153,7 @@ function SideBar({ panelsNumber }) {
         title: t("inviteToSession"),
         onClick: async () => {
           const { QRCodeComponent } = thisBot.Chips();
-          const url = `https://ao.bot/?pattern=SeedBibleDev&inst=${uuid()}&hosted=${configBot.id}`;
+          const url = `https://ao.bot/?inst=${os.getCurrentInst()}`;
           ShowModal(<QRCodeComponent url={url} />);
         },
       },
@@ -1143,6 +1173,7 @@ function SideBar({ panelsNumber }) {
             <JoinSessionComponent
               onJoin={(code) => os.goToURL(code)}
               translations={translations}
+              CloseModal={() => globalThis.CloseModal()}
             />
           );
         },
@@ -1174,6 +1205,13 @@ function SideBar({ panelsNumber }) {
           setFullScreen(true);
         },
       },
+      {
+        disabled: false,
+        icon: <MenuIcon name="brightness_high" />,
+        title: t("keepDeviceAwaken"),
+        toggle: keepAwake,
+        onClick: toggleKeepAwake,
+      },
       // { type: "line" },
       // {
       //     disabled: false,
@@ -1184,10 +1222,12 @@ function SideBar({ panelsNumber }) {
       // { disabled: true, icon: <MenuIcon name="extension" />, title: 'Extensions', onClick: () => { } },
       { type: "line" },
       {
-        disabled: true,
+        disabled: false,
         icon: <MenuIcon name="bug_report" />,
         title: t("reportBug"),
-        onClick: () => {},
+        onClick: () => {
+          os.openURL("https://forms.gle/mhtqbQd6VPW8ZDh2A");
+        },
       },
       {
         disabled: true,
@@ -1216,6 +1256,7 @@ function SideBar({ panelsNumber }) {
                 bookId: "GEN",
                 chapter: 1,
                 translation: "BSB",
+                shortName: "BSB",
               },
             });
             closePopupSettings();
@@ -1260,9 +1301,19 @@ function SideBar({ panelsNumber }) {
 
   const { moveMultipleTabs } = useTabsContext();
   const holdTimeout = useRef({ time: null, clicked: null });
-  const handleOpenKenBoa = () => {
-    window.open("https://www.kenboa.org/");
+   const clientSite=tags?.settingsConfigs?.presets?.["minimal"]
+      ?.clientBranding?.clientSite;
+  const handleOpenClientSite = () => {
+    if(clientSite){
+    window.open(clientSite);
+    }
   };
+  const clientLogo=tags?.settingsConfigs?.presets?.["minimal"]
+      ?.clientBranding?.logo;
+
+   const isSiteOfClient =
+    tags?.settingsConfigs?.presets?.["minimal"]
+      ?.clientBranding?.enabled;
 
   return (
     <>
@@ -1363,56 +1414,42 @@ function SideBar({ panelsNumber }) {
         <div className="headbar">
           {!collapsed ? (
             <>
-              <div className="menuandlogo">
-                <div className="menuOptions">
-                  <span
-                    onClick={() => {
-                      const mob = window.innerWidth < 768;
-                      if (!mob) {
-                        setSidebarWidth(60);
-                        setCollapsed(true);
-                        setMultiSelectMode(false);
-                      } else {
-                        setMultiSelectMode(false);
-                        setSidebarWidth(0);
-                        setOpenOnMobile(false);
-                      }
-                    }}
-                    className="material-symbols-outlined"
-                    style={{ color: "var(--openCloseMenuIcon, var(--text1))" }}
-                  >
-                    menu_open
-                  </span>
-                  <div>
-                    {customIcon ? (
-                      <span
-                        onClick={() =>
-                          customIcon.link && os.openURL(customIcon.link)
-                        }
-                        className="material-symbols-outlined"
-                      >
-                        {customIcon.icon}
-                      </span>
-                    ) : (
-                      <span></span>
-                    )}
-                  </div>
-                </div>
-                <img
-                  onClick={handleOpenKenBoa}
-                  alt="logo"
-                  src="https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png"
-                  style={{
-                    width: "32px",
-                    height: "32px",
-                    backgroundColor: "#f5f5f5",
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    cursor: "pointer",
+              <div className="menuOptions">
+                <span
+                  onClick={() => {
+                    const mob = window.innerWidth < 768;
+                    if (!mob) {
+                      setSidebarWidth(60);
+                      setCollapsed(true);
+                      setMultiSelectMode(false);
+                    } else {
+                      setMultiSelectMode(false);
+                      setSidebarWidth(0);
+                      setOpenOnMobile(false);
+                    }
                   }}
-                />
-              </div>
+                  className="material-symbols-outlined"
+                  style={{ color: "var(--openCloseMenuIcon, var(--text1))" }}
+                >
+                  menu_open
+                </span>
+                <div>
+                  {customIcon ? (
+                    <span
+                      onClick={() =>
+                        customIcon.link && os.openURL(customIcon.link)
+                      }
+                      className="material-symbols-outlined"
+                    >
+                      {customIcon.icon}
+                    </span>
+                  ) : (
+                    <span></span>
+                  )}
+                </div>
 
+                { isSiteOfClient && <ClientLogo handleOpenClientSite={handleOpenClientSite} url={clientLogo} alt={'Logo'}/>}
+              </div>
               <div className="canvasOptions">
                 <span
                   style={{
@@ -1533,6 +1570,7 @@ function SideBar({ panelsNumber }) {
                           bookId: "GEN",
                           chapter: 1,
                           translation: "BSB",
+                          shortName: "BSB",
                         },
                       });
                     }
@@ -1542,7 +1580,7 @@ function SideBar({ panelsNumber }) {
                     clearTimeout(holdTimeout.current.time);
                     holdTimeout.current.clicked = false;
                   }}
-                  className="addIcon material-symbols-outlined "
+                  className="material-symbols-outlined addIcon"
                 >
                   add
                 </span>
@@ -1659,20 +1697,9 @@ function SideBar({ panelsNumber }) {
               cursor: "pointer",
             }}
           >
-            <img
-              onClick={handleOpenKenBoa}
-              alt="logo"
-              src="https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png"
-              style={{
-                width: "36px",
-                height: "36px",
-                backgroundColor: "white",
-                borderRadius: "50%",
-                overflow: "hidden",
-                cursor: "pointer",
-              }}
-            />
-            <div className="sidebarLine"></div>
+
+                { isSiteOfClient && <ClientLogo handleOpenClientSite={handleOpenClientSite} url={clientLogo} alt={'Logo'}/>}
+             <div className="sidebarLine"></div>
             <div
               onClick={() => {
                 setSidebarWidth(280);
@@ -1744,6 +1771,7 @@ function SideBar({ panelsNumber }) {
                       bookId: "GEN",
                       chapter: 1,
                       translation: "BSB",
+                      shortName: "BSB",
                     },
                   });
                 }
@@ -1753,7 +1781,7 @@ function SideBar({ panelsNumber }) {
                 clearTimeout(holdTimeout.current.time);
                 holdTimeout.current.clicked = false;
               }}
-              className="addIconCollapsed material-symbols-outlined "
+              class="material-symbols-outlined addIconCollapsed"
             >
               add
             </span>
@@ -1923,36 +1951,40 @@ export const SettingsProfile = () => {
       setActiveSpace(spaceId);
     }
   };
+  const removeSpaces =
+    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "minimal"]
+      ?.appSettings?.removeSpaces;
 
   return (
     <div className="dot">
-      {spaces.map((space) => {
-        return (
-          <SurroundingDivs>
-            <div
-              onClick={() => handleMouseDown(space.id)}
-              // onMouseUp={() => handleMouseUp(space.id)}
-              // onMouseLeave={() => clearTimeout(holdTimeout.current)}
-              onContextMenu={(e) => {
-                handleMouseDown(space.id);
-                handleRightClick(space.id);
-              }}
-              className={space.id === activeSpace ? "activeBg" : "bg"}
-            >
-              {!space?.icon ? (
-                <span></span>
-              ) : (
-                <div
-                  className="material-symbols-outlined"
-                  style={{ scale: "0.6", cursor: "pointer" }}
-                >
-                  {space.icon}
-                </div>
-              )}
-            </div>
-          </SurroundingDivs>
-        );
-      })}
+      {!removeSpaces &&
+        spaces.map((space) => {
+          return (
+            <SurroundingDivs>
+              <div
+                onClick={() => handleMouseDown(space.id)}
+                // onMouseUp={() => handleMouseUp(space.id)}
+                // onMouseLeave={() => clearTimeout(holdTimeout.current)}
+                onContextMenu={(e) => {
+                  handleMouseDown(space.id);
+                  handleRightClick(space.id);
+                }}
+                className={space.id === activeSpace ? "activeBg" : "bg"}
+              >
+                {!space?.icon ? (
+                  <span></span>
+                ) : (
+                  <div
+                    className="material-symbols-outlined"
+                    style={{ scale: "0.6", cursor: "pointer" }}
+                  >
+                    {space.icon}
+                  </div>
+                )}
+              </div>
+            </SurroundingDivs>
+          );
+        })}
     </div>
   );
 };
@@ -1998,8 +2030,32 @@ export const UserProfile = ({ collapsed }) => {
   return (
     <div
       onClick={() => {
-        globalThis.AccountSettingsEnteredFrom = "default";
-        setSideBarMode("createAccountSettings");
+        if (!authBot?.id) {
+          globalThis.AccountSettingsEnteredFrom = "default";
+          setSideBarMode("createAccountSettings");
+        } else {
+          openPopupSettings({
+            type: "normal",
+            items: [
+              {
+                icon: <MenuIcon name="account_circle" />,
+                title: "View profile",
+                onClick: () => {
+                  globalThis.AccountSettingsEnteredFrom = "default";
+                  setSideBarMode("createAccountSettings");
+                },
+              },
+              {
+                icon: <MenuIcon name="logout" />,
+                title: "Sign out",
+                onClick: () => {
+                  destroy(authBot);
+                  setUserData(null);
+                },
+              },
+            ],
+          });
+        }
       }}
       style={{ background: userData?.photoLink && "transparent" }}
       className="userProfile"

@@ -117,7 +117,7 @@ export const ApologistIcon = (noFilter = false) => {
       fill="none"
       viewBox="0 0 24 24"
       stroke-width="1.5"
-      stroke="currentColor"
+      stroke="#000"
       class="size-6"
     >
       <path
@@ -650,6 +650,24 @@ export const ThemeIcon = (props) => (
     />
   </svg>
 );
+export const ClientLogo=({handleOpenClientSite,url,alt})=>{
+  return (
+     <img
+              onClick={handleOpenClientSite}
+              alt={alt}
+              src={url}
+              style={{
+                width: "36px",
+                height: "36px",
+                backgroundColor: "white",
+                borderRadius: "50%",
+                overflow: "hidden",
+                cursor: "pointer",
+              }}
+            />
+  )
+
+}
 export const SelectionUIIcon = (props) => (
   <svg
     width={24}
@@ -675,7 +693,7 @@ export const SelectionUIIcon = (props) => (
     <path d="M11 12L21 16L15 17L17 22Z" fill="black" />
   </svg>
 );
-const MenuIcon = ({ name, size = 24, invert = false, className = "" }) => {
+const MenuIcon = ({ name, size = 24, invert = false, className = "", style = {} }) => {
   // Check if `name` looks like an image URL
   const isImage =
     typeof name === "string" && name.match(/\.(png|jpg|jpeg|svg|gif|webp)$/i);
@@ -690,6 +708,7 @@ const MenuIcon = ({ name, size = 24, invert = false, className = "" }) => {
   const iconStyle = {
     fontSize: isImage ? 16 : size,
     filter: invert ? "invert(1)" : undefined,
+    ...style,
   };
 
   return isImage ? (
@@ -1009,7 +1028,7 @@ const LocationIcon = (props) => (
   >
     <path
       d="M8.00225 9.75C8.4841 9.75 8.89585 9.5784 9.2375 9.23525C9.57915 8.8921 9.75 8.4796 9.75 7.99775C9.75 7.5159 9.5784 7.10415 9.23525 6.7625C8.8921 6.42085 8.4796 6.25 7.99775 6.25C7.5159 6.25 7.10415 6.4216 6.7625 6.76475C6.42085 7.1079 6.25 7.5204 6.25 8.00225C6.25 8.4841 6.4216 8.89585 6.76475 9.2375C7.1079 9.57915 7.5204 9.75 8.00225 9.75ZM8 20C5.31665 17.7167 3.3125 15.5958 1.9875 13.6375C0.6625 11.6791 0 9.86665 0 8.2C0 5.7 0.804165 3.70835 2.4125 2.225C4.02085 0.741665 5.88335 0 8 0C10.1166 0 11.9791 0.741665 13.5875 2.225C15.1958 3.70835 16 5.7 16 8.2C16 9.86665 15.3375 11.6791 14.0125 13.6375C12.6875 15.5958 10.6833 17.7167 8 20Z"
-      fill="#606060"
+      fill="black"
     />
   </svg>
 );
@@ -1110,4 +1129,5 @@ export {
   CopyIcon,
   ShareIcon,
   LocationIcon,
+  Playlist,
 };

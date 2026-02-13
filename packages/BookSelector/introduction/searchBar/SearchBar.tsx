@@ -105,7 +105,8 @@ const tanakhIndex: { [key: number]: number } = Object.fromEntries(
 
 const thePage = getBot("system", "app.components");
 
-const SearchBar = () => {
+const SearchBar = (props: { openSidebar: boolean }) => {
+  const { openSidebar } = props;
   const [query, setQuery] = useState("");
   const [languageQuery, setLanguageQuery] = useState("");
   const inputRef = useRef(null);
@@ -492,10 +493,9 @@ const SearchBar = () => {
                   web
                     .get(`${defaultTranslation.listOfBooksApiLink}`)
                     .then((e) => {
-                      const book0 = e.data.books[0];
                       ChangeTranslation(
                         defaultTranslation.id,
-                        book0,
+                        e.data.books,
                         defaultTranslation.origin
                       );
                       setBooksData([...e.data.books]);
@@ -531,7 +531,7 @@ const SearchBar = () => {
                     os.toast(`Translation Already Exists!`);
                     ChangeTranslation(
                       controlledTranslation.id,
-                      data.books[0],
+                      data.books,
                       controlledTranslation.origin
                     );
                     setBooksData([...data.books[0]]);
@@ -573,7 +573,7 @@ const SearchBar = () => {
                     }
                     ChangeTranslation(
                       controlledTranslation.id,
-                      data.books[0],
+                      data.books,
                       controlledTranslation.origin
                     );
                     setBooksData([...data.books[0]]);
@@ -660,11 +660,10 @@ const SearchBar = () => {
       web
         .get(`${selectedTranslation.listOfBooksApiLink}`)
         .then((e) => {
-          let book0 = e.data.books[0];
           !thePage.masks?.translationInitiated &&
             ChangeTranslation(
               selectedTranslation.id,
-              book0,
+              e.data.books,
               selectedTranslation.origin
             );
           // ChangeTranslation(selectedTranslation.id, book0, selectedTranslation.origin);
@@ -679,11 +678,10 @@ const SearchBar = () => {
           `https://bible.helloao.org/api/${selectedTranslation.id}/books.json`
         )
         .then((e) => {
-          let book0 = e.data.books[0];
           !thePage.masks?.translationInitiated &&
             ChangeTranslation(
               selectedTranslation.id,
-              book0,
+              e.data.books,
               "https://bible.helloao.org"
             );
           // ChangeTranslation(selectedTranslation.id, book0, "https://bible.helloao.org");
@@ -818,6 +816,12 @@ const SearchBar = () => {
   useEffect(() => {
     setLanguageQuery("");
   }, [selectingTranslation]);
+
+  useEffect(() => {
+    if (!openSidebar && globalThis?.bookModalOpen) {
+      globalThis.bookModalOpen(false);
+    }
+  }, [openSidebar]);
 
   // Use State of Element
   const [showCheck, setShowCheck] = useState(
@@ -988,6 +992,7 @@ const SearchBar = () => {
             dontOpen={dontOpen}
             selectedTranslation={selectedTranslation}
             selectedTestament={selectedTestament}
+            setSelectedTestament={setSelectedTestament}
             booksData={selectedTestamentData}
             sortBooksByTestament={sortBooksByTestament}
             windowSize={windowSize}
@@ -1018,6 +1023,7 @@ const SearchBar = () => {
 const SideBarBooks = (props: {
   booksData: BookInterface[];
   selectedTestament: number;
+  setSelectedTestament: (n: number) => void;
   selectedTranslation: TranslationInterface;
   dontOpen: any;
   showCheck: any;
@@ -1034,6 +1040,7 @@ const SideBarBooks = (props: {
     booksData,
     selectedTestament,
     selectedTranslation,
+    setSelectedTestament,
     dontOpen,
     showCheck,
     onlineUsers,
@@ -1042,21 +1049,15 @@ const SideBarBooks = (props: {
     systemTranslation,
   } = props;
   const [lastBookClicked, setLastBookClicked] = useState(-1);
-  const [bookData, setBookData] = useState(null);
+  const [bookData, setBookData] = useState<BookInterface | null>(null);
   const [chT, setChT] = useState(0);
-
-  const refsArray = useRef([]);
-
-  // Function to update the array of refs
-  const updateRefsArray = useCallback((index: number, ref: any) => {
-    refsArray.current[index] = ref;
-    globalThis.BooksRefSearchBar = refsArray;
-  }, []);
+  const [localSelectedTestament, setLocalSelectedTestament] =
+    useState(selectedTestament);
 
   useEffect(() => {
     setLastBookClicked(-1);
     setBookData(null);
-  }, [selectedTestament]);
+  }, [localSelectedTestament]);
 
   useLayoutEffect(() => {
     if (booksData.length === 1 && booksData[0]) {
@@ -1074,21 +1075,8 @@ const SideBarBooks = (props: {
     }
   }, [booksData]);
 
-  const refsObject = useMemo(() => {
-    const refs = [];
-    if (bookData?.numberOfChapters)
-      for (let i = 0; i < bookData.numberOfChapters; i++) {
-        refs.push(createRef());
-      }
-    return refs;
-  }, [bookData]);
-
-  globalThis.FocusOnChapter = (number) => {
-    refsObject[number]?.current.focus();
-  };
-
   const handleClick = useCallback(
-    (props: { index: number; book: BookInterface; cht: number }) => {
+    (props: { index: number; book: BookInterface; cht?: number }) => {
       const { index, book, cht = 0 } = props;
       if (bookData?.id === book.id) {
         setBookData(null);
@@ -1107,6 +1095,18 @@ const SideBarBooks = (props: {
     return Math.floor(index / separator) * separator + separator - 1;
   }, []);
 
+  // const isBook = useCallback(
+  //   (book: BookInterface | { ghost?: boolean }): book is BookInterface =>
+  //     !("ghost" in book) || !book.ghost,
+  //   []
+  // );
+
+  const isBook = useCallback(
+    (book: BookInterface | { ghost?: boolean }) =>
+      !("ghost" in book) || !book.ghost,
+    []
+  );
+
   const ghostArray = useCallback(
     (booksArray: BookInterface[], allowedRows: number) => {
       if (allowedRows === 1) return booksArray;
@@ -1116,7 +1116,9 @@ const SideBarBooks = (props: {
         (booksLength % allowedRows === 0
           ? allowedRows
           : booksLength % allowedRows);
-      const tempBooksArray = [...booksArray];
+      const tempBooksArray: (BookInterface | { ghost?: boolean })[] = [
+        ...booksArray,
+      ];
       for (let i = 0; i < additionalElements; i++) {
         tempBooksArray.push({ ghost: true });
       }
@@ -1147,6 +1149,23 @@ const SideBarBooks = (props: {
     return bookName;
   }, []);
 
+  useEffect(() => {
+    const sortedBooks = sortBooksByTestament(booksData);
+    const OTBooks = sortedBooks.OTBooks;
+    const NTBooks = sortedBooks.NTBooks;
+    if (selectedTestament === 2) {
+      if (OTBooks.length > 0 && NTBooks.length === 0) {
+        setLocalSelectedTestament(0);
+      } else if (NTBooks.length > 0 && OTBooks.length === 0) {
+        setLocalSelectedTestament(1);
+      } else {
+        setLocalSelectedTestament(selectedTestament);
+      }
+    } else {
+      setLocalSelectedTestament(selectedTestament);
+    }
+  }, [selectedTestament, booksData]);
+
   const RenderBooksByTestament = useMemo(() => {
     let allowedRows = 5;
 
@@ -1160,7 +1179,7 @@ const SideBarBooks = (props: {
 
     const sortedBooks = sortBooksByTestament(booksData);
 
-    if (selectedTestament === 2) {
+    if (localSelectedTestament === 2) {
       const OTChapterSeparator =
         allowedRows === 1 ? 1 : allowedRows === 3 ? 2 : 3;
       const OTChapterPos = calcChapterPos(lastBookClicked, OTChapterSeparator);
@@ -1187,10 +1206,9 @@ const SideBarBooks = (props: {
               {OTBooks.map((book, index) => {
                 return (
                   <>
-                    {!book?.ghost && (
+                    {isBook(book) && (
                       <div
                         class={`sidebar-itm ${index === lastBookClicked && bookData?.id === book.id ? "sidebar-selected-itm" : ""}`}
-                        ref={(ref) => updateRefsArray(index, ref)}
                         tabIndex={index + 1}
                         onClick={() => {
                           handleClick({ index, book, cht: 0 });
@@ -1216,12 +1234,8 @@ const SideBarBooks = (props: {
                         </span>
                       </div>
                     )}
-                    {book?.ghost && (
-                      <div
-                        class={`sidebar-ghost-itm`}
-                        ref={(ref) => updateRefsArray(index, ref)}
-                        tabIndex={index + 1}
-                      />
+                    {!isBook(book) && (
+                      <div class={`sidebar-ghost-itm`} tabIndex={index + 1} />
                     )}
                     {OTChapterPos === index && bookData && chT === 0 && (
                       <div
@@ -1236,7 +1250,6 @@ const SideBarBooks = (props: {
                       >
                         <SideBarChapters
                           onlineUsers={onlineUsers}
-                          refsObject={refsObject}
                           bookData={bookData}
                           setLastBookClicked={setLastBookClicked}
                           dontOpen={dontOpen}
@@ -1264,10 +1277,9 @@ const SideBarBooks = (props: {
               {NTBooks.map((book, index) => {
                 return (
                   <>
-                    {!book?.ghost && (
+                    {isBook(book) && (
                       <div
                         class={`sidebar-itm ${index === lastBookClicked && bookData?.id === book.id ? "sidebar-selected-itm" : ""}`}
-                        ref={(ref) => updateRefsArray(index, ref)}
                         tabIndex={index + 1}
                         onClick={() => {
                           handleClick({ index, book, cht: 1 });
@@ -1292,12 +1304,8 @@ const SideBarBooks = (props: {
                         </span>
                       </div>
                     )}
-                    {book?.ghost && (
-                      <div
-                        class={`sidebar-ghost-itm`}
-                        ref={(ref) => updateRefsArray(index, ref)}
-                        tabIndex={index + 1}
-                      />
+                    {!isBook(book) && (
+                      <div class={`sidebar-ghost-itm`} tabIndex={index + 1} />
                     )}
                     {NTChapterPos === index && bookData && chT === 1 && (
                       <div
@@ -1318,7 +1326,6 @@ const SideBarBooks = (props: {
                         </style>
                         <SideBarChapters
                           onlineUsers={onlineUsers}
-                          refsObject={refsObject}
                           bookData={bookData}
                           setLastBookClicked={setLastBookClicked}
                           dontOpen={dontOpen}
@@ -1334,7 +1341,7 @@ const SideBarBooks = (props: {
           </div>
         </div>
       );
-    } else if (selectedTestament === 1) {
+    } else if (localSelectedTestament === 1) {
       const chapterPos = calcChapterPos(lastBookClicked, allowedRows);
       const booksWithGhost = ghostArray(sortedBooks.NTBooks, allowedRows);
       return (
@@ -1350,10 +1357,9 @@ const SideBarBooks = (props: {
               {booksWithGhost.map((book, index) => {
                 return (
                   <>
-                    {!book.ghost && (
+                    {isBook(book) && (
                       <div
                         class={`sidebar-itm ${index === lastBookClicked && bookData?.id === book.id ? "sidebar-selected-itm" : ""}`}
-                        ref={(ref) => updateRefsArray(index, ref)}
                         tabIndex={index + 1}
                         onClick={() => {
                           handleClick({ index, book });
@@ -1378,12 +1384,8 @@ const SideBarBooks = (props: {
                         </span>
                       </div>
                     )}
-                    {book?.ghost && (
-                      <div
-                        class={`sidebar-ghost-itm`}
-                        ref={(ref) => updateRefsArray(index, ref)}
-                        tabIndex={index + 1}
-                      />
+                    {!isBook(book) && (
+                      <div class={`sidebar-ghost-itm`} tabIndex={index + 1} />
                     )}
                     {chapterPos === index && bookData && (
                       <div
@@ -1398,7 +1400,6 @@ const SideBarBooks = (props: {
                       >
                         <SideBarChapters
                           onlineUsers={onlineUsers}
-                          refsObject={refsObject}
                           bookData={bookData}
                           setLastBookClicked={setLastBookClicked}
                           dontOpen={dontOpen}
@@ -1414,7 +1415,7 @@ const SideBarBooks = (props: {
           </div>
         </div>
       );
-    } else if (selectedTestament === 0) {
+    } else if (localSelectedTestament === 0) {
       const chapterPos = calcChapterPos(lastBookClicked, allowedRows);
       const booksWithGhost = ghostArray(sortedBooks.OTBooks, allowedRows);
       return (
@@ -1430,10 +1431,9 @@ const SideBarBooks = (props: {
               {booksWithGhost.map((book, index) => {
                 return (
                   <>
-                    {!book.ghost && (
+                    {isBook(book) && (
                       <div
                         class={`sidebar-itm ${index === lastBookClicked && bookData?.id === book.id ? "sidebar-selected-itm" : ""}`}
-                        ref={(ref) => updateRefsArray(index, ref)}
                         tabIndex={index + 1}
                         onClick={() => {
                           handleClick({ index, book });
@@ -1458,12 +1458,8 @@ const SideBarBooks = (props: {
                         </span>
                       </div>
                     )}
-                    {book?.ghost && (
-                      <div
-                        class={`sidebar-ghost-itm`}
-                        ref={(ref) => updateRefsArray(index, ref)}
-                        tabIndex={index + 1}
-                      />
+                    {!isBook(book) && (
+                      <div class={`sidebar-ghost-itm`} tabIndex={index + 1} />
                     )}
                     {chapterPos === index && bookData && (
                       <div
@@ -1478,7 +1474,6 @@ const SideBarBooks = (props: {
                       >
                         <SideBarChapters
                           onlineUsers={onlineUsers}
-                          refsObject={refsObject}
                           bookData={bookData}
                           setLastBookClicked={setLastBookClicked}
                           dontOpen={dontOpen}
@@ -1494,7 +1489,7 @@ const SideBarBooks = (props: {
           </div>
         </div>
       );
-    } else if (selectedTestament === 3) {
+    } else if (localSelectedTestament === 3) {
       const chapterPos = calcChapterPos(lastBookClicked, allowedRows);
       const booksWithGhost = ghostArray(
         sortedBooks.ApocryphaBooks,
@@ -1513,10 +1508,9 @@ const SideBarBooks = (props: {
               {booksWithGhost.map((book, index) => {
                 return (
                   <>
-                    {!book.ghost && (
+                    {isBook(book) && (
                       <div
                         class={`sidebar-itm ${index === lastBookClicked && bookData?.id === book.id ? "sidebar-selected-itm" : ""}`}
-                        ref={(ref) => updateRefsArray(index, ref)}
                         tabIndex={index + 1}
                         onClick={() => {
                           handleClick({ index, book });
@@ -1541,12 +1535,8 @@ const SideBarBooks = (props: {
                         </span>
                       </div>
                     )}
-                    {book?.ghost && (
-                      <div
-                        class={`sidebar-ghost-itm`}
-                        ref={(ref) => updateRefsArray(index, ref)}
-                        tabIndex={index + 1}
-                      />
+                    {!isBook(book) && (
+                      <div class={`sidebar-ghost-itm`} tabIndex={index + 1} />
                     )}
                     {chapterPos === index && bookData && (
                       <div
@@ -1561,7 +1551,6 @@ const SideBarBooks = (props: {
                       >
                         <SideBarChapters
                           onlineUsers={onlineUsers}
-                          refsObject={refsObject}
                           bookData={bookData}
                           setLastBookClicked={setLastBookClicked}
                           dontOpen={dontOpen}
@@ -1583,7 +1572,7 @@ const SideBarBooks = (props: {
     lastBookClicked,
     bookData,
     dontOpen,
-    selectedTestament,
+    localSelectedTestament,
     windowSize,
     chT,
     onlineUsers,
@@ -1594,10 +1583,9 @@ const SideBarBooks = (props: {
 
 const SideBarChapters = (props: {
   bookData: BookInterface;
-  dontOpen: any;
+  dontOpen: boolean;
   setLastBookClicked: (num: number) => void;
-  setBookData: any;
-  refsObject: any;
+  setBookData: (book: BookInterface) => void;
   selectedTranslation: TranslationInterface;
   onlineUsers: any;
 }) => {
@@ -1606,11 +1594,12 @@ const SideBarChapters = (props: {
     dontOpen,
     setLastBookClicked,
     setBookData,
-    refsObject,
     selectedTranslation,
     onlineUsers,
   } = props;
-  const [highLightedButtonsID, setHighlightedButtonID] = useState({});
+  const [highLightedButtonsID, setHighlightedButtonID] = useState<
+    Record<number, boolean>
+  >({});
 
   const handleChapterClick = (props: {
     bookName: string;
@@ -1717,6 +1706,7 @@ const SideBarChapters = (props: {
                 bookId: data.id,
                 chapter: chapterNo,
                 translation: data.translationId,
+                shortName: data?.shortName || "",
               },
             };
             globalThis.AddTab(tab);
@@ -1773,6 +1763,8 @@ const SideBarChapters = (props: {
       return "4 Psalms";
     } else if (index <= 149) {
       return "5 Psalms";
+    } else {
+      return "";
     }
   };
   const [currentPsalms, setCurrentPsalms] = useState("1 Psalms");
@@ -1785,7 +1777,7 @@ const SideBarChapters = (props: {
           renderJSX.push(
             <button
               style={{ width: "100%" }}
-              onCLick={() => {
+              onClick={() => {
                 setCurrentPsalms(
                   currentPsalms === "1 Psalms" ? "" : "1 Psalms"
                 );
@@ -1801,7 +1793,7 @@ const SideBarChapters = (props: {
           renderJSX.push(
             <button
               style={{ width: "100%" }}
-              onCLick={() => {
+              onClick={() => {
                 setCurrentPsalms(
                   currentPsalms === "2 Psalms" ? "" : "2 Psalms"
                 );
@@ -1817,7 +1809,7 @@ const SideBarChapters = (props: {
           renderJSX.push(
             <button
               style={{ width: "100%" }}
-              onCLick={() => {
+              onClick={() => {
                 setCurrentPsalms(
                   currentPsalms === "3 Psalms" ? "" : "3 Psalms"
                 );
@@ -1833,7 +1825,7 @@ const SideBarChapters = (props: {
           renderJSX.push(
             <button
               style={{ width: "100%" }}
-              onCLick={() => {
+              onClick={() => {
                 setCurrentPsalms(
                   currentPsalms === "4 Psalms" ? "" : "4 Psalms"
                 );
@@ -1849,7 +1841,7 @@ const SideBarChapters = (props: {
           renderJSX.push(
             <button
               style={{ width: "100%" }}
-              onCLick={() => {
+              onClick={() => {
                 setCurrentPsalms(
                   currentPsalms === "5 Psalms" ? "" : "5 Psalms"
                 );
@@ -1871,7 +1863,7 @@ const SideBarChapters = (props: {
                   : "none",
             }}
             class={`chapter-btn`}
-            onCLick={() =>
+            onClick={() =>
               handleChapterClick({
                 id: bookData?.id,
                 translationId: bookData.translationId,
@@ -1899,9 +1891,8 @@ const SideBarChapters = (props: {
       for (let i = 0; i < bookData.numberOfChapters; i++) {
         renderJSX.push(
           <button
-            ref={refsObject[i]}
             class={`chapter-btn ${i === bookData.numberOfChapters - 1 ? "lastOne" : ""}`}
-            onCLick={() =>
+            onClick={() =>
               handleChapterClick({
                 id: bookData?.id,
                 translationId: bookData.translationId,
@@ -2006,17 +1997,27 @@ const CircleCounter = (props: {
     } catch (e) {
       console.error("Error getting user visual:", e);
     }
+    return {
+      IconComponent: TreeIcon,
+      color: "#34D399",
+    };
   };
 
   useEffect(() => {
     if (isModalOpen) {
-      globalThis.bookModalOpen = setIsModalOpen;
+      (
+        globalThis as { bookModalOpen?: ((open: boolean) => void) | null }
+      ).bookModalOpen = setIsModalOpen;
       return () => {
-        globalThis.bookModalOpen = null;
+        (
+          globalThis as { bookModalOpen?: ((open: boolean) => void) | null }
+        ).bookModalOpen = null;
       };
     }
     return () => {
-      globalThis.bookModalOpen = null;
+      (
+        globalThis as { bookModalOpen?: ((open: boolean) => void) | null }
+      ).bookModalOpen = null;
     };
   }, [isModalOpen]);
 

@@ -92,7 +92,13 @@ const Layout = ({ children, panelsNumber }) => {
       ) : null}
       <div className={`floatsidebar ${openOnMobile ? "open" : ""}`}>
         {sidebarMode === "settings" ? (
-          <SettingsSidebar />
+          <SettingsSidebar
+            config={
+              tags?.settingsConfigs?.presets[
+                 "minimal"
+              ]
+            }
+          />
         ) : sidebarMode === "textSettings" ? (
           <TextSettings />
         ) : sidebarMode.includes("toolbarSettings") ? (

@@ -16,7 +16,7 @@ export function TabsProvider({ children }) {
   const [spaces, setSpaces] = useState([
     {
       id: "1",
-      /* name: "(Optional) Add space name",*/
+      name: "(Optional) Add space name",
       settings: {
         theme: {},
         toolbar: {
@@ -39,13 +39,14 @@ export function TabsProvider({ children }) {
             bookId: "GEN",
             chapter: 1,
             translation: "BSB",
+            shortName: "BSB",
           },
         },
       ], // Standalone tabs (not in a folder)
     },
     {
       id: "2",
-      /* name: "(Optional) Add space name",*/
+      name: "(Optional) Add space name",
       settings: {
         theme: {},
         toolbar: {
@@ -66,14 +67,14 @@ export function TabsProvider({ children }) {
             bookId: "GEN",
             chapter: 1,
             translation: "BSB",
+            shortName: "BSB",
           },
         },
       ],
     },
     {
       id: "3",
-      /* name: "(Optional) Add space name",*/
-
+      name: "(Optional) Add space name",
       settings: {
         theme: {},
         toolbar: {
@@ -94,6 +95,7 @@ export function TabsProvider({ children }) {
             bookId: "GEN",
             chapter: 1,
             translation: "BSB",
+            shortName: "BSB",
           },
         },
       ],
@@ -496,6 +498,7 @@ export function TabsProvider({ children }) {
             bookId: "GEN",
             chapter: 1,
             translation: "BSB",
+            shortName: "BSB",
           },
         },
       ],

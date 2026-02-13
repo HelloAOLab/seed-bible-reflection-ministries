@@ -1,0 +1,34 @@
+name: Sync Seed-Bible Develop
+
+on:
+  schedule:
+    - cron: "0 4 * * *"   # Runs daily at 4 AM UTC
+  workflow_dispatch:       # Allows manual trigger from GitHub UI
+
+jobs:
+  sync_fork_job:
+    name: Sync Reflection with Seed-Bible
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: NPM Install
+        run: |
+          corepack enable
+          npm run bootstrap
+
+      - name: Sync Fork
+        run: |
+          node ./script/sync-fork.mjs sync-fork \
+          ${{ github.repository }} \
+           HelloAOLab/seed-bible \
+          -a ${{ secrets.GITHUB_TOKEN }} \
+          -s ${{ secrets.GITHUB_TOKEN }}
+  
