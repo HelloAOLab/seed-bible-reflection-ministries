@@ -1,0 +1,42 @@
+import { ScriptureMap2DProvider } from "scriptureMap2D.main.ScriptureMap2DContext";
+import { Wrapper } from "scriptureMap2D.main.Wrapper";
+import { TimeProvider } from "scriptureMap2D.main.TimeContext";
+import { ReadingHistoryProvider } from "scriptureMap2D.main.ReadingHistoryContext";
+const { memo } = os.appCompat;
+
+export const ScriptureMap2DModes = Object.freeze({
+  Viewer: "Viewer",
+  Checkbox: "Checkbox",
+  Project: "Project",
+});
+
+export const ProjectChapterState = Object.freeze({
+  None: "None",
+  Assigned: "Assigned",
+  InProgress: "InProgress",
+  NeedsReview: "NeedsReview",
+  Completed: "Completed",
+});
+
+export const ScriptureMap2D = memo(({ parentContext }) => {
+  const { mode, project } = parentContext;
+
+  if (mode === ScriptureMap2DModes.Project && !project) return null;
+
+  return (
+    <>
+      <style>{thisBot.tags["ScriptureMap2D.css"]}</style>
+      <TimeProvider>
+        <ScriptureMap2DProvider
+          parentContext={parentContext}
+          ScriptureMap2DModes={ScriptureMap2DModes}
+          ProjectChapterState={ProjectChapterState}
+        >
+          <ReadingHistoryProvider>
+            <Wrapper />
+          </ReadingHistoryProvider>
+        </ScriptureMap2DProvider>
+      </TimeProvider>
+    </>
+  );
+});
