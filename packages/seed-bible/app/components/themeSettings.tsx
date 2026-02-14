@@ -108,6 +108,9 @@ const ADVANCED_SETTINGS_SECTIONS = {
     ],
   },
 };
+const themeOverrides =
+  tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "minimal"]
+    ?.clientBranding?.themeOverrides || {};
 
 // Default Theme - Warm Orange/Amber accent
 // Based on the design mockup with orange accent colors
@@ -263,6 +266,10 @@ const defaultTheme = {
   text3: "#333333",
   "secondary-filter-mode": "invert(100%)",
 };
+const reflectionTheme = {
+  ...defaultTheme,
+  ...themeOverrides,
+};
 
 // ————————————————————————————————————————————————————————————
 // Ready Themes Collection
@@ -270,7 +277,7 @@ const defaultTheme = {
 export const READY_THEMES = [
   {
     name: "Default",
-    colors: defaultTheme,
+    colors: themeOverrides ? reflectionTheme : defaultTheme,
   },
   {
     name: "Dark Mode",

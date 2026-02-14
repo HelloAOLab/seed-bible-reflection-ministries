@@ -1301,19 +1301,20 @@ function SideBar({ panelsNumber }) {
 
   const { moveMultipleTabs } = useTabsContext();
   const holdTimeout = useRef({ time: null, clicked: null });
-   const clientSite=tags?.settingsConfigs?.presets?.["minimal"]
-      ?.clientBranding?.clientSite;
+  const activePreset = configBot?.tags?.settingsPreset || "minimal";
+  const clientSite =
+    tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.clientSite;
+  const clientName =
+    tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.clientName;
+  const clientLogo =
+    tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.clientLogo;
+  const isSiteOfClient =
+    tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.enabled;
   const handleOpenClientSite = () => {
-    if(clientSite){
-    window.open(clientSite);
+    if (clientSite) {
+      window.open(clientSite);
     }
   };
-  const clientLogo=tags?.settingsConfigs?.presets?.["minimal"]
-      ?.clientBranding?.logo;
-
-   const isSiteOfClient =
-    tags?.settingsConfigs?.presets?.["minimal"]
-      ?.clientBranding?.enabled;
 
   return (
     <>
@@ -1448,7 +1449,13 @@ function SideBar({ panelsNumber }) {
                   )}
                 </div>
 
-                { isSiteOfClient && <ClientLogo handleOpenClientSite={handleOpenClientSite} url={clientLogo} alt={'Logo'}/>}
+                {isSiteOfClient && (
+                  <ClientLogo
+                    handleOpenClientSite={handleOpenClientSite}
+                    url={clientLogo}
+                    alt={clientName}
+                  />
+                )}
               </div>
               <div className="canvasOptions">
                 <span
@@ -1697,9 +1704,14 @@ function SideBar({ panelsNumber }) {
               cursor: "pointer",
             }}
           >
-
-                { isSiteOfClient && <ClientLogo handleOpenClientSite={handleOpenClientSite} url={clientLogo} alt={'Logo'}/>}
-             <div className="sidebarLine"></div>
+            {isSiteOfClient && (
+              <ClientLogo
+                handleOpenClientSite={handleOpenClientSite}
+                url={clientLogo}
+                alt={clientName}
+              />
+            )}
+            <div className="sidebarLine"></div>
             <div
               onClick={() => {
                 setSidebarWidth(280);
@@ -1952,8 +1964,9 @@ export const SettingsProfile = () => {
     }
   };
   const removeSpaces =
-    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "minimal"]
-      ?.appSettings?.removeSpaces;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || "minimal"
+    ]?.appSettings?.removeSpaces;
 
   return (
     <div className="dot">
