@@ -812,16 +812,22 @@ function Apologist({
   const handleResetToBaseline = () => {
     if (!currentBaselineQuery) return;
 
+    // Use the stored chapter-level label (not the current which may be verse-level)
+    const chapterLabel =
+      globalThis.GlobalSearchChapterLabel || globalThis.GlobalSearchLabel || "";
+
+    // Always sync globals so polling stays consistent
+    globalThis.GlobalSearch = currentBaselineQuery;
+    globalThis.GlobalSearchLevel = "chapter";
+    globalThis.GlobalSearchLabel = chapterLabel;
+
     const helper = globalThis.UpdateStudyNoteSearch;
     if (typeof helper === "function") {
       helper(currentBaselineQuery, {
         level: "chapter",
+        label: chapterLabel,
         forceRefresh: true,
       });
-    } else {
-      globalThis.GlobalSearch = currentBaselineQuery;
-      globalThis.GlobalSearchLevel = "chapter";
-      globalThis.GlobalSearchLabel = currentBaselineQuery;
     }
   };
 
