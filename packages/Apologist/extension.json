@@ -1,0 +1,29 @@
+{
+  "author": "AO Lab",
+  "configEditor": {
+    "author": "AO Lab",
+    "app": "@GetApp",
+    "toolbarConfig": {
+      "active": true,
+      "hasToggle": "true",
+      "icon": "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/f89ebc25a02acbfb56957a90bdddb7d938f5ba54fc045fa0ef108a0ff30821bb.svg",
+      "iconUrl": "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/f89ebc25a02acbfb56957a90bdddb7d938f5ba54fc045fa0ef108a0ff30821bb.svg",
+      "isImg": true,
+      "label": "Apologist",
+      "to": "panel"
+    }
+  },
+  "createdAt": "2026-02-15T08:00:00.000Z",
+  "dependencies": [],
+  "description": "Corpus-search component for Bible study — provides contextual search results for chapters and verses",
+  "id": 1739584800000,
+  "license": "MIT",
+  "linkedDependencies": [],
+  "mainBotTag": "apologist.main",
+  "name": "Apologist",
+  "otherBots": [],
+  "status": "active",
+  "type": "package",
+  "updatedAt": "2026-02-15T08:00:00.000Z",
+  "version": "1.0.0"
+}

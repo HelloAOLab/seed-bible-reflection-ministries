@@ -575,6 +575,30 @@ function ThePage({
         chapter: data?.chapter,
       });
       os.syncConfigBotTagsToURL(["book", "chapter"]);
+
+      // ── Apologist state bridge: push chapter text to global search ──
+      try {
+        const combinedText = (data.content || [])
+          .flatMap((section) => (section.verses || []).map((v) => v.text || ""))
+          .join(" ")
+          .trim();
+        if (combinedText) {
+          globalThis.GlobalSearch = combinedText;
+          globalThis.GlobalSearchLevel = "chapter";
+          globalThis.GlobalSearchLabel = `${data.book || ""} ${data.chapter || ""}`;
+          globalThis.StudyNoteParentSearch = combinedText;
+          if (typeof globalThis.UpdateStudyNoteSearch === "function") {
+            globalThis.UpdateStudyNoteSearch(combinedText, {
+              level: "chapter",
+              label: `${data.book || ""} ${data.chapter || ""}`,
+              baseline: combinedText,
+              forceRefresh: true,
+            });
+          }
+        }
+      } catch (e) {
+        console.warn("[Apologist] state bridge error:", e);
+      }
     }
   }, [data]);
 
@@ -836,6 +860,29 @@ function ThePage({
         to: "panel",
       });
     }
+
+    // ── Apologist state bridge: push next chapter text ──
+    try {
+      const nextData = bible.data;
+      const combinedText = (nextData.content || [])
+        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
+        .join(" ")
+        .trim();
+      if (combinedText) {
+        globalThis.GlobalSearch = combinedText;
+        globalThis.GlobalSearchLevel = "chapter";
+        globalThis.GlobalSearchLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
+        globalThis.StudyNoteParentSearch = combinedText;
+        if (typeof globalThis.UpdateStudyNoteSearch === "function") {
+          globalThis.UpdateStudyNoteSearch(combinedText, {
+            level: "chapter",
+            forceRefresh: true,
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("[Apologist] next chapter bridge error:", e);
+    }
   }
 
   async function openPrevChapter() {
@@ -855,6 +902,29 @@ function ThePage({
         ),
         to: "panel",
       });
+    }
+
+    // ── Apologist state bridge: push prev chapter text ──
+    try {
+      const prevData = bible.data;
+      const combinedText = (prevData.content || [])
+        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
+        .join(" ")
+        .trim();
+      if (combinedText) {
+        globalThis.GlobalSearch = combinedText;
+        globalThis.GlobalSearchLevel = "chapter";
+        globalThis.GlobalSearchLabel = `${prevData.book || ""} ${prevData.chapter || ""}`;
+        globalThis.StudyNoteParentSearch = combinedText;
+        if (typeof globalThis.UpdateStudyNoteSearch === "function") {
+          globalThis.UpdateStudyNoteSearch(combinedText, {
+            level: "chapter",
+            forceRefresh: true,
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("[Apologist] prev chapter bridge error:", e);
     }
   }
 
@@ -2629,6 +2699,21 @@ function Section({
                             if (globalThis.studyNotesPresent) {
                               HighlightStudyNoteSection(verse?.verseNumber);
                             }
+                            // Trigger Apologist verse-level search
+                            const verseText = (verse?.text || "").trim();
+                            if (
+                              verseText &&
+                              typeof globalThis.UpdateStudyNoteSearch ===
+                                "function"
+                            ) {
+                              globalThis.UpdateStudyNoteSearch(verseText, {
+                                level: "verse",
+                                label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
+                                baseline:
+                                  globalThis.StudyNoteParentSearch || "",
+                                forceRefresh: true,
+                              });
+                            }
                           }}
                           onPointerEnter={() => {
                             globalThis.showRefModal = true;
@@ -2796,6 +2881,20 @@ function Section({
                         onClick={() => {
                           if (globalThis.studyNotesPresent) {
                             HighlightStudyNoteSection(verse?.verseNumber);
+                          }
+                          // Trigger Apologist verse-level search
+                          const verseText = (verse?.text || "").trim();
+                          if (
+                            verseText &&
+                            typeof globalThis.UpdateStudyNoteSearch ===
+                              "function"
+                          ) {
+                            globalThis.UpdateStudyNoteSearch(verseText, {
+                              level: "verse",
+                              label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
+                              baseline: globalThis.StudyNoteParentSearch || "",
+                              forceRefresh: true,
+                            });
                           }
                         }}
                         onPointerEnter={() => {
