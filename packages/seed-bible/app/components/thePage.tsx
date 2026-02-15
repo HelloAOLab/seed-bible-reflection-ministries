@@ -586,6 +586,7 @@ function ThePage({
           globalThis.GlobalSearch = combinedText;
           globalThis.GlobalSearchLevel = "chapter";
           globalThis.GlobalSearchLabel = `${data.book || ""} ${data.chapter || ""}`;
+          globalThis.GlobalSearchChapterLabel = `${data.book || ""} ${data.chapter || ""}`;
           globalThis.StudyNoteParentSearch = combinedText;
           if (typeof globalThis.UpdateStudyNoteSearch === "function") {
             globalThis.UpdateStudyNoteSearch(combinedText, {
@@ -872,6 +873,7 @@ function ThePage({
         globalThis.GlobalSearch = combinedText;
         globalThis.GlobalSearchLevel = "chapter";
         globalThis.GlobalSearchLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
+        globalThis.GlobalSearchChapterLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
         globalThis.StudyNoteParentSearch = combinedText;
         if (typeof globalThis.UpdateStudyNoteSearch === "function") {
           globalThis.UpdateStudyNoteSearch(combinedText, {
@@ -915,6 +917,7 @@ function ThePage({
         globalThis.GlobalSearch = combinedText;
         globalThis.GlobalSearchLevel = "chapter";
         globalThis.GlobalSearchLabel = `${prevData.book || ""} ${prevData.chapter || ""}`;
+        globalThis.GlobalSearchChapterLabel = `${prevData.book || ""} ${prevData.chapter || ""}`;
         globalThis.StudyNoteParentSearch = combinedText;
         if (typeof globalThis.UpdateStudyNoteSearch === "function") {
           globalThis.UpdateStudyNoteSearch(combinedText, {
@@ -2701,18 +2704,23 @@ function Section({
                             }
                             // Trigger Apologist verse-level search
                             const verseText = (verse?.text || "").trim();
-                            if (
-                              verseText &&
-                              typeof globalThis.UpdateStudyNoteSearch ===
+                            if (verseText) {
+                              // Sync globals so polling doesn't revert to chapter
+                              globalThis.GlobalSearch = verseText;
+                              globalThis.GlobalSearchLevel = "verse";
+                              globalThis.GlobalSearchLabel = `${book || ""} ${chapter || ""}:${verse.verseNumber}`;
+                              if (
+                                typeof globalThis.UpdateStudyNoteSearch ===
                                 "function"
-                            ) {
-                              globalThis.UpdateStudyNoteSearch(verseText, {
-                                level: "verse",
-                                label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
-                                baseline:
-                                  globalThis.StudyNoteParentSearch || "",
-                                forceRefresh: true,
-                              });
+                              ) {
+                                globalThis.UpdateStudyNoteSearch(verseText, {
+                                  level: "verse",
+                                  label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
+                                  baseline:
+                                    globalThis.StudyNoteParentSearch || "",
+                                  forceRefresh: true,
+                                });
+                              }
                             }
                           }}
                           onPointerEnter={() => {
@@ -2884,17 +2892,23 @@ function Section({
                           }
                           // Trigger Apologist verse-level search
                           const verseText = (verse?.text || "").trim();
-                          if (
-                            verseText &&
-                            typeof globalThis.UpdateStudyNoteSearch ===
+                          if (verseText) {
+                            // Sync globals so polling doesn't revert to chapter
+                            globalThis.GlobalSearch = verseText;
+                            globalThis.GlobalSearchLevel = "verse";
+                            globalThis.GlobalSearchLabel = `${book || ""} ${chapter || ""}:${verse.verseNumber}`;
+                            if (
+                              typeof globalThis.UpdateStudyNoteSearch ===
                               "function"
-                          ) {
-                            globalThis.UpdateStudyNoteSearch(verseText, {
-                              level: "verse",
-                              label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
-                              baseline: globalThis.StudyNoteParentSearch || "",
-                              forceRefresh: true,
-                            });
+                            ) {
+                              globalThis.UpdateStudyNoteSearch(verseText, {
+                                level: "verse",
+                                label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
+                                baseline:
+                                  globalThis.StudyNoteParentSearch || "",
+                                forceRefresh: true,
+                              });
+                            }
                           }
                         }}
                         onPointerEnter={() => {

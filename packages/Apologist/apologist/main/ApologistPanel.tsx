@@ -26,6 +26,12 @@ function ApologistPanelWrapper({ id }) {
 
   // ── Expose update function so the Bible reader can push new search context ──
   const updateSearch = useCallback((query, options = {}) => {
+    console.log("[ApologistPanel updateSearch] called with:", {
+      query: query?.substring(0, 50),
+      level: options.level,
+      label: options.label,
+      forceRefresh: options.forceRefresh,
+    });
     setSearchQuery(query || "");
     if (options.level) setSearchLevel(options.level);
     if (options.label) setSearchLabel(options.label);
@@ -46,9 +52,16 @@ function ApologistPanelWrapper({ id }) {
   useEffect(() => {
     const interval = setInterval(() => {
       const gs = globalThis.GlobalSearch || "";
+      const gsLevel = globalThis.GlobalSearchLevel || "chapter";
       if (gs && gs !== searchQuery) {
+        console.log("[ApologistPanel Poll] OVERRIDING search!", {
+          oldQuery: searchQuery?.substring(0, 50),
+          newQuery: gs?.substring(0, 50),
+          oldLevel: searchLevel,
+          newLevel: gsLevel,
+        });
         setSearchQuery(gs);
-        setSearchLevel(globalThis.GlobalSearchLevel || "chapter");
+        setSearchLevel(gsLevel);
         setSearchLabel(globalThis.GlobalSearchLabel || "");
         setBaselineQuery(globalThis.StudyNoteParentSearch || "");
         setSearchTrigger((prev) => prev + 1);
