@@ -194,6 +194,10 @@
   justify-content: center;
   display: flex;
 }
+.addIcon.material-symbols-outlined {
+  color: var(--primary-color) !important;
+  filter: none !important;
+}
 
 .tabs-collapsed {
   display: flex;
