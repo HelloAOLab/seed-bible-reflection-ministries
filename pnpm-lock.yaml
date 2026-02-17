@@ -76,6 +76,9 @@ importers:
       prompts:
         specifier: ^2.4.2
         version: 2.4.2
+      puppetter:
+        specifier: ^1.0.1
+        version: 1.0.1
       zod:
         specifier: ^4.1.13
         version: 4.3.6
@@ -3781,6 +3784,9 @@ packages:
     resolution: {integrity: sha512-BD/VCyV/Uezvd6o7Fd1DmEJSxTzofAKplzDy6T9d4WbLTQ5A+06zY7VwO91ZlNU22vYE8sidVEsTpTrKc+EEnQ==}
     engines: {node: '>=18'}
     hasBin: true
+
+  puppetter@1.0.1:
+    resolution: {integrity: sha512-Ehd2eDh46UvzSdech977PDLv00XDHwKvCKkmBqLBPU+E3ochQLJgcZxkJecGnnSSYzlMWKcbhcDA5yaVTMjXfA==}
 
   pure-rand@7.0.1:
     resolution: {integrity: sha512-oTUZM/NAZS8p7ANR3SHh30kXB+zK2r2BPcEn/awJIbOvq82WoMN4p62AWWp3Hhw50G0xMsw1mhIBLqHw64EcNQ==}
@@ -8522,6 +8528,8 @@ snapshots:
       - supports-color
       - typescript
       - utf-8-validate
+
+  puppetter@1.0.1: {}
 
   pure-rand@7.0.1: {}
 

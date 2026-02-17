@@ -1587,7 +1587,7 @@ function SideBar({ panelsNumber }) {
                     clearTimeout(holdTimeout.current.time);
                     holdTimeout.current.clicked = false;
                   }}
-                  className="material-symbols-outlined addIcon"
+                  className="material-symbols-outlined  addIcon"
                 >
                   add
                 </span>

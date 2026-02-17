@@ -11,18 +11,33 @@
         "clientLogo": "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png",
         "clientSite": "https://www.kenboa.org/",
         "themeOverrides": {
-          "panelBackground": "#F4F4F4",
+          "firstToolbarbutton": "#dfdede",
+          "primaryColor": "#FFFFFF",
+          "secondaryColor": "#2E4879",
+          "tertiaryColor": "#C0C8D7",
+
+          "themeSideMenu": "#FFFFFF",
+          "panelBackground": "#FFFFFF",
+
           "tabSelection": "#2E4879",
           "activeTabBackground": "#2E48791A",
-          "activeTabText": "#262626",
+          "activeTabText": "#2E4879",
           "activeTabBorder": "#2E4879",
           "activeTabFill": "#2E48791A",
           "simpleTabText": "#333333",
           "inactiveTabText": "#333333",
+
           "primaryButton": "#2E4879",
+          "primaryButtonColor": "#FFFFFF",
           "primaryButtonBorder": "#2E4879",
           "primaryButtonFill": "#2E4879",
+          "secondaryButton": "#1F3358",
           "secondaryButtonColor": "#FFFFFF",
+          "secondaryButtonBorder": "#1F3358",
+          "secondaryButtonFill": "#1F3358",
+          "tertiaryButtonColor": "#333333",
+          "buttonBorder": "#E1E3EA",
+
           "bookHeadingColor": "#333333",
           "chapterHeadingColor": "#333333",
           "verseNumberColor": "#000000",
@@ -36,7 +51,7 @@
           "descriptionTextColor": "#666666",
           "menuTextColor": "#333333",
           "breadcrumbsColor": "#666666",
-          "sectionBackground": "#",
+          "sectionBackground": "#2E4879",
           "spaceNameColor": "#333333",
           "sideMenuIconsColor": "#333333",
           "selectedSpaceColor": "#2E4879",
@@ -60,6 +75,7 @@
           "selectionIconsColor": "#333333",
           "toolbarBackground": "#FFFFFF",
           "iconColor": "#333333",
+
           "inputTitleColor": "#333333",
           "inputPlaceholderColor": "#999999",
           "inputActiveBorder": "#2E4879",
@@ -70,12 +86,16 @@
           "inputBorder": "#E1E3EA",
           "inputText": "#333333",
           "inputPlaceholder": "#999999",
+
           "logoColor": "#333333",
           "accentColor": "#2E4879",
+
           "spaceSelection": "#2E4879",
+
           "text1": "#333333",
           "text2": "#666666",
           "showTabIcons": true,
+
           "torahBorder": "#E1E3EA",
           "torahFill": "#2E4879",
           "torahFont": "DM Sans",
@@ -88,6 +108,7 @@
           "ketuvimFill": "#00BCD4",
           "ketuvimFont": "DM Sans",
           "ketuvimSize": "12",
+
           "bookTextColor": "#4A4A4A",
           "bookTextFont": "DM Sans",
           "bookTextSize": "12",
@@ -96,6 +117,7 @@
           "chapterTextSize": "12",
           "chapterColorBorder": "#E1E3EA",
           "chapterColorFill": "#E1E3EA",
+
           "pentateuchBorder": "#E1E3EA",
           "pentateuchFill": "#2E4879",
           "pentateuchFont": "DM Sans",
@@ -108,13 +130,12 @@
           "poeticFill": "#9C27B0",
           "poeticFont": "DM Sans",
           "poeticSize": "12",
-
           "propheticBorder": "#E1E3EA",
-          "propheticFill": "#FF9800",
+          "propheticFill": "#1976D2",
           "propheticFont": "DM Sans",
           "propheticSize": "12",
 
-          "primaryLight": "#FADDD1",
+          "primaryLight": "#C0C8D7",
           "onPrimaryLight": "#8B4513",
           "primaryBase": "#2E4879",
           "onPrimaryBase": "#FFFFFF",
@@ -123,20 +144,23 @@
 
           "secondaryLight": "#FFE4C4",
           "onSecondaryLight": "#8B4513",
-          "secondaryBase": "#D2691E",
+          "secondaryBase": "#1F3358",
           "onSecondaryBase": "#FFFFFF",
           "secondaryDark": "#A0522D",
           "onSecondaryDark": "#FFFFFF",
+
           "tertiaryLight": "#FFEFD5",
           "onTertiaryLight": "#8B4513",
           "tertiaryBase": "#CD853F",
           "onTertiaryBase": "#FFFFFF",
           "tertiaryDark": "#A0522D",
           "onTertiaryDark": "#FFFFFF",
+
           "background": "#FFFFFF",
           "onBackground": "#333333",
           "surface": "#FAFAFA",
           "onSurface": "#333333",
+
           "filter-mode": "invert(0)",
           "text3": "#333333",
           "secondary-filter-mode": "invert(100%)"
@@ -145,6 +169,9 @@
       "onlineUsers": {
         "enabled": true,
         "anonymous": true
+      },
+      "advancedSettings": {
+        "enabled": false
       },
       "sections": {
         "accountHeader": {
