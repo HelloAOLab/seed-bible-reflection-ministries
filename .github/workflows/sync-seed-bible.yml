@@ -2,8 +2,8 @@ name: Sync Seed-Bible Develop
 
 on:
   schedule:
-    - cron: "0 4 * * *"   # Runs daily at 4 AM UTC
-  workflow_dispatch:       # Allows manual trigger from GitHub UI
+    - cron: "0 4 * * *"
+  workflow_dispatch:
 
 jobs:
   sync_fork_job:
@@ -14,21 +14,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 18.x
+      - name: Use Node.js 18
         uses: actions/setup-node@v4
         with:
-          node-version: 18.x
+          node-version: 18
+          cache: "pnpm" # enables pnpm caching
 
-      - name: NPM Install
+      - name: Install Dependencies
         run: |
           corepack enable
-          npm run bootstrap
+          pnpm install --frozen-lockfile
 
       - name: Sync Fork
         run: |
           node ./script/sync-fork.mjs sync-fork \
           ${{ github.repository }} \
-           HelloAOLab/seed-bible \
+          HelloAOLab/seed-bible \
           -a ${{ secrets.GITHUB_TOKEN }} \
           -s ${{ secrets.GITHUB_TOKEN }}
-  
