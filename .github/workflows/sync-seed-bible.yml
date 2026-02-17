@@ -2,7 +2,7 @@ name: Sync Seed-Bible Develop
 
 on:
   schedule:
-    - cron: "0 4 * * *"
+    - cron: "55 4 * * *"
   workflow_dispatch:
 
 jobs:
