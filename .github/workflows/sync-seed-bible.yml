@@ -2,7 +2,7 @@ name: Sync Seed-Bible Develop
 
 on:
   schedule:
-    - cron: "* * * * *"   # every minute (testing)
+    - cron: "0 4 * * *" # every minute (testing)
   workflow_dispatch:
 
 jobs:
@@ -13,20 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-     
       - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      
       - name: Enable pnpm
         run: corepack enable
 
-    
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-    
       - name: Sync Fork
         run: |
           node ./script/sync-fork.mjs sync-fork \
