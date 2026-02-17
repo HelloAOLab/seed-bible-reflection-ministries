@@ -2,7 +2,7 @@ name: Sync Seed-Bible Develop
 
 on:
   schedule:
-    - cron: "55 4 * * *"
+    - cron: "* * * * *"   # Runs every minute (UTC)
   workflow_dispatch:
 
 jobs:
@@ -14,19 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: "pnpm" # enables pnpm caching
+          node-version: 20
+          cache: "pnpm"
 
-      - name: Install Dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
 
-      - name: Sync Fork
-        run: |
+      - run: |
           node ./script/sync-fork.mjs sync-fork \
           ${{ github.repository }} \
           HelloAOLab/seed-bible \
