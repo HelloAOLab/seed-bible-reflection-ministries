@@ -2,27 +2,33 @@ name: Sync Seed-Bible Develop
 
 on:
   schedule:
-    - cron: "* * * * *"   # Runs every minute (UTC)
+    - cron: "* * * * *"   # every minute (testing)
   workflow_dispatch:
 
 jobs:
   sync_fork_job:
-    name: Sync Reflection with Seed-Bible
     runs-on: ubuntu-latest
     permissions: write-all
 
     steps:
       - uses: actions/checkout@v4
 
+     
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
 
-      - run: corepack enable
-      - run: pnpm install --frozen-lockfile
+      
+      - name: Enable pnpm
+        run: corepack enable
 
-      - run: |
+    
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+    
+      - name: Sync Fork
+        run: |
           node ./script/sync-fork.mjs sync-fork \
           ${{ github.repository }} \
           HelloAOLab/seed-bible \
