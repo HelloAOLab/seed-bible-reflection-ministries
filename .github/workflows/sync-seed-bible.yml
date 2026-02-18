@@ -2,28 +2,26 @@ name: Sync Seed-Bible Develop
 
 on:
   schedule:
-    - cron: "55 4 * * *"
+    - cron: "0 4 * * *" # every minute (testing)
   workflow_dispatch:
 
 jobs:
   sync_fork_job:
-    name: Sync Reflection with Seed-Bible
     runs-on: ubuntu-latest
     permissions: write-all
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: "pnpm" # enables pnpm caching
+          node-version: 20
+
+      - name: Enable pnpm
+        run: corepack enable
 
       - name: Install Dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Sync Fork
         run: |
