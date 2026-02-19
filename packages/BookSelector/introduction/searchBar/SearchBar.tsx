@@ -235,15 +235,16 @@ const SearchBar = (props: { openSidebar: boolean }) => {
         } else {
           setApocryphaAvailable(false);
         }
-        if (selectedTestament === 0) {
-          return OTBooks;
-        } else if (selectedTestament === 1) {
-          return NTBooks;
-        } else if (selectedTestament === 2) {
-          return [...OTBooks, ...NTBooks];
-        } else {
-          return ApocryphaBooks;
-        }
+        return [...OTBooks, ...NTBooks, ...ApocryphaBooks];
+        // if (selectedTestament === 0) {
+        //   return OTBooks;
+        // } else if (selectedTestament === 1) {
+        //   return NTBooks;
+        // } else if (selectedTestament === 2) {
+        //   return [...OTBooks, ...NTBooks];
+        // } else {
+        //   return ApocryphaBooks;
+        // }
       } else {
         return [];
       }
@@ -833,6 +834,12 @@ const SearchBar = (props: { openSidebar: boolean }) => {
 
   const dontOpen = dontopn && showCheck;
   globalThis.SetBooksOnlineUsers = setOnlineUsers;
+  globalThis.setSelectingTranslation = setSelectingTranslation;
+
+  useEffect(() => {
+    globalThis.setSelectingTranslation = setSelectingTranslation;
+    globalThis.selectingTranslation = selectingTranslation;
+  }, [selectingTranslation]);
 
   return (
     <>
@@ -898,27 +905,27 @@ const SearchBar = (props: { openSidebar: boolean }) => {
                 </span>
               </div>
             )}
-            <div className="dropdown">
+            <div class="dropdown">
               <select
                 value={selectedTestament}
                 onChange={(e) => setSelectedTestament(Number(e.target.value))}
-                className="dropdown-select"
+                class="dropdown-select"
               >
-                <option value={2} className="dropdown-option">
+                <option value={2} class="dropdown-option">
                   {systemTranslation["allBooks"] || "All Books"}
                 </option>
-                <option value={0} className="dropdown-option">
+                <option value={0} class="dropdown-option">
                   {windowSize > 750
                     ? systemTranslation["oldTestament"] || "Old Testament"
                     : systemTranslation["oldTestamentShort"] || "OT"}
                 </option>
-                <option value={1} className="dropdown-option">
+                <option value={1} class="dropdown-option">
                   {windowSize > 750
                     ? systemTranslation["newTestament"] || "New Testament"
                     : systemTranslation["newTestamentShort"] || "NT"}
                 </option>
                 {apocryphaAvailable && (
-                  <option value={3} className="dropdown-option">
+                  <option value={3} class="dropdown-option">
                     {systemTranslation["apocrypha"] || "Apocrypha"}
                   </option>
                 )}
@@ -997,6 +1004,7 @@ const SearchBar = (props: { openSidebar: boolean }) => {
             sortBooksByTestament={sortBooksByTestament}
             windowSize={windowSize}
             systemTranslation={systemTranslation}
+            query={query}
           />
         )}
         {selectingTranslation && (
@@ -1035,6 +1043,7 @@ const SideBarBooks = (props: {
   };
   windowSize: number;
   systemTranslation: { [key: string]: string };
+  query: string;
 }) => {
   const {
     booksData,
@@ -1047,17 +1056,13 @@ const SideBarBooks = (props: {
     sortBooksByTestament,
     windowSize,
     systemTranslation,
+    query,
   } = props;
   const [lastBookClicked, setLastBookClicked] = useState(-1);
   const [bookData, setBookData] = useState<BookInterface | null>(null);
   const [chT, setChT] = useState(0);
   const [localSelectedTestament, setLocalSelectedTestament] =
     useState(selectedTestament);
-
-  useEffect(() => {
-    setLastBookClicked(-1);
-    setBookData(null);
-  }, [localSelectedTestament]);
 
   useLayoutEffect(() => {
     if (booksData.length === 1 && booksData[0]) {
@@ -1149,22 +1154,43 @@ const SideBarBooks = (props: {
     return bookName;
   }, []);
 
+  const selectBookSelectorBook = useCallback(
+    (bookId) => {
+      if (!bookId) {
+        setBookData(null);
+        setLastBookClicked(-1);
+        setChT(0);
+        return;
+      }
+      const book = booksData.find((b) => b.id === bookId);
+      if (book) {
+        handleClick({
+          index: booksData.indexOf(book),
+          book,
+          cht: book.order > 39 ? 1 : 0,
+        });
+      }
+    },
+    [booksData, handleClick]
+  );
   useEffect(() => {
     const sortedBooks = sortBooksByTestament(booksData);
     const OTBooks = sortedBooks.OTBooks;
     const NTBooks = sortedBooks.NTBooks;
-    if (selectedTestament === 2) {
+    if (selectedTestament === 2 || query.length > 0) {
       if (OTBooks.length > 0 && NTBooks.length === 0) {
         setLocalSelectedTestament(0);
       } else if (NTBooks.length > 0 && OTBooks.length === 0) {
         setLocalSelectedTestament(1);
+      } else if (query.length > 0) {
+        setLocalSelectedTestament(2);
       } else {
         setLocalSelectedTestament(selectedTestament);
       }
     } else {
       setLocalSelectedTestament(selectedTestament);
     }
-  }, [selectedTestament, booksData]);
+  }, [selectedTestament, booksData, query]);
 
   const RenderBooksByTestament = useMemo(() => {
     let allowedRows = 5;
@@ -1577,6 +1603,13 @@ const SideBarBooks = (props: {
     chT,
     onlineUsers,
   ]);
+
+  useEffect(() => {
+    globalThis.selectBookSelectorBook = selectBookSelectorBook;
+    return () => {
+      globalThis.selectBookSelectorBook = null;
+    };
+  }, [selectBookSelectorBook]);
 
   return <>{RenderBooksByTestament}</>;
 };

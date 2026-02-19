@@ -236,6 +236,10 @@
   color: inherit;
 }
 
+.verse-highlighted .sectionTextNumber {
+  color: inherit;
+}
+
 .verse-number-anchor {
   display: inline;
 }

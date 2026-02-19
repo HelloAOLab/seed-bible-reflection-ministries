@@ -807,6 +807,9 @@ function SideBar({ panelsNumber }) {
     setSelectedTabs,
     sharedTab,
   } = useTabsContext();
+  const hidePanels =
+    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "full"]
+      ?.appSettings?.disablePanels;
   globalThis.AddTab = addTab;
   const { screens, setScreens, fullScreen, setFullScreen, ReSeed, setReSeed } =
     useBibleContext();
@@ -1137,26 +1140,28 @@ function SideBar({ panelsNumber }) {
   const MenuOptions = {
     type: "normal",
     items: [
-      {
-        disabled: false,
-        icon: <StartSessionIcon />,
-        title: t("startSession"),
-        onClick: () => {
-          // os.log(globalThis?.StartSession,globalThis)
-          HandleSharedTabClick();
+      ...(!configBot.tags.staticInst ? [
+        {
+          disabled: false,
+          icon: <StartSessionIcon />,
+          title: t("startSession"),
+          onClick: () => {
+            // os.log(globalThis?.StartSession,globalThis)
+            HandleSharedTabClick();
+          },
         },
-      },
-      {
-        disabled: false,
-        icon: <MenuIcon name="person_add" />,
-        // icon: <TransparentSvg />,
-        title: t("inviteToSession"),
-        onClick: async () => {
-          const { QRCodeComponent } = thisBot.Chips();
-          const url = `https://ao.bot/?inst=${os.getCurrentInst()}`;
-          ShowModal(<QRCodeComponent url={url} />);
+        {
+          disabled: false,
+          icon: <MenuIcon name="person_add" />,
+          // icon: <TransparentSvg />,
+          title: t("inviteToSession"),
+          onClick: async () => {
+            const { QRCodeComponent } = thisBot.Chips();
+            const url = `https://ao.bot/?inst=${os.getCurrentInst()}`;
+            ShowModal(<QRCodeComponent url={url} />);
+          },
         },
-      },
+      ] : []),
       {
         disabled: false,
         icon: <JoinSession />,
@@ -1178,16 +1183,18 @@ function SideBar({ panelsNumber }) {
           );
         },
       },
-      {
-        disabled: false,
-        icon: <GoPrivateIcon />,
-        title: globalThis.IsPrivateMode?.() ? t("goPublic") : t("goPrivate"),
-        onClick: async () => {
-          if (globalThis.TogglePrivateMode) {
-            await globalThis.TogglePrivateMode();
-          }
+      ...(!configBot.tags.staticInst ? [
+        {
+          disabled: false,
+          icon: <GoPrivateIcon />,
+          title: globalThis.IsPrivateMode?.() ? t("goPublic") : t("goPrivate"),
+          onClick: async () => {
+            if (globalThis.TogglePrivateMode) {
+              await globalThis.TogglePrivateMode();
+            }
+          },
         },
-      },
+      ] : []),
 
       { type: "line" },
       {
@@ -1301,7 +1308,7 @@ function SideBar({ panelsNumber }) {
 
   const { moveMultipleTabs } = useTabsContext();
   const holdTimeout = useRef({ time: null, clicked: null });
-  const activePreset = configBot?.tags?.settingsPreset || "minimal";
+const activePreset = configBot?.tags?.settingsPreset || "full";
   const clientSite =
     tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.clientSite;
   const clientName =
@@ -1315,7 +1322,6 @@ function SideBar({ panelsNumber }) {
       window.open(clientSite);
     }
   };
-
   return (
     <>
       {isResizing.current && (
@@ -1448,7 +1454,6 @@ function SideBar({ panelsNumber }) {
                     <span></span>
                   )}
                 </div>
-
                 {isSiteOfClient && (
                   <ClientLogo
                     handleOpenClientSite={handleOpenClientSite}
@@ -1462,6 +1467,7 @@ function SideBar({ panelsNumber }) {
                   style={{
                     paddingTop: customScreens?.value >= 2 ? "3px" : "0px",
                     color: "var(--selectPanelIcon, var(--text1))",
+                    display: hidePanels ? "none" : "",
                   }}
                   onContextMenu={(e) => {
                     e.preventDefault();
@@ -1964,9 +1970,8 @@ export const SettingsProfile = () => {
     }
   };
   const removeSpaces =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || "minimal"
-    ]?.appSettings?.removeSpaces;
+    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "full"]
+      ?.appSettings?.removeSpaces;
 
   return (
     <div className="dot">
