@@ -26,53 +26,6 @@ if (bibleVizUtils) {
 }
 // <PlaylistInfoItem />
 
-const sortFunc = (a, b) => {
-  const parseHeading = (heading = "") => {
-    // 1️⃣ Chapter always first
-    if (heading.startsWith("Chapter")) {
-      return { group: 0, start: 0, length: heading.length };
-    }
-
-    // 2️⃣ Verse logic
-    const match = heading.match(/Verse\s*(\d+)/);
-    if (match) {
-      return {
-        group: 1,
-        start: Number(match[1]), // starting verse
-        length: heading.length,
-      };
-    }
-
-    // 3️⃣ Everything else
-    return {
-      group: 2,
-      start: Infinity,
-      length: heading.length,
-    };
-  };
-
-  const A = parseHeading(a.heading);
-  const B = parseHeading(b.heading);
-
-  // Group order: Chapter → Verse → Others
-  if (A.group !== B.group) {
-    return A.group - B.group;
-  }
-
-  // Verse number comparison
-  if (A.start !== B.start) {
-    return A.start - B.start;
-  }
-
-  // Length comparison (shorter first)
-  if (A.length !== B.length) {
-    return B.length - A.length;
-  }
-
-  // Final fallback
-  return a.heading.localeCompare(b.heading);
-};
-
 const Playlist = () => {
   const IsPlaylistPlaying = globalThis.IsPlaylistPlaying;
 
@@ -319,6 +272,8 @@ const Playlist = () => {
 
     apiCallforAnnotationRef.current = setTimeout(() => {
       setAnnotationData([]);
+      annotationSourcesRef.current = [];
+      tagsSourcesRef.current = [];
       apiCallforAnnotationRef.current = null;
       if (!currentOpenedBook?.bookId) return;
 
@@ -326,15 +281,7 @@ const Playlist = () => {
         try {
           setFetchingAnnotation(true);
 
-          const annotationSources: any = [];
-
-          const sourcesMap = {};
-
-          const tagsSources: any = [];
-
-          const tagsMap = {};
-
-          let annotations = "";
+          let annotations: any = "";
 
           if (
             globalThis.AnnotationsData[
@@ -353,135 +300,15 @@ const Playlist = () => {
               ...currentOpenedBook,
             });
           }
+          if (!annotations) return;
 
-          let allAnnotations: any = [];
-          const verseIndexMap: any = {};
-          annotations.forEach((ele) => {
-            if (!sourcesMap[ele.data.userId]) {
-              annotationSources.push({
-                label: ele.data.userName,
-                value: ele.data.userId,
-                profilePicture: ele.data.userProfilePicture,
-              });
-              sourcesMap[ele.data.userId] = true;
-            }
-            ele?.data?.tags?.forEach((tag) => {
-              if (!tagsMap[tag]) {
-                tagsMap[tag] = true;
-                tagsSources.push({
-                  label: tag,
-                  value: tag,
-                });
-              }
+          let { allAnnotations, annotationSources, tagsSources } =
+            thisBot.convertAnnotationsToReadableFormat({
+              annotations,
+              currentOpenedBook,
             });
-            if (
-              ele?.data.type === "comment" &&
-              (ele.verseNumber || ele.verseNumbers)
-            ) {
-              const booksDetails = globalThis.findNameRank(ele.bookId);
 
-              const anoItem = {
-                type: "heading",
-                content: ele.data.html,
-                additionalInfo: {
-                  verse: ele.verseNumber || ele.verseNumbers,
-                  chapter: ele.chapter,
-                  book: ele.bookId,
-                  bookRank: booksDetails.item,
-                },
-                address: ele.id,
-                id: ele.id,
-                createdAtMs: ele?.data?.createdAtMs || Date.now(),
-                updatedAtMs: ele?.data?.updatedAtMs || Date.now(),
-                tags: ele?.data?.tags || [],
-                createdBy: ele?.data?.userId,
-                createdByName: ele?.data?.userName,
-                createdByProfilePicture: ele?.data?.userProfilePicture,
-              };
-
-              const verseSummaryHeading = globalThis.GetVerseSummaryHeading(
-                ele.verseNumber ? [ele.verseNumber] : ele.verseNumbers
-              );
-
-              const data = {
-                bookid: currentOpenedBook?.bookId,
-                chapter: currentOpenedBook?.chapter,
-              };
-
-              data.heading = `${currentOpenedBook.book} ${currentOpenedBook.chapter}:${verseSummaryHeading.join(`, `)}`;
-              data.data = [anoItem];
-              data.verse = ele.verseNumber || ele.verseNumbers;
-              data.tags = [];
-              data.address = ele.id;
-              if (!verseIndexMap[data.heading]) {
-                // verseIndexMap[data.heading] = allAnnotations.length - 1;
-                allAnnotations.push(data);
-              } else {
-                allAnnotations[verseIndexMap[data.heading]].data.push(anoItem);
-              }
-            } else if (ele?.data.type !== "comment") {
-              const data = {
-                bookid: currentOpenedBook?.bookId,
-                chapter: currentOpenedBook?.chapter,
-              };
-              const innerele = ele?.data?.data;
-
-              if (innerele) {
-                if (
-                  !!innerele.additionalInfo &&
-                  !!innerele.additionalInfo.layers
-                ) {
-                  const tags = [...(ele?.data.chronicle_tags || [])];
-                  const layers = [
-                    ...innerele.additionalInfo.layers.map((layer) => ({
-                      ...layer,
-                      address: ele.id,
-                      createdAtMs: innerele.createdAtMs || Date.now(),
-                      updatedAtMs: innerele.updatedAtMs || Date.now(),
-                    })),
-                  ];
-                  if (innerele?.type === "chapter") {
-                    data.heading = "Chapter";
-                    data.data = [...layers];
-                    data.tags = [...tags];
-                    data.address = ele.id;
-                    data.verse = [0];
-                  }
-                  if (innerele?.type === "verse-grouped") {
-                    const verses = [...innerele.additionalInfo.verse];
-                    const length = verses.length;
-                    data.heading = `Verse ${verses[0]}-${verses[length - 1]}`;
-                    data.data = [...layers];
-                    data.tags = [...tags];
-                    data.address = ele.id;
-                    data.verse = verses[0];
-                  }
-
-                  if (innerele?.type === "verse") {
-                    data.heading = `Verse ${innerele.additionalInfo.verse}`;
-                    data.data = [...layers];
-                    data.tags = [...tags];
-                    data.verse = innerele.additionalInfo.verse;
-                    data.address = ele.id;
-                  }
-                  if (data.data) {
-                    if (!verseIndexMap[data.heading]) {
-                      verseIndexMap[data.heading] = allAnnotations.length - 1;
-                      allAnnotations.push(data);
-                    } else {
-                      allAnnotations[verseIndexMap[data.heading]]?.data.push(
-                        ...layers
-                      );
-                      allAnnotations[verseIndexMap[data.heading]]?.tags.push(
-                        ...tags
-                      );
-                    }
-                  }
-                }
-              }
-            }
-          });
-          allAnnotations = allAnnotations.sort(sortFunc);
+          allAnnotations = allAnnotations.sort(G.AnnotationSortFunction);
           setFetchingAnnotation(false);
           setAnnotationData(allAnnotations);
           annotationSourcesRef.current = annotationSources;
@@ -564,14 +391,15 @@ const Playlist = () => {
         skipAll: true,
       });
     }
-    globalThis.makingPlaylist = true;
-    globalThis.setOpenSidebar && globalThis.setOpenSidebar(false);
-    globalThis.OpenVideoOverlay = () => setShowVideoOverlay(true);
-    globalThis.CloseVideoOverlay = () => setShowVideoOverlay(false);
-    globalThis.SetEditAnnoData = setEditAnnoData;
-    globalThis.SetTab = setTab;
-    globalThis.SetEditRichText = setEditRichText;
-    globalThis.SetEditAttachmentItem = setEditAttachmentItem;
+    G.makingPlaylist = true;
+    G.setOpenSidebar && G.setOpenSidebar(false);
+    G.OpenVideoOverlay = () => setShowVideoOverlay(true);
+    G.CloseVideoOverlay = () => setShowVideoOverlay(false);
+    G.SetEditAnnoData = setEditAnnoData;
+    G.SetAnnotationData = setAnnotationData;
+    G.SetTab = setTab;
+    G.SetEditRichText = setEditRichText;
+    G.SetEditAttachmentItem = setEditAttachmentItem;
     const tt = setTimeout(async () => {
       if (globalThis.hasASharedPlaylist) {
         const nameOfSharer = globalThis.shareProfileName;
@@ -622,12 +450,12 @@ const Playlist = () => {
       globalThis[`defaultToggleGreyCheckPLayingPlaylist`] &&
         globalThis[`defaultToggleGreyCheckPLayingPlaylist`](null);
       thisBot.CloseFloatingApp();
-      globalThis.SetSplitAppPanel2 && globalThis.SetSplitAppPanel2(null);
-      globalThis.makingPlaylist = false;
-      globalThis.SetMediaURL && globalThis.SetMediaURL(null);
-      globalThis.SetVideoSrc && globalThis.SetVideoSrc(null);
-      globalThis.SetPlaylistForcedHeight &&
-        globalThis.SetPlaylistForcedHeight(0);
+      G.SetSplitAppPanel2 && G.SetSplitAppPanel2(null);
+      G.makingPlaylist = false;
+      G.SetMediaURL && G.SetMediaURL(null);
+      G.SetVideoSrc && G.SetVideoSrc(null);
+      G.SetAnnotationData = null;
+      G.SetPlaylistForforcedHeight && G.SetPlaylistForforcedHeight(0);
     };
   }, []);
 
@@ -842,10 +670,12 @@ const Playlist = () => {
               onClick={(e) => {
                 // if not login show notification
                 if (!authBot?.id) {
-                  return ShowNotification({
+                  ShowNotification({
                     message: t("pleaseLoginToUseFeature"),
                     severity: "error",
                   });
+                  shout("tryUserLogin");
+                  return;
                 }
                 e.stopPropagation();
                 if (SplitAppPanel2) {
@@ -1075,7 +905,7 @@ const Playlist = () => {
                           return;
                         }}
                       >
-                        close
+                        {t("close")}
                       </span>
                     )}
                   </div>
