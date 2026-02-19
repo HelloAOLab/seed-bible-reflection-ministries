@@ -5836,6 +5836,9 @@ const SettingsUI = () => {
     });
   };
 
+  const settingsPreset =
+    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full";
+
   // ————————————————————————————————————————————————————————————
   // Handle Tab Icons Toggle
   // ————————————————————————————————————————————————————————————
@@ -5884,7 +5887,9 @@ const SettingsUI = () => {
   //   }
   // }, [activeSpace]);
   const presetConfig =
-    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset];
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ];
   const displayThemes: typeof READY_THEMES =
     presetConfig?.availableThemes?.length > 0
       ? presetConfig.availableThemes
@@ -6608,7 +6613,7 @@ const SettingsUI = () => {
           )
         )}
       </div>
-      {configBot.tags.settingsPreset !== "full" && (
+      {settingsPreset !== "minimal" && (
         <button
           style={buttonStyle}
           onClick={() => setSideBarMode("advancedThemeSettings")}

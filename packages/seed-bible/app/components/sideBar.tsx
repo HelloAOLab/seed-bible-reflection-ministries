@@ -808,8 +808,9 @@ function SideBar({ panelsNumber }) {
     sharedTab,
   } = useTabsContext();
   const hidePanels =
-    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "full"]
-      ?.appSettings?.disablePanels;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ]?.appSettings?.disablePanels;
   globalThis.AddTab = addTab;
   const { screens, setScreens, fullScreen, setFullScreen, ReSeed, setReSeed } =
     useBibleContext();
@@ -1314,7 +1315,8 @@ function SideBar({ panelsNumber }) {
 
   const { moveMultipleTabs } = useTabsContext();
   const holdTimeout = useRef({ time: null, clicked: null });
-  const activePreset = configBot?.tags?.settingsPreset || "full";
+  const activePreset =
+    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full";
   const clientSite =
     tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.clientSite;
   const clientName =
@@ -1976,8 +1978,9 @@ export const SettingsProfile = () => {
     }
   };
   const removeSpaces =
-    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "full"]
-      ?.appSettings?.removeSpaces;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ]?.appSettings?.removeSpaces;
 
   return (
     <div className="dot">
