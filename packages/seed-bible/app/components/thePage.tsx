@@ -498,6 +498,15 @@ function ThePage({
     };
   }, [tab]);
 
+  useEffect(() => {
+    globalThis.PanelTabsMap = {
+      ...globalThis.PanelTabsMap,
+      [panelId]: {
+        ...tab,
+      },
+    };
+  }, [tab, panelId]);
+
   // GLOBAL GUARDS
   if (!globalThis.__remoteBookUpdate) globalThis.__remoteBookUpdate = false;
   if (!globalThis.__lastBookEmit) globalThis.__lastBookEmit = 0;
@@ -575,31 +584,6 @@ function ThePage({
         chapter: data?.chapter,
       });
       os.syncConfigBotTagsToURL(["book", "chapter"]);
-
-      // ── Apologist state bridge: push chapter text to global search ──
-      try {
-        const combinedText = (data.content || [])
-          .flatMap((section) => (section.verses || []).map((v) => v.text || ""))
-          .join(" ")
-          .trim();
-        if (combinedText) {
-          globalThis.GlobalSearch = combinedText;
-          globalThis.GlobalSearchLevel = "chapter";
-          globalThis.GlobalSearchLabel = `${data.book || ""} ${data.chapter || ""}`;
-          globalThis.GlobalSearchChapterLabel = `${data.book || ""} ${data.chapter || ""}`;
-          globalThis.StudyNoteParentSearch = combinedText;
-          if (typeof globalThis.UpdateStudyNoteSearch === "function") {
-            globalThis.UpdateStudyNoteSearch(combinedText, {
-              level: "chapter",
-              label: `${data.book || ""} ${data.chapter || ""}`,
-              baseline: combinedText,
-              forceRefresh: true,
-            });
-          }
-        }
-      } catch (e) {
-        console.warn("[Apologist] state bridge error:", e);
-      }
     }
   }, [data]);
 
@@ -861,30 +845,6 @@ function ThePage({
         to: "panel",
       });
     }
-
-    // ── Apologist state bridge: push next chapter text ──
-    try {
-      const nextData = bible.data;
-      const combinedText = (nextData.content || [])
-        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
-        .join(" ")
-        .trim();
-      if (combinedText) {
-        globalThis.GlobalSearch = combinedText;
-        globalThis.GlobalSearchLevel = "chapter";
-        globalThis.GlobalSearchLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
-        globalThis.GlobalSearchChapterLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
-        globalThis.StudyNoteParentSearch = combinedText;
-        if (typeof globalThis.UpdateStudyNoteSearch === "function") {
-          globalThis.UpdateStudyNoteSearch(combinedText, {
-            level: "chapter",
-            forceRefresh: true,
-          });
-        }
-      }
-    } catch (e) {
-      console.warn("[Apologist] next chapter bridge error:", e);
-    }
   }
 
   async function openPrevChapter() {
@@ -905,30 +865,6 @@ function ThePage({
         to: "panel",
       });
     }
-
-    // ── Apologist state bridge: push prev chapter text ──
-    try {
-      const prevData = bible.data;
-      const combinedText = (prevData.content || [])
-        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
-        .join(" ")
-        .trim();
-      if (combinedText) {
-        globalThis.GlobalSearch = combinedText;
-        globalThis.GlobalSearchLevel = "chapter";
-        globalThis.GlobalSearchLabel = `${prevData.book || ""} ${prevData.chapter || ""}`;
-        globalThis.GlobalSearchChapterLabel = `${prevData.book || ""} ${prevData.chapter || ""}`;
-        globalThis.StudyNoteParentSearch = combinedText;
-        if (typeof globalThis.UpdateStudyNoteSearch === "function") {
-          globalThis.UpdateStudyNoteSearch(combinedText, {
-            level: "chapter",
-            forceRefresh: true,
-          });
-        }
-      }
-    } catch (e) {
-      console.warn("[Apologist] prev chapter bridge error:", e);
-    }
   }
 
   async function open(bookId, chapter, translation = null, chapterUrl = null) {
@@ -937,19 +873,22 @@ function ThePage({
       setData(bible.data);
       setFootnotes(bible.footnotes);
     } catch {
-      // const tab = globalThis.AddTab({
-      //   id: uuid(),
-      //   taken: false,
-      //   data: {
-      //     use: "thePage",
-      //     type: "book",
-      //     book: bookId,
-      //     bookId: bookId,
-      //     chapter: chapter,
-      //     translation: translation || "BSB",
-      //   },
-      // });
-      // setTab(tab);
+      if (tab) return;
+      const newTab = globalThis.AddTab({
+        id: uuid(),
+        taken: false,
+        data: {
+          use: "thePage",
+          type: "book",
+          book: bookId,
+          bookId: bookId,
+          chapter: chapter,
+          translation: translation || "BSB",
+        },
+      });
+      setTab(newTab);
+      console.log("newTab created for open error", newTab);
+      return;
     }
   }
 
@@ -1073,6 +1012,7 @@ function ThePage({
   }, [data]);
 
   function hanldNavFunctions() {
+    console.log("hanldNavFunctions", { tab, sharedTab, setActiveTab, panelId });
     if (tab && tab?.id && !sharedTab) setActiveTab(tab?.id);
     setNavFunctions({
       openNextChapter,
@@ -1722,8 +1662,15 @@ function ThePage({
         <>
           <div
             onClick={(e) => {
-              setOpenSidebar((prev) => !prev);
-              setCurrentExperience(0);
+              if (globalThis.setOpenSidebar && globalThis.openSidebar) {
+                globalThis.setOpenSidebar(false);
+                globalThis.selectBookSelectorBook &&
+                  globalThis.selectBookSelectorBook(null);
+              } else {
+                globalThis.setOpenSidebar && globalThis.setOpenSidebar(true);
+                globalThis.selectBookSelectorBook &&
+                  globalThis.selectBookSelectorBook(data.bookId);
+              }
             }}
             style={{ "pointer-events": isDragging ? "none" : null }}
             className="bookTitle"
@@ -1733,6 +1680,22 @@ function ThePage({
               style={{
                 fontSize: "24px",
                 color: "color-mix(in srgb, var(--text1), transparent 40%)",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (globalThis.setOpenSidebar && globalThis.openSidebar) {
+                  globalThis.setOpenSidebar(false);
+                  globalThis.setSelectingTranslation &&
+                    globalThis.setSelectingTranslation(false);
+                  globalThis.selectBookSelectorBook &&
+                    globalThis.selectBookSelectorBook(null);
+                } else {
+                  globalThis.setOpenSidebar(true);
+                  globalThis.setSelectingTranslation &&
+                    globalThis.setSelectingTranslation(true);
+                  globalThis.selectBookSelectorBook &&
+                    globalThis.selectBookSelectorBook(data.bookId);
+                }
               }}
             >{` / ${data?.shortName}`}</span>
           </div>
@@ -2702,26 +2665,6 @@ function Section({
                             if (globalThis.studyNotesPresent) {
                               HighlightStudyNoteSection(verse?.verseNumber);
                             }
-                            // Trigger Apologist verse-level search
-                            const verseText = (verse?.text || "").trim();
-                            if (verseText) {
-                              // Sync globals so polling doesn't revert to chapter
-                              globalThis.GlobalSearch = verseText;
-                              globalThis.GlobalSearchLevel = "verse";
-                              globalThis.GlobalSearchLabel = `${book || ""} ${chapter || ""}:${verse.verseNumber}`;
-                              if (
-                                typeof globalThis.UpdateStudyNoteSearch ===
-                                "function"
-                              ) {
-                                globalThis.UpdateStudyNoteSearch(verseText, {
-                                  level: "verse",
-                                  label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
-                                  baseline:
-                                    globalThis.StudyNoteParentSearch || "",
-                                  forceRefresh: true,
-                                });
-                              }
-                            }
                           }}
                           onPointerEnter={() => {
                             globalThis.showRefModal = true;
@@ -2890,26 +2833,6 @@ function Section({
                           if (globalThis.studyNotesPresent) {
                             HighlightStudyNoteSection(verse?.verseNumber);
                           }
-                          // Trigger Apologist verse-level search
-                          const verseText = (verse?.text || "").trim();
-                          if (verseText) {
-                            // Sync globals so polling doesn't revert to chapter
-                            globalThis.GlobalSearch = verseText;
-                            globalThis.GlobalSearchLevel = "verse";
-                            globalThis.GlobalSearchLabel = `${book || ""} ${chapter || ""}:${verse.verseNumber}`;
-                            if (
-                              typeof globalThis.UpdateStudyNoteSearch ===
-                              "function"
-                            ) {
-                              globalThis.UpdateStudyNoteSearch(verseText, {
-                                level: "verse",
-                                label: `${book || ""} ${chapter || ""}:${verse.verseNumber}`,
-                                baseline:
-                                  globalThis.StudyNoteParentSearch || "",
-                                forceRefresh: true,
-                              });
-                            }
-                          }
                         }}
                         onPointerEnter={() => {
                           globalThis.showRefModal = true;
@@ -3003,15 +2926,24 @@ export const ThePageWithEditor = ({ tab, setPanalApp, panelId }) => {
   }, []);
 
   const activeTab = panelId ? globalThis.PanelTabsMap[panelId] || tab : tab;
+  console.log("active tab in the page", panelId, activeTab);
   const [enableEditor, setEnableEditor] = useState(false);
   useEffect(() => {}, [enableEditor]);
-  const [data, setData] = useState(() =>
-    getCachedBibleData(
-      tab?.data?.translation,
-      tab?.data?.bookId,
-      tab?.data?.chapter
-    )
-  );
+  const [data, setData] = useState(() => {
+    if (activeTab) {
+      return getCachedBibleData(
+        activeTab?.data?.translation,
+        activeTab?.data?.bookId,
+        activeTab?.data?.chapter
+      );
+    } else {
+      return getCachedBibleData(
+        tab?.data?.translation,
+        tab?.data?.bookId,
+        tab?.data?.chapter
+      );
+    }
+  });
   const [deleteTab, setDeleteTab] = useState(false);
   if (tab) globalThis[`SetEnableEditorOf${tab?.id}`] = setEnableEditor;
   useEffect(() => {
