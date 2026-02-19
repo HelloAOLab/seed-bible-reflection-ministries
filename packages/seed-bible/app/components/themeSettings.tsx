@@ -109,7 +109,7 @@ const ADVANCED_SETTINGS_SECTIONS = {
   },
 };
 const themeOverrides =
-  tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "minimal"]
+  tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "full"]
     ?.clientBranding?.themeOverrides || {};
 
 // Default Theme - Warm Orange/Amber accent
@@ -6608,7 +6608,7 @@ const SettingsUI = () => {
           )
         )}
       </div>
-      {configBot.tags.settingsPreset !== "minimal" && (
+      {configBot.tags.settingsPreset !== "full" && (
         <button
           style={buttonStyle}
           onClick={() => setSideBarMode("advancedThemeSettings")}

@@ -1976,9 +1976,8 @@ export const SettingsProfile = () => {
     }
   };
   const removeSpaces =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || "minimal"
-    ]?.appSettings?.removeSpaces;
+    tags?.settingsConfigs?.presets?.[configBot?.tags?.settingsPreset || "full"]
+      ?.appSettings?.removeSpaces;
 
   return (
     <div className="dot">
