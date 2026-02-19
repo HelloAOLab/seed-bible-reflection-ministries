@@ -1,9 +1,9 @@
-import { updateUserColorStoreDebouncer } from "bibleVizUtils.services.UpdateUserColorStoreDebouncer";
+import { TryInitializeReadingHistoryColorStore } from "bibleVizUtils.functions.TryInitializeReadingHistoryColorStore";
 
 const { authBot } = that;
 
 if (!BibleVizUtils.Main.masks.hasUserLoggedInBeenHandled) {
   BibleVizUtils.Main.masks.hasUserLoggedInBeenHandled = true;
   shout("onAuthBotAdded");
-  // updateUserColorStoreDebouncer.execute("HandleUserLoggedIn");
+  TryInitializeReadingHistoryColorStore(authBot);
 }

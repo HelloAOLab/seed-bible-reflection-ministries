@@ -1,18 +1,16 @@
-const { useState, useRef, useLayoutEffect } = os.appHooks;
+const { useState, useLayoutEffect } = os.appHooks;
 // check_circle
-const G = globalThis as any;
-const { Input, Modal, Button, ButtonsCover, Checkbox } = G.Components;
+const { Input, Modal, Button, ButtonsCover, Checkbox } = Components;
 const Linking = thisBot.LinkingItems();
 const isMobile =
   (window?.innerWidth || gridPortalBot.tags.pixelWidth) <
-  G.MOBILE_VIEWPORT_THRESHOLD;
-const editAbleTypes: any = {
+  MOBILE_VIEWPORT_THRESHOLD;
+const editAbleTypes = {
   youtube: true,
   iframe: true,
   video: true,
   Video: true,
   externalLink: true,
-  date: true,
 };
 
 const AutoplayIcons = {
@@ -21,84 +19,66 @@ const AutoplayIcons = {
   TRUE: "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/9721a3a303021e8c4b84b6c3e939718a5a7ab773d84fd305351bf3f5081fbeca.svg",
 };
 
-const AttachLinkItem = (props: any) => {
-  const {
-    clickPass,
-    activeItemID,
-    playlistId,
-    setRef,
-    oldItemsMap,
-    dragOverSet,
-    playlistName,
-    linkingMode,
-    viewOnly,
-    checklistEnabled,
-    checkListData,
-    data,
-    editDataFromPlaylist,
-    creatingPlaylist,
-    toggle,
-    onClickItem,
-    handleDragStart,
-    handleDragOver,
-    handleDragEnd,
-    deleteFromList,
-    originalIndex,
-    index,
-    playListSubIndex,
-    onClick,
-    setList,
-    activeItemList,
-    currentDateActive,
-    originalList,
-    datesRepeat,
-    datesInWrongOrder,
-    currentFormat,
-    isSomethingEmbededChecked,
-    draggable = true,
-    layers,
-    onDisembed,
-    playingPlaylist = false,
-    justPlay = false,
-    embedding,
-    pId,
-    onClickCheckbox,
-    checked,
-    isPlaylistNestedSupported = false,
-    isPlaylistNestedPlayAble = false,
-    autoPlayToggle = null,
-  } = props;
+const AttachLinkItem = ({
+  clickPass,
+  activeItemID,
+  playlistId,
+  setRef,
+  oldItemsMap,
+  dragOverSet,
+  playlistName,
+  linkingMode,
+  viewOnly,
+  checklistEnabled,
+  checkListData,
+  data,
+  editDataFromPlaylist,
+  creatingPlaylist,
+  toggle,
+  onClickItem,
+  handleDragStart,
+  handleDragOver,
+  handleDragEnd,
+  deleteFromList,
+  originalIndex,
+  index,
+  playListSubIndex,
+  onClick,
+  setList,
+  activeItemList,
+  currentDateActive,
+  originalList,
+  datesRepeat,
+  datesInWrongOrder,
+  currentFormat,
+  isSomethingEmbededChecked,
+  draggable = true,
+  layers,
+  onDisembed,
+  playingPlaylist = false,
+  justPlay = false,
+  embedding,
+  pId,
+  onClickCheckbox,
+  checked,
+  isPlaylistNestedSupported = false,
+  isPlaylistNestedPlayAble = false,
+  autoPlayToggle = null,
+}) => {
   const [editDateModal, setEditDateModal] = useState(false);
-  const datePickerRef = useRef<any>(null);
   const [date, setDate] = useState(
-    G.FORMAT_YYYY_MM_DD(data.additionalInfo.date || new Date())
+    FORMAT_YYYY_MM_DD(data.additionalInfo.date || new Date())
   );
-
-  useLayoutEffect(() => {
-    if (datePickerRef.current) {
-      (window as any).flatpickr(datePickerRef.current, {
-        dateFormat: "m/d/Y",
-        allowInput: false,
-      });
-    }
-  }, []);
-
-  const onDateSave = (date?: string) => {
-    setList((prev: any[]) => {
+  const onDateSave = () => {
+    setList((prev) => {
       const old = [...prev];
       const index = old.findIndex((ele) => ele.id === data.id);
       if (index > -1) {
         old[index] = {
           ...old[index],
-          content: G.FORMAT_DATE(
-            date?.replaceAll("/", "-") || "",
-            "DEFAULT",
-            "MM-DD-YYYY"
-          ),
+          content: FORMAT_DATE(date),
           additionalInfo: {
-            date: G.FORMAT_YYYY_MM_DD(
-              new Date(`${date?.replaceAll("/", "-") || ""} 12:00:00`)
-            ),
+            date: FORMAT_YYYY_MM_DD(date),
           },
         };
       }
@@ -110,7 +90,7 @@ const AttachLinkItem = (props: any) => {
     return null;
   }
 
-  const isVideoItem = G.IsVideoAttachment(data);
+  const isVideoItem = globalThis.IsVideoAttachment(data);
 
   const toggleAutoPlay = () => {
     if (autoPlayToggle) autoPlayToggle(originalIndex, pId, data.id);
@@ -120,21 +100,16 @@ const AttachLinkItem = (props: any) => {
 
   return (
     <>
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-      />
       {editDateModal && (
         <Modal
-          title={t("changeDate")}
+          title={t('changeDate')}
           showIcon={false}
-          onClose={() => setEditDateModal(false)}
-        >
-          <h3>{t("editDate")}</h3>
+          onClose={() => setEditDateModal(false)}>
+          <h3>{t('editDate')}</h3>
           <input
             type="date"
             value={date}
-            onChange={(e: any) => setDate(e.target.value)}
+            onChange={(e) => setDate(e.target.value)}
             style={{
               margin: "10px 0",
               padding: "8px",
@@ -148,12 +123,11 @@ const AttachLinkItem = (props: any) => {
               onClick={() => {
                 onDateSave();
                 setEditDateModal(false);
-              }}
-            >
-              {t("save")}
+              }}>
+              {t('save')}
             </Button>
             <Button secondaryAlt onClick={() => setEditDateModal(false)}>
-              {t("close")}
+              {t('close')}
             </Button>
           </ButtonsCover>
         </Modal>
@@ -202,32 +176,31 @@ const AttachLinkItem = (props: any) => {
               return;
             }
           }
-          G.ADDING_TOPLAYLIST_TIMEOUT = setTimeout(() => {
-            G.ADDING_TOPLAYLIST_TIMEOUT = null;
+          globalThis.ADDING_TOPLAYLIST_TIMEOUT = setTimeout(() => {
+            globalThis.ADDING_TOPLAYLIST_TIMEOUT = null;
             onClickItem({ dataItem: data });
           }, 1000);
         }}
         onPointerUp={() => {
-          if (G.ADDING_TOPLAYLIST_TIMEOUT) {
-            clearInterval(G.ADDING_TOPLAYLIST_TIMEOUT);
-            G.ADDING_TOPLAYLIST_TIMEOUT = null;
+          if (globalThis.ADDING_TOPLAYLIST_TIMEOUT) {
+            clearInterval(globalThis.ADDING_TOPLAYLIST_TIMEOUT);
+            globalThis.ADDING_TOPLAYLIST_TIMEOUT = null;
           }
         }}
         // onMouseDown={(e) => e.stopPropagation()} // block parent drag
         onMouseLeave={() => {
-          if (G.ADDING_TOPLAYLIST_TIMEOUT)
-            clearInterval(G.ADDING_TOPLAYLIST_TIMEOUT);
+          if (globalThis.ADDING_TOPLAYLIST_TIMEOUT)
+            clearInterval(globalThis.ADDING_TOPLAYLIST_TIMEOUT);
         }}
         onTouchEnd={() => {
-          if (G.ADDING_TOPLAYLIST_TIMEOUT)
-            clearInterval(G.ADDING_TOPLAYLIST_TIMEOUT);
+          if (globalThis.ADDING_TOPLAYLIST_TIMEOUT)
+            clearInterval(globalThis.ADDING_TOPLAYLIST_TIMEOUT);
         }}
         onDragStart={() => {
           handleDragStart(index, pId);
         }}
         onDragOver={(e) => handleDragOver(index, originalIndex, null, e)}
-        onDragEnd={handleDragEnd}
-      >
+        onDragEnd={handleDragEnd}>
         <input
           style={{
             opacity: "0",
@@ -259,27 +232,25 @@ const AttachLinkItem = (props: any) => {
                   return;
                 }
 
-                const isShiftHold = G?.KEY_HOLD?.["shift"];
+                const isShiftHold = globalThis?.KEY_HOLD?.["shift"];
 
                 if (isShiftHold && !onDisembed) {
-                  let upperLimit = Math.max(index, G.LAST_CLICK_ID);
-                  let lowerLimit = Math.min(index, G.LAST_CLICK_ID);
+                  let upperLimit = Math.max(index, globalThis.LAST_CLICK_ID);
+                  let lowerLimit = Math.min(index, globalThis.LAST_CLICK_ID);
                   const idsFilter = originalList
-                    .filter((ele: { id: string }, indexInner: number) => {
-                      const { id } = ele;
-                      return (
+                    .filter(
+                      ({ id }, indexInner) =>
                         indexInner <= upperLimit &&
                         indexInner >= lowerLimit &&
-                        indexInner !== G.LAST_CLICK_ID &&
+                        indexInner !== globalThis.LAST_CLICK_ID &&
                         id !== embedding
-                      );
-                    })
-                    .map((ele: { id: string }) => ele.id);
+                    )
+                    .map((ele) => ele.id);
                   editDataFromPlaylist(idsFilter, false);
-                  G.LAST_CLICK_ID = index;
+                  globalThis.LAST_CLICK_ID = index;
                   return;
                 } else {
-                  G.LAST_CLICK_ID = index;
+                  globalThis.LAST_CLICK_ID = index;
                 }
                 editDataFromPlaylist(data.id, false);
               }}
@@ -293,47 +264,32 @@ const AttachLinkItem = (props: any) => {
                     setEditDateModal(true);
                   }
                 }}
-                class="material-symbols-outlined unfollow drag-item-icon"
-              >
+                class="material-symbols-outlined unfollow drag-item-icon">
                 playlist_play
               </span>
             ) : data.additionalInfo.type === "voice-recording" ? (
               <img
-                src={G.getFileIconByMimeType("audio/")}
+                src={getFileIconByMimeType("audio/")}
                 style={{ width: "18px" }}
               />
             ) : data.additionalInfo.type === "video-recording" ? (
               <img
-                src={G.getFileIconByMimeType("video/")}
+                src={getFileIconByMimeType("video/")}
                 style={{ width: "18px" }}
               />
             ) : data.additionalInfo.type === "file" ? (
               <img
-                src={G.getFileIconByMimeType(data.additionalInfo.mimeType)}
+                src={getFileIconByMimeType(data.additionalInfo.mimeType)}
                 style={{ width: "18px" }}
               />
             ) : (
               <span
                 onClick={() => {
-                  // if (data.type === "date" && creatingPlaylist && !viewOnly) {
-                  //   setEditDateModal(true);
-                  // }
+                  if (data.type === "date" && creatingPlaylist && !viewOnly) {
+                    setEditDateModal(true);
+                  }
                 }}
-                style={{ position: "relative" }}
-                class="material-symbols-outlined unfollow drag-item-icon"
-              >
-                <input
-                  ref={datePickerRef}
-                  type="date"
-                  onChange={(e: any) => {
-                    if (!e.target.value) {
-                      return;
-                    }
-                    onDateSave(e?.target?.value || "");
-                  }}
-                  className="hidden-date"
-                  placeholder="MM/DD/YYYY"
-                />
+                class="material-symbols-outlined unfollow drag-item-icon">
                 {data.type === "date" ? "calendar_month" : "media_link"}
               </span>
             )
@@ -343,9 +299,9 @@ const AttachLinkItem = (props: any) => {
           onClick={() => {
             if (data.type === "date") return;
 
-            if (onClick) {
-              clearInterval(G.ADDING_TOPLAYLIST_TIMEOUT);
-              G.ADDING_TOPLAYLIST_TIMEOUT = null;
+            if (!!onClick) {
+              clearInterval(globalThis.ADDING_TOPLAYLIST_TIMEOUT);
+              globalThis.ADDING_TOPLAYLIST_TIMEOUT = null;
               // thisBot.RenderLinkContent(data);
               onClick({ dataItem: data, index: originalIndex });
               if (checklistEnabled) {
@@ -363,12 +319,12 @@ const AttachLinkItem = (props: any) => {
               // globalThis.SetCurreIndexPlaylist && globalThis.SetCurreIndexPlaylist(index, playListSubIndex);
               return;
             }
-            if (G.SetCurrentItem) {
-              G.SetCurrentItem({ ...data });
+            if (globalThis.SetCurrentItem) {
+              globalThis.SetCurrentItem({ ...data });
             }
 
-            if (G.SetVideoSrc) {
-              G.SetVideoSrc(null);
+            if (globalThis.SetVideoSrc) {
+              globalThis.SetVideoSrc(null);
               if (
                 data.additionalInfo.type === "video-recording" ||
                 data.additionalInfo.type === "Video" ||
@@ -389,13 +345,13 @@ const AttachLinkItem = (props: any) => {
 
             if (data.additionalInfo.type === "externalLink") {
               // thisBot.RenderLinkContent({ ...data });
-              if (G.OpenRefTimeout) {
-                clearTimeout(G.OpenRefTimeout);
-                G.OpenRefTimeout = null;
+              if (globalThis.OpenRefTimeout) {
+                clearTimeout(globalThis.OpenRefTimeout);
+                globalThis.OpenRefTimeout = null;
               }
-              G.OpenRefTimeout = setTimeout(() => {
+              globalThis.OpenRefTimeout = setTimeout(() => {
                 const link = data.additionalInfo.link;
-                const isVideo = G.IsVideoAttachment(data);
+                const isVideo = globalThis.IsVideoAttachment(data);
                 if (isVideo) {
                   thisBot.CloseFloatingApp();
                   thisBot.VideoPlayer({
@@ -413,10 +369,10 @@ const AttachLinkItem = (props: any) => {
               return;
             }
 
-            if (G.SetMediaURL) {
-              G.SetMediaURL(null);
+            if (globalThis.SetMediaURL) {
+              globalThis.SetMediaURL(null);
               if (data.additionalInfo.type === "voice-recording") {
-                G.SetMediaURL(data.additionalInfo.link);
+                globalThis.SetMediaURL(data.additionalInfo.link);
                 return;
               }
             }
@@ -430,14 +386,13 @@ const AttachLinkItem = (props: any) => {
             data.type === "heading"
               ? "no-left-padding"
               : data.type !== "date" && checklistEnabled && !viewOnly
-                ? "checklistEnabled"
-                : ""
+              ? "checklistEnabled"
+              : ""
           } playlist-item-type playlist-item-verse ${
             toggle === data.id && "current-playing-item"
-          }`}
-        >
+          }`}>
           {data.type === "date"
-            ? G.FORMAT_DATE(data?.additionalInfo.date, currentFormat)
+            ? FORMAT_DATE(data?.additionalInfo.date, currentFormat)
             : data?.content.substr(0, 25)}{" "}
           {`${data?.content.length > 25 ? "..." : ""}`}
         </p>
@@ -447,8 +402,7 @@ const AttachLinkItem = (props: any) => {
               style={{ marginLeft: "10px" }}
               target="_blank"
               rel="noreferrer"
-              href={data.additionalInfo?.link}
-            >
+              href={data.additionalInfo?.link}>
               🔗
             </a>
           )}
@@ -478,8 +432,7 @@ const AttachLinkItem = (props: any) => {
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
-              }}
-            >
+              }}>
               <span class="material-symbols-outlined">download</span>
             </p>
           )}
@@ -501,8 +454,7 @@ const AttachLinkItem = (props: any) => {
                 data.autoPlay && !playingPlaylist ? "active" : ""
               } without-right-margin ${`${
                 (isMobile || playingPlaylist) && "visible"
-              }`}`}
-            >
+              }`}`}>
               <img
                 src={
                   data.autoPlay && !playingPlaylist
@@ -513,7 +465,7 @@ const AttachLinkItem = (props: any) => {
               />
             </p>
           )}
-          {editAbleTypes[data.additionalInfo.type || data.type] &&
+          {editAbleTypes[data.additionalInfo.type] &&
             creatingPlaylist &&
             !viewOnly && (
               <p
@@ -522,11 +474,7 @@ const AttachLinkItem = (props: any) => {
                 }`}`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (data.type === "date") {
-                    datePickerRef.current.click();
-                    return;
-                  }
-                  G.SetEditAttachmentItem({
+                  globalThis.SetEditAttachmentItem({
                     id: data.id,
                     parentId: pId,
                     selectedType: "LINK",
@@ -535,8 +483,7 @@ const AttachLinkItem = (props: any) => {
                     link: data.additionalInfo.link,
                     mediaType: data.additionalInfo.type,
                   });
-                }}
-              >
+                }}>
                 <span class="material-symbols-outlined unfollow delete-icon">
                   edit
                 </span>
@@ -557,8 +504,7 @@ const AttachLinkItem = (props: any) => {
                   if (onDisembed) {
                     onDisembed();
                   }
-                }}
-              >
+                }}>
                 <span class="material-symbols-outlined unfollow delete-icon">
                   link_off
                 </span>
@@ -572,8 +518,7 @@ const AttachLinkItem = (props: any) => {
               onClick={(e) => {
                 e.stopPropagation();
                 deleteFromList(index, pId, data.id);
-              }}
-            >
+              }}>
               <span class="material-symbols-outlined unfollow delete-icon">
                 delete
               </span>

@@ -1,11 +1,7 @@
 import { useTestamentContext } from "scriptureMap2D.main.TestamentContext";
-import type { TestamentToggleType } from "scriptureMap2D.main.types";
 const { useMemo } = os.appHooks;
 
-export const TestamentToggle: TestamentToggleType = ({
-  toggleshowContent,
-  showingContent,
-}) => {
+export const TestamentToggle = ({ toggleshowContent, showingContent }) => {
   const { testament } = useTestamentContext();
 
   // const fixedTestamentColor = useMemo(() => {

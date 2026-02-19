@@ -1,6 +1,6 @@
 import { FiltersSelectorOption } from "scriptureMap2D.main.FiltersSelectorOption";
 import { useReadingHistoryContext } from "scriptureMap2D.main.ReadingHistoryContext";
-import { userColorStore } from "bibleVizUtils.services.UserColorStore";
+import { readingHistoryColorStore } from "bibleVizUtils.services.ReadingHistoryColorStore";
 
 import { useSideBarContext } from "app.hooks.sideBar";
 
@@ -38,7 +38,7 @@ export const ReadingHistoryUserFiltersSelector = () => {
           const fixedName: string =
             userId === myAuthBotId
               ? t("you")
-              : (profileName?.length ?? 0) > 0
+              : profileName?.length > 0
                 ? profileName
                 : t("Unknown User");
           return (
@@ -46,13 +46,10 @@ export const ReadingHistoryUserFiltersSelector = () => {
               content={[
                 <div
                   style={{
-                    backgroundColor: userColorStore.getUserColor({
-                      authId: userId,
-                    }),
+                    backgroundColor:
+                      readingHistoryColorStore.getUserColor(userId),
                     borderStyle: "solid",
-                    borderColor: userColorStore.getUserColor({
-                      authId: userId,
-                    }),
+                    borderColor: readingHistoryColorStore.getUserColor(userId),
                   }}
                   className="filter-option-icon"
                 ></div>,

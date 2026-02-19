@@ -1,7 +1,6 @@
 const { useState, useRef, useEffect } = os.appHooks;
 
-const DraggableContainer = (props: { children: HTMLElement }) => {
-  const { children } = props;
+const DraggableContainer = ({ children }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState(
     masks?.position || {
@@ -10,10 +9,9 @@ const DraggableContainer = (props: { children: HTMLElement }) => {
     }
   );
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const dragRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef(null);
 
-  const handleMouseDown = (e: MouseEvent) => {
-    if (!dragRef.current) return;
+  const handleMouseDown = (e) => {
     setIsDragging(true);
     const rect = dragRef.current.getBoundingClientRect();
     setOffset({
@@ -23,7 +21,7 @@ const DraggableContainer = (props: { children: HTMLElement }) => {
     e.preventDefault();
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = (e) => {
     if (!isDragging) return;
     setPosition({
       x: e.clientX - offset.x,
@@ -31,7 +29,7 @@ const DraggableContainer = (props: { children: HTMLElement }) => {
     });
   };
 
-  const handleMouseUp = (e: MouseEvent) => {
+  const handleMouseUp = (e) => {
     setIsDragging(false);
     setTagMask(
       thisBot,
@@ -44,12 +42,12 @@ const DraggableContainer = (props: { children: HTMLElement }) => {
     );
   };
 
-  const onESC = (evt: Event) => {
+  const onESC = (evt) => {
     let isEscape = false;
     if ("key" in evt) {
       isEscape = evt.key === "Escape" || evt.key === "Esc";
     } else {
-      isEscape = (evt as KeyboardEvent).code === "Escape";
+      isEscape = evt.keyCode === 27;
     }
     if (isEscape) {
       whisper(thisBot, "closePainter");
@@ -70,7 +68,7 @@ const DraggableContainer = (props: { children: HTMLElement }) => {
   useEffect(() => {
     document.addEventListener("keydown", onESC);
     return () => {
-      document.removeEventListener("keydown", onESC);
+      document.removeEventListener("onkeydown", onESC);
     };
   }, []);
 

@@ -12,6 +12,8 @@ const App = () => {
   const [openSidebar, setOpenSidebar] = useState(false);
   const [currentExperience, setCurrentExperience] = useState(0);
 
+  globalThis.setOpenSidebar = setOpenSidebar;
+  globalThis.openSidebar = openSidebar;
   globalThis.currentExperience = currentExperience;
   globalThis.setCurrentExperience = setCurrentExperience;
 
@@ -19,12 +21,6 @@ const App = () => {
     if (!openSidebar && globalThis?.bookModalOpen) {
       globalThis.bookModalOpen(false);
     }
-    globalThis.setOpenSidebar = setOpenSidebar;
-    globalThis.openSidebar = openSidebar;
-    return () => {
-      globalThis.setOpenSidebar = null;
-      globalThis.openSidebar = null;
-    };
   }, [openSidebar]);
 
   useEffect(() => {

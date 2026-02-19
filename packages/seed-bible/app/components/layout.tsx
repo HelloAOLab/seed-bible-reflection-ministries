@@ -95,7 +95,7 @@ const Layout = ({ children, panelsNumber }) => {
           <SettingsSidebar
             config={
               tags?.settingsConfigs?.presets[
-                configBot?.tags?.settingsPreset || "full"
+                configBot?.tags?.settingsPreset || "minimal"
               ]
             }
           />

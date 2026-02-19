@@ -1,8 +1,7 @@
 const { useState, useLayoutEffect, useMemo, useRef } = os.appHooks;
 import { MiniTextEditor } from "app.components.smallEditor";
-const G = globalThis as any;
 const { Input, Modal, Button, ButtonsCover, Select, LoaderSecondary } =
-  G.Components;
+  Components;
 
 const RecordingUI = await thisBot.RecordVoice();
 const VideoRecordUI = await thisBot.VideoRecordUI();
@@ -12,7 +11,7 @@ const RECORDING_VALUE = "voice-recording";
 
 const EditorId = "attachfile";
 
-const OPTIONS = (t: any) => [
+const OPTIONS = (t) => [
   // { value: "text", label: "Heading Text" },
   // { value: SEARCH_ADD_VALUE, label: "Search & Add Verse,Chapter" },
   { value: "youtube", label: t("youtube") },
@@ -33,7 +32,7 @@ const BIBLE_ICON =
 
 const getCurrentTime = () => new Date().toLocaleString();
 
-const imageAssets: any = {
+const imageAssets = {
   RECORDING_1:
     "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/df7ee00a951b3e90b4900ef34614ef81955e8d78546e27ce96866568a84a8397.svg",
   RECORDING_2:
@@ -77,33 +76,35 @@ const imageAssets: any = {
 //     }}
 // />
 
-function SubComponent(props: any) {
-  const {
-    editMode,
-    onAddFiles,
-    dragState,
-    recordingType,
-    setRecordingType,
-    name,
-    link,
-    setLinkState,
-    setLink,
-    setName,
-    mediaType,
-    setLoading,
-    setType,
-    data,
-    setData,
-    type,
-    textType,
-    setTextType,
-    showChangeOptions = true,
-  } = props;
-  const playlists = useMemo(() => G[`${"default"}playlists`] || [], []);
+function SubComponent({
+  editMode,
+  onAddFiles,
+  dragState,
+  recordingType,
+  setRecordingType,
+  name,
+  link,
+  setLinkState,
+  setLink,
+  setName,
+  mediaType,
+  setLoading,
+  setType,
+  data,
+  setData,
+  type,
+  textType,
+  setTextType,
+  showChangeOptions = true,
+}) {
+  const playlists = useMemo(
+    () => globalThis[`${"default"}playlists`] || [],
+    []
+  );
   const playlistListOptions = useMemo(
     () => [
       { label: "Select Playlist", value: "" },
-      ...playlists.map((ele: any) => ({ label: ele.name, value: ele.id })),
+      ...playlists.map((ele) => ({ label: ele.name, value: ele.id })),
     ],
     []
   );
@@ -181,10 +182,11 @@ function SubComponent(props: any) {
           <div className="align-center" style={{ gap: "0.5rem" }}>
             <div
               onClick={() => {
-                G.SET_SHOW_CHECK?.(true);
-                G.setOpenSidebar && G.setOpenSidebar(true);
+                globalThis.SET_SHOW_CHECK?.(true);
+                globalThis.setOpenSidebar && globalThis.setOpenSidebar(true);
                 setTimeout(() => {
-                  G.SetDontOpenPlaylist && G.SetDontOpenPlaylist(true);
+                  globalThis.SetDontOpenPlaylist &&
+                    globalThis.SetDontOpenPlaylist(true);
                 }, 200);
               }}
               style={{
@@ -235,7 +237,7 @@ function SubComponent(props: any) {
           <div className="switch-tabs">
             <div
               onClick={() => {
-                if (G.isRecording) {
+                if (globalThis.isRecording) {
                   return ShowNotification({
                     message: "Cannot Switch while recording!",
                     severity: "error",
@@ -254,7 +256,7 @@ function SubComponent(props: any) {
             </div>
             <div
               onClick={() => {
-                if (G.isRecording) {
+                if (globalThis.isRecording) {
                   return ShowNotification({
                     message: "Cannot Switch while recording!",
                     severity: "error",
@@ -299,7 +301,7 @@ function SubComponent(props: any) {
               sxSelect={{ width: "7rem", marginBottom: "1rem" }}
               secondary
               value={textType}
-              onChangeListener={(val: string) => {
+              onChangeListener={(val) => {
                 setTextType(val);
               }}
               name={`${t("role")}:`}
@@ -312,8 +314,8 @@ function SubComponent(props: any) {
             headingControls
             showMoreOptions={false}
             placeholderHTML={name}
-            initialHTML={name}
-            onChange={(html: string) => {
+            initialHtml={name}
+            onChange={(html) => {
               setName(html);
             }}
           />
@@ -341,7 +343,7 @@ function SubComponent(props: any) {
               sxSelect={{ width: "7rem" }}
               secondary
               value={mediaType}
-              onChangeListener={(val: string) => {
+              onChangeListener={(val) => {
                 setLinkState({ isValid: false, type: val });
                 setType(val);
               }}
@@ -364,7 +366,7 @@ function SubComponent(props: any) {
             sxSelect={{ width: "100%" }}
             secondary
             value={data}
-            onChangeListener={(val: string) => {
+            onChangeListener={(val) => {
               setData(val);
             }}
             name={`${t("playlist")}:`}
@@ -378,7 +380,7 @@ function SubComponent(props: any) {
           <div
             onClick={async () => {
               setLoading(true);
-              const files: any = await os.showUploadFiles();
+              const files = await os.showUploadFiles();
               const file = files?.[0];
 
               if (!file) {
@@ -389,11 +391,11 @@ function SubComponent(props: any) {
                 });
               }
 
-              const filesPromises: any = [];
+              const filesPromises = [];
 
               files.forEach((file: any) => {
                 filesPromises.push(
-                  os.recordFile(G.RECORD_STOREKEY, file.data, {
+                  os.recordFile(globalThis.RECORD_STOREKEY, file.data, {
                     name: file.name,
                     mimeType: file.mimeType,
                   })
@@ -401,22 +403,19 @@ function SubComponent(props: any) {
               });
 
               try {
-                let failCount = 0;
+                const failCount = 0;
                 const fileSave = await Promise.all(filesPromises);
-                const filesResult: any = [];
+                const filesResult = [];
 
                 fileSave.forEach(
-                  (
-                    { success, url, existingFileUrl, errorCode },
-                    index: number
-                  ) => {
+                  ({ success, url, existingFileUrl, errorCode }, index) => {
                     if (!success && errorCode !== "file_already_exists") {
                       failCount++;
                       return;
                     }
                     filesResult.push({
                       content: files[index].name,
-                      id: G.createUUID(),
+                      id: createUUID(),
                       additionalInfo: {
                         link: url || existingFileUrl,
                         mimeType: files[index].mimeType,
@@ -486,7 +485,7 @@ const tags = [
   "TAG",
 ];
 
-const WITHOUTLOGIN_TAGS: any = {
+const WITHOUTLOGIN_TAGS = {
   RECORDING: true,
   FILE_UPLOAD: true,
 };
@@ -497,84 +496,79 @@ const SEND =
 const CLOSE =
   "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/eee3f1736645b937d137719cbaeecf14e983237f4bf1594e765d75c0e887fa1a.png";
 
-const readFileAsText = (file: any) => {
+const readFileAsText = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (event: any) => resolve(event.target.result);
+    reader.onload = (event) => resolve(event.target.result);
     reader.onerror = reject;
     reader.readAsText(file);
   });
 };
 
-const toPlainFile = (file: any) => ({
+const toPlainFile = (file) => ({
   name: file.name,
   size: file.size,
   mimeType: file.type,
   lastModified: file.lastModified,
 });
 
-const AttachLink = (props: any) => {
-  const {
-    sSelectedType,
-    sName,
-    sData,
-    sLink,
-    sMediaType,
-    editMode,
-    canRecord = true,
-    onClose,
-    canClose,
-    onAddTags,
-    massAdd,
-    attachLink,
-    isDate = false,
-    onDateClick,
-    isTags = false,
-    isPlaylist = false,
-    showSaveButton = true,
-  } = props;
+const AttachLink = ({
+  sSelectedType,
+  sName,
+  sData,
+  sLink,
+  sMediaType,
+  editMode,
+  onClose,
+  canClose,
+  onAddTags,
+  massAdd,
+  attachLink,
+  isDate = false,
+  onDateClick,
+  isTags = false,
+  isPlaylist = false,
+  showSaveButton = true,
+}) => {
   const isloggedIN = authBot?.id;
-  const datePickerRef = useRef<any>(null);
 
-  useLayoutEffect(() => {
-    if (datePickerRef.current) {
-      (window as any).flatpickr(datePickerRef.current, {
-        dateFormat: "m/d/Y",
-        allowInput: false,
-      });
-    }
-  }, [isDate]);
-
-  const playlists = useMemo(() => G[`${"default"}playlists`] || [], []);
+  const playlists = useMemo(
+    () => globalThis[`${"default"}playlists`] || [],
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [selectedType, setSelectedType] = useState(
-    sSelectedType ? sSelectedType : G.isScreenRecording ? "RECORDING" : tags[0]
+    sSelectedType
+      ? sSelectedType
+      : globalThis.isScreenRecording
+        ? "RECORDING"
+        : tags[0]
   );
   const [textType, setTextType] = useState("heading");
   const [mediaType, setType] = useState(sMediaType ? sMediaType : "youtube");
   const [data, setData] = useState(sData ? sData : null);
-  const [linkState, setLinkState] = useState<any>(false);
+  const [linkState, setLinkState] = useState(false);
   const [name, setName] = useState(
-    sName ? sName : selectedType === "TEXT" ? G.RawName || "" : ""
+    sName ? sName : selectedType === "TEXT" ? globalThis.RawName || "" : ""
   );
   const [link, setLink] = useState(sLink ? sLink : "");
 
   // Audio or Video
   const [recordingType, setRecordingType] = useState(
-    G.isScreenRecording ? "video" : "audio"
+    globalThis.isScreenRecording ? "video" : "audio"
   );
 
-  const dragRef = useRef<any>(null);
+  const dragRef = useRef(null);
   const dragCounter = useRef(0);
 
   const [dragState, setDragState] = useState({
     isDragOver: false,
   });
 
-  const onAddFiles = async (files: any) => {
+  const onAddFiles = async (files) => {
     setLoading(true);
     let failCount = 0;
-    const tempData: any = [];
+    const tempData = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       try {
@@ -584,7 +578,7 @@ const AttachLink = (props: any) => {
             thisBot.filterOutValidItemFromJSON(playlistImportedData);
           if (filterdArray.length) {
             tempData.push({
-              id: G.createUUID(),
+              id: createUUID(),
               ...file,
               content: file.name,
               additionalInfo: {
@@ -611,11 +605,11 @@ const AttachLink = (props: any) => {
       });
     }
 
-    setData((prev: any) => [...(Array.isArray(prev) ? prev : []), ...tempData]);
+    setData((prev) => [...(Array.isArray(prev) ? prev : []), ...tempData]);
   };
 
   useLayoutEffect(() => {
-    const handleDragEnter = (e: any) => {
+    const handleDragEnter = (e) => {
       e.preventDefault();
       e.stopPropagation();
       dragCounter.current += 1;
@@ -624,7 +618,7 @@ const AttachLink = (props: any) => {
       }
     };
 
-    const handleDragLeave = (e: any) => {
+    const handleDragLeave = (e) => {
       e.preventDefault();
       e.stopPropagation();
       dragCounter.current -= 1;
@@ -633,18 +627,18 @@ const AttachLink = (props: any) => {
       }
     };
 
-    const handleDragOver = (e: any) => {
+    const handleDragOver = (e) => {
       e.preventDefault();
       e.stopPropagation();
     };
 
-    const handleDrop = async (e: any) => {
+    const handleDrop = async (e) => {
       e.preventDefault();
       e.stopPropagation();
 
       const files = Array.from(e.dataTransfer.files);
-      const finalFiles: any = [];
-      const filesPromises: any = [];
+      const finalFiles = [];
+      const filesPromises = [];
 
       for (const file of files) {
         filesPromises.push(readFileAsText(file));
@@ -685,7 +679,7 @@ const AttachLink = (props: any) => {
   }, [selectedType]);
 
   useLayoutEffect(() => {
-    const results: any = G.validateUrl(link);
+    const results = validateUrl(link);
     if (!results.isValid) {
       return;
     }
@@ -733,9 +727,9 @@ const AttachLink = (props: any) => {
     }
   }, [mediaType, link, data]);
 
-  const deleteFromList = (id: string) => {
+  const deleteFromList = (id) => {
     if (Array.isArray(data)) {
-      setData((prev: any) => prev.filter((ele: any) => ele.id !== id));
+      setData((prev) => prev.filter((ele) => ele.id !== id));
     }
   };
 
@@ -794,10 +788,14 @@ const AttachLink = (props: any) => {
 
       let finalData = data;
 
-      const fileSave: any = await os.recordFile(G.RECORD_STOREKEY, finalData, {
-        name: name,
-        mimeType: finalData?.type || "audio/webm",
-      });
+      const fileSave = await os.recordFile(
+        globalThis.RECORD_STOREKEY,
+        finalData,
+        {
+          name: name,
+          mimeType: finalData?.type || "audio/webm",
+        }
+      );
 
       const url = fileSave.url || fileSave?.existingFileUrl;
 
@@ -843,7 +841,7 @@ const AttachLink = (props: any) => {
           message: t("selectAPlaylistToAnnotate"),
           severity: "error",
         });
-      const playlistList: any = playlists.find((ele: any) => ele.id === data);
+      const playlistList = playlists.find((ele) => ele.id === data);
       attachLink(playlistList.name, playlistList.list, {
         isValid: true,
         type: "playlist",
@@ -852,7 +850,7 @@ const AttachLink = (props: any) => {
     }
 
     if (selectedType === "LINK") {
-      const results: any = G.validateUrl(link);
+      const results = validateUrl(link);
       if (!results.isValid) {
         return ShowNotification({
           message: t("invalidLinkFormat"),
@@ -878,7 +876,7 @@ const AttachLink = (props: any) => {
           allItems.push(...file.data);
         });
       }
-      if (name.trim()) {
+      if (!!name.trim()) {
         allItems.push(...thisBot.getSuggestedListItems({ searchText: name }));
       }
       setName("");
@@ -893,9 +891,9 @@ const AttachLink = (props: any) => {
       setSelectedType("TEXT");
       setLink("");
       const isTempID = EditorId;
-      if (G[`${isTempID}ClearEditorContent`])
-        G[`${isTempID}ClearEditorContent`]();
-      G.RawName = "";
+      if (globalThis[`${isTempID}ClearEditorContent`])
+        globalThis[`${isTempID}ClearEditorContent`]();
+      globalThis.RawName = "";
       return attachLink(name, link, {
         isValid: true,
         subType: textType,
@@ -906,190 +904,167 @@ const AttachLink = (props: any) => {
 
   useLayoutEffect(() => {
     if (selectedType === "TEXT") {
-      G.RawName = name;
+      globalThis.RawName = name;
     } else {
-      G.RawName = "";
+      globalThis.RawName = "";
     }
   }, [name, selectedType]);
 
   useLayoutEffect(() => {
     if (editMode) {
-      G.FireEditContent = onClickSend;
+      globalThis.FireEditContent = onClickSend;
     }
   }, [onClickSend]);
 
   return (
-    <>
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
-      />
-      <form
-        className="add-new-playlist"
-        ref={dragRef}
-        onSubmit={(e) => {
-          e.preventDefault(); // prevent full page reload
-          onClickSend();
+    <form
+      className="add-new-playlist"
+      ref={dragRef}
+      onSubmit={(e) => {
+        e.preventDefault(); // prevent full page reload
+        onClickSend();
+      }}
+    >
+      <div
+        className="container-render"
+        onKeyDown={(e) => {
+          e.stopPropagation();
         }}
       >
-        <div
-          className="container-render"
-          onKeyDown={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          {loading && (
-            <div className="loader-container">
-              <LoaderSecondary />
-            </div>
-          )}
-
-          <SubComponent
-            link={link}
-            setLink={setLink}
-            setRecordingType={setRecordingType}
-            recordingType={recordingType}
-            data={data}
-            setData={setData}
-            editMode={editMode}
-            textType={textType}
-            setTextType={setTextType}
-            onAddFiles={onAddFiles}
-            setLinkState={setLinkState}
-            dragState={dragState}
-            name={name}
-            setLoading={setLoading}
-            setName={setName}
-            mediaType={mediaType}
-            setType={setType}
-            type={selectedType}
-          />
-        </div>
-        {Array.isArray(data) &&
-          data.map((ele) => (
-            <div
-              style={{
-                padding: "1rem",
-                border: "1px solid gray",
-                margin: "0.5rem",
-                borderRadius: "6px",
-                display: "flex",
-                alignItems: "center",
-                justifyItems: "space-between",
-              }}
-            >
-              <div className="align-center" style={{ gap: "1rem" }}>
-                <img
-                  src={G.getFileIconByMimeType(ele?.additionalInfo?.mimeType)}
-                  style={{ width: "18px" }}
-                />
-                <div className="align-center">
-                  <p class="truncate-text">{ele.content}</p>
-                  <p>
-                    .{G.getExtensionFromMimeType(ele?.additionalInfo?.mimeType)}
-                  </p>
-                </div>
-              </div>
-              <p
-                style={{ marginLeft: "auto", cursor: "pointer" }}
-                onClick={() => deleteFromList(ele.id)}
-              >
-                <span class="material-symbols-outlined unfollow delete-icon">
-                  delete
-                </span>
-              </p>
-            </div>
-          ))}
-        {!editMode && (
-          <div className="select_item_container">
-            {tags
-              .filter(
-                (ele) =>
-                  (isloggedIN || !WITHOUTLOGIN_TAGS[ele]) &&
-                  (ele === "PLAYLIST"
-                    ? isPlaylist
-                    : ele === "TAG"
-                      ? isTags
-                      : ele === "DATE"
-                        ? isDate
-                        : ele === "RECORDING"
-                          ? canRecord
-                          : true)
-              )
-              .map((ele: any) => (
-                <div
-                  key={ele.id}
-                  onClick={() => {
-                    if (editMode)
-                      return ShowNotification({
-                        message: t("cannotChangeWhileBeingInEditMode"),
-                        severity: "error",
-                      });
-                    if (ele === "DATE" && !!onDateClick) {
-                      console.log(datePickerRef.current, "datePickerRef");
-                      datePickerRef.current.click();
-                      // return onDateClick();
-                      return;
-                    }
-                    setName("");
-                    setSelectedType(ele);
-                    setData(null);
-                  }}
-                  style={{ position: "relative" }}
-                  className={`${
-                    ele === selectedType ? "active" : ""
-                  } select_item_type`}
-                >
-                  {ele === "DATE" && (
-                    <input
-                      ref={datePickerRef}
-                      type="date"
-                      onChange={(e: any) => {
-                        onDateClick(e?.target?.value || "");
-                      }}
-                      className="hidden-date"
-                      placeholder="MM/DD/YYYY"
-                    />
-                  )}
-                  <img
-                    style={{ height: "16px", width: "16px" }}
-                    src={
-                      imageAssets[`${ele}${ele === selectedType ? "_2" : "_1"}`]
-                    }
-                  />
-                </div>
-              ))}
-            <div
-              className="align-center"
-              style={{ gap: "0.25rem", marginLeft: "auto" }}
-            >
-              {canClose && (
-                <div
-                  onClick={onClose}
-                  style={{ marginLeft: "auto" }}
-                  className={`active  select_item_type`}
-                >
-                  <img src={CLOSE} style={{ width: "20px" }} />
-                </div>
-              )}
-              <button
-                type="submit"
-                style={{
-                  marginLeft: "auto",
-                  cursor: isDisabled ? "not-allowed" : "",
-                }}
-                className={`${
-                  !isDisabled ? "active" : "disabled"
-                } select_item_type`}
-                disabled={isDisabled}
-              >
-                <img src={SEND} style={{ width: "20px" }} />
-              </button>
-            </div>
+        {loading && (
+          <div className="loader-container">
+            <LoaderSecondary />
           </div>
         )}
-      </form>
-    </>
+
+        <SubComponent
+          link={link}
+          setLink={setLink}
+          setRecordingType={setRecordingType}
+          recordingType={recordingType}
+          data={data}
+          setData={setData}
+          editMode={editMode}
+          textType={textType}
+          setTextType={setTextType}
+          onAddFiles={onAddFiles}
+          setLinkState={setLinkState}
+          dragState={dragState}
+          name={name}
+          setLoading={setLoading}
+          setName={setName}
+          mediaType={mediaType}
+          setType={setType}
+          type={selectedType}
+        />
+      </div>
+      {Array.isArray(data) &&
+        data.map((ele) => (
+          <div
+            style={{
+              padding: "1rem",
+              border: "1px solid gray",
+              margin: "0.5rem",
+              borderRadius: "6px",
+              display: "flex",
+              alignItems: "center",
+              justifyItems: "space-between",
+            }}
+          >
+            <div className="align-center" style={{ gap: "1rem" }}>
+              <img
+                src={getFileIconByMimeType(ele?.additionalInfo?.mimeType)}
+                style={{ width: "18px" }}
+              />
+              <div className="align-center">
+                <p class="truncate-text">{ele.content}</p>
+                <p>
+                  .{getExtensionFromMimeType(ele?.additionalInfo?.mimeType)}
+                </p>
+              </div>
+            </div>
+            <p
+              style={{ marginLeft: "auto", cursor: "pointer" }}
+              onClick={() => deleteFromList(ele.id)}
+            >
+              <span class="material-symbols-outlined unfollow delete-icon">
+                delete
+              </span>
+            </p>
+          </div>
+        ))}
+      {!editMode && (
+        <div className="select_item_container">
+          {tags
+            .filter(
+              (ele) =>
+                (isloggedIN || !WITHOUTLOGIN_TAGS[ele]) &&
+                (ele === "PLAYLIST"
+                  ? isPlaylist
+                  : ele === "TAG"
+                    ? isTags
+                    : ele === "DATE"
+                      ? isDate
+                      : true)
+            )
+            .map((ele) => (
+              <div
+                key={ele.id}
+                onClick={() => {
+                  if (editMode)
+                    return ShowNotification({
+                      message: t("cannotChangeWhileBeingInEditMode"),
+                      severity: "error",
+                    });
+                  if (ele === "DATE" && !!onDateClick) {
+                    return onDateClick();
+                  }
+                  setName("");
+                  setSelectedType(ele);
+                  setData(null);
+                }}
+                className={`${
+                  ele === selectedType ? "active" : ""
+                } select_item_type`}
+              >
+                <img
+                  style={{ height: "16px", width: "16px" }}
+                  src={
+                    imageAssets[`${ele}${ele === selectedType ? "_2" : "_1"}`]
+                  }
+                />
+              </div>
+            ))}
+          <div
+            className="align-center"
+            style={{ gap: "0.25rem", marginLeft: "auto" }}
+          >
+            {canClose && (
+              <div
+                onClick={onClose}
+                style={{ marginLeft: "auto" }}
+                className={`active  select_item_type`}
+              >
+                <img src={CLOSE} style={{ width: "20px" }} />
+              </div>
+            )}
+            <button
+              type="submit"
+              style={{
+                marginLeft: "auto",
+                cursor: isDisabled ? "not-allowed" : "",
+              }}
+              className={`${
+                !isDisabled ? "active" : "disabled"
+              } select_item_type`}
+              disabled={isDisabled}
+            >
+              <img src={SEND} style={{ width: "20px" }} />
+            </button>
+          </div>
+        </div>
+      )}
+    </form>
   );
 };
 

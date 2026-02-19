@@ -1,10 +1,12 @@
-const bibleVizUtilsMain = getBot(byTag("system", "bibleVizUtils.main"));
-
 if (
   thisBot.masks.initialized ||
   configBot.tags.systemPortal ||
-  !bibleVizUtilsMain
+  globalThis.ScriptureMap2DManager ||
+  !globalThis.BibleVizUtils
 )
   return;
 
 setTagMask(thisBot, "initialized", true);
+if (typeof ScriptureMap2DManager === "undefined") {
+  globalThis.ScriptureMap2DManager = thisBot;
+}

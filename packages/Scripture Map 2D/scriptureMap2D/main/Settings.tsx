@@ -4,15 +4,6 @@ import { ProjectStateSetter } from "scriptureMap2D.main.ProjectStateSetter";
 import { ReadingHistoryUserFiltersSelector } from "scriptureMap2D.main.ReadingHistoryUserFiltersSelector";
 import { ReadingHistoryTimeline } from "scriptureMap2D.main.ReadingHistoryTimeline";
 import { useReadingHistoryContext } from "scriptureMap2D.main.ReadingHistoryContext";
-import {
-  ScriptureMap2DModes,
-  TimelineRangeMethod,
-} from "scriptureMap2D.main.enums";
-import { GetHistoryColorByReadingTime } from "bibleVizUtils.functions.index";
-import type {
-  SettingsOptionType,
-  SettingsOptionsType,
-} from "scriptureMap2D.main.types";
 
 import { useSideBarContext } from "app.hooks.sideBar";
 
@@ -24,26 +15,23 @@ const SETTINGS_ICON =
 const Legend = () => {
   const { themeColors } = useSideBarContext();
 
-  const { secondaryColor, baseColor } = useMemo<{
-    secondaryColor: string;
-    baseColor: string;
-  }>(() => {
+  const { secondaryColor, baseColor } = useMemo(() => {
     const secondaryColor = themeColors?.["1"]?.secondaryColor ?? "#D2691E";
     const baseColor = themeColors?.["1"]?.firstToolbarbutton ?? "#dfdede";
 
     return { secondaryColor, baseColor };
   }, [themeColors]);
 
-  const squares = useMemo<React.ReactNode[]>(() => {
+  const squares = useMemo(() => {
     const squaresCount = 4;
     const step = 1 / squaresCount;
-    const squares: React.ReactNode[] = [];
+    const squares = [];
 
     for (let i = 0; i <= squaresCount; i++) {
-      let backgroundColor: React.CSSProperties["backgroundColor"];
+      let backgroundColor;
       if (i === 0) backgroundColor = baseColor;
       else {
-        backgroundColor = GetHistoryColorByReadingTime({
+        backgroundColor = BibleVizUtils.Functions.GetHistoryColorByReadingTime({
           baseColor,
           userColor: secondaryColor,
           step,
@@ -67,31 +55,31 @@ const Legend = () => {
 };
 
 const YearSelector = () => {
-  const optionsRef = useRef<HTMLDivElement | null>(null);
-  const labelRef = useRef<HTMLDivElement | null>(null);
+  const optionsRef = useRef(null);
+  const labelRef = useRef(null);
   const { selectedTimelineKey, timelineRangesMap, setSelectedTimelineKey } =
     useReadingHistoryContext();
 
-  const [showOptions, setShowOptions] = useState<boolean>(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   useEffect(() => {
-    const handleClickOutside: (event: MouseEvent) => void = (e) => {
+    const handleClickOutside = (e) => {
       if (
         optionsRef.current &&
-        !optionsRef.current.contains(e.target as Node) &&
+        !optionsRef.current.contains(e.target) &&
         labelRef.current &&
-        !labelRef.current.contains(e.target as Node)
+        !labelRef.current.contains(e.target)
       ) {
         setShowOptions(false);
       }
     };
 
-    const handleFocusOutside: (event: FocusEvent) => void = (e) => {
+    const handleFocusOutside = (e) => {
       if (
         optionsRef.current &&
-        !optionsRef.current.contains(e.target as Node) &&
+        !optionsRef.current.contains(e.target) &&
         labelRef.current &&
-        !labelRef.current.contains(e.target as Node)
+        !labelRef.current.contains(e.target)
       ) {
         setShowOptions(false);
       }
@@ -137,7 +125,7 @@ const YearSelector = () => {
   );
 };
 
-const Option: SettingsOptionType = ({
+const Option = ({
   callback,
   condition,
   enabledText,
@@ -156,7 +144,7 @@ const Option: SettingsOptionType = ({
   );
 };
 
-const SettingsOptions: SettingsOptionsType = ({
+const SettingsOptions = ({
   setShowOptions,
   settingsButtonRef,
   collapsed,
@@ -172,6 +160,7 @@ const SettingsOptions: SettingsOptionsType = ({
     isReadingHistoryEnabled,
     setIsReadingHistoryEnabled,
     mode,
+    ScriptureMap2DModes,
     showTestamentLabels,
     handleTestamentLabelsToggle,
     showSectionLabels,
@@ -185,30 +174,30 @@ const SettingsOptions: SettingsOptionsType = ({
     setTimelineRangeMethod,
   } = useReadingHistoryContext();
 
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef(null);
 
   const shouldShowReadingHistoryOption = useMemo(() => {
     return mode === ScriptureMap2DModes.Viewer && usersDataMap.size > 0;
   }, [mode, usersDataMap]);
 
   useEffect(() => {
-    const handleClickOutside: (event: MouseEvent) => void = (e) => {
+    const handleClickOutside = (e) => {
       if (
         containerRef.current &&
-        !containerRef.current.contains(e.target as Node) &&
+        !containerRef.current.contains(e.target) &&
         settingsButtonRef.current &&
-        !settingsButtonRef.current.contains(e.target as Node)
+        !settingsButtonRef.current.contains(e.target)
       ) {
         setShowOptions(false);
       }
     };
 
-    const handleFocusOutside: (event: FocusEvent) => void = (e) => {
+    const handleFocusOutside = (e) => {
       if (
         containerRef.current &&
-        !containerRef.current.contains(e.target as Node) &&
+        !containerRef.current.contains(e.target) &&
         settingsButtonRef.current &&
-        !settingsButtonRef.current.contains(e.target as Node)
+        !settingsButtonRef.current.contains(e.target)
       ) {
         setShowOptions(false);
       }
@@ -246,16 +235,16 @@ const SettingsOptions: SettingsOptionsType = ({
       )}
       <Option
         callback={() =>
-          setTimelineRangeMethod((prev) => {
+          setTimelineRangeMethod((prev: string) => {
             switch (prev) {
-              case TimelineRangeMethod.Rolling:
-                return TimelineRangeMethod.Calendar;
-              case TimelineRangeMethod.Calendar:
-                return TimelineRangeMethod.Rolling;
+              case "rolling":
+                return "calendar";
+              case "calendar":
+                return "rolling";
             }
           })
         }
-        condition={!!timelineRangeMethod}
+        condition={timelineRangeMethod}
         enabledText={t("Toggle")}
         disabledText={t("Toggle")}
         staticText={t("type of timeline")}
@@ -309,13 +298,13 @@ const SettingsOptions: SettingsOptionsType = ({
 };
 
 export const Settings = () => {
-  const { mode, project, isInSelectionMode, appId } =
+  const { mode, ScriptureMap2DModes, project, isInSelectionMode, appId } =
     useScriptureMap2DContext();
   const { shouldShowReadingHistory } = useReadingHistoryContext();
 
-  const settingsButtonRef = useRef<HTMLDivElement | null>(null);
-  const [collapsed, setCollapsed] = useState<boolean>(false);
-  const [showOptions, setShowOptions] = useState<boolean>(false);
+  const settingsButtonRef = useRef(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   return (
     <div

@@ -1,8 +1,6 @@
-import type { SectionToggleType } from "scriptureMap2D.main.types";
-
 const { memo } = os.appCompat;
 
-export const SectionToggle = memo<SectionToggleType>(
+export const SectionToggle = memo(
   ({ toggleShowSection, showingContent, section, style, sectionKey }) => {
     return (
       <div

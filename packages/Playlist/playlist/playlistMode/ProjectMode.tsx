@@ -1,18 +1,13 @@
 // import { ScriptureMap2D, ScriptureMap2DModes, ProjectChapterState } from "interactiveBible.managers.MapsManager.ScriptureMap2D"
 
-let ScriptureMap2D: any;
-let ScriptureMap2DModes: any;
-let ProjectChapterState: any;
+let ScriptureMap2D, ScriptureMap2DModes, ProjectChapterState;
 
 try {
-  const scriptureMap2DModule =
-    await import("scriptureMap2D.main.ScriptureMap2D");
-  ({ ScriptureMap2D } = scriptureMap2DModule);
-  const enums = await import("scriptureMap2D.main.enums");
-  ({ ScriptureMap2DModes, ProjectChapterState } = enums);
+  const module = await import("scriptureMap2D.main.ScriptureMap2D");
+  ({ ScriptureMap2D, ScriptureMap2DModes, ProjectChapterState } = module);
 } catch (error) {
   console.warn(
-    "Could not find modules ScriptureMap2D, ScriptureMap2DModes and ProjectChapterState",
+    "Could not find modules ScriptureMap2D, ScriptureMap2DModes and ProjectChapterState in scriptureMap2D.main.ScriptureMap2D",
     { error }
   );
   ScriptureMap2DModes = {};
@@ -63,7 +58,7 @@ const ProjectMode = ({
   onReset,
 }) => {
   const { menuState, setMenuValue } = useProjectMenu();
-
+  
   // const [showingAllChapters, setShowingAllChapters] = useState(true);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [publishAccess, setPublishAccess] = useState("public");
@@ -342,13 +337,17 @@ const ProjectMode = ({
                     fontSize: "12px",
                     fontWeight: "600",
                     marginLeft: "4px",
+                    color: "white",
                   }}
                   for="playlistInclude"
                 >
-                  {t("annotationMode")}
+                  {t('annotationMode')}
                 </label>
               </div>
-              <Tooltip forRight={true} text={t("annotationModeInfo")}>
+              <Tooltip
+                forRight={true}
+                text={t('annotationModeInfo')}
+              >
                 <p
                   className="what-this center"
                   style={{ margin: "0 0 0 0.5rem" }}
@@ -381,13 +380,17 @@ const ProjectMode = ({
                     fontSize: "12px",
                     fontWeight: "600",
                     marginLeft: "4px",
+                    color: "white",
                   }}
                   for="playlistInclude"
                 >
-                  {t("playlistMode")}
+                  {t('playlistMode')}
                 </label>
               </div>
-              <Tooltip forRight={true} text={t("playlistModeInfo")}>
+              <Tooltip
+                forRight={true}
+                text={t('playlistModeInfo')}
+              >
                 <p
                   className="what-this center"
                   style={{ margin: "0 0 0 0.5rem" }}
@@ -419,13 +422,14 @@ const ProjectMode = ({
                     fontSize: "12px",
                     fontWeight: "600",
                     marginLeft: "4px",
+                    color: "white",
                   }}
                   for="playlistInclude"
                 >
-                  {t("projectMode")}
+                  {t('projectMode')}
                 </label>
               </div>
-              <Tooltip forRight={true} text={t("projectModeInfo")}>
+              <Tooltip forRight={true} text={t('projectModeInfo')}>
                 <p
                   className="what-this center"
                   style={{ margin: "0 0 0 0.5rem" }}
@@ -458,9 +462,11 @@ const ProjectMode = ({
             className="overlay linked-item-custom"
           >
             <p>
-              <b>{t("viewOptions")} </b>
+              <b style={{ color: "white" }}>{t('viewOptions')} </b>
             </p>
-            <span style={{ fontSize: "10px" }}>{t("viewOptionsInfo")}</span>
+            <span style={{ fontSize: "10px", color: "#c9c8c6" }}>
+              {t('viewOptionsInfo')}
+            </span>
             {menuItems.map(({ icon, label, value }, i) => {
               return (
                 <>

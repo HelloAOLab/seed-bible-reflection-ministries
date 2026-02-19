@@ -1,15 +1,11 @@
 os.unregisterApp("playlist-cont-ui");
-os.registerApp("playlist-cont-ui", thisBot);
+os.registerApp("playlist-cont-ui");
 import { getAnnotationRecord, loadAnnotations } from "db.annotations.library";
 import { ProjectProvider } from "playlist.playlistMode.useProjectContext";
 
 const RenderIcon = await thisBot.RenderIcon();
 const { useState, useLayoutEffect, useMemo, useRef, useCallback } = os.appHooks;
-
-const G = globalThis as any;
-const { Modal, Button, ButtonsCover } = G.Components;
-
-const GetLabel = G.GetLabel;
+const { Modal, Button, ButtonsCover } = Components;
 
 const ShowPersonVideoOverlay = await thisBot.ShowPersonVideoOverlay();
 
@@ -30,7 +26,7 @@ if (bibleVizUtils) {
 }
 // <PlaylistInfoItem />
 
-const sortFunc = (a: any, b: any) => {
+const sortFunc = (a, b) => {
   const parseHeading = (heading = "") => {
     // 1️⃣ Chapter always first
     if (heading.startsWith("Chapter")) {
@@ -78,7 +74,7 @@ const sortFunc = (a: any, b: any) => {
 };
 
 const Playlist = () => {
-  const IsPlaylistPlaying = G.IsPlaylistPlaying;
+  const IsPlaylistPlaying = globalThis.IsPlaylistPlaying;
 
   const [createOptions, setCreateOptions] = useState(false);
   const showPlaylistPosition = useRef(
@@ -92,7 +88,7 @@ const Playlist = () => {
 
   const [stopPlaylistModal, setStopPlaylistModal] = useState(false);
 
-  G.StopPlayingPlaylistModal = setStopPlaylistModal;
+  globalThis.StopPlayingPlaylistModal = setStopPlaylistModal;
 
   const [showVideoOverlay, setShowVideoOverlay] = useState(false);
 
@@ -101,19 +97,19 @@ const Playlist = () => {
   const tagsSourcesRef = useRef([]);
   const [fetchingAnnotation, setFetchingAnnotation] = useState(false);
   const [currentOpenedBook, setCurrentOpenedBook] = useState({
-    ...(G.CurrentBookData || {}),
+    ...(globalThis.CurrentBookData || {}),
   });
 
   useLayoutEffect(() => {
-    G.SetCurrentBook = setCurrentOpenedBook;
+    globalThis.SetCurrentBook = setCurrentOpenedBook;
     return () => {
-      G.SetCurrentBook = null;
+      globalThis.SetCurrentBook = null;
     };
   }, [setCurrentOpenedBook, currentOpenedBook]);
 
   const [SplitAppPanel2, setSplitAppPanel2] = useState(null);
 
-  const [tab, setTab] = useState(G.currentActiveItem || "discover");
+  const [tab, setTab] = useState(globalThis.currentActiveItem || "discover");
 
   // Hide / Show
   const [hide, setHide] = useState(false);
@@ -126,12 +122,12 @@ const Playlist = () => {
     icon: null,
   });
 
-  const isCustomIcon = (editData.icon || (null as any))?.startsWith("https");
+  const isCustomIcon = (editData.icon || null)?.startsWith("https");
 
   const [queueOpen, setQueueOpen] = useState(false);
 
   useLayoutEffect(() => {
-    G.SetIsQueuePlaying = setQueueOpen;
+    globalThis.SetIsQueuePlaying = setQueueOpen;
   }, [queueOpen]);
 
   const [viewHistroy, setViewHistory] = useState(0);
@@ -140,7 +136,7 @@ const Playlist = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useLayoutEffect(() => {
-    G.SetSidebarOpen = setSidebarOpen;
+    globalThis.SetSidebarOpen = setSidebarOpen;
   }, [sidebarOpen]);
 
   const [open, setOpen] = useState(false);
@@ -148,7 +144,7 @@ const Playlist = () => {
   const [playingPlaylist, setPlayingPlaylist] = useState(false);
 
   const [playlists, setPlaylist] = useState(
-    G.PlaylistsGroups || {
+    globalThis.PlaylistsGroups || {
       default: {
         active: true,
         deleteable: false,
@@ -158,20 +154,20 @@ const Playlist = () => {
   );
 
   useLayoutEffect(() => {
-    G.isUIOpen = open;
+    globalThis.isUIOpen = open;
   }, [open]);
 
   useLayoutEffect(() => {
-    G.SetHidePlaylist = setHide;
-    G.IsHidden = hide;
+    globalThis.SetHidePlaylist = setHide;
+    globalThis.IsHidden = hide;
     return () => {
-      G.SetHidePlaylist = null;
+      globalThis.SetHidePlaylist = null;
     };
   }, [hide]);
 
   const onAddPlaylist = () => {
-    setPlaylist((prev: any) => {
-      const id = G.createUUID();
+    setPlaylist((prev) => {
+      const id = createUUID();
       return {
         ...prev,
         [id]: {
@@ -185,34 +181,34 @@ const Playlist = () => {
   };
 
   useLayoutEffect(() => {
-    G.PlayingPlaylist = playingPlaylist;
-    G.PlaylistsGroups = playlists;
-    G.SetPlayingPlaylist = (val: any) => {
+    globalThis.PlayingPlaylist = playingPlaylist;
+    globalThis.PlaylistsGroups = playlists;
+    globalThis.SetPlayingPlaylist = (val) => {
       setPlayingPlaylist(val);
       if (!val) setSplitAppPanel2(val);
     };
-    G.SetPlaylistGroups = setPlaylist;
+    globalThis.SetPlaylistGroups = setPlaylist;
     setPlaylistsLocale(playlists);
-    G.SetEditData = setEditData;
+    globalThis.SetEditData = setEditData;
     return () => {
-      G.PlayingPlaylist = null;
-      G.SetPlayingPlaylist = null;
+      globalThis.PlayingPlaylist = null;
+      globalThis.SetPlayingPlaylist = null;
     };
   }, [playingPlaylist, playlists]);
 
   useLayoutEffect(() => {
-    G.SetSplitAppPanel2 = setSplitAppPanel2;
+    globalThis.SetSplitAppPanel2 = setSplitAppPanel2;
     return () => {
-      G.SetSplitAppPanel2 = null;
+      globalThis.SetSplitAppPanel2 = null;
     };
   }, [SplitAppPanel2]);
 
   const activePlaylists = useMemo(() => {
     let id = null;
     Object.keys(playlists).forEach((pId) => {
-      const pls = G[`${pId}playlists`];
+      const pls = globalThis[`${pId}playlists`];
       if (pls) {
-        const plsIndex = pls.findIndex((pl: any) => pl.id === playingPlaylist);
+        const plsIndex = pls.findIndex((pl) => pl.id === playingPlaylist);
         if (plsIndex > -1) {
           id = pId;
         }
@@ -221,12 +217,12 @@ const Playlist = () => {
     return id ? [id] : Object.keys(playlists);
   }, [playingPlaylist, playlists]);
 
-  const [collections, setCollections] = useState(G.COLLECTIONS || {});
+  const [collections, setCollections] = useState(globalThis.COLLECTIONS || {});
   const [currentCollection, setCurrentCollection] = useState(
-    Object.keys(G.COLLECTIONS || {})?.[0] || ""
+    Object.keys(globalThis.COLLECTIONS || {})?.[0] || ""
   );
 
-  const setCollectionsMiddleware = (newCollections: any) => {
+  const setCollectionsMiddleware = (newCollections) => {
     const keys = Object.keys(newCollections);
     const oldKeys = Object.keys(collections);
     const firstId = keys?.[0] || "";
@@ -238,8 +234,8 @@ const Playlist = () => {
   };
 
   useLayoutEffect(() => {
-    G.COLLECTIONS = collections;
-    G.COLLECTION_SETTER = setCollectionsMiddleware;
+    globalThis.COLLECTIONS = collections;
+    globalThis.COLLECTION_SETTER = setCollectionsMiddleware;
   }, [collections, setCollections]);
 
   const collection = collections[currentCollection]?.collection;
@@ -292,21 +288,17 @@ const Playlist = () => {
   //                     </span>
   //                 </button>
 
-  const apiCallforAnnotationRef = useRef<NodeJS.Timeout | null>(null);
+  const apiCallforAnnotationRef = useRef(null);
   const [authSwtich, setAuthSwitch] = useState(false);
-  const lastFetchAddress = useRef<string | null>(null);
+  const lastFetchAddress = useRef(null);
   const lastFetchTab = useRef("discover");
   const [playlistSharerName, setPLaylistSharerName] = useState("");
   const currentProfileNameRef = useRef("");
 
-  const [PlaylistIconT, AnnotationIconT] = useMemo(() => {
-    return [G.PlaylistIcon, G.AnnotationIcon];
-  }, []);
-
   useLayoutEffect(() => {
-    G.currentActiveItem = tab;
-    G.setTabPlaylist = setTab;
-    G.SetAuthSwtich = setAuthSwitch;
+    globalThis.currentActiveItem = tab;
+    globalThis.setTabPlaylist = setTab;
+    globalThis.SetAuthSwtich = setAuthSwitch;
     if (apiCallforAnnotationRef.current) {
       clearTimeout(apiCallforAnnotationRef.current);
       apiCallforAnnotationRef.current = null;
@@ -336,21 +328,21 @@ const Playlist = () => {
 
           const annotationSources: any = [];
 
-          const sourcesMap: any = {};
+          const sourcesMap = {};
 
           const tagsSources: any = [];
 
-          const tagsMap: any = {};
+          const tagsMap = {};
 
-          let annotations: any = "";
+          let annotations = "";
 
           if (
-            G.AnnotationsData[
+            globalThis.AnnotationsData[
               `${currentOpenedBook?.bookId}-${currentOpenedBook?.chapter}`
             ]
           ) {
             annotations =
-              G.AnnotationsData[
+              globalThis.AnnotationsData[
                 `${currentOpenedBook?.bookId}-${currentOpenedBook?.chapter}`
               ].data;
             thisBot.fetchAnnotationsData({ ...currentOpenedBook });
@@ -364,7 +356,7 @@ const Playlist = () => {
 
           let allAnnotations: any = [];
           const verseIndexMap: any = {};
-          annotations.forEach((ele: any) => {
+          annotations.forEach((ele) => {
             if (!sourcesMap[ele.data.userId]) {
               annotationSources.push({
                 label: ele.data.userName,
@@ -373,7 +365,7 @@ const Playlist = () => {
               });
               sourcesMap[ele.data.userId] = true;
             }
-            ele?.data?.tags?.forEach((tag: any) => {
+            ele?.data?.tags?.forEach((tag) => {
               if (!tagsMap[tag]) {
                 tagsMap[tag] = true;
                 tagsSources.push({
@@ -386,7 +378,7 @@ const Playlist = () => {
               ele?.data.type === "comment" &&
               (ele.verseNumber || ele.verseNumbers)
             ) {
-              const booksDetails = G.findNameRank(ele.bookId);
+              const booksDetails = globalThis.findNameRank(ele.bookId);
 
               const anoItem = {
                 type: "heading",
@@ -407,11 +399,11 @@ const Playlist = () => {
                 createdByProfilePicture: ele?.data?.userProfilePicture,
               };
 
-              const verseSummaryHeading = G.GetVerseSummaryHeading(
+              const verseSummaryHeading = globalThis.GetVerseSummaryHeading(
                 ele.verseNumber ? [ele.verseNumber] : ele.verseNumbers
               );
 
-              const data: any = {
+              const data = {
                 bookid: currentOpenedBook?.bookId,
                 chapter: currentOpenedBook?.chapter,
               };
@@ -428,7 +420,7 @@ const Playlist = () => {
                 allAnnotations[verseIndexMap[data.heading]].data.push(anoItem);
               }
             } else if (ele?.data.type !== "comment") {
-              const data: any = {
+              const data = {
                 bookid: currentOpenedBook?.bookId,
                 chapter: currentOpenedBook?.chapter,
               };
@@ -441,7 +433,7 @@ const Playlist = () => {
                 ) {
                   const tags = [...(ele?.data.chronicle_tags || [])];
                   const layers = [
-                    ...innerele.additionalInfo.layers.map((layer: any) => ({
+                    ...innerele.additionalInfo.layers.map((layer) => ({
                       ...layer,
                       address: ele.id,
                       createdAtMs: innerele.createdAtMs || Date.now(),
@@ -494,7 +486,7 @@ const Playlist = () => {
           setAnnotationData(allAnnotations);
           annotationSourcesRef.current = annotationSources;
           tagsSourcesRef.current = tagsSources;
-          G.UsedTags = [...tagsSources];
+          globalThis.UsedTags = [...tagsSources];
         } catch (e) {
           console.log(e);
           setFetchingAnnotation(false);
@@ -503,8 +495,8 @@ const Playlist = () => {
     }, 200);
 
     return () => {
-      G.setTabPlaylist = null;
-      G.SetAuthSwtich = null;
+      globalThis.setTabPlaylist = null;
+      globalThis.SetAuthSwtich = null;
     };
   }, [tab, authSwtich, currentOpenedBook]);
 
@@ -524,7 +516,6 @@ const Playlist = () => {
     data: "",
     link: "",
     mediaType: "",
-    text: null,
   });
 
   const onCloseEditRichText = () => {
@@ -548,13 +539,13 @@ const Playlist = () => {
     });
   };
 
-  const onKeyUp = useCallback((e: any) => {
+  const onKeyUp = useCallback((e) => {
     whisper(thisBot, "onKeyUp", {
       keys: [e.key],
     });
   }, []);
 
-  const onKeyDown = useCallback((e: any) => {
+  const onKeyDown = useCallback((e) => {
     whisper(thisBot, "onKeyDown", {
       keys: [e.key],
     });
@@ -563,26 +554,27 @@ const Playlist = () => {
   useLayoutEffect(() => {
     const isMobile =
       (window?.innerWidth || gridPortalBot.tags.pixelWidth) <
-      G.MOBILE_VIEWPORT_THRESHOLD;
+      MOBILE_VIEWPORT_THRESHOLD;
     if (isMobile) {
-      G.SetPlaylistForcedHeight && G.SetPlaylistForcedHeight(1);
+      globalThis.SetPlaylistForcedHeight &&
+        globalThis.SetPlaylistForcedHeight(1);
     }
     if (IsPlaylistPlaying) {
       thisBot.Playlistplaying({
         skipAll: true,
       });
     }
-    G.makingPlaylist = true;
-    G.setOpenSidebar && G.setOpenSidebar(false);
-    G.OpenVideoOverlay = () => setShowVideoOverlay(true);
-    G.CloseVideoOverlay = () => setShowVideoOverlay(false);
-    G.SetEditAnnoData = setEditAnnoData;
-    G.SetTab = setTab;
-    G.SetEditRichText = setEditRichText;
-    G.SetEditAttachmentItem = setEditAttachmentItem;
+    globalThis.makingPlaylist = true;
+    globalThis.setOpenSidebar && globalThis.setOpenSidebar(false);
+    globalThis.OpenVideoOverlay = () => setShowVideoOverlay(true);
+    globalThis.CloseVideoOverlay = () => setShowVideoOverlay(false);
+    globalThis.SetEditAnnoData = setEditAnnoData;
+    globalThis.SetTab = setTab;
+    globalThis.SetEditRichText = setEditRichText;
+    globalThis.SetEditAttachmentItem = setEditAttachmentItem;
     const tt = setTimeout(async () => {
-      if (G.hasASharedPlaylist) {
-        const nameOfSharer = G.shareProfileName;
+      if (globalThis.hasASharedPlaylist) {
+        const nameOfSharer = globalThis.shareProfileName;
         let currentProfileName = "Guest";
         const authBot = await os.requestAuthBotInBackground();
         if (authBot?.id) {
@@ -597,7 +589,7 @@ const Playlist = () => {
         }
         setPLaylistSharerName(nameOfSharer);
         currentProfileNameRef.current = currentProfileName;
-        G.shareProfileName = false;
+        globalThis.shareProfileName = false;
       }
     }, 200);
 
@@ -605,47 +597,49 @@ const Playlist = () => {
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
-      G.makingPlaylist = false;
+      globalThis.makingPlaylist = false;
       document.removeEventListener("keyup", onKeyUp);
       document.removeEventListener("keydown", onKeyDown);
-      G.SetEditRichText = null;
-      G.SetEditAnnoData = null;
+      globalThis.SetEditRichText = null;
+      globalThis.SetEditAnnoData = null;
       clearTimeout(tt);
-      os.removeBotListener(thisBot, "onKeyDown", onKeyDown);
-      os.removeBotListener(thisBot, "onKeyUp", onKeyUp);
-      G.SetTab = null;
-      G.isRecording = false;
-      G.SelectedItemIDForAttachments = null;
-      G.Playlist.RemoveScreenRecordingControls();
+      os.removeBotListener(thisBot, "onKeyDown");
+      os.removeBotListener(thisBot, "onKeyUp");
+      globalThis.SetTab = null;
+      globalThis.isRecording = false;
+      globalThis.SelectedItemIDForAttachments = null;
+      globalThis.Playlist.RemoveScreenRecordingControls();
       (async () => {
         try {
           await experiment.endRecording();
         } catch (err) {}
       })();
-      G.StopVideoRecording = false;
-      G.RemoveApplicationByID && G.RemoveApplicationByID(G.PLAYLIST_PANEL_ID);
-      G.PLAYLIST_PANEL_ID = null;
-      G.IS_PLAYLIST_ACTIVE = false;
-      G[`defaultToggleGreyCheckPLayingPlaylist`] &&
-        G[`defaultToggleGreyCheckPLayingPlaylist`](null);
+      globalThis.StopVideoRecording = false;
+      globalThis.RemoveApplicationByID &&
+        globalThis.RemoveApplicationByID(globalThis.PLAYLIST_PANEL_ID);
+      globalThis.PLAYLIST_PANEL_ID = null;
+      globalThis.IS_PLAYLIST_ACTIVE = false;
+      globalThis[`defaultToggleGreyCheckPLayingPlaylist`] &&
+        globalThis[`defaultToggleGreyCheckPLayingPlaylist`](null);
       thisBot.CloseFloatingApp();
-      G.SetSplitAppPanel2 && G.SetSplitAppPanel2(null);
-      G.makingPlaylist = false;
-      G.SetMediaURL && G.SetMediaURL(null);
-      G.SetVideoSrc && G.SetVideoSrc(null);
-      G.SetPlaylistForforcedHeight && G.SetPlaylistForforcedHeight(0);
+      globalThis.SetSplitAppPanel2 && globalThis.SetSplitAppPanel2(null);
+      globalThis.makingPlaylist = false;
+      globalThis.SetMediaURL && globalThis.SetMediaURL(null);
+      globalThis.SetVideoSrc && globalThis.SetVideoSrc(null);
+      globalThis.SetPlaylistForcedHeight &&
+        globalThis.SetPlaylistForcedHeight(0);
     };
   }, []);
 
   const onCloseSharPlaylistModal = () => {
     setPLaylistSharerName("");
-    G.hasASharedPlaylist = false;
+    globalThis.hasASharedPlaylist = false;
   };
 
   const playlistShared = useMemo(
     () =>
-      (G[`${"default"}playlists`] || []).find(
-        (ele: any) => ele.id === G.hasASharedPlaylist
+      (globalThis[`${"default"}playlists`] || []).find(
+        (ele) => ele.id === globalThis.hasASharedPlaylist
       ) || {},
     []
   );
@@ -655,18 +649,18 @@ const Playlist = () => {
   };
 
   const gotoCreate = (isAnnotation = false) => {
-    if (G[`${"default"}SetMode`]) {
+    if (globalThis[`${"default"}SetMode`]) {
       if (isAnnotation) {
-        G[`${"default"}SetMode`](PlaylistModeTypes.annotations);
+        globalThis[`${"default"}SetMode`](PlaylistModeTypes.annotations);
       } else {
-        G[`${"default"}SetMode`](PlaylistModeTypes.playlist);
+        globalThis[`${"default"}SetMode`](PlaylistModeTypes.playlist);
       }
     } else {
-      G.SetTab("create");
+      globalThis.SetTab("create");
       if (isAnnotation) {
-        G[`${"default"}mode`] = PlaylistModeTypes.annotations;
+        globalThis[`${"default"}mode`] = PlaylistModeTypes.annotations;
       } else {
-        G[`${"default"}mode`] = PlaylistModeTypes.playlist;
+        globalThis[`${"default"}mode`] = PlaylistModeTypes.playlist;
       }
     }
     setCreateOptions(false);
@@ -697,7 +691,7 @@ const Playlist = () => {
       {!!playlistSharerName && (
         <Modal
           sxContainer={{ width: "460px" }}
-          title={t("welcomeToSeedBible")}
+          title={globalThis.t("welcomeToSeedBible")}
           showIcon={false}
           onClose={onCloseSharPlaylistModal}
         >
@@ -707,20 +701,20 @@ const Playlist = () => {
               alt="share"
             />
             <div className="align-center" style={{ gap: "1rem" }}>
-              {G.shareProfilePic && (
+              {!!globalThis.shareProfilePic && (
                 <img
                   className="welcome-box-profile"
-                  src={G.shareProfilePic}
+                  src={globalThis.shareProfilePic}
                   alt={playlistSharerName}
                 />
               )}
-              {playlistSharerName ? (
+              {!!playlistSharerName ? (
                 <p>
                   {" "}
-                  <b>{playlistSharerName}</b> {t("sharedAPlaylist")}
+                  <b>{playlistSharerName}</b> {globalThis.t("sharedAPlaylist")}
                 </p>
               ) : (
-                <p>{t("hereIsYourSharedPlaylist")}</p>
+                <p>{globalThis.t("hereIsYourSharedPlaylist")}</p>
               )}
             </div>
             <div
@@ -739,7 +733,9 @@ const Playlist = () => {
               <div className="welcome-details">
                 <h4
                   style={{
-                    fontSize: playlistShared.description ? "1rem" : "1.125rem",
+                    fontSize: !!playlistShared.description
+                      ? "1rem"
+                      : "1.125rem",
                   }}
                 >
                   {playlistShared.name}
@@ -755,7 +751,7 @@ const Playlist = () => {
                 width: "205px",
               }}
               onClick={() => {
-                if (G.DragDrop)
+                if (globalThis.DragDrop)
                   thisBot.Playlistplaying({
                     playingPlaylist: playlistShared.id,
                     startIndex: 0,
@@ -764,10 +760,10 @@ const Playlist = () => {
                     name: playlistShared.name,
                   });
                 setPLaylistSharerName("");
-                G.hasASharedPlaylist = false;
+                globalThis.hasASharedPlaylist = false;
               }}
             >
-              {t("start")}
+              {globalThis.t("start")}
             </Button>
           </div>
         </Modal>
@@ -776,29 +772,29 @@ const Playlist = () => {
       {stopPlaylistModal && (
         <Modal showIcon={false} onClose={closeConfirmStopPlaylist}>
           <h2 style={{ fontSize: "1rem" }}>
-            {t("thisWillStopPlayingPlaylist")}
+            {globalThis.t("thisWillStopPlayingPlaylist")}
           </h2>
-          <p>{t("playlistCurrentlyPlayingConfirm")}</p>
+          <p>{globalThis.t("playlistCurrentlyPlayingConfirm")}</p>
           <ButtonsCover>
-            <Button secondaryAlt onClick={closeConfirmStopPlaylist}>
-              {t("no")}
-            </Button>
             <Button
               secondary
               onClick={() => {
-                G.IsPlaylistPlaying = false;
-                G.IsQueuePresent = false;
+                globalThis.IsPlaylistPlaying = false;
+                globalThis.IsQueuePresent = false;
                 thisBot.StopPlayingPlaylist();
                 os.unregisterApp("playing-playlist-flaot");
                 thisBot.CloseFloatingApp();
-                if (G.PendingAction) {
-                  G.PendingAction();
-                  G.PendingAction = null;
+                if (globalThis.PendingAction) {
+                  globalThis.PendingAction();
+                  globalThis.PendingAction = null;
                 }
               }}
               variant="black"
             >
-              {t("confirm")}
+              {globalThis.t("confirm")}
+            </Button>
+            <Button secondaryAlt onClick={closeConfirmStopPlaylist}>
+              {globalThis.t("no")}
             </Button>
           </ButtonsCover>
         </Modal>
@@ -825,19 +821,19 @@ const Playlist = () => {
               onClick={(e) => {
                 e.stopPropagation();
                 if (SplitAppPanel2) {
-                  G.PendingAction = gotoCreate;
-                  G.StopPlayingPlaylistModal(true);
+                  globalThis.PendingAction = gotoCreate;
+                  globalThis.StopPlayingPlaylistModal(true);
                   return;
                 }
                 gotoCreate();
               }}
             >
               <div className="align-center" style={{ gap: "0.5rem" }}>
-                <PlaylistIconT />
+                <PlaylistIcon />
                 <span
                   style={{ fontFamily: `"Satoshi", system-ui, sans-serif` }}
                 >
-                  {t("playlist")}
+                  {globalThis.t("playlist")}
                 </span>
               </div>
             </div>
@@ -853,19 +849,19 @@ const Playlist = () => {
                 }
                 e.stopPropagation();
                 if (SplitAppPanel2) {
-                  G.PendingAction = () => gotoCreate(true);
-                  G.StopPlayingPlaylistModal(true);
+                  globalThis.PendingAction = () => gotoCreate(true);
+                  globalThis.StopPlayingPlaylistModal(true);
                   return;
                 }
                 gotoCreate(true);
               }}
             >
               <div className="align-center" style={{ gap: "0.5rem" }}>
-                <AnnotationIconT />
+                <AnnotationIcon />
                 <span
                   style={{ fontFamily: `"Satoshi", system-ui, sans-serif` }}
                 >
-                  {t("annotation")}
+                  {globalThis.t("annotation")}
                 </span>
               </div>
             </div>
@@ -909,14 +905,14 @@ const Playlist = () => {
             {openModal && (
               <Modal onClose={() => setOpenModal(false)}>
                 <h2 style={{ fontSize: "1rem" }}>
-                  {t("addAnotherParallelPlaylist")}
+                  {globalThis.t("addAnotherParallelPlaylist")}
                 </h2>
                 <ButtonsCover>
                   <Button onClick={() => onAddPlaylist()} varient="black">
-                    {t("yes")}
+                    {globalThis.t("yes")}
                   </Button>
                   <Button onClick={() => setOpenModal(false)}>
-                    {t("close")}
+                    {globalThis.t("close")}
                   </Button>
                 </ButtonsCover>
               </Modal>
@@ -950,13 +946,13 @@ const Playlist = () => {
                       <span
                         class="material-symbols-outlined unfollow"
                         style={{
-                          ...G.ButtonStyle,
+                          ...ButtonStyle,
                           fontSize: "24px",
                           padding: "0",
                           border: "none",
                         }}
                         onClick={() => {
-                          G[`setOpenAttachLink`](false);
+                          globalThis[`setOpenAttachLink`](false);
                           thisBot.resetEditingState({ id: editData.id });
                         }}
                       >
@@ -973,14 +969,13 @@ const Playlist = () => {
                           alignItems: "center",
                         }}
                       >
-                        {[buttonConfigs[0]].map((ele: any) => {
-                          const { label, onClick, value, icon } = ele;
-                          return (
+                        {[buttonConfigs[0]].map(
+                          ({ label, onClick, value, icon }) => (
                             <h4
                               onClick={() => {
                                 if (SplitAppPanel2) {
-                                  G.PendingAction = onClick;
-                                  G.StopPlayingPlaylistModal(true);
+                                  globalThis.PendingAction = onClick;
+                                  globalThis.StopPlayingPlaylistModal(true);
                                   return;
                                 }
                                 onClick();
@@ -1005,8 +1000,8 @@ const Playlist = () => {
                                 />
                               </span>
                             </h4>
-                          );
-                        })}
+                          )
+                        )}
                         <Button
                           onClick={() => {
                             setCreateOptions(true);
@@ -1020,7 +1015,7 @@ const Playlist = () => {
                           >
                             add
                           </span>
-                          {t("create")}
+                          {globalThis.t("create")}
                         </Button>
                       </div>
                     )}
@@ -1048,7 +1043,7 @@ const Playlist = () => {
                       <span
                         class="material-symbols-outlined unfollow"
                         style={{
-                          ...G.ButtonStyle,
+                          ...ButtonStyle,
                           fontSize: "24px",
                           padding: "0",
                           border: "none",
@@ -1058,20 +1053,25 @@ const Playlist = () => {
                           // setHide(p => !p);
                           // globalThis.SetScreens(1);
                           thisBot.CloseFloatingApp();
-                          G.DataManager.cancelCurrentPlayingSound();
+                          DataManager.cancelCurrentPlayingSound();
                           // globalThis.SetPlayingPlaylist && globalThis.SetPlayingPlaylist(false);
-                          G[`defaultToggleGreyCheckPLayingPlaylist`] &&
-                            G[`defaultToggleGreyCheckPLayingPlaylist`](null);
-                          G.IsQueuePresent = false;
+                          globalThis[`defaultToggleGreyCheckPLayingPlaylist`] &&
+                            globalThis[`defaultToggleGreyCheckPLayingPlaylist`](
+                              null
+                            );
+                          globalThis.IsQueuePresent = false;
                           // os.unregisterApp("playing-playlist");
 
-                          G.IS_PLAYLIST_ACTIVE = false;
-                          G.SET_SHOW_CHECK && G.SET_SHOW_CHECK(false);
+                          globalThis.IS_PLAYLIST_ACTIVE = false;
+                          globalThis.SET_SHOW_CHECK &&
+                            globalThis.SET_SHOW_CHECK(false);
                           setSplitAppPanel2(null);
-                          G.RemoveApplicationByID &&
-                            G.RemoveApplicationByID(G.PLAYLIST_PANEL_ID);
-                          G.PLAYLIST_PANEL_ID = null;
-                          G.makingPlaylist = false;
+                          globalThis.RemoveApplicationByID &&
+                            globalThis.RemoveApplicationByID(
+                              globalThis.PLAYLIST_PANEL_ID
+                            );
+                          globalThis.PLAYLIST_PANEL_ID = null;
+                          globalThis.makingPlaylist = false;
                           return;
                         }}
                       >
@@ -1087,7 +1087,7 @@ const Playlist = () => {
                     display: "flex",
                     flexDirection: "column",
                     overflow: "auto",
-                    paddingBottom: SplitAppPanel2 ? "0rem" : "0",
+                    paddingBottom: !!SplitAppPanel2 ? "0rem" : "0",
                     height: `calc(100% - ${
                       playingPlaylist || !!editData.id ? "130px" : "40px"
                     })`,
@@ -1111,6 +1111,7 @@ const Playlist = () => {
                 <div
                   style={{
                     display: "flex",
+                    overflow: "scroll",
                     overflow: "auto",
                     height: `calc(100% - ${
                       playingPlaylist || !!editData.id ? "90px" : "0px"

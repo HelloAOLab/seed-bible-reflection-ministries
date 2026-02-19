@@ -1,33 +1,25 @@
 import { useScriptureMap2DContext } from "scriptureMap2D.main.ScriptureMap2DContext";
-import type {
-  ZoomLevelOptionType,
-  ZoomLevelSelectorType,
-  ZoomButtonType,
-} from "scriptureMap2D.main.types";
-import type { ZoomButtonProps } from "scriptureMap2D.main.interfaces";
+
 import { useSideBarContext } from "app.hooks.sideBar";
 
 const { useState, useCallback, useMemo, useRef, useEffect } = os.appHooks;
 const { forwardRef } = os.appCompat;
 
-const ZoomLevelOption: ZoomLevelOptionType = ({
-  value,
-  handleZoomLevelClick,
-}) => {
+const ZoomLevelOption = ({ value, handleZoomLevelClick }) => {
   const { scaleFactor } = useScriptureMap2DContext();
 
-  const zoom = useMemo<number>(() => {
+  const zoom = useMemo(() => {
     return value * 100;
   }, [scaleFactor]);
 
-  const selected = useMemo<boolean>(() => {
+  const selected = useMemo(() => {
     return value === scaleFactor;
   }, [scaleFactor]);
 
   return (
     <button
-      onClick={() => {
-        handleZoomLevelClick(value);
+      onClick={(e) => {
+        handleZoomLevelClick(e, value);
       }}
     >
       <span>{`${zoom} %`}</span>
@@ -36,37 +28,34 @@ const ZoomLevelOption: ZoomLevelOptionType = ({
   );
 };
 
-const ZoomLevelSelector: ZoomLevelSelectorType = ({
-  setShowOptions,
-  toggleButtonRef,
-}) => {
+const ZoomLevelSelector = ({ setShowOptions, toggleButtonRef }) => {
   const { t } = useSideBarContext();
   const { setScaleFactor } = useScriptureMap2DContext();
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef(null);
 
-  const handleZoomLevelClick = useCallback<(value: number) => void>((value) => {
+  const handleZoomLevelClick = useCallback((e, value) => {
     setShowOptions(false);
     setScaleFactor(value);
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = (e) => {
       if (
         containerRef.current &&
-        !containerRef.current.contains(e.target as Node) &&
+        !containerRef.current.contains(e.target) &&
         toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(e.target as Node)
+        !toggleButtonRef.current.contains(e.target)
       ) {
         setShowOptions(false);
       }
     };
 
-    const handleFocusOutside = (e: FocusEvent) => {
+    const handleFocusOutside = (e) => {
       if (
         containerRef.current &&
-        !containerRef.current.contains(e.target as Node) &&
+        !containerRef.current.contains(e.target) &&
         toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(e.target as Node)
+        !toggleButtonRef.current.contains(e.target)
       ) {
         setShowOptions(false);
       }
@@ -115,7 +104,7 @@ const ZoomLevelSelector: ZoomLevelSelectorType = ({
   );
 };
 
-const ZoomButtonRaw: ZoomButtonType = ({ onClick, children }, ref) => {
+const ZoomButton = forwardRef(({ onClick, children }, ref) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -133,11 +122,7 @@ const ZoomButtonRaw: ZoomButtonType = ({ onClick, children }, ref) => {
       {children}
     </button>
   );
-};
-
-const ZoomButton = forwardRef(
-  ZoomButtonRaw
-) as React.FunctionComponent<ZoomButtonProps>;
+});
 
 export const Controls = () => {
   const { scaleFactor } = useScriptureMap2DContext();
@@ -150,7 +135,7 @@ export const Controls = () => {
 
   const { handleZoomIn, handleZoomOut } = useScriptureMap2DContext();
 
-  const toggleButtonRef = useRef<HTMLButtonElement | null>(null);
+  const toggleButtonRef = useRef(null);
 
   return (
     <div className="scripture-map-2d-controls">

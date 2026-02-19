@@ -9,7 +9,7 @@ class DebouncerService {
     this.#debouncedFunction = debounce(callback, debounceTime);
   }
 
-  execute(params?: any): void {
+  execute(params): void {
     this.#debouncedFunction(params);
   }
 }

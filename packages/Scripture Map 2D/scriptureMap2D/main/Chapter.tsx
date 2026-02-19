@@ -2,12 +2,10 @@ import { useScriptureMap2DContext } from "scriptureMap2D.main.ScriptureMap2DCont
 import { Tooltip } from "scriptureMap2D.main.Tooltip";
 import { useTestamentContext } from "scriptureMap2D.main.TestamentContext";
 import { useClickAndHold } from "scriptureMap2D.main.CustomHooks";
-import { ScriptureMap2DModes } from "scriptureMap2D.main.enums";
-import type { ChapterType } from "scriptureMap2D.main.types";
 const { useState, useMemo } = os.appHooks;
 const { memo } = os.appCompat;
 
-export const Chapter = memo<ChapterType>(
+export const Chapter = memo(
   ({
     index,
     bookName,
@@ -18,7 +16,7 @@ export const Chapter = memo<ChapterType>(
     chapter,
     borderGradientColors,
   }) => {
-    const [containerRect, setContainerRect] = useState<DOMRect | null>(null);
+    const [containerRect, setContainerRect] = useState(null);
 
     const {
       isUserPresenceEnabled,
@@ -26,6 +24,7 @@ export const Chapter = memo<ChapterType>(
       content,
       mode,
       selection,
+      ScriptureMap2DModes,
       project,
       projectFilters,
       projectStateStyle,
@@ -33,6 +32,7 @@ export const Chapter = memo<ChapterType>(
       onChapterClickDependencies,
       onChapterClickAndHold,
       isInSelectionMode,
+      BASE_BACKGROUND_COLOR: baseColor,
       scaleFactor,
     } = useScriptureMap2DContext();
 
@@ -68,26 +68,32 @@ export const Chapter = memo<ChapterType>(
     });
 
     const { background, borderStyle, borderColor, color } = useMemo(() => {
-      const projectChapterState =
-        project?.structure[testament.name]?.[sectionName]?.[bookName]?.[index];
+      const baseColorRgb = BibleVizUtils.Functions.HexToRgb({
+        hexColor: baseColor,
+      });
       const hasProjectContent =
         project &&
         mode === ScriptureMap2DModes.Project &&
         (isInSelectionMode ||
-          (projectChapterState && projectFilters.get(projectChapterState)));
+          projectFilters.get(
+            project.structure[testament.name][sectionName][bookName][index]
+          ));
 
-      let background;
-      let borderStyle;
-      let borderColor;
-      let color;
+      let background; // = `rgb(${baseColorRgb[0]}, ${baseColorRgb[1]}, ${baseColorRgb[2]})`;
+      let borderStyle; // = "solid";
+      let borderColor; // = `rgb(${baseColorRgb[0]}, ${baseColorRgb[1]}, ${baseColorRgb[2]})`;
+      let color; // = "var(--bookHeadingColor)";
 
       switch (mode) {
         case ScriptureMap2DModes.Project:
           {
             if (hasProjectContent || checked) {
-              const style: React.CSSProperties = projectChapterState
-                ? projectStateStyle[projectChapterState]
-                : {};
+              const style =
+                projectStateStyle[
+                  project.structure[testament.name][sectionName][bookName][
+                    index
+                  ]
+                ];
               background = style?.backgroundColor;
               borderStyle = checked ? "solid" : style?.borderStyle;
               borderColor = checked ? "#2AB80D" : style?.borderColor;

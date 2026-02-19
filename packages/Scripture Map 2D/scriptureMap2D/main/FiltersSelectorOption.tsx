@@ -1,6 +1,4 @@
-import type { FiltersSelectorOptionType } from "scriptureMap2D.main.types";
-
-export const FiltersSelectorOption: FiltersSelectorOptionType = ({
+export const FiltersSelectorOption = ({
   content,
   onClick,
   selected = false,

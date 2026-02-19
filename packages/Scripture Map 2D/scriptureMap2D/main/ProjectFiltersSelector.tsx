@@ -1,9 +1,5 @@
 import { FiltersSelectorOption } from "scriptureMap2D.main.FiltersSelectorOption";
 import { useScriptureMap2DContext } from "scriptureMap2D.main.ScriptureMap2DContext";
-import {
-  ProjectChapterState,
-  type ProjectChapterStateType,
-} from "scriptureMap2D.main.enums";
 
 import { useSideBarContext } from "app.hooks.sideBar";
 
@@ -11,8 +7,12 @@ const { useMemo, useCallback } = os.appHooks;
 
 export const ProjectFiltersSelector = () => {
   const { t } = useSideBarContext();
-  const { projectFilters, handleProjectFilterOptionClick, projectStateStyle } =
-    useScriptureMap2DContext();
+  const {
+    projectFilters,
+    handleProjectFilterOptionClick,
+    ProjectChapterState,
+    projectStateStyle,
+  } = useScriptureMap2DContext();
 
   const allSelected = useMemo(() => {
     return Array.from(projectFilters).every(([, value]) => {
@@ -20,9 +20,7 @@ export const ProjectFiltersSelector = () => {
     });
   }, [projectFilters]);
 
-  const getOptionContent = useCallback<
-    (key: ProjectChapterStateType) => React.ReactNode[]
-  >(
+  const getOptionContent = useCallback(
     (key) => {
       let title;
 
@@ -40,7 +38,7 @@ export const ProjectFiltersSelector = () => {
           title = t("stateCompleted");
           break;
         default:
-          throw new Error("Not found key", { cause: { key } });
+          throw new Error("Not found key", { key });
       }
 
       const style = projectStateStyle[key];

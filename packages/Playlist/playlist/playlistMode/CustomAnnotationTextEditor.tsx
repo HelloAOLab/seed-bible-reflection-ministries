@@ -544,26 +544,25 @@ const PlaylistID = (list: any) => {
   return name;
 };
 
-export function CustomAnnotationTextEditor(props: any) {
-  const {
-    instanceId,
-    className,
-    style,
-    minHeight = 300,
-    initialText,
-    initialHTML,
-    placeholderHTML = '<p style="text-align: left;">Hello World!</p>',
-    readOnly = false,
-    priorityKey = "simple_rich_editor_toolbar_priority",
-    defaultPriority = DEFAULT_TOOLBAR_PRIORITY,
-    onChange,
-    onAIHighlight,
-    showMoreOptions = true,
-    headingControls = false,
-    id = "editor",
-    showPreview,
-    setShowPreview,
-  } = props;
+export function CustomAnnotationTextEditor({
+  instanceId,
+  className,
+  style,
+  minHeight = 300,
+  initialText,
+  initialHTML,
+  placeholderHTML = '<p style="text-align: left;">Hello World!</p>',
+  readOnly = false,
+  priorityKey = "simple_rich_editor_toolbar_priority",
+  defaultPriority = DEFAULT_TOOLBAR_PRIORITY,
+  onChange,
+  onAIHighlight,
+  showMoreOptions = true,
+  headingControls = false,
+  id = "editor",
+  showPreview,
+  setShowPreview,
+}) {
   // ----- ids & storage
   const _instanceId = useRef(
     instanceId || `sre_${Math.random().toString(36).slice(2)}`

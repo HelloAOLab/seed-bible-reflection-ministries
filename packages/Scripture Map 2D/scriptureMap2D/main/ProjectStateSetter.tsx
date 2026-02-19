@@ -1,10 +1,6 @@
 import { SelectionOptions } from "scriptureMap2D.main.SelectionOptions";
 import { ProjectStateSetterOption } from "scriptureMap2D.main.ProjectStateSetterOption";
 import { useScriptureMap2DContext } from "scriptureMap2D.main.ScriptureMap2DContext";
-import {
-  ProjectChapterState,
-  type ProjectChapterStateType,
-} from "scriptureMap2D.main.enums";
 
 import { useSideBarContext } from "app.hooks.sideBar";
 
@@ -15,15 +11,14 @@ export const ProjectStateSetter = () => {
   const {
     isInSelectionMode,
     projectStateStyle,
+    ProjectChapterState,
     onSelectionModeCheckboxClick,
     onSelectionModeDoneButtonClick,
     onStateSetterOptionClick,
     onSelectionModeClearSelectionButtonClick,
   } = useScriptureMap2DContext();
 
-  const getOptionContent = useCallback<
-    (key: ProjectChapterStateType) => React.ReactNode[]
-  >(
+  const getOptionContent = useCallback(
     (key) => {
       let title;
 
@@ -44,7 +39,7 @@ export const ProjectStateSetter = () => {
           title = t("stateCompleted");
           break;
         default:
-          throw new Error("Not found key", { cause: { key } });
+          throw new Error("Not found key", { key });
       }
 
       const style = projectStateStyle[key];
@@ -77,27 +72,23 @@ export const ProjectStateSetter = () => {
           <span>{t("selectionMode")}</span>
           <span className="material-symbols-outlined">info</span>
         </span>
-        {isInSelectionMode &&
-          onSelectionModeClearSelectionButtonClick &&
-          onSelectionModeDoneButtonClick && (
-            <SelectionOptions
-              handleClearSelectionClick={
-                onSelectionModeClearSelectionButtonClick
-              }
-              handleDoneClick={onSelectionModeDoneButtonClick}
-            />
-          )}
+        {isInSelectionMode && (
+          <SelectionOptions
+            handleClearSelectionClick={onSelectionModeClearSelectionButtonClick}
+            handleDoneClick={onSelectionModeDoneButtonClick}
+          />
+        )}
       </div>
 
       {isInSelectionMode && (
         <div>
           <span>{t("status")}:</span>
-          {Object.values(ProjectChapterState).map((state) => {
+          {Object.keys(ProjectChapterState).map((state) => {
             return (
               <ProjectStateSetterOption
                 content={getOptionContent(state)}
                 onClick={() => {
-                  onStateSetterOptionClick?.(state);
+                  onStateSetterOptionClick(state);
                 }}
               />
             );

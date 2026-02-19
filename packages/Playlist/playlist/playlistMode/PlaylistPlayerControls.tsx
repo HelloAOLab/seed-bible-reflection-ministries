@@ -5,6 +5,8 @@ const AudioPlayer = await thisBot.AudioPlayer();
 const AttachLink = await thisBot.AttachLink();
 const RenderHTMLContent = await thisBot.RenderHTMLContent();
 
+
+
 const EditPlaylist =
   "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/a48b4bb0182ac0b5f8c8437e3d985f9af99c8b64c61249496ef797b9b8ac88df.svg";
 const SharePlaylist =
@@ -99,6 +101,8 @@ const getCurrentItem = (key, index, playlists, subIndex, isHint = false) => {
 };
 
 const PlayerControls = ({ parentId = "default" }) => {
+  
+
   const [showCurrent, setShowCurrent] = useState(false);
   const [queue, setQueue] = useState([]);
 
@@ -793,9 +797,7 @@ const PlayerControls = ({ parentId = "default" }) => {
         >
           <AttachLink
             canClose
-            canRecord={false}
             massAdd={massAdd}
-            sSelectedType="SCRIPTURE"
             attachLink={attachLink}
             onClose={() => setOpenAttachLink(false)}
           />
@@ -1034,7 +1036,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                   class="material-symbols-outlined unfollow img-icon"
                   style={{
                     margin: "0",
-                    minWidth: "10px",
+                    width: "12px",
                   }}
                 />
 
@@ -1044,7 +1046,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                 onClick={() => {
                   if (globalThis.RemotePlaylistPlayed) {
                     return ShowNotification({
-                      message: t("onlyHostCanAddItemsToQueue"),
+                      message: t('onlyHostCanAddItemsToQueue'),
                       severity: "error",
                     });
                   }
@@ -1218,7 +1220,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                 }}
                 onClick={() => {
                   return ShowNotification({
-                    message: t("comingSoon"),
+                    message: t('comingSoon'),
                     severity: "error",
                   });
                 }}

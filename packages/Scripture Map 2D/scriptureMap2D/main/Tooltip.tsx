@@ -1,17 +1,11 @@
 import { useReadingHistoryContext } from "scriptureMap2D.main.ReadingHistoryContext";
+import { useScriptureMap2DContext } from "scriptureMap2D.main.ScriptureMap2DContext";
 import { useSideBarContext } from "app.hooks.sideBar";
-import { userColorStore } from "bibleVizUtils.services.UserColorStore";
-import type {
-  UserPresenceTooltipContentType,
-  ReadingHistoryTooltipContentType,
-  TooltipType,
-} from "scriptureMap2D.main.types";
+import { readingHistoryColorStore } from "bibleVizUtils.services.ReadingHistoryColorStore";
 
 const { useRef, useState, useLayoutEffect, useMemo } = os.appHooks;
 
-export const UserPresenceTooltipContent: UserPresenceTooltipContentType = ({
-  colors,
-}) => {
+export const UserPresenceTooltipContent = ({ colors }) => {
   const { t } = useSideBarContext();
   return (
     <span className="user-presence-tooltip-content">
@@ -43,17 +37,14 @@ export const UserPresenceTooltipContent: UserPresenceTooltipContentType = ({
   );
 };
 
-export const ReadingHistoryTooltipContent: ReadingHistoryTooltipContentType = ({
-  userId,
-  fixedContent,
-}) => {
+export const ReadingHistoryTooltipContent = ({ userId, fixedContent }) => {
   const { t } = useSideBarContext();
   const { myAuthBotId } = useReadingHistoryContext();
 
   const { userName, backgroundColor } = useMemo(() => {
     const isMe = userId === myAuthBotId;
     const userName = isMe ? t("you") : t("guest");
-    const backgroundColor = userColorStore.getUserColor({ authId: userId });
+    const backgroundColor = readingHistoryColorStore.getUserColor(userId);
 
     return { userName, backgroundColor };
   }, [t]);
@@ -67,14 +58,14 @@ export const ReadingHistoryTooltipContent: ReadingHistoryTooltipContentType = ({
   );
 };
 
-export const Tooltip: TooltipType = ({ content, anchor, offsetY = 0 }) => {
-  const ref = useRef<null | HTMLSpanElement>(null);
-  const [style, setStyle] = useState<React.CSSProperties>({
+export const Tooltip = ({ content, anchor, offsetY = 0 }) => {
+  const ref = useRef(null);
+  const [style, setStyle] = useState({
     top: anchor.y + offsetY,
     left: anchor.x,
     "--arrowLeft": "50%",
   });
-  const [direction, setDirection] = useState<string>("up");
+  const [direction, setDirection] = useState("up");
 
   useLayoutEffect(() => {
     if (!ref.current) return;
