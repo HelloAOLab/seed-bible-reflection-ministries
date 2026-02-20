@@ -53,18 +53,11 @@ console.log("[app.error] Initializing PostHog for error reporting...");
     (e.__SV = 1));
 })(document, window.posthog || []);
 
-// Seed Bible PostHog API Key
-posthog.init("phc_pkHozDO7Nv2TT1WUQoFbNfaX3xvGaBuHYAoFzMJTVXW", {
-  api_host: "https://i.ao.bot",
-  ui_host: "https://us.posthog.com",
-  defaults: "2025-05-24",
-});
-
 // Reflection ministries PostHog API Key
 posthog.init("phc_j1SZ1t8N9GTWIuBDYJK4GpHiT2xbG4TDcuxEeEIIVtV", {
   api_host: "https://i.ao.bot",
   ui_host: "https://us.posthog.com",
-  defaults: "2025-05-24",
+  defaults: "2026-01-30",
 });
 
 thisBot.identify();
