@@ -53,8 +53,8 @@ console.log("[app.error] Initializing PostHog for error reporting...");
     (e.__SV = 1));
 })(document, window.posthog || []);
 
-// Reflection ministries PostHog API Key
-posthog.init("phc_j1SZ1t8N9GTWIuBDYJK4GpHiT2xbG4TDcuxEeEIIVtV", {
+const seedBibleApiKey = "phc_rEUogfrnXkdTitOTrfWK2laEINF1QwNtGNQizzuMW0";
+posthog.init(thisBot.tags.posthogApiKey || seedBibleApiKey, {
   api_host: "https://i.ao.bot",
   ui_host: "https://us.posthog.com",
   defaults: "2026-01-30",
