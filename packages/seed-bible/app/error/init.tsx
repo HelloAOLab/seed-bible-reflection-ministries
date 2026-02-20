@@ -60,4 +60,8 @@ posthog.init("phc_j1SZ1t8N9GTWIuBDYJK4GpHiT2xbG4TDcuxEeEIIVtV", {
   defaults: "2026-01-30",
 });
 
+posthog.register({
+  pattern: configBot.tags.pattern,
+});
+
 thisBot.identify();
