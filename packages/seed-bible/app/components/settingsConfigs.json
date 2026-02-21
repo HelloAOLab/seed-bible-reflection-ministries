@@ -4,7 +4,8 @@
       "useTabs": false,
       "appSettings": {
         "disablePanels": true,
-        "removeSpaces": true
+        "removeSpaces": true,
+        "removeEditMode": true
       },
       "onlineUsers": {
         "enabled": true,
@@ -374,7 +375,8 @@
       ],
       "appSettings": {
         "disablePanels": true,
-        "removeSpaces": true
+        "removeSpaces": true,
+        "removeEditMode": true
       },
       "onlineUsers": {
         "enabled": true,
