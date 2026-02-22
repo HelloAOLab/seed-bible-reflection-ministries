@@ -380,11 +380,6 @@ function Tab({
     tags?.settingsConfigs?.presets?.[
       configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
     ]?.appSettings?.removeEditMode;
-  const valSettings =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ];
-  console.log(valSettings, "valSettings");
   const OPTIONS = (tab) => ({
     type: "normal",
     items: [
