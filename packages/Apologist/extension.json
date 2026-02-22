@@ -6,8 +6,8 @@
     "toolbarConfig": {
       "active": true,
       "hasToggle": "true",
-      "icon": "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/f89ebc25a02acbfb56957a90bdddb7d938f5ba54fc045fa0ef108a0ff30821bb.svg",
-      "iconUrl": "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/f89ebc25a02acbfb56957a90bdddb7d938f5ba54fc045fa0ef108a0ff30821bb.svg",
+      "icon": "explore",
+
       "isImg": true,
       "label": "Apologist",
       "to": "panel"
