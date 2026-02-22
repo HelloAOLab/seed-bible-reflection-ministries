@@ -197,7 +197,8 @@
       "appSettings": {
         "disablePanels": true,
         "removeSpaces": true,
-        "removeEditMode": true
+        "removeEditMode": true,
+        "removeAccountOptions": true
       },
       "sections": {
         "accountHeader": {
