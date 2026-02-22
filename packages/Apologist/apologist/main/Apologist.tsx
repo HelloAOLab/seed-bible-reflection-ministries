@@ -378,7 +378,7 @@ function SgCard({
               rel="noopener noreferrer"
               title="Open in new tab"
               aria-label="Open in new tab"
-              style={{ color: "#fff", textDecoration: "none" }}
+              style={{ color: "var(--text1)", textDecoration: "none" }}
             >
               Learn More
               <svg
@@ -390,8 +390,8 @@ function SgCard({
               >
                 <path
                   d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
-                  fill="#ffffff"
-                  style={{ fill: "#fff" }}
+                  fill="currentColor"
+                  style={{ fill: "currentColor" }}
                 />
               </svg>
             </a>
@@ -436,7 +436,7 @@ function SgCard({
                 >
                   <path
                     d="M1.25 10C1.05 10 0.875 9.925 0.725 9.775C0.575 9.625 0.5 9.45 0.5 9.25V1.5C0.5 1.3 0.575 1.125 0.725 0.975C0.875 0.825 1.05 0.75 1.25 0.75H2.0625V0H2.875V0.75H7.125V0H7.9375V0.75H8.75C8.95 0.75 9.125 0.825 9.275 0.975C9.425 1.125 9.5 1.3 9.5 1.5V9.25C9.5 9.45 9.425 9.625 9.275 9.775C9.125 9.925 8.95 10 8.75 10H1.25ZM1.25 9.25H8.75V3.875H1.25V9.25ZM1.25 3.125H8.75V1.5H1.25V3.125ZM5 6C4.85833 6 4.73958 5.95208 4.64375 5.85625C4.54792 5.76042 4.5 5.64167 4.5 5.5C4.5 5.35833 4.54792 5.23958 4.64375 5.14375C4.73958 5.04792 4.85833 5 5 5C5.14167 5 5.26042 5.04792 5.35625 5.14375C5.45208 5.23958 5.5 5.35833 5.5 5.5C5.5 5.64167 5.45208 5.76042 5.35625 5.85625C5.26042 5.95208 5.14167 6 5 6ZM3 6C2.85833 6 2.73957 5.95208 2.64375 5.85625C2.54792 5.76042 2.5 5.64167 2.5 5.5C2.5 5.35833 2.54792 5.23958 2.64375 5.14375C2.73957 5.04792 2.85833 5 3 5C3.14167 5 3.26042 5.04792 3.35625 5.14375C3.45207 5.23958 3.5 5.35833 3.5 5.5C3.5 5.64167 3.45207 5.76042 3.35625 5.85625C3.26042 5.95208 3.14167 6 3 6ZM7 6C6.85833 6 6.73958 5.95208 6.64375 5.85625C6.54792 5.76042 6.5 5.64167 6.5 5.5C6.5 5.35833 6.54792 5.23958 6.64375 5.14375C6.73958 5.04792 6.85833 5 7 5C7.14167 5 7.26042 5.04792 7.35625 5.14375C7.45208 5.23958 7.5 5.35833 7.5 5.5C7.5 5.64167 7.45208 5.76042 7.35625 5.85625C7.26042 5.95208 7.14167 6 7 6ZM5 8C4.85833 8 4.73958 7.95208 4.64375 7.85625C4.54792 7.76042 4.5 7.64167 4.5 7.5C4.5 7.35833 4.54792 7.23958 4.64375 7.14375C4.73958 7.04792 4.85833 7 5 7C5.14167 7 5.26042 7.04792 5.35625 7.14375C5.45208 7.23958 5.5 7.35833 5.5 7.5C5.5 7.64167 5.45208 7.76042 5.35625 7.85625C5.26042 7.95208 5.14167 8 5 8ZM3 8C2.85833 8 2.73957 7.95208 2.64375 7.85625C2.54792 7.76042 2.5 7.64167 2.5 7.5C2.5 7.35833 2.54792 7.23958 2.64375 7.14375C2.73957 7.04792 2.85833 7 3 7C3.14167 7 3.26042 7.04792 3.35625 7.14375C3.45207 7.23958 3.5 7.35833 3.5 7.5C3.5 7.64167 3.45207 7.76042 3.35625 7.85625C3.26042 7.95208 3.14167 8 3 8ZM7 8C6.85833 8 6.73958 7.95208 6.64375 7.85625C6.54792 7.76042 6.5 7.64167 6.5 7.5C6.5 7.35833 6.54792 7.23958 6.64375 7.14375C6.73958 7.04792 6.85833 7 7 7C7.14167 7 7.26042 7.04792 7.35625 7.14375C7.45208 7.23958 7.5 7.35833 7.5 7.5C7.5 7.64167 7.45208 7.76042 7.35625 7.85625C7.26042 7.95208 7.14167 8 7 8Z"
-                    fill="#949494"
+                    fill="currentColor"
                   />
                 </svg>
               </span>
@@ -467,8 +467,8 @@ function SgCard({
               >
                 <path
                   d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
-                  fill="#ffffff"
-                  style={{ fill: "#fff" }}
+                  fill="currentColor"
+                  style={{ fill: "currentColor" }}
                 />
               </svg>
             </a>
@@ -542,7 +542,7 @@ function SgCard({
                   rel="noopener noreferrer"
                   title="Open in new tab"
                   aria-label="Open in new tab"
-                  style={{ color: "#fff", textDecoration: "none" }}
+                  style={{ color: "var(--text1)", textDecoration: "none" }}
                 >
                   Learn More
                   <svg
@@ -554,8 +554,8 @@ function SgCard({
                   >
                     <path
                       d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
-                      fill="#ffffff"
-                      style={{ fill: "#fff" }}
+                      fill="currentColor"
+                      style={{ fill: "currentColor" }}
                     />
                   </svg>
                 </a>
@@ -887,7 +887,7 @@ function Apologist({
         <style>{getStyleOf("apologist.css")}</style>
         <style>{`
                     .sg-error { color: #e57373; padding: 1rem; }
-                    .sg-error .sg-muted { color: #777; }
+                    .sg-error .sg-muted { color: var(--text2); }
                 `}</style>
       </div>
     );
@@ -1044,7 +1044,7 @@ function Apologist({
 
       <style>{`
                 .sg-searchWrap {
-                    color: #e0e0e0;
+                    color: var(--text1);
                 }
 
                 .sg-results {
@@ -1099,7 +1099,7 @@ function Apologist({
                 }
 
                 .sg-book-cover-title {
-                    color: #fff !important;
+                    color: var(--text1) !important;
                     font-size: 15px !important;
                     font-weight: 600 !important;
                     text-align: center;
@@ -1113,32 +1113,31 @@ function Apologist({
                     align-items: center;
                     gap: 6px;
                     padding: 8px 20px;
-                    border: 1px solid rgba(255,255,255,0.6);
+                    border: 1px solid var(--accentColor);
                     border-radius: 20px;
-                    background: rgba(0,0,0,0.45);
-                    color: #fff !important;
+                    background: var(--accentColor);
+                    color: var(--onPrimaryBase, #fff) !important;
                     font-size: 13px !important;
                     font-weight: 500;
                     text-decoration: none !important;
                     cursor: pointer;
-                    transition: background 0.2s, border-color 0.2s;
+                    transition: background 0.2s, border-color 0.2s, opacity 0.2s;
                     backdrop-filter: blur(4px);
                 }
 
                 .sg-book-cover-btn:hover {
-                    background: rgba(255,255,255,0.15);
-                    border-color: #fff;
+                    opacity: 0.85;
                 }
 
                 .sg-book-cover-btn:visited,
                 .sg-book-cover-btn:active,
                 .sg-book-cover-btn:link {
-                    color: #fff !important;
+                    color: var(--onPrimaryBase, #fff) !important;
                     text-decoration: none !important;
                 }
 
                 .sg-book-cover-btn svg path {
-                    fill: #fff !important;
+                    fill: var(--onPrimaryBase, #fff) !important;
                 }
                 
                 .sg-loadMore {
@@ -1154,21 +1153,21 @@ function Apologist({
                 .sg-loadMoreBtn {
                     padding: 12px 24px;
                     background: transparent;
-                    color: #fff;
+                    color: var(--text1);
                     border-radius: 6px;
-                    border: 1px solid #fff;
+                    border: 1px solid var(--accentColor);
                     font-size: 14px;
                     font-weight: 500;
                     cursor: pointer;
-                    transition: background 0.2s;
+                    transition: background 0.2s, color 0.2s;
                     display: flex;
                     align-items: center;
                     gap: 8px;
                 }
                 
                 .sg-loadMoreBtn:hover:not(:disabled) {
-                    background: rgba(140, 164, 67, 0.15);
-                    color: #a1bd4f;
+                    background: var(--accentColor);
+                    color: var(--onPrimaryBase, #fff);
                 }
                 
                 .sg-loadMoreBtn:disabled {
@@ -1177,9 +1176,9 @@ function Apologist({
                 }
                 
                 .sg-card {
-                    background: #1e1e1e;
+                    background: var(--panelBackground);
                     border-radius: 12px;
-                    border: 1px solid #2d2d2d;
+                    border: 1px solid var(--inputBorder);
                     padding: 16px;
                     margin-bottom: 0px;
                     overflow: hidden;
@@ -1187,7 +1186,7 @@ function Apologist({
                     display: flex;
                     flex-direction: column;
                     box-sizing: border-box;
-                    color: #e0e0e0;
+                    color: var(--text1);
                 }
 
                 .sg-card.sg-card-list {
@@ -1224,7 +1223,7 @@ function Apologist({
                 }
 
                 .sg-card:hover {
-                    border-color: #444;
+                    border-color: var(--accentColor);
                     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
                 }
 
@@ -1233,16 +1232,16 @@ function Apologist({
                 }
 
                 .sg-card.is-open {
-                    border: 2px solid #444;
+                    border: 2px solid var(--accentColor);
                     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
                 }
 
-                /* Only "Now Playing" card gets green border */
+                /* Only "Now Playing" card gets accent border */
                 .sg-card.sg-now-playing-card,
                 .sg-card.sg-now-playing-card:hover,
                 .sg-card.sg-now-playing-card.is-open {
-                    border: 2px solid #fff;
-                    box-shadow: 0 10px 30px rgba(140, 164, 67, 0.2);
+                    border: 2px solid var(--accentColor);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
                 }
                 
                 .sg-header {
@@ -1261,7 +1260,7 @@ function Apologist({
                 
                 .sg-resultCount {
                     font-size: 14px;
-                    color: #999;
+                    color: var(--text2);
                     font-weight: 500;
                 }
                 
@@ -1272,29 +1271,29 @@ function Apologist({
 
                 .sg-toggle-btn {
                     background: transparent;
-                    border: 1px solid #333;
+                    border: 1px solid var(--inputBorder);
                     border-radius: 4px;
                     padding: 4px 6px;
                     cursor: pointer;
-                    color: #888;
+                    color: var(--text2);
                     transition: all 0.2s;
                 }
 
                 .sg-toggle-btn.active {
-                    background: #2a2a2a;
-                    border-color: #555;
-                    color: #e0e0e0;
+                    background: var(--panelBackground);
+                    border-color: var(--accentColor);
+                    color: var(--text1);
                 }
 
                 .sg-toggle-btn:hover {
-                    border-color: #555;
-                    color: #ccc;
+                    border-color: var(--accentColor);
+                    color: var(--text1);
                 }
 
                 .sg-resetBtn {
                     border: none;
                     background: transparent;
-                    color: #fff;
+                    color: var(--text1);
                     cursor: pointer;
                     padding: 4px;
                     display: flex;
@@ -1305,14 +1304,14 @@ function Apologist({
                 }
 
                 .sg-resetBtn:hover {
-                    color: #a1bd4f;
+                    color: var(--accentColor);
                 }
 
                 .sg-now-playing-close {
                     background: transparent;
                     border: none;
                     font-size: 24px;
-                    color: #777;
+                    color: var(--text2);
                     cursor: pointer;
                     padding: 4px 8px;
                     line-height: 1;
@@ -1321,8 +1320,8 @@ function Apologist({
                 }
 
                 .sg-now-playing-close:hover {
-                    background: rgba(255,255,255,0.05);
-                    color: #ccc;
+                    background: rgba(128,128,128,0.1);
+                    color: var(--text1);
                 }
 
                 .sg-youtubeEmbed {
@@ -1356,14 +1355,14 @@ function Apologist({
                     justify-content: center;
                     gap: 8px;
                     height: 100%;
-                    background: #111;
-                    color: #777;
+                    background: var(--panelBackground);
+                    color: var(--text2);
                     font-size: 14px;
                 }
                 
                 .sg-media-unavailable .material-symbols-outlined {
                     font-size: 24px;
-                    color: #777;
+                    color: var(--text2);
                 }
 
                 .sg-previewVideoButton {
@@ -1387,7 +1386,7 @@ function Apologist({
                 }
 
                 .sg-previewVideoThumb--fallback {
-                    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+                    background: linear-gradient(135deg, var(--panelBackground), var(--inputBorder));
                 }
 
                 .sg-previewVideoButton::after {
@@ -1415,14 +1414,14 @@ function Apologist({
                     height: 34px;
                 }
 
-                /* ── Dark theme overrides for sg2 classes ── */
+                /* ── Theme-aware overrides for sg2 classes ── */
                 .sg2-head {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     gap: 4px;
                     font-size: 12px;
-                    color: #999;
+                    color: var(--text2);
                     margin-bottom: 6px;
                 }
 
@@ -1454,7 +1453,7 @@ function Apologist({
                     width: 16px;
                     height: 16px;
                     border-radius: 3px;
-                    background: #333;
+                    background: var(--inputBorder);
                 }
 
                 .sg2-bodyTitle {
@@ -1466,89 +1465,85 @@ function Apologist({
                     width: 3px;
                     height: 3px;
                     border-radius: 50%;
-                    background: #555;
+                    background: var(--text2);
                     flex-shrink: 0;
                 }
 
                 .sg2-domain {
-                    color: #999;
+                    color: var(--text2);
                 }
 
                 .sg2-date {
-                    color: #777;
-                }
-
-                .sg2-dot {
-                    color: #555;
+                    color: var(--text2);
                 }
 
                 .sg2-title {
-                    color: #fff;
+                    color: var(--text1);
                 }
 
                 .sg2-title-link {
-                    color: #fff;
+                    color: var(--text1);
                     text-decoration: none;
                 }
 
                 .sg2-title-link:hover {
-                    color: #ccc;
+                    color: var(--accentColor);
                 }
 
                 .sg2-desc {
-                    color: #999;
+                    color: var(--text2);
                 }
 
                 .sg2-open {
                     display: inline-flex;
                     align-items: center;
-                    color: #fff !important;
+                    color: var(--text1) !important;
                     text-decoration: none;
                 }
 
                 .sg2-open:visited,
                 .sg2-open:active,
                 .sg2-open:link {
-                    color: #fff !important;
+                    color: var(--text1) !important;
                 }
 
                 .sg2-open svg {
-                    fill: #fff !important;
+                    fill: var(--text1) !important;
                 }
 
                 .sg2-open svg path {
-                    fill: #fff !important;
+                    fill: var(--text1) !important;
                 }
 
                 .sg2-calendar svg path {
-                    fill: #666;
+                    fill: var(--text2);
                 }
 
                 .sg-preview-learnMoreLink {
-                    color: #fff !important;
+                    color: var(--text1) !important;
                     text-decoration: none !important;
                 }
 
                 .sg-preview-learnMoreLink:visited,
                 .sg-preview-learnMoreLink:active,
                 .sg-preview-learnMoreLink:link {
-                    color: #fff !important;
+                    color: var(--text1) !important;
                 }
 
                 .sg-preview-learnMoreLink:hover {
-                    color: #ccc !important;
+                    color: var(--accentColor) !important;
                 }
 
                 .sg-preview-learnMoreLink svg {
-                    fill: #fff !important;
+                    fill: var(--text1) !important;
                 }
 
                 .sg-preview-learnMoreLink svg path {
-                    fill: #fff !important;
+                    fill: var(--text1) !important;
                 }
 
                 .sg-muted {
-                    color: #777;
+                    color: var(--text2);
                     text-align: center;
                     padding: 2rem;
                 }
@@ -1559,23 +1554,23 @@ function Apologist({
                 }
 
                 .sg-error .sg-muted {
-                    color: #777;
+                    color: var(--text2);
                 }
 
                 .sg-empty {
                     text-align: center;
                     padding: 3rem 1rem;
-                    color: #777;
+                    color: var(--text2);
                 }
 
                 .sg-emptyTitle {
-                    color: #999;
+                    color: var(--text2);
                     font-weight: 600;
                     margin-top: 0.5rem;
                 }
 
                 .sg-emptyHint {
-                    color: #666;
+                    color: var(--text2);
                     font-size: 0.85rem;
                 }
 
@@ -1585,14 +1580,14 @@ function Apologist({
                     align-items: center;
                     justify-content: center;
                     padding: 3rem;
-                    color: #999;
+                    color: var(--text2);
                 }
 
                 .sg-spinner {
                     width: 32px;
                     height: 32px;
-                    border: 3px solid #333;
-                    border-top-color: #fff;
+                    border: 3px solid var(--inputBorder);
+                    border-top-color: var(--accentColor);
                     border-radius: 50%;
                     animation: sg-spin 0.8s linear infinite;
                 }
@@ -1600,8 +1595,8 @@ function Apologist({
                 .sg-spinner-small {
                     width: 16px;
                     height: 16px;
-                    border: 2px solid #333;
-                    border-top-color: #fff;
+                    border: 2px solid var(--inputBorder);
+                    border-top-color: var(--accentColor);
                     border-radius: 50%;
                     animation: sg-spin 0.8s linear infinite;
                 }
@@ -1612,7 +1607,7 @@ function Apologist({
 
                 .sg-loading-text {
                     margin-top: 12px;
-                    color: #999;
+                    color: var(--text2);
                     font-size: 14px;
                 }
             `}</style>
