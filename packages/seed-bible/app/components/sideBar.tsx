@@ -1613,7 +1613,7 @@ function SideBar({ panelsNumber }) {
                     clearTimeout(holdTimeout.current.time);
                     holdTimeout.current.clicked = false;
                   }}
-                  className="material-symbols-outlined addIcon"
+                  className="material-symbols-outlined  addIcon"
                 >
                   add
                 </span>
@@ -1733,6 +1733,14 @@ function SideBar({ panelsNumber }) {
               cursor: "pointer",
             }}
           >
+            {isSiteOfClient && (
+              <ClientLogo
+                handleOpenClientSite={handleOpenClientSite}
+                url={clientLogo}
+                alt={clientName}
+              />
+            )}
+            <div className="sidebarLine"></div>
             <div
               onClick={() => {
                 setSidebarWidth(280);
@@ -2080,6 +2088,7 @@ export const UserProfile = ({ collapsed }) => {
       configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
     ]?.appSettings?.removeAccountOptions;
   const Icon = icons[iconIndex];
+
   return (
     <div
       onClick={

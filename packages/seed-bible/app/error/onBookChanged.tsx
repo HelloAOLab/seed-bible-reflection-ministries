@@ -3,7 +3,7 @@ import { debounce } from "es-toolkit";
 console.warn("[app.onBookChanged] ", that);
 
 thisBot.vars.postChapterReadEvent ??= debounce((that) => {
-  posthog.capture("user_chapter_read", {
+  posthog?.capture("user_chapter_read", {
     translationId: that.translation,
     bookId: that.bookId,
     chapter: String(that.chapter),

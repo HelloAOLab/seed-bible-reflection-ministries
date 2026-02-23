@@ -1,0 +1,35 @@
+{
+  "author": "Ahmed Alaa",
+  "configEditor": {
+    "author": "Ahmed Alaa",
+    "app": "@GetApp",
+    "toolbarConfig": {
+      "active": true,
+      "hasToggle": "true",
+      "icon": "explore",
+
+      "isImg": true,
+      "label": "Apologist",
+      "to": "panel"
+    }
+  },
+  "createdAt": "2026-02-15T08:00:00.000Z",
+  "dependencies": [],
+  "description": "Corpus-search component for Bible study — provides contextual search results for chapters and verses",
+  "id": 1739584800000,
+  "license": "MIT",
+  "linkedDependencies": [],
+  "mainBotTag": "apologist.main",
+  "name": "Apologist",
+  "otherBots": [],
+  "status": "active",
+  "type": "package",
+  "updatedAt": "2026-02-18T22:48:56.586Z",
+  "version": "1.0.0",
+  "recordFile": {
+    "sha256Hash": "b45243f3e18072ac1df6dc021222edc5a2791675e982e3b85be81726d9da0310",
+    "success": true,
+    "url": "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/seedBibleExtensions/b45243f3e18072ac1df6dc021222edc5a2791675e982e3b85be81726d9da0310.json"
+  },
+  "source": "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/seedBibleExtensions/b45243f3e18072ac1df6dc021222edc5a2791675e982e3b85be81726d9da0310.json"
+}
