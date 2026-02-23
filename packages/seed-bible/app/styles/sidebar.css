@@ -3,6 +3,7 @@
   width: 280px;
   /* height: 100dvh; */
   position: relative;
+
   /* transition: width 0.3s ease; */
   /* background-color: transparent; */
   font-family: "Satoshi", sans-serif;
@@ -187,6 +188,7 @@
 .material-symbols-outlined.addIconCollapsed {
   width: 50px;
   background: var(--whitegray-color);
+  background-color: #ffffff !important;
   border-radius: 5px;
   cursor: pointer;
   height: 45px;
@@ -271,7 +273,7 @@
   height: 45px;
   padding: 0;
   padding-top: 3px;
-  background: transparent;
+  background: #d9d9d9;
   border: var(--simpleTabText, black) 1px solid;
   color: var(--simpleTabText, black);
 }
