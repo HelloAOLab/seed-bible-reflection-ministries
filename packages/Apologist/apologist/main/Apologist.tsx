@@ -591,6 +591,7 @@ function Apologist({
   const [displayedCount, setDisplayedCount] = useState(20);
   const [showSpinner, setShowSpinner] = useState(false);
   const [allData, setAllData] = useState([]);
+  const [headerLabel, setHeaderLabel] = useState("");
   const [nowPlayingId, setNowPlayingId] = useState(null);
   const lastSearchKeyRef = useRef(null);
   const lastResultKeysRef = useRef(new Set());
@@ -600,9 +601,6 @@ function Apologist({
   const isVerseLevel = resolvedLevel === "verse";
   const currentBaselineQuery = baselineQuery || baselineQueryRef.current;
   const showResetControl = Boolean(isVerseLevel && currentBaselineQuery);
-  const headerLabel =
-    label ||
-    (isVerseLevel && currentBaselineQuery ? currentBaselineQuery : searchParam);
 
   useEffect(() => {
     const trimmed = (search ?? "").trim();
@@ -662,6 +660,7 @@ function Apologist({
         setOpenIds(new Set());
         setHasMore(false);
         setDisplayedCount(20);
+
         return;
       }
       setLoading(true);
@@ -760,6 +759,14 @@ function Apologist({
           .filter((item) => item.type === "youtube" && item.id)
           .map((item) => item.id);
         setOpenIds(new Set([...bookIds, ...youtubeIds]));
+        // Update header label AFTER results are ready
+        const computedLabel =
+          globalThis.GlobalSearchLabel ||
+          (isVerseLevel && currentBaselineQuery
+            ? currentBaselineQuery
+            : trimmedQuery);
+
+        setHeaderLabel(computedLabel);
 
         lastSearchKeyRef.current = normalizedSearchKey || null;
         lastResultKeysRef.current = new Set();
