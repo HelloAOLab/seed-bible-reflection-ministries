@@ -226,15 +226,13 @@ function SgCard({
 
   const openInNewTab = (e) => {
     e.preventDefault();
-
-    // If it's a TableTalk item, open in devotional tab iframe
-    if (isTableTalk) {
-      const previewUrl = item.url || item.referral_url || item.listing_url;
-      if (previewUrl && globalThis.StudyNoteOpenPreview) {
-        globalThis.StudyNoteOpenPreview(previewUrl, item.title || "Preview");
-      }
+    const previewUrl = item.url || item.referral_url || item.listing_url;
+    if (previewUrl && globalThis.ApologistOpenInMinistriesTab) {
+      globalThis.ApologistOpenInMinistriesTab(
+        previewUrl,
+        item.title || "Preview"
+      );
     } else {
-      // For everything else, open normally in a new tab
       window.open(item.url, "_blank", "noopener");
     }
   };
@@ -374,11 +372,10 @@ function SgCard({
             <a
               href={url}
               className="sg-book-cover-btn"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Open in new tab"
-              aria-label="Open in new tab"
-              style={{ color: "var(--text1)", textDecoration: "none" }}
+              onClick={openInNewTab}
+              title="Open in Reflection Ministries"
+              aria-label="Open in Reflection Ministries"
+              style={{ color: "#fff", textDecoration: "none" }}
             >
               Learn More
               <svg
@@ -450,13 +447,8 @@ function SgCard({
               className="sg2-open"
               href={url}
               onClick={openInNewTab}
-              target={isTableTalk ? undefined : "_blank"}
-              rel={isTableTalk ? undefined : "noopener noreferrer"}
-              referrerPolicy={isTableTalk ? undefined : "no-referrer"}
-              title={isTableTalk ? "Open in devotional tab" : "Open in new tab"}
-              aria-label={
-                isTableTalk ? "Open in devotional tab" : "Open in new tab"
-              }
+              title="Open in Reflection Ministries"
+              aria-label="Open in Reflection Ministries"
             >
               <svg
                 width="16"
@@ -492,12 +484,8 @@ function SgCard({
             className="sg2-title-link"
             href={url}
             onClick={openInNewTab}
-            target={isTableTalk ? undefined : "_blank"}
-            rel={isTableTalk ? undefined : "noopener noreferrer"}
-            title={isTableTalk ? "Open in devotional tab" : "Open in new tab"}
-            aria-label={
-              isTableTalk ? "Open in devotional tab" : "Open in new tab"
-            }
+            title="Open in Reflection Ministries"
+            aria-label="Open in Reflection Ministries"
           >
             <h3 className="sg2-title" title={item.title}>
               {item.title}
@@ -538,11 +526,10 @@ function SgCard({
                 <a
                   href={url}
                   className="sg-preview-learnMoreLink"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Open in new tab"
-                  aria-label="Open in new tab"
-                  style={{ color: "var(--text1)", textDecoration: "none" }}
+                  onClick={openInNewTab}
+                  title="Open in Reflection Ministries"
+                  aria-label="Open in Reflection Ministries"
+                  style={{ color: "#fff", textDecoration: "none" }}
                 >
                   Learn More
                   <svg
@@ -1044,7 +1031,7 @@ function Apologist({
 
       <style>{`
                 .sg-searchWrap {
-                    color: var(--text1);
+                    color: var(--text1, #e0e0e0);
                 }
 
                 .sg-results {
@@ -1099,7 +1086,7 @@ function Apologist({
                 }
 
                 .sg-book-cover-title {
-                    color: var(--text1) !important;
+                    color: var(--text1, #fff) !important;
                     font-size: 15px !important;
                     font-weight: 600 !important;
                     text-align: center;
@@ -1115,8 +1102,8 @@ function Apologist({
                     padding: 8px 20px;
                     border: 1px solid var(--accentColor);
                     border-radius: 20px;
-                    background: var(--accentColor);
-                    color: var(--onPrimaryBase, #fff) !important;
+                    background: var(--accentColor, rgba(0,0,0,0.45));
+                    color: var(--text1, #fff) !important;
                     font-size: 13px !important;
                     font-weight: 500;
                     text-decoration: none !important;
@@ -1132,12 +1119,12 @@ function Apologist({
                 .sg-book-cover-btn:visited,
                 .sg-book-cover-btn:active,
                 .sg-book-cover-btn:link {
-                    color: var(--onPrimaryBase, #fff) !important;
+                    color: var(--text1, #fff) !important;
                     text-decoration: none !important;
                 }
 
                 .sg-book-cover-btn svg path {
-                    fill: var(--onPrimaryBase, #fff) !important;
+                    fill: currentColor !important;
                 }
                 
                 .sg-loadMore {
@@ -1153,9 +1140,9 @@ function Apologist({
                 .sg-loadMoreBtn {
                     padding: 12px 24px;
                     background: transparent;
-                    color: var(--text1);
+                    color: var(--text1, #fff);
                     border-radius: 6px;
-                    border: 1px solid var(--accentColor);
+                    border: 1px solid var(--text1, #fff);
                     font-size: 14px;
                     font-weight: 500;
                     cursor: pointer;
@@ -1166,8 +1153,8 @@ function Apologist({
                 }
                 
                 .sg-loadMoreBtn:hover:not(:disabled) {
-                    background: var(--accentColor);
-                    color: var(--onPrimaryBase, #fff);
+                    background: rgba(140, 164, 67, 0.15);
+                    color: var(--accentColor, #a1bd4f);
                 }
                 
                 .sg-loadMoreBtn:disabled {
@@ -1176,9 +1163,9 @@ function Apologist({
                 }
                 
                 .sg-card {
-                    background: var(--panelBackground);
+                    background: var(--panelBackground, #1e1e1e);
                     border-radius: 12px;
-                    border: 1px solid var(--inputBorder);
+                    border: 1px solid var(--inputBorder, #2d2d2d);
                     padding: 16px;
                     margin-bottom: 0px;
                     overflow: hidden;
@@ -1186,7 +1173,7 @@ function Apologist({
                     display: flex;
                     flex-direction: column;
                     box-sizing: border-box;
-                    color: var(--text1);
+                    color: var(--text1, #e0e0e0);
                 }
 
                 .sg-card.sg-card-list {
@@ -1223,7 +1210,7 @@ function Apologist({
                 }
 
                 .sg-card:hover {
-                    border-color: var(--accentColor);
+                    border-color: var(--inputBorder, #444);
                     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
                 }
 
@@ -1232,7 +1219,7 @@ function Apologist({
                 }
 
                 .sg-card.is-open {
-                    border: 2px solid var(--accentColor);
+                    border: 2px solid var(--inputBorder, #444);
                     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
                 }
 
@@ -1240,8 +1227,8 @@ function Apologist({
                 .sg-card.sg-now-playing-card,
                 .sg-card.sg-now-playing-card:hover,
                 .sg-card.sg-now-playing-card.is-open {
-                    border: 2px solid var(--accentColor);
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    border: 2px solid var(--text1, #fff);
+                    box-shadow: 0 10px 30px rgba(140, 164, 67, 0.2);
                 }
                 
                 .sg-header {
@@ -1260,7 +1247,7 @@ function Apologist({
                 
                 .sg-resultCount {
                     font-size: 14px;
-                    color: var(--text2);
+                    color: var(--text2, #999);
                     font-weight: 500;
                 }
                 
@@ -1271,29 +1258,29 @@ function Apologist({
 
                 .sg-toggle-btn {
                     background: transparent;
-                    border: 1px solid var(--inputBorder);
+                    border: 1px solid var(--inputBorder, #333);
                     border-radius: 4px;
                     padding: 4px 6px;
                     cursor: pointer;
-                    color: var(--text2);
+                    color: var(--text2, #888);
                     transition: all 0.2s;
                 }
 
                 .sg-toggle-btn.active {
-                    background: var(--panelBackground);
-                    border-color: var(--accentColor);
-                    color: var(--text1);
+                    background: var(--panelBackground, #2a2a2a);
+                    border-color: var(--inputBorder, #555);
+                    color: var(--text1, #e0e0e0);
                 }
 
                 .sg-toggle-btn:hover {
-                    border-color: var(--accentColor);
-                    color: var(--text1);
+                    border-color: var(--inputBorder, #555);
+                    color: var(--text1, #ccc);
                 }
 
                 .sg-resetBtn {
                     border: none;
                     background: transparent;
-                    color: var(--text1);
+                    color: var(--text1, #fff);
                     cursor: pointer;
                     padding: 4px;
                     display: flex;
@@ -1304,14 +1291,14 @@ function Apologist({
                 }
 
                 .sg-resetBtn:hover {
-                    color: var(--accentColor);
+                    color: var(--accentColor, #a1bd4f);
                 }
 
                 .sg-now-playing-close {
                     background: transparent;
                     border: none;
                     font-size: 24px;
-                    color: var(--text2);
+                    color: var(--text2, #777);
                     cursor: pointer;
                     padding: 4px 8px;
                     line-height: 1;
@@ -1320,8 +1307,8 @@ function Apologist({
                 }
 
                 .sg-now-playing-close:hover {
-                    background: rgba(128,128,128,0.1);
-                    color: var(--text1);
+                    background: rgba(255,255,255,0.05);
+                    color: var(--text1, #ccc);
                 }
 
                 .sg-youtubeEmbed {
@@ -1355,14 +1342,14 @@ function Apologist({
                     justify-content: center;
                     gap: 8px;
                     height: 100%;
-                    background: var(--panelBackground);
-                    color: var(--text2);
+                    background: var(--panelBackground, #111);
+                    color: var(--text2, #777);
                     font-size: 14px;
                 }
                 
                 .sg-media-unavailable .material-symbols-outlined {
                     font-size: 24px;
-                    color: var(--text2);
+                    color: var(--text2, #777);
                 }
 
                 .sg-previewVideoButton {
@@ -1421,7 +1408,7 @@ function Apologist({
                     justify-content: space-between;
                     gap: 4px;
                     font-size: 12px;
-                    color: var(--text2);
+                    color: var(--text2, #999);
                     margin-bottom: 6px;
                 }
 
@@ -1453,7 +1440,7 @@ function Apologist({
                     width: 16px;
                     height: 16px;
                     border-radius: 3px;
-                    background: var(--inputBorder);
+                    background: var(--inputBorder, #333);
                 }
 
                 .sg2-bodyTitle {
@@ -1465,85 +1452,89 @@ function Apologist({
                     width: 3px;
                     height: 3px;
                     border-radius: 50%;
-                    background: var(--text2);
+                    background: var(--text2, #555);
                     flex-shrink: 0;
                 }
 
                 .sg2-domain {
-                    color: var(--text2);
+                    color: var(--text2, #999);
                 }
 
                 .sg2-date {
-                    color: var(--text2);
+                    color: var(--text2, #777);
+                }
+
+                .sg2-dot {
+                    color: var(--text2, #555);
                 }
 
                 .sg2-title {
-                    color: var(--text1);
+                    color: var(--text1, #fff);
                 }
 
                 .sg2-title-link {
-                    color: var(--text1);
+                    color: var(--text1, #fff);
                     text-decoration: none;
                 }
 
                 .sg2-title-link:hover {
-                    color: var(--accentColor);
+                    color: var(--text1, #ccc);
                 }
 
                 .sg2-desc {
-                    color: var(--text2);
+                    color: var(--text2, #999);
                 }
 
                 .sg2-open {
                     display: inline-flex;
                     align-items: center;
-                    color: var(--text1) !important;
+                    color: var(--text1, #fff) !important;
                     text-decoration: none;
                 }
 
                 .sg2-open:visited,
                 .sg2-open:active,
                 .sg2-open:link {
-                    color: var(--text1) !important;
+                    color: var(--text1, #fff) !important;
                 }
 
                 .sg2-open svg {
-                    fill: var(--text1) !important;
+                    fill: currentColor !important;
                 }
 
                 .sg2-open svg path {
-                    fill: var(--text1) !important;
+                    fill: currentColor !important;
                 }
 
                 .sg2-calendar svg path {
-                    fill: var(--text2);
+                    fill: currentColor;
                 }
 
                 .sg-preview-learnMoreLink {
-                    color: var(--text1) !important;
+                    color: var(--text1, #fff) !important;
                     text-decoration: none !important;
                 }
 
                 .sg-preview-learnMoreLink:visited,
                 .sg-preview-learnMoreLink:active,
                 .sg-preview-learnMoreLink:link {
-                    color: var(--text1) !important;
+                    color: var(--text1, #fff) !important;
                 }
 
                 .sg-preview-learnMoreLink:hover {
-                    color: var(--accentColor) !important;
+                    color: var(--text1, #ccc) !important;
                 }
 
                 .sg-preview-learnMoreLink svg {
-                    fill: var(--text1) !important;
+                    fill: currentColor !important;
                 }
 
                 .sg-preview-learnMoreLink svg path {
-                    fill: var(--text1) !important;
+                    fill: currentColor !important;
                 }
 
                 .sg-muted {
-                    color: var(--text2);
+                    color: var(--text2, #777);
                     text-align: center;
                     padding: 2rem;
                 }
@@ -1554,23 +1545,23 @@ function Apologist({
                 }
 
                 .sg-error .sg-muted {
-                    color: var(--text2);
+                    color: var(--text2, #777);
                 }
 
                 .sg-empty {
                     text-align: center;
                     padding: 3rem 1rem;
-                    color: var(--text2);
+                    color: var(--text2, #777);
                 }
 
                 .sg-emptyTitle {
-                    color: var(--text2);
+                    color: var(--text2, #999);
                     font-weight: 600;
                     margin-top: 0.5rem;
                 }
 
                 .sg-emptyHint {
-                    color: var(--text2);
+                    color: var(--text2, #666);
                     font-size: 0.85rem;
                 }
 
@@ -1580,14 +1571,14 @@ function Apologist({
                     align-items: center;
                     justify-content: center;
                     padding: 3rem;
-                    color: var(--text2);
+                    color: var(--text2, #999);
                 }
 
                 .sg-spinner {
                     width: 32px;
                     height: 32px;
-                    border: 3px solid var(--inputBorder);
-                    border-top-color: var(--accentColor);
+                    border: 3px solid var(--inputBorder, #333);
+                    border-top-color: var(--accentColor, #fff);
                     border-radius: 50%;
                     animation: sg-spin 0.8s linear infinite;
                 }
@@ -1595,8 +1586,8 @@ function Apologist({
                 .sg-spinner-small {
                     width: 16px;
                     height: 16px;
-                    border: 2px solid var(--inputBorder);
-                    border-top-color: var(--accentColor);
+                    border: 2px solid var(--inputBorder, #333);
+                    border-top-color: var(--accentColor, #fff);
                     border-radius: 50%;
                     animation: sg-spin 0.8s linear infinite;
                 }
@@ -1607,7 +1598,7 @@ function Apologist({
 
                 .sg-loading-text {
                     margin-top: 12px;
-                    color: var(--text2);
+                    color: var(--text2, #999);
                     font-size: 14px;
                 }
             `}</style>
