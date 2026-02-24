@@ -5,7 +5,8 @@
       "appSettings": {
         "disablePanels": true,
         "removeSpaces": true,
-        "removeEditMode": true
+        "removeEditMode": true,
+        "removeAccountOptions": true
       },
       "onlineUsers": {
         "enabled": true,
@@ -45,6 +46,7 @@
         "clientLogo": "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png",
         "clientSite": "https://www.kenboa.org/"
       },
+
       "useTabs": false,
       "availableThemes": [
         {
@@ -55,7 +57,7 @@
             "secondaryColor": "#2E4879",
             "tertiaryColor": "#C0C8D7",
             "themeSideMenu": "#FFFFFF",
-            "panelBackground": "#FFFFFF",
+            "panelBackground": "#F4F4F4",
             "tabSelection": "#2E4879",
             "activeTabBackground": "#2E48791A",
             "activeTabText": "#2E4879",
@@ -188,13 +190,17 @@
           }
         }
       ],
-      "appSettings": {
-        "disablePanels": true,
-        "removeSpaces": true
-      },
+
       "onlineUsers": {
         "enabled": true,
         "anonymous": true
+      },
+      "appSettings": {
+        "disablePanels": true,
+        "removeSpaces": true,
+        "removeEditMode": true,
+        "removeAccountOptions": true,
+        "removeBibleStack": true
       },
       "sections": {
         "accountHeader": {

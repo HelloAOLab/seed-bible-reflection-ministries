@@ -387,8 +387,8 @@ function SgCard({
               >
                 <path
                   d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
-                  fill="#ffffff"
-                  style={{ fill: "#fff" }}
+                  fill="currentColor"
+                  style={{ fill: "currentColor" }}
                 />
               </svg>
             </a>
@@ -433,7 +433,7 @@ function SgCard({
                 >
                   <path
                     d="M1.25 10C1.05 10 0.875 9.925 0.725 9.775C0.575 9.625 0.5 9.45 0.5 9.25V1.5C0.5 1.3 0.575 1.125 0.725 0.975C0.875 0.825 1.05 0.75 1.25 0.75H2.0625V0H2.875V0.75H7.125V0H7.9375V0.75H8.75C8.95 0.75 9.125 0.825 9.275 0.975C9.425 1.125 9.5 1.3 9.5 1.5V9.25C9.5 9.45 9.425 9.625 9.275 9.775C9.125 9.925 8.95 10 8.75 10H1.25ZM1.25 9.25H8.75V3.875H1.25V9.25ZM1.25 3.125H8.75V1.5H1.25V3.125ZM5 6C4.85833 6 4.73958 5.95208 4.64375 5.85625C4.54792 5.76042 4.5 5.64167 4.5 5.5C4.5 5.35833 4.54792 5.23958 4.64375 5.14375C4.73958 5.04792 4.85833 5 5 5C5.14167 5 5.26042 5.04792 5.35625 5.14375C5.45208 5.23958 5.5 5.35833 5.5 5.5C5.5 5.64167 5.45208 5.76042 5.35625 5.85625C5.26042 5.95208 5.14167 6 5 6ZM3 6C2.85833 6 2.73957 5.95208 2.64375 5.85625C2.54792 5.76042 2.5 5.64167 2.5 5.5C2.5 5.35833 2.54792 5.23958 2.64375 5.14375C2.73957 5.04792 2.85833 5 3 5C3.14167 5 3.26042 5.04792 3.35625 5.14375C3.45207 5.23958 3.5 5.35833 3.5 5.5C3.5 5.64167 3.45207 5.76042 3.35625 5.85625C3.26042 5.95208 3.14167 6 3 6ZM7 6C6.85833 6 6.73958 5.95208 6.64375 5.85625C6.54792 5.76042 6.5 5.64167 6.5 5.5C6.5 5.35833 6.54792 5.23958 6.64375 5.14375C6.73958 5.04792 6.85833 5 7 5C7.14167 5 7.26042 5.04792 7.35625 5.14375C7.45208 5.23958 7.5 5.35833 7.5 5.5C7.5 5.64167 7.45208 5.76042 7.35625 5.85625C7.26042 5.95208 7.14167 6 7 6ZM5 8C4.85833 8 4.73958 7.95208 4.64375 7.85625C4.54792 7.76042 4.5 7.64167 4.5 7.5C4.5 7.35833 4.54792 7.23958 4.64375 7.14375C4.73958 7.04792 4.85833 7 5 7C5.14167 7 5.26042 7.04792 5.35625 7.14375C5.45208 7.23958 5.5 7.35833 5.5 7.5C5.5 7.64167 5.45208 7.76042 5.35625 7.85625C5.26042 7.95208 5.14167 8 5 8ZM3 8C2.85833 8 2.73957 7.95208 2.64375 7.85625C2.54792 7.76042 2.5 7.64167 2.5 7.5C2.5 7.35833 2.54792 7.23958 2.64375 7.14375C2.73957 7.04792 2.85833 7 3 7C3.14167 7 3.26042 7.04792 3.35625 7.14375C3.45207 7.23958 3.5 7.35833 3.5 7.5C3.5 7.64167 3.45207 7.76042 3.35625 7.85625C3.26042 7.95208 3.14167 8 3 8ZM7 8C6.85833 8 6.73958 7.95208 6.64375 7.85625C6.54792 7.76042 6.5 7.64167 6.5 7.5C6.5 7.35833 6.54792 7.23958 6.64375 7.14375C6.73958 7.04792 6.85833 7 7 7C7.14167 7 7.26042 7.04792 7.35625 7.14375C7.45208 7.23958 7.5 7.35833 7.5 7.5C7.5 7.64167 7.45208 7.76042 7.35625 7.85625C7.26042 7.95208 7.14167 8 7 8Z"
-                    fill="#949494"
+                    fill="currentColor"
                   />
                 </svg>
               </span>
@@ -459,8 +459,8 @@ function SgCard({
               >
                 <path
                   d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
-                  fill="#ffffff"
-                  style={{ fill: "#fff" }}
+                  fill="currentColor"
+                  style={{ fill: "currentColor" }}
                 />
               </svg>
             </a>
@@ -541,8 +541,8 @@ function SgCard({
                   >
                     <path
                       d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
-                      fill="#ffffff"
-                      style={{ fill: "#fff" }}
+                      fill="currentColor"
+                      style={{ fill: "currentColor" }}
                     />
                   </svg>
                 </a>
@@ -874,7 +874,7 @@ function Apologist({
         <style>{getStyleOf("apologist.css")}</style>
         <style>{`
                     .sg-error { color: #e57373; padding: 1rem; }
-                    .sg-error .sg-muted { color: #777; }
+                    .sg-error .sg-muted { color: var(--text2); }
                 `}</style>
       </div>
     );
@@ -1100,7 +1100,7 @@ function Apologist({
                     align-items: center;
                     gap: 6px;
                     padding: 8px 20px;
-                    border: 1px solid rgba(255,255,255,0.6);
+                    border: 1px solid var(--accentColor);
                     border-radius: 20px;
                     background: var(--accentColor, rgba(0,0,0,0.45));
                     color: var(--text1, #fff) !important;
@@ -1108,13 +1108,12 @@ function Apologist({
                     font-weight: 500;
                     text-decoration: none !important;
                     cursor: pointer;
-                    transition: background 0.2s, border-color 0.2s;
+                    transition: background 0.2s, border-color 0.2s, opacity 0.2s;
                     backdrop-filter: blur(4px);
                 }
 
                 .sg-book-cover-btn:hover {
-                    background: rgba(255,255,255,0.15);
-                    border-color: #fff;
+                    opacity: 0.85;
                 }
 
                 .sg-book-cover-btn:visited,
@@ -1147,7 +1146,7 @@ function Apologist({
                     font-size: 14px;
                     font-weight: 500;
                     cursor: pointer;
-                    transition: background 0.2s;
+                    transition: background 0.2s, color 0.2s;
                     display: flex;
                     align-items: center;
                     gap: 8px;
@@ -1224,7 +1223,7 @@ function Apologist({
                     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
                 }
 
-                /* Only "Now Playing" card gets green border */
+                /* Only "Now Playing" card gets accent border */
                 .sg-card.sg-now-playing-card,
                 .sg-card.sg-now-playing-card:hover,
                 .sg-card.sg-now-playing-card.is-open {
@@ -1374,7 +1373,7 @@ function Apologist({
                 }
 
                 .sg-previewVideoThumb--fallback {
-                    background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+                    background: linear-gradient(135deg, var(--panelBackground), var(--inputBorder));
                 }
 
                 .sg-previewVideoButton::after {
@@ -1402,7 +1401,7 @@ function Apologist({
                     height: 34px;
                 }
 
-                /* ── Dark theme overrides for sg2 classes ── */
+                /* ── Theme-aware overrides for sg2 classes ── */
                 .sg2-head {
                     display: flex;
                     align-items: center;

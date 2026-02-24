@@ -427,13 +427,13 @@ function ThePage({
                 chapterNo = configBot.tags.chapter;
               const chapterUrl = chapterNo
                 ? bookData.firstChapterApiLink.replace(
-                    "1.json",
-                    `${chapterNo}.json`
-                  )
+                  "1.json",
+                  `${chapterNo}.json`
+                )
                 : bookData.firstChapterApiLink.replace(
-                    "1.json",
-                    `${tab.data.chapter}.json`
-                  );
+                  "1.json",
+                  `${tab.data.chapter}.json`
+                );
               await bible.open(
                 bookData.id,
                 configBot.tags.chapter || 1,
@@ -453,13 +453,13 @@ function ThePage({
               chapterNo = configBot.tags.chapter;
             const chapterUrl = chapterNo
               ? bookData.firstChapterApiLink.replace(
-                  "1.json",
-                  `${chapterNo}.json`
-                )
+                "1.json",
+                `${chapterNo}.json`
+              )
               : bookData.firstChapterApiLink.replace(
-                  "1.json",
-                  `${tab.data.chapter}.json`
-                );
+                "1.json",
+                `${tab.data.chapter}.json`
+              );
             await bible.open(
               bookData.id,
               configBot.tags.chapter || 1,
@@ -551,7 +551,7 @@ function ThePage({
         config &&
         !config?.sharedTab &&
         role === "host" &&
-        masks["sharedTab"] !== tab.id
+        masks["sharedTab"] !== tab?.id
       ) {
         updateTab(tab?.id, data);
         updateTab(masks["sharedTab"], data);
@@ -573,7 +573,7 @@ function ThePage({
       } else {
         setDirection(null);
       }
-      if (masks["sharedTab"] === tab.id) EmitData("book", { ...data });
+      if (masks["sharedTab"] === tab?.id) EmitData("book", { ...data });
       // const emitter = getBot("system", "app.emitter");
       // sendRemoteData(emitter.masks.otherRemotes, "updateSharingData", {
       //   id: tab?.id,
@@ -596,7 +596,7 @@ function ThePage({
   }, [data]);
 
   useEffect(() => {
-    if (data && tab.id === activeTab) {
+    if (data && tab?.id === activeTab) {
       configBot.tags.book = data?.bookId;
       configBot.tags.chapter = data?.chapter;
     }
@@ -750,9 +750,8 @@ function ThePage({
       // Build context data
       setContextData({
         verse: selectedTextFinal,
-        reference: `${data?.book} ${data?.chapter}:${lowestVerse}${
-          lowestVerse !== highestVerse ? `-${highestVerse}` : ""
-        }`,
+        reference: `${data?.book} ${data?.chapter}:${lowestVerse}${lowestVerse !== highestVerse ? `-${highestVerse}` : ""
+          }`,
         book: data?.book,
         chapter: data?.chapter,
         verses: unifiedVerses,
@@ -984,8 +983,8 @@ function ThePage({
               createAttributes: config?.createAttributes
                 ? config.createAttributes
                 : () => {
-                    return {};
-                  },
+                  return {};
+                },
             };
           });
         });
@@ -1056,11 +1055,11 @@ function ThePage({
       openPrevChapter,
       open,
       changeTranslation: bible?.changeTranslation || undefined,
-      setPanalApp: () => {},
+      setPanalApp: () => { },
     });
     globalThis.Open = open;
     globalThis.ChangeTranslation = changeTranslation;
-    globalThis.SetPanalApp = () => {};
+    globalThis.SetPanalApp = () => { };
     globalThis.ToggleVerseHighlight = toggleVerseHighlight;
     globalThis.UnHighlightVerse = unHighlightVerse;
     globalThis.HighlightVerse = highlightVerse;
@@ -1212,11 +1211,10 @@ function ThePage({
     (verseNumbers, color, scroll, fadeIn, skipIt) => {
       if (!tab?.id) return;
 
-      const verseId = `v-${
-        Array.isArray(verseNumbers)
-          ? verseNumbers[verseNumbers.length - 1]
-          : verseNumbers
-      }`;
+      const verseId = `v-${Array.isArray(verseNumbers)
+        ? verseNumbers[verseNumbers.length - 1]
+        : verseNumbers
+        }`;
 
       if (scroll)
         document.getElementById(verseId)?.scrollIntoView({
@@ -1312,11 +1310,10 @@ function ThePage({
     (verseNumbers, color, scroll = true) => {
       if (!tab?.id) return;
 
-      const verseId = `v-${
-        Array.isArray(verseNumbers)
-          ? verseNumbers[verseNumbers.length - 1]
-          : verseNumbers
-      }`;
+      const verseId = `v-${Array.isArray(verseNumbers)
+        ? verseNumbers[verseNumbers.length - 1]
+        : verseNumbers
+        }`;
 
       if (scroll)
         document.getElementById(verseId)?.scrollIntoView({
@@ -1361,11 +1358,10 @@ function ThePage({
     (verseNumbers) => {
       if (!tab?.id) return;
 
-      const verseId = `v-${
-        typeof verseNumbers === "object"
-          ? verseNumbers[verseNumbers.length - 1]
-          : verseNumbers
-      }`;
+      const verseId = `v-${typeof verseNumbers === "object"
+        ? verseNumbers[verseNumbers.length - 1]
+        : verseNumbers
+        }`;
 
       document.getElementById(verseId).scrollIntoView({
         behavior: "smooth",
@@ -1817,24 +1813,24 @@ function ThePage({
                 style={
                   globalThis.IsMobileNow()
                     ? {
-                        position: "fixed",
-                        left: "50%",
-                        bottom: "20px",
-                        transform: "translateX(-50%)",
-                        zIndex: 10000,
-                        width: "90%",
-                        maxWidth: "420px",
-                        cursor: "default",
-                        userSelect: "none",
-                      }
+                      position: "fixed",
+                      left: "50%",
+                      bottom: "20px",
+                      transform: "translateX(-50%)",
+                      zIndex: 10000,
+                      width: "90%",
+                      maxWidth: "420px",
+                      cursor: "default",
+                      userSelect: "none",
+                    }
                     : {
-                        position: "fixed",
-                        left: toolbarPos.x - 50,
-                        top: toolbarPos.y,
-                        zIndex: 10000,
-                        cursor: dragToolbar ? "grabbing" : "grab",
-                        userSelect: "none",
-                      }
+                      position: "fixed",
+                      left: toolbarPos.x - 50,
+                      top: toolbarPos.y,
+                      zIndex: 10000,
+                      cursor: dragToolbar ? "grabbing" : "grab",
+                      userSelect: "none",
+                    }
                 }
                 className="verse-toolbar"
               >
@@ -1920,9 +1916,8 @@ function ThePage({
               justifyContent: "center",
               // backgroundColor: "#f8f9fa",
             }}
-            className={`pageContainer ${
-              tabEntered ? "tabEntered" : "tabDrop"
-            } ${highlightOnce ? "tabHighlightBg" : ""}`}
+            className={`pageContainer ${tabEntered ? "tabEntered" : "tabDrop"
+              } ${highlightOnce ? "tabHighlightBg" : ""}`}
           >
             <div
               style={{
@@ -1941,6 +1936,7 @@ function ThePage({
                 onClick={() => {
                   setOpenSidebar((prev) => !prev);
                   setCurrentExperience(0);
+                  globalThis.MakingNewTab = true;
                 }}
                 style={{
                   fontSize: "24px",
@@ -2469,9 +2465,8 @@ function Section({
         return (
           <span
             key={i}
-            className={`clickableCursor highlightened ${
-              isActive ? "highlighted-word" : ""
-            }`}
+            className={`clickableCursor highlightened ${isActive ? "highlighted-word" : ""
+              }`}
             style={{ animationDelay: `${i * 0.1}s` }}
             onClick={() => {
               console.log(part.key);
@@ -2638,8 +2633,8 @@ function Section({
                         `${book}-${chapter}-${verse.verseNumber}`
                       ] || commandHighlight.includes(verse.verseNumber)
                         ? highlighted?.[
-                            `${book}-${chapter}-${verse.verseNumber}`
-                          ]?.color
+                          `${book}-${chapter}-${verse.verseNumber}`
+                        ]?.color
                         : "transparent",
                     color:
                       highlighted?.[
@@ -2678,26 +2673,23 @@ function Section({
                       ? "2px dashed var(--spaceSelection)"
                       : "none",
                   }}
-                  className={`sectionText ${
-                    verse?.verseNumber.toString() === activeVerse.toString()
-                      ? "highlighted"
-                      : ""
-                  } ${
-                    highlighted?.[`${book}-${chapter}-${verse.verseNumber}`]
+                  className={`sectionText ${verse?.verseNumber.toString() === activeVerse.toString()
+                    ? "highlighted"
+                    : ""
+                    } ${highlighted?.[`${book}-${chapter}-${verse.verseNumber}`]
                       ? "verse-highlighted"
                       : ""
-                  } ${isClicked ? "verse-clicked" : ""}`}
+                    } ${isClicked ? "verse-clicked" : ""}`}
                 >
                   {!c ? (
                     (() => {
                       const verseContent = renderVerseText(verse);
                       const verseNumberElement = showVerses[activeSpace] ? (
                         <span
-                          className={`sectionTextNumber ${
-                            globalThis.studyNotesPresent
-                              ? "clickableCursor"
-                              : ""
-                          }`}
+                          className={`sectionTextNumber ${globalThis.studyNotesPresent
+                            ? "clickableCursor"
+                            : ""
+                            }`}
                           onClick={() => {
                             if (globalThis.studyNotesPresent) {
                               HighlightStudyNoteSection(verse?.verseNumber);
@@ -2863,9 +2855,8 @@ function Section({
                         style={{
                           display: showVerses[activeSpace] ? "" : "none",
                         }}
-                        className={`sectionTextNumber ${
-                          globalThis.studyNotesPresent ? "clickableCursor" : ""
-                        }`}
+                        className={`sectionTextNumber ${globalThis.studyNotesPresent ? "clickableCursor" : ""
+                          }`}
                         onClick={() => {
                           if (globalThis.studyNotesPresent) {
                             HighlightStudyNoteSection(verse?.verseNumber);
@@ -2948,7 +2939,7 @@ export const ThePageWithPanel = ({ tab }) => {
         initialWidth={gridPortalBot.tags.pixelWidth}
         containerWidth={gridPortalBot.tags.pixelWidth}
         containerHeight={1000}
-        onResize={() => {}}
+        onResize={() => { }}
         otherTab={panalApp}
       >
         <ThePage setPanalApp={setPanalApp} tab={tab} />
@@ -2965,7 +2956,7 @@ export const ThePageWithEditor = ({ tab, setPanalApp, panelId }) => {
   const activeTab = panelId ? globalThis.PanelTabsMap[panelId] || tab : tab;
   console.log("active tab in the page", panelId, activeTab);
   const [enableEditor, setEnableEditor] = useState(false);
-  useEffect(() => {}, [enableEditor]);
+  useEffect(() => { }, [enableEditor]);
   const [data, setData] = useState(() => {
     if (activeTab) {
       return getCachedBibleData(

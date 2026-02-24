@@ -1,4 +1,4 @@
-/* ──────────────────────────────  Apologist Panel (Dark Theme)  ────────────────────────────── */
+/* ──────────────────────────────  Apologist Panel (Theme-aware)  ────────────────────────────── */
 
 .sg-searchWrap {
   font-family:
@@ -160,7 +160,7 @@
 }
 
 .sg-error .sg-muted {
-  color: #777;
+  color: var(--text2);
 }
 
 .sg-empty {
