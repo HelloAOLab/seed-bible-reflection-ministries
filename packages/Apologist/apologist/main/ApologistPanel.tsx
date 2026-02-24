@@ -391,8 +391,12 @@ function ApologistPanelWrapper({ id }) {
 
   const tabs = [
     { key: "discovery", label: "Discovery", icon: "explore" },
-    { key: "ministries", label: "Reflection Ministries", icon: "menu_book" },
     { key: "askken", label: "Ask Ken", icon: "chat" },
+    {
+      key: "ministries",
+      label: "Reflection Ministries",
+      icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png",
+    },
   ];
 
   return (
@@ -414,9 +418,17 @@ function ApologistPanelWrapper({ id }) {
             onClick={() => setActiveTab(tab.key)}
             title={tab.label}
           >
-            <span className="material-symbols-outlined apologist-tab-icon">
-              {tab.icon}
-            </span>
+            {tab.icon.startsWith("http") ? (
+              <img
+                src={tab.icon}
+                alt={tab.label}
+                className="apologist-tab-image-icon"
+              />
+            ) : (
+              <span className="material-symbols-outlined apologist-tab-icon">
+                {tab.icon}
+              </span>
+            )}
             <span className="apologist-tab-label">{tab.label}</span>
           </button>
         ))}
@@ -484,7 +496,13 @@ function ApologistPanelWrapper({ id }) {
 
         .apologist-tab-icon {
           font-size: 18px;
-        }
+      }
+        .apologist-tab-image-icon {
+        width: 28px !important;
+        height: 28px !important;
+        object-fit: contain;
+          
+          }
 
         .apologist-tab-label {
           font-size: 12px;
