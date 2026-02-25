@@ -24,7 +24,7 @@ const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const KENBOA_API_KEY = "apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN";
 
-function AskKenTab() {
+function AskKenTab({ context, label }) {
   const [messages, setMessages] = useState([]);
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -46,17 +46,29 @@ function AskKenTab() {
     setIsLoading(true);
     setError(null);
 
-    // Build prompt: single question or conversation history concatenated
-    const prompt =
-      newMessages.length === 1
-        ? newMessages[0].content
-        : newMessages
-            .map((m) =>
-              m.role === "user"
-                ? `User: ${m.content}`
-                : `Assistant: ${m.content}`
-            )
+    // Build prompt with Bible context + conversation history
+    // Max 15 messages, truncate assistant replies to keep prompt lean
+    // Read context directly from globalThis for the freshest value
+    const currentContext = globalThis.GlobalSearch || context || "";
+    const currentLabel = globalThis.GlobalSearchLabel || label || "";
+    const contextPrefix = currentContext
+      ? `[The user is currently reading: ${currentLabel || currentContext}]\n\n`
+      : "";
+    const recentMessages = newMessages.slice(-15);
+    const chatHistory =
+      recentMessages.length === 1
+        ? recentMessages[0].content
+        : recentMessages
+            .map((m) => {
+              if (m.role === "user") return `User: ${m.content}`;
+              const short =
+                m.content.length > 200
+                  ? m.content.substring(0, 200) + "..."
+                  : m.content;
+              return `Assistant: ${short}`;
+            })
             .join("\n");
+    const prompt = contextPrefix + chatHistory;
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", KENBOA_DOMAIN);
@@ -443,7 +455,9 @@ function ApologistPanelWrapper({ id }) {
         {activeTab === "ministries" && (
           <MinistriesTab url={ministriesUrl} title={ministriesTitle} />
         )}
-        {activeTab === "askken" && <AskKenTab />}
+        {activeTab === "askken" && (
+          <AskKenTab context={searchQuery} label={searchLabel} />
+        )}
       </div>
 
       {/* ── Styles ── */}
