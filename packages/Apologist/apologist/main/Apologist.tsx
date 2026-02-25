@@ -1,3 +1,4 @@
+const { useSideBarContext } = await import("app.hooks.sideBar");
 const { useEffect, useState, useMemo, useRef } = os.appHooks;
 const getStyleOf = await thisBot.GetStyle();
 
@@ -377,7 +378,7 @@ function SgCard({
               aria-label="Open in Reflection Ministries"
               style={{ color: "#fff", textDecoration: "none" }}
             >
-              Learn More
+              {t("learnMore")}
               <svg
                 width="14"
                 height="14"
@@ -531,7 +532,7 @@ function SgCard({
                   aria-label="Open in Reflection Ministries"
                   style={{ color: "#fff", textDecoration: "none" }}
                 >
-                  Learn More
+                  {t("earnMore")}
                   <svg
                     width="16"
                     height="16"
@@ -579,6 +580,8 @@ function Apologist({
   baselineQuery = "",
   label = "",
 }) {
+  const { t } = useSideBarContext();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
@@ -904,7 +907,7 @@ function Apologist({
               </button>
             )}
             <div className="sg-resultCount">
-              {headerLabel} | {data.length} Results
+              {t(headerLabel)} | {data.length} {t("results")}
             </div>
             <div className="sg-viewToggle">
               <button
@@ -1015,7 +1018,7 @@ function Apologist({
                       Loading...
                     </>
                   ) : (
-                    "Load More"
+                    t("loadMore")
                   )}
                 </button>
               </div>
