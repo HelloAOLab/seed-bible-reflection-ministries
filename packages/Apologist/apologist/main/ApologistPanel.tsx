@@ -10,7 +10,7 @@
  * - Polling globalThis.GlobalSearch as a fallback sync
  * - Tab navigation and inter-tab communication
  */
-
+const { useSideBarContext } = await import("app.hooks.sideBar");
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
 
 // ── Logo URL (same icon used in the Apologist toolbar) ──
@@ -130,8 +130,8 @@ function AskKenTab() {
         <div className="askken-logo-group">
           <img src={APOLOGIST_LOGO_URL} alt="Ken Boa" className="askken-logo" />
           <div className="askken-logo-text">
-            <span className="askken-logo-name">KEN BOA</span>
-            <span className="askken-logo-sub">REFLECTIONS</span>
+            <span className="askken-logo-name">{t("kenBoa")}</span>
+            <span className="askken-logo-sub">{t("reflections")}</span>
           </div>
         </div>
         {hasMessages && (
@@ -142,7 +142,7 @@ function AskKenTab() {
                 fill="currentColor"
               />
             </svg>
-            New Chat
+            {t("newChat")}
           </button>
         )}
       </div>
@@ -151,13 +151,9 @@ function AskKenTab() {
       <div className="askken-messages">
         {!hasMessages && (
           <div className="askken-hero">
-            <p className="askken-subtitle">Exploring God's Word to Inspire &</p>
-            <h1 className="askken-heading">Deepen Your Faith</h1>
-            <p className="askken-description">
-              Reflections Ministries equips disciples & empowers churches
-              through powerful biblical resources to help you Love, Learn, &
-              Live Well.
-            </p>
+            <p className="askken-subtitle">{t("kenSubtitle")}</p>
+            <h1 className="askken-heading">{t("kenHeading")}</h1>
+            <p className="askken-description">{t("kenDescription")}</p>
           </div>
         )}
 
@@ -208,7 +204,7 @@ function AskKenTab() {
           <input
             type="text"
             className="askken-input"
-            placeholder="Ask a question here"
+            placeholder={t("askQuestion")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -230,9 +226,7 @@ function AskKenTab() {
             </svg>
           </button>
         </div>
-        <p className="askken-footer">
-          © 2025 Reflections Ministries. All Rights Reserved.
-        </p>
+        <p className="askken-footer">{t("reflectionCopyRight")}</p>
       </div>
     </div>
   );
@@ -256,7 +250,7 @@ function MinistriesTab({ url, title }) {
             fontSize: "15px",
           }}
         >
-          Open a resource from the Discovery tab to view it here.
+          {t("openResourceFromDiscovery")}
         </p>
       </div>
     );
@@ -294,6 +288,7 @@ function MinistriesTab({ url, title }) {
 }
 
 function ApologistPanelWrapper({ id }) {
+  const { t } = useSideBarContext();
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState("discovery");
   const [ministriesUrl, setMinistriesUrl] = useState("");
@@ -390,11 +385,11 @@ function ApologistPanelWrapper({ id }) {
   }
 
   const tabs = [
-    { key: "discovery", label: "Discovery", icon: "explore" },
-    { key: "askken", label: "Ask Ken", icon: "chat" },
+    { key: "discovery", label: "discovery", icon: "explore" },
+    { key: "askken", label: "askKen", icon: "chat" },
     {
       key: "ministries",
-      label: "Reflection Ministries",
+      label: "reflectionMinistries",
       icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png",
     },
   ];
@@ -429,7 +424,7 @@ function ApologistPanelWrapper({ id }) {
                 {tab.icon}
               </span>
             )}
-            <span className="apologist-tab-label">{tab.label}</span>
+            <span className="apologist-tab-label">{t(tab.label)}</span>
           </button>
         ))}
       </div>

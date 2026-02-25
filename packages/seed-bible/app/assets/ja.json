@@ -675,5 +675,20 @@
   "pentateuch": "モーセ五書",
   "historical": "歴史書",
   "poetic": "詩歌書",
-  "prophetic": "預言書"
+  "prophetic": "預言書",
+  "discovery": "ディスカバリー",
+  "reflectionMinistries": "リフレクションズ・ミニストリーズ",
+  "askKen": "ケンに質問する",
+  "results": "結果",
+  "openResourceFromDiscovery": "ここで表示するには、ディスカバリータブからリソースを開いてください",
+  "kenBoa": "ケン・ボア",
+  "reflections": "リフレクションズ",
+  "reflectionCopyRight": "© 2026 リフレクションズ・ミニストリーズ。無断転載を禁じます。",
+  "askQuestion": "ここで質問してください",
+  "kenSubtitle": "神の御言葉を探求し、インスピレーションを得る",
+  "kenHeading": "あなたの信仰を深める",
+  "kenDescription": "リフレクションズ・ミニストリーズは、力強い聖書的リソースを通して弟子たちを育て、教会を力づけ、あなたが愛し、学び、より良く生きることを助けます。",
+  "newChat": "新しいチャット",
+  "learnMore": "もっと見る",
+  "loadMore": "さらに読み込む"
 }
