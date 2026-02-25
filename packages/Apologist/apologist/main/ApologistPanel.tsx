@@ -15,7 +15,7 @@ const { useState, useEffect, useCallback, useRef } = os.appHooks;
 
 // ── Logo URL (same icon used in the Apologist toolbar) ──
 const APOLOGIST_LOGO_URL =
-  "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/f89ebc25a02acbfb56957a90bdddb7d938f5ba54fc045fa0ef108a0ff30821bb.svg";
+  "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png";
 
 // ── Ask Ken AI Chat component ──
 // Constants per official Apologist Fusion docs:
