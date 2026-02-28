@@ -700,6 +700,38 @@ function getMenuActions(that, onClose, activeSpace, spaces) {
       {
         icon: <ApologistIcon />,
         onClick: () => {
+          // Build verse reference (e.g., "Genesis 1:2-3")
+          const verseNums = (that.verseNumber || []).sort((a, b) => a - b);
+          const groups = [];
+          if (verseNums.length > 0) {
+            let start = verseNums[0],
+              end = verseNums[0];
+            for (let i = 1; i < verseNums.length; i++) {
+              if (verseNums[i] === end + 1) {
+                end = verseNums[i];
+              } else {
+                groups.push(start === end ? `${start}` : `${start}-${end}`);
+                start = verseNums[i];
+                end = verseNums[i];
+              }
+            }
+            groups.push(start === end ? `${start}` : `${start}-${end}`);
+          }
+          const verseLabel = `${that.book} ${that.chapter}:${groups.join(",")}`;
+
+          // Push verse-level search to Apologist
+          globalThis.GlobalSearch = that.text || "";
+          globalThis.GlobalSearchLevel = "verse";
+          globalThis.GlobalSearchLabel = verseLabel;
+
+          if (typeof globalThis.UpdateStudyNoteSearch === "function") {
+            globalThis.UpdateStudyNoteSearch(that.text || "", {
+              level: "verse",
+              label: verseLabel,
+              forceRefresh: true,
+            });
+          }
+
           ClearUserSelection();
           SetShowCommands(true);
           SetInHold(null);
