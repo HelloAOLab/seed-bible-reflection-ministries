@@ -38,7 +38,7 @@ const ReferenceApp = (props: { reference: ReferencesInterface }) => {
       const referenceDataPromises = currentReference.references.map(
         (reference) => {
           return web.get(
-            `https://bible.helloao.org/api/BSB/${reference.book}/${reference.chapter}.json`
+            `https://vmfnri.helloao.org/api/NASB95/${reference.book}/${reference.chapter}.json`
           );
         }
       );
@@ -152,8 +152,8 @@ const ReferenceApp = (props: { reference: ReferencesInterface }) => {
         book: tags.IdToName[reference.book],
         bookId: reference.book,
         chapter: reference.chapter,
-        translation: "BSB",
-        shortName: "BSB",
+        translation: "NASB95",
+        shortName: "NASB95",
       },
     };
     AddTab({

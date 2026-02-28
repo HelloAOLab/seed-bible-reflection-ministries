@@ -15,7 +15,7 @@ const ReferenceComponent = (props: {
       const { reference } = props;
       setRdLoading(true);
       const contentReq = await web.get(
-        `https://bible.helloao.org/api/BSB/${reference.book}/${reference.chapter}.json`
+        `https://vmfnri.helloao.org/api/NASB95/${reference.book}/${reference.chapter}.json`
       );
       if (contentReq.status == 200) {
         const contentArray = [...contentReq.data.chapter.content];

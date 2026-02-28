@@ -35,7 +35,7 @@ const ReferenceModal = (props: { reference: ReferencesInterface }) => {
       console.log("retriveing from web");
       const referenceDataPromises = referenceArray.map((reference) => {
         return web.get(
-          `https://bible.helloao.org/api/BSB/${reference.book}/${reference.chapter}.json`
+          `https://vmfnri.helloao.org/api/NASB95/${reference.book}/${reference.chapter}.json`
         );
       });
 
@@ -97,8 +97,8 @@ const ReferenceModal = (props: { reference: ReferencesInterface }) => {
         book: tags.IdToName[reference.book],
         bookId: reference.book,
         chapter: reference.chapter,
-        translation: "BSB",
-        shortName: "BSB",
+        translation: "NASB95",
+        shortName: "NASB95",
       },
     };
     AddTab({

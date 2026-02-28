@@ -693,7 +693,13 @@ function Tab({
   );
 }
 
-function Folder({ folder, onlineUsers, collapsed, setSidebarWidth, setCollapsed }) {
+function Folder({
+  folder,
+  onlineUsers,
+  collapsed,
+  setSidebarWidth,
+  setCollapsed,
+}) {
   const {
     setActiveTab,
     activeTab,
@@ -1276,8 +1282,8 @@ function SideBar({ panelsNumber }) {
                 book: "Genesis",
                 bookId: "GEN",
                 chapter: 1,
-                translation: "BSB",
-                shortName: "BSB",
+                translation: "NASB95",
+                shortName: "NASB95",
               },
             });
             closePopupSettings();
@@ -1602,8 +1608,8 @@ function SideBar({ panelsNumber }) {
                           book: "Genesis",
                           bookId: "GEN",
                           chapter: 1,
-                          translation: "BSB",
-                          shortName: "BSB",
+                          translation: "NASB95",
+                          shortName: "NASB95",
                         },
                       });
                     }
@@ -1776,7 +1782,9 @@ function SideBar({ panelsNumber }) {
               if (!searchQuery) return true;
               const query = searchQuery.toLowerCase();
               const name = tab?.data?.book || tab?.data?.title || "";
-              const chapter = tab?.data?.chapter ? String(tab.data.chapter) : "";
+              const chapter = tab?.data?.chapter
+                ? String(tab.data.chapter)
+                : "";
               const shortName = tab?.data?.shortName || "";
               const type = tab?.data?.type || "";
               return (
@@ -1826,8 +1834,8 @@ function SideBar({ panelsNumber }) {
                       book: "Genesis",
                       bookId: "GEN",
                       chapter: 1,
-                      translation: "BSB",
-                      shortName: "BSB",
+                      translation: "NASB95",
+                      shortName: "NASB95",
                     },
                   });
                 }
@@ -2147,7 +2155,9 @@ export const UserProfile = ({ collapsed }) => {
           />
         ) : !configBot.tags.staticInst ? (
           <Icon width={15} height={15} />
-        ) : <span className="material-symbols-outlined">person</span>}
+        ) : (
+          <span className="material-symbols-outlined">person</span>
+        )}
       </div>
       {
         null /*userData?.photoLink ? (
