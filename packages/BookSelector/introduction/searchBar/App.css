@@ -957,7 +957,6 @@ input:checked + .slider:not(#slider):before {
 .close-sideBar {
   right: 0;
   height: 0;
-  bottom: -80px;
   user-select: none;
   visibility: hidden;
   pointer-events: none;
@@ -1271,7 +1270,7 @@ input:checked + .slider:not(#slider):before {
   }
 
   .books-container {
-    height: calc(100dvh - 110px);
+    height: calc(100dvh - 145px);
     flex-direction: column;
     overflow: auto;
   }
@@ -1345,10 +1344,11 @@ input:checked + .slider:not(#slider):before {
     right: 0;
     opacity: 1;
     bottom: 45px;
-    height: calc(100dvh - 40px);
+    height: calc(100dvh - 75px);
     width: 100dvw;
     border-radius: 0px;
     box-shadow: none;
+    top: 0;
   }
 
   .close-sideBar {
