@@ -19,6 +19,8 @@ import {
   GoPrivateIcon,
   BurgerMenuIcon,
   ClientLogo,
+  BookMarkIcon,
+  MobileSettingsIcon,
 } from "app.components.icons";
 import { useBibleContext } from "app.hooks.bibleVariables";
 import { useSideBarContext } from "app.hooks.sideBar";
@@ -359,9 +361,10 @@ function Tab({
   index,
   setSidebarWidth,
   setCollapsed,
-
   sharedTab,
-}) {
+  isBookmarked,
+  onBookmarkClick,
+}: any) {
   const { openPopupSettings, closePopupSettings, userURL, t } =
     useSideBarContext();
   const { setCanvasMode, setMapMode } = useBibleContext();
@@ -664,16 +667,38 @@ function Tab({
             />
           </div>
 
-          {!sharedTab && activeTab === el.id && (
-            <span
-              onClick={() => {
-                openPopupSettings(OPTIONS(el));
-              }}
-              style={{ display: activeTab ? "" : "none" }}
-              className="material-symbols-outlined "
-            >
-              more_vert
-            </span>
+          {!sharedTab && (
+            <div className="tab-actions">
+              {onBookmarkClick && (
+                <span
+                  className="tab-bookmark-btn"
+                  onClick={(e: MouseEvent) => {
+                    e.stopPropagation();
+                    onBookmarkClick(el.id);
+                  }}
+                  title={isBookmarked ? "Remove bookmark" : "Bookmark"}
+                >
+                  <BookMarkIcon
+                    stroke={
+                      isBookmarked
+                        ? "var(--selectedSpaceColor)"
+                        : "currentColor"
+                    }
+                    fill={isBookmarked ? "var(--selectedSpaceColor)" : "none"}
+                  />
+                </span>
+              )}
+              {activeTab === el.id && (
+                <span
+                  onClick={() => {
+                    openPopupSettings(OPTIONS(el));
+                  }}
+                  className="material-symbols-outlined"
+                >
+                  more_vert
+                </span>
+              )}
+            </div>
           )}
         </>
       ) : (
@@ -832,6 +857,75 @@ function SideBar({ panelsNumber }) {
   const [searchQuery, setSearchQuery] = useState(""); // Search filter for tabs
   const [editMode, setEditMode] = useState(false); // New state for edit mode
   const [keepAwake, setKeepAwake] = useState(false); // New state for keep device awaken
+
+  // Bookmark state (shared between mobile and desktop)
+  const [bookmarks, setBookmarks] = useState(
+    () => masks.mobileBookmarks || { "My bookmarks": [] }
+  );
+  const [showBookmarksFilter, setShowBookmarksFilter] = useState(false);
+  const [showBookmarkModal, setShowBookmarkModal] = useState(false);
+  const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
+  const [selectedTabForBookmark, setSelectedTabForBookmark] = useState<
+    string | null
+  >(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const bookmarkedTabIds = new Set(Object.values(bookmarks).flat());
+
+  const handleRemoveBookmark = (tabId: string) => {
+    setBookmarks((prev: any) => {
+      const updated: Record<string, string[]> = {};
+      for (const [cat, ids] of Object.entries(prev)) {
+        updated[cat] = (ids as string[]).filter((id) => id !== tabId);
+      }
+      setTagMask(thisBot, "mobileBookmarks", updated, "local");
+      return updated;
+    });
+  };
+
+  const handleBookmarkTab = (tabId: string) => {
+    setSelectedTabForBookmark(tabId);
+    const first = Object.keys(bookmarks)[0] || "";
+    setSelectedCategory(first);
+    setShowBookmarkModal(true);
+  };
+
+  const handleAddToCategory = (category: string) => {
+    if (!category) return;
+    setBookmarks((prev: any) => {
+      const updated = { ...prev };
+      if (!updated[category]) updated[category] = [];
+      if (!updated[category].includes(selectedTabForBookmark)) {
+        updated[category].push(selectedTabForBookmark);
+      }
+      setTagMask(thisBot, "mobileBookmarks", updated, "local");
+      return updated;
+    });
+    setShowBookmarkModal(false);
+    setSelectedTabForBookmark(null);
+  };
+
+  const handleCreateCategory = () => {
+    if (!newCategoryName.trim()) return;
+    const name = newCategoryName.trim();
+    setBookmarks((prev: any) => {
+      const updated = { ...prev, [name]: [] };
+      setTagMask(thisBot, "mobileBookmarks", updated, "local");
+      if (
+        selectedTabForBookmark &&
+        !updated[name].includes(selectedTabForBookmark)
+      ) {
+        updated[name] = [selectedTabForBookmark];
+        setTagMask(thisBot, "mobileBookmarks", updated, "local");
+      }
+      return updated;
+    });
+    setNewCategoryName("");
+    setShowNewCategoryModal(false);
+    setShowBookmarkModal(false);
+    setSelectedTabForBookmark(null);
+  };
+
   useEffect(() => {
     setEditMode(ReSeed);
   }, [ReSeed]);
@@ -1272,7 +1366,82 @@ function SideBar({ panelsNumber }) {
       // },
     ],
   };
+  const SessionsOptions = {
+    type: "normal",
+    items: [
+      ...(!configBot.tags.staticInst
+        ? [
+            {
+              disabled: false,
+              icon: <StartSessionIcon />,
+              title: t("startSession"),
+              onClick: () => {
+                // os.log(globalThis?.StartSession,globalThis)
+                HandleSharedTabClick();
+              },
+            },
+            {
+              disabled: false,
+              icon: <MenuIcon name="person_add" />,
+              // icon: <TransparentSvg />,
+              title: t("inviteToSession"),
+              onClick: async () => {
+                const { QRCodeComponent } = thisBot.Chips();
+                const url = `https://ao.bot/?inst=${os.getCurrentInst()}`;
+                ShowModal(<QRCodeComponent url={url} />);
+              },
+            },
+          ]
+        : []),
+      ...(!removeJoinSession
+        ? [
+            {
+              disabled: true,
+              icon: <JoinSession />,
+              title: t("joinAnotherSession"),
+              onClick: async () => {
+                const { JoinSessionComponent } = thisBot.Chips();
+                const translations = {
+                  joinSession: t("joinSession"),
+                  enterSessionCode: t("enterSessionCode"),
+                  sessionCodePlaceholder: t("sessionCodePlaceholder"),
+                  join: t("join"),
+                };
+                ShowModal(
+                  <JoinSessionComponent
+                    onJoin={(code) => os.goToURL(code)}
+                    translations={translations}
+                    CloseModal={() => globalThis.CloseModal()}
+                  />
+                );
+                if (globalThis.IsMobileNow()) {
+                  setOpenOnMobile(false);
+                  setSidebarWidth(0);
+                }
+              },
+            },
+            ...(!configBot.tags.staticInst
+              ? [
+                  {
+                    disabled: false,
+                    icon: <GoPrivateIcon />,
+                    title: globalThis.IsPrivateMode?.()
+                      ? t("goPublic")
+                      : t("goPrivate"),
+                    onClick: async () => {
+                      if (globalThis.TogglePrivateMode) {
+                        await globalThis.TogglePrivateMode();
+                      }
+                    },
+                  },
+                ]
+              : []),
 
+            { type: "line" },
+          ]
+        : []),
+    ],
+  };
   const AddingOption = () => {
     const input = {
       type: "normal",
@@ -1354,17 +1523,14 @@ function SideBar({ panelsNumber }) {
   // Mobile-only layout: when `isMobile` and `openOnMobile` are true, render a simplified
   // full-screen sidebar that matches the mobile design (header, list, bottom nav).
   if (isMobile && openOnMobile) {
-    const [bookmarks, setBookmarks] = useState(
-      () => masks.mobileBookmarks || {}
-    );
-    const [showBookmarkModal, setShowBookmarkModal] = useState(false);
-    const [showNewCategoryModal, setShowNewCategoryModal] = useState(false);
-    const [selectedTabForBookmark, setSelectedTabForBookmark] = useState(null);
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [newCategoryName, setNewCategoryName] = useState("");
+    const [renamingCategory, setRenamingCategory] = useState("");
+    const [renameValue, setRenameValue] = useState("");
     const [expandedCategories, setExpandedCategories] = useState<
       Record<string, boolean>
-    >({});
+    >({
+      ["My bookmarks"]: false,
+    });
+    const [showBookmarks, setShowBookmarks] = useState(false);
 
     const toggleCategory = (categoryName) => {
       setExpandedCategories((prev) => ({
@@ -1374,21 +1540,9 @@ function SideBar({ panelsNumber }) {
     };
 
     // Compute free tabs (tabs not bookmarked in any category)
-    const bookmarkedTabIds = new Set(Object.values(bookmarks).flat());
     const freeTabs = tabs.filter(
       (tab) => !tab.sharedTab && !bookmarkedTabIds.has(tab.id)
     );
-
-    const handleRemoveBookmark = (tabId: any) => {
-      setBookmarks((prev: any) => {
-        const updated: any = {};
-        for (const [cat, ids] of Object.entries(prev) as any) {
-          updated[cat] = ids.filter((id: any) => id !== tabId);
-        }
-        setTagMask(thisBot, "mobileBookmarks", updated, "local");
-        return updated;
-      });
-    };
 
     const handleMobileTabClick = (el) => {
       setActiveTab(el.id);
@@ -1399,53 +1553,39 @@ function SideBar({ panelsNumber }) {
       setCollapsed(false);
     };
 
-    const handleBookmarkTab = (tabId) => {
-      setSelectedTabForBookmark(tabId);
-      const first = Object.keys(bookmarks)[0] || "";
-      setSelectedCategory(first);
-      setShowBookmarkModal(true);
+    const handleDeleteCategory = (categoryName: string) => {
+      setBookmarks((prev: any) => {
+        const updated = { ...prev };
+        delete updated[categoryName];
+        setTagMask(thisBot, "mobileBookmarks", updated, "local");
+        return updated;
+      });
     };
 
-    const handleAddToCategory = (category) => {
-      if (!category) {
-        console.warn("No category selected");
+    const handleRenameCategory = () => {
+      const newName = renameValue.trim();
+      if (!newName || newName === renamingCategory) {
+        setRenamingCategory("");
         return;
       }
-      setBookmarks((prev) => {
-        const updated = { ...prev };
-        if (!updated[category]) {
-          updated[category] = [];
-        }
-        if (!updated[category].includes(selectedTabForBookmark)) {
-          updated[category].push(selectedTabForBookmark);
+      setBookmarks((prev: any) => {
+        const updated: any = {};
+        for (const [cat, ids] of Object.entries(prev)) {
+          updated[cat === renamingCategory ? newName : cat] = ids;
         }
         setTagMask(thisBot, "mobileBookmarks", updated, "local");
         return updated;
       });
-      setShowBookmarkModal(false);
-      setSelectedTabForBookmark(null);
-    };
-
-    const handleCreateCategory = () => {
-      if (!newCategoryName.trim()) return;
-      const name = newCategoryName.trim();
-      setBookmarks((prev) => {
-        const updated = { ...prev, [name]: [] };
-        setTagMask(thisBot, "mobileBookmarks", updated, "local");
-        // After creating, add the selected tab to new category
-        if (
-          selectedTabForBookmark &&
-          !updated[name].includes(selectedTabForBookmark)
-        ) {
-          updated[name] = [selectedTabForBookmark];
-          setTagMask(thisBot, "mobileBookmarks", updated, "local");
+      setExpandedCategories((prev) => {
+        const updated: any = { ...prev };
+        if (renamingCategory in updated) {
+          updated[newName] = updated[renamingCategory];
+          delete updated[renamingCategory];
         }
         return updated;
       });
-      setNewCategoryName("");
-      setShowNewCategoryModal(false);
-      setShowBookmarkModal(false);
-      setSelectedTabForBookmark(null);
+      setRenamingCategory("");
+      setRenameValue("");
     };
 
     const mobileAddTab = () => {
@@ -1473,15 +1613,15 @@ function SideBar({ panelsNumber }) {
           <div className="mobile-sidebar-header">
             <h2>Tabs & Folders</h2>
             <div className="mobile-header-actions">
-              <span
+              {/* <span
                 className="mobile-header-icon"
                 onClick={() => {
                   openPopupSettings(MenuOptions);
                 }}
                 role="button"
               >
-                <MenuIcon name={"person_add"} />
-              </span>
+                {<MenuIcon name={"person_add"} />}
+              </span> */}
               <span
                 className="mobile-header-icon"
                 onClick={() => {
@@ -1497,100 +1637,130 @@ function SideBar({ panelsNumber }) {
 
           <div className="mobile-tabs-list">
             {/* Bookmark folders */}
-            {Object.entries(bookmarks).map(
-              ([categoryName, tabIds]: [string, any]) => (
-                <div key={categoryName} className="bookmark-category">
-                  <div
-                    className="bookmark-category-header"
-                    onClick={() => toggleCategory(categoryName)}
-                  >
-                    <span className="bookmark-icon">
-                      <span className="material-symbols-outlined">
-                        bookmark
-                      </span>
-                    </span>
-                    <span className="category-title">{categoryName}</span>
-                    <span
-                      className={`collapse-icon ${
-                        expandedCategories[categoryName] ? "expanded" : ""
-                      }`}
+            {showBookmarks &&
+              Object.entries(bookmarks).map(
+                ([categoryName, tabIds]: [string, any]) => (
+                  <div key={categoryName} className="bookmark-category">
+                    <div
+                      className="bookmark-category-header"
+                      onClick={() => toggleCategory(categoryName)}
                     >
-                      <span className="material-symbols-outlined">
-                        expand_more
+                      <span className="bookmark-icon">
+                        <BookMarkIcon />
                       </span>
-                    </span>
-                  </div>
-                  {expandedCategories[categoryName] && (
-                    <div className="bookmark-items">
-                      {tabIds.length > 0 ? (
-                        tabIds.map((tabId: any) => {
-                          const tab = tabs.find((t: any) => t.id === tabId);
-                          return tab ? (
-                            <div
-                              key={tabId}
-                              className={`mobile-tab ${activeTab === tabId ? "active" : ""}`}
-                              onClick={() => handleMobileTabClick(tab)}
-                            >
-                              <div className="mobile-tab-left">
-                                <div className="mobile-tab-title">
-                                  {`${tab.data?.book || tab.data?.title || ""} – ${tab.data?.chapter || ""}`}{" "}
-                                  <div className="mobile-tab-sub">
-                                    • {tab.data?.shortName || ""}
+                      <span className="category-title">{categoryName}</span>
+                      <span
+                        className={`collapse-icon ${
+                          expandedCategories[categoryName] ? "expanded" : ""
+                        }`}
+                      >
+                        <span className="material-symbols-outlined">
+                          expand_more
+                        </span>
+                      </span>
+                      <div
+                        className="mobile-tab-actions"
+                        onClick={(e: any) => {
+                          e.stopPropagation();
+                          const options = {
+                            type: "normal",
+                            items: [
+                              {
+                                icon: <MenuIcon name="edit" />,
+                                title: "Rename",
+                                onClick: () => {
+                                  setRenamingCategory(categoryName);
+                                  setRenameValue(categoryName);
+                                  closePopupSettings();
+                                },
+                              },
+                              {
+                                icon: <MenuIcon name="delete" />,
+                                title: "Delete",
+                                onClick: () => {
+                                  handleDeleteCategory(categoryName);
+                                  closePopupSettings();
+                                },
+                              },
+                            ],
+                          };
+                          openPopupSettings(options);
+                        }}
+                      >
+                        <MenuIcon name={"more_vert"} />
+                      </div>
+                    </div>
+                    {expandedCategories[categoryName] && (
+                      <div className="bookmark-items">
+                        {tabIds.length > 0 ? (
+                          tabIds.map((tabId: any) => {
+                            const tab = tabs.find((t: any) => t.id === tabId);
+                            return tab ? (
+                              <div
+                                key={tabId}
+                                className={`mobile-tab ${activeTab === tabId ? "active" : ""}`}
+                                onClick={() => handleMobileTabClick(tab)}
+                              >
+                                <div className="mobile-tab-left">
+                                  <div className="mobile-tab-title">
+                                    {`${tab.data?.book || tab.data?.title || ""} – ${tab.data?.chapter || ""}`}{" "}
+                                    <div className="mobile-tab-sub">
+                                      • {tab.data?.shortName || ""}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              <div
-                                className="mobile-tab-actions"
-                                onClick={(e: any) => {
-                                  e.stopPropagation();
-                                  const options = {
-                                    type: "normal",
-                                    items: [
-                                      {
-                                        icon: (
-                                          <MenuIcon name="bookmark_remove" />
-                                        ),
-                                        title: "Remove Bookmark",
-                                        onClick: () => {
-                                          handleRemoveBookmark(tabId);
-                                          closePopupSettings();
+                                <div
+                                  className="mobile-tab-actions"
+                                  onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    const options = {
+                                      type: "normal",
+                                      items: [
+                                        {
+                                          icon: (
+                                            <MenuIcon name="bookmark_remove" />
+                                          ),
+                                          title: "Remove Bookmark",
+                                          onClick: () => {
+                                            handleRemoveBookmark(tabId);
+                                            closePopupSettings();
+                                          },
                                         },
-                                      },
-                                      {
-                                        icon: <MenuIcon name="delete" />,
-                                        title: t("deleteTab"),
-                                        onClick: () => {
-                                          handleRemoveBookmark(tabId);
-                                          removeTab(tabId);
-                                          closePopupSettings();
+                                        {
+                                          icon: <MenuIcon name="delete" />,
+                                          title: t("deleteTab"),
+                                          onClick: () => {
+                                            handleRemoveBookmark(tabId);
+                                            removeTab(tabId);
+                                            closePopupSettings();
+                                          },
+                                          active: TabOptions.Delete.active,
                                         },
-                                        active: TabOptions.Delete.active,
-                                      },
-                                    ].filter(Boolean),
-                                  };
-                                  openPopupSettings(options);
-                                }}
-                              >
-                                <MenuIcon name={"more_vert"} />
+                                      ].filter(Boolean),
+                                    };
+                                    openPopupSettings(options);
+                                  }}
+                                >
+                                  <MenuIcon name={"more_vert"} />
+                                </div>
                               </div>
-                            </div>
-                          ) : null;
-                        })
-                      ) : (
-                        <div className="empty-message">
-                          No bookmarks in this category
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )
-            )}
+                            ) : null;
+                          })
+                        ) : (
+                          <div className="empty-message">
+                            No bookmarks in this category
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              )}
 
             {/* Divider between bookmarks and free tabs */}
-            {Object.keys(bookmarks).length > 0 && freeTabs.length > 0 && (
-              <div className="mobile-tabs-divider" />
-            )}
+            {showBookmarks &&
+              Object.keys(bookmarks).length > 0 &&
+              freeTabs.length > 0 && <div className="mobile-tabs-divider" />}
 
             {/* Free tabs (not bookmarked) */}
             {freeTabs.map((el: any) => (
@@ -1646,11 +1816,12 @@ function SideBar({ panelsNumber }) {
             <button
               className="mobile-nav-btn"
               onClick={() => {
-                setSideBarMode("settings");
+                // setSideBarMode("settings");
+                openPopupSettings(SessionsOptions);
               }}
             >
-              <span className="material-symbols-outlined">settings</span>
-              <div className="mobile-nav-label">Settings</div>
+              <MenuIcon name={"person_add"} />
+              <div className="mobile-nav-label">Sessions</div>
             </button>
 
             <button className="mobile-nav-add" onClick={mobileAddTab}>
@@ -1658,12 +1829,18 @@ function SideBar({ panelsNumber }) {
             </button>
 
             <button
-              className="mobile-nav-btn"
+              className={`mobile-nav-btn${showBookmarks ? " active" : ""}`}
               onClick={() => {
-                setShowNewCategoryModal(true);
+                setShowBookmarks((prev) => !prev);
               }}
             >
-              <span className="material-symbols-outlined">bookmark</span>
+              <span className="material-symbols-outlined">
+                {/* {showBookmarks ? "bookmark" : "bookmark_border"} */}
+                <BookMarkIcon
+                  stroke={showBookmarks ? "var(--selectedSpaceColor)" : "black"}
+                  fill={showBookmarks ? "var(--selectedSpaceColor)" : "none"}
+                />
+              </span>
               <div className="mobile-nav-label">Bookmarks</div>
             </button>
           </div>
@@ -1698,13 +1875,17 @@ function SideBar({ panelsNumber }) {
                         align-items: center;
             }
             .mobile-tab{display:flex;justify-content:space-between;align-items:center;padding:11px;border-radius:10px;margin-bottom:12px;border:1px solid transparent;cursor:pointer;width: 90%;height: 54px;}
-            .mobile-tab.active{background:#f0a68b;border-color:#e18b69;color:#000}
+            .mobile-tab.active{
+                background: var(--activeTabFill);
+                border-color: var(--activeTabBorder);
+                color: var(--activeTabText);
+            }
             .mobile-tab-title{font-weight:600;font-size:16px}
             .mobile-tab-sub{font-size:14px;color:rgba(0,0,0,0.45);margin-top:4px;display: inline;}
             .mobile-tab-left{display:flex;flex-direction:column}
             .mobile-tab-actions{opacity:0.6;cursor:pointer;display:flex;align-items:center;}
             .mobile-tab-actions:hover{opacity:1;}
-            .mobile-bottom-nav{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid #eee}
+            .mobile-bottom-nav{display:flex;justify-content:space-between;align-items:center;padding:12px 30px;border-top:1px solid #eee}
             .mobile-nav-btn{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text1);cursor:pointer}
             .mobile-nav-label{font-size:12px}
             .mobile-nav-add{
@@ -1940,6 +2121,41 @@ function SideBar({ panelsNumber }) {
                     onClick={() => handleAddToCategory(selectedCategory)}
                   >
                     Add
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* rename category modal */}
+          {renamingCategory && (
+            <div
+              className="mobile-modal-overlay"
+              onClick={() => setRenamingCategory("")}
+            >
+              <div
+                className="mobile-modal"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3>Rename category</h3>
+                <input
+                  placeholder="Category name"
+                  value={renameValue}
+                  onChange={(e: any) => setRenameValue(e.target.value)}
+                  onKeyPress={(e: any) => {
+                    if (e.key === "Enter") handleRenameCategory();
+                  }}
+                  autoFocus
+                />
+                <div className="modal-actions">
+                  <button
+                    className="cancel"
+                    onClick={() => setRenamingCategory("")}
+                  >
+                    Cancel
+                  </button>
+                  <button className="create" onClick={handleRenameCategory}>
+                    Rename
                   </button>
                 </div>
               </div>
@@ -2227,6 +2443,26 @@ function SideBar({ panelsNumber }) {
                 style={{ display: "flex", alignItems: "center", gap: "5px" }}
               >
                 <span
+                  className="sidebar-bookmark-filter-btn"
+                  onClick={() => setShowBookmarksFilter((prev) => !prev)}
+                  title={
+                    showBookmarksFilter
+                      ? "Show all tabs"
+                      : "Show bookmarked tabs"
+                  }
+                >
+                  <BookMarkIcon
+                    stroke={
+                      showBookmarksFilter
+                        ? "var(--selectedSpaceColor)"
+                        : "var(--text1)"
+                    }
+                    fill={
+                      showBookmarksFilter ? "var(--selectedSpaceColor)" : "none"
+                    }
+                  />
+                </span>
+                <span
                   style={{ "user-select": "none" }}
                   onMouseDown={() => {
                     clearTimeout(holdTimeout.current.time);
@@ -2420,6 +2656,9 @@ function SideBar({ panelsNumber }) {
         >
           {tabs
             .filter((tab) => !tab.sharedTab)
+            .filter(
+              (tab) => !showBookmarksFilter || bookmarkedTabIds.has(tab.id)
+            )
             .filter((tab) => {
               if (!searchQuery) return true;
               const query = searchQuery.toLowerCase();
@@ -2451,6 +2690,14 @@ function SideBar({ panelsNumber }) {
                 editMode={editMode}
                 setSidebarWidth={setSidebarWidth}
                 setCollapsed={setCollapsed}
+                isBookmarked={bookmarkedTabIds.has(el.id)}
+                onBookmarkClick={(tabId: string) => {
+                  if (bookmarkedTabIds.has(tabId)) {
+                    handleRemoveBookmark(tabId);
+                  } else {
+                    handleBookmarkTab(tabId);
+                  }
+                }}
               />
             ))}
 
@@ -2497,6 +2744,101 @@ function SideBar({ panelsNumber }) {
         <style>{getStyleOf("sidebar.css")}</style>
         <style>{sidebarStyles}</style>
       </div>
+
+      {/* Desktop bookmark category modal */}
+      {showBookmarkModal && (
+        <div
+          className="desktop-modal-overlay"
+          onClick={() => setShowBookmarkModal(false)}
+        >
+          <div className="desktop-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Add to bookmark category</h3>
+            {Object.keys(bookmarks).length > 0 ? (
+              <>
+                {Object.keys(bookmarks).map((cat) => (
+                  <label key={cat} className="category-item">
+                    <input
+                      type="radio"
+                      name="bookmarkCatDesktop"
+                      value={cat}
+                      checked={selectedCategory === cat}
+                      onChange={() => setSelectedCategory(cat)}
+                    />
+                    <span>{cat}</span>
+                  </label>
+                ))}
+                <div
+                  className="add-new"
+                  onClick={() => {
+                    setShowBookmarkModal(false);
+                    setShowNewCategoryModal(true);
+                  }}
+                >
+                  + Add to new category
+                </div>
+              </>
+            ) : (
+              <div
+                className="add-new"
+                onClick={() => {
+                  setShowBookmarkModal(false);
+                  setShowNewCategoryModal(true);
+                }}
+              >
+                + Create first category
+              </div>
+            )}
+            <div className="modal-actions">
+              <button
+                className="cancel"
+                onClick={() => setShowBookmarkModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="create"
+                onClick={() => handleAddToCategory(selectedCategory)}
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop new category modal */}
+      {showNewCategoryModal && (
+        <div
+          className="desktop-modal-overlay"
+          onClick={() => setShowNewCategoryModal(false)}
+        >
+          <div className="desktop-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>New bookmark category</h3>
+            <input
+              placeholder="Category name"
+              value={newCategoryName}
+              onChange={(e) =>
+                setNewCategoryName((e.target as HTMLInputElement).value)
+              }
+              onKeyPress={(e) => {
+                if (e.key === "Enter") handleCreateCategory();
+              }}
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button
+                className="cancel"
+                onClick={() => setShowNewCategoryModal(false)}
+              >
+                Cancel
+              </button>
+              <button className="create" onClick={handleCreateCategory}>
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -2540,7 +2882,7 @@ export const SpaceUI = () => {
                 onClick={() => setSideBarMode("settings")}
                 className="material-symbols-outlined"
               >
-                <TheNewSettingsIcon />
+                <MobileSettingsIcon />
               </span>
               <SettingsProfile />
               <UserProfile />
@@ -2782,7 +3124,7 @@ export const UserProfile = ({ collapsed }) => {
           width: 30,
           height: 30,
           borderRadius: "50%",
-          border: `2px solid ${colors[colorIndex]}`,
+          border: `2px solid ${!configBot.tags.staticInst ? colors[colorIndex] : "var(--selectedSpaceColor)"}`,
           padding: 2,
           display: "flex",
           alignItems: "center",
@@ -2861,6 +3203,160 @@ const sidebarStyles = `
     .icon-button {
         cursor: pointer;
         color: var(--text1);
+    }
+
+    /* Sidebar header bookmark filter button */
+    .sidebar-bookmark-filter-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 2px;
+        border-radius: 4px;
+        opacity: 0.7;
+        transition: opacity 0.15s, background 0.15s;
+    }
+
+    .sidebar-bookmark-filter-btn:hover {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    /* Desktop tab bookmark icon */
+    .tab-actions {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        flex-shrink: 0;
+    }
+
+    .tab-bookmark-btn {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 2px;
+        border-radius: 3px;
+        opacity: 0.6;
+        line-height: 1;
+    }
+
+    .tab:hover .tab-bookmark-btn,
+    .activeTab .tab-bookmark-btn {
+        display: flex;
+    }
+
+    .tab-bookmark-btn:hover {
+        opacity: 1;
+        background: rgba(0, 0, 0, 0.06);
+    }
+
+    /* Desktop bookmark modals */
+    .desktop-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 10004;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .desktop-modal {
+        background: var(--panelBackground, #fff);
+        color: var(--text1);
+        width: 360px;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .desktop-modal h3 {
+        margin: 0 0 16px;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text1);
+    }
+
+    .desktop-modal input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+        color: var(--text1);
+        background: var(--panelBackground, #fff);
+    }
+
+    .desktop-modal .category-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+
+    .desktop-modal .category-item:hover {
+        background: rgba(0, 0, 0, 0.04);
+    }
+
+    .desktop-modal .category-item input[type=radio] {
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .desktop-modal .category-item span {
+        flex: 1;
+        font-size: 14px;
+        color: var(--text1);
+    }
+
+    .desktop-modal .add-new {
+        cursor: pointer;
+        color: var(--selectedSpaceColor);
+        padding: 10px 0;
+        text-align: center;
+        font-weight: 500;
+        font-size: 14px;
+        margin: 8px 0;
+    }
+
+    .desktop-modal .modal-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .desktop-modal .modal-actions button {
+        flex: 1;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.15s;
+    }
+
+    .desktop-modal .modal-actions button:hover {
+        opacity: 0.85;
+    }
+
+    .desktop-modal .modal-actions .cancel {
+        background: #f0f0f0;
+        color: var(--text1);
+    }
+
+    .desktop-modal .modal-actions .create {
+        background: var(--selectedSpaceColor);
+        color: #fff;
     }
 `;
 

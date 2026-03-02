@@ -39,6 +39,7 @@ export function BibleVariablesProvider({ children }) {
     "2": true,
     "3": true,
   });
+  const [showNavArrows, setShowNavArrows] = useState(false);
 
   const [ReSeed, setReSeed] = useState();
   useEffect(() => {
@@ -437,6 +438,8 @@ export function BibleVariablesProvider({ children }) {
         setShowVerses,
         showFootnotes,
         setShowFootnotes,
+        showNavArrows,
+        setShowNavArrows,
       }}
     >
       {children}

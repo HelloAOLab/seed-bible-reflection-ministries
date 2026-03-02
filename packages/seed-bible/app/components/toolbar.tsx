@@ -6,7 +6,7 @@ import { useMouseMove } from "app.hooks.mouseMove";
 import SurroundingDivs from "app.components.surroundingDivs";
 import { useBibleContext } from "app.hooks.bibleVariables";
 import { useTabsContext } from "app.hooks.tabs";
-import { BurgerMenuIcon, MoreIcon, TodayIcon } from "app.components.icons";
+import { BurgerMenuIcon, MoreIcon, TabsIcon } from "app.components.icons";
 
 // Simple, single-toolbar component (no edit layer). Main logic unchanged.
 export function Toolbar() {
@@ -26,6 +26,7 @@ export function Toolbar() {
     setTools,
     setCanvasTools,
     setMapTools,
+    showNavArrows,
   } = useBibleContext();
 
   const {
@@ -34,6 +35,9 @@ export function Toolbar() {
     isMobile,
     setSidebarWidth,
     setOpenOnMobile,
+    setCollapsed,
+    setSideBarMode,
+    openPopupSettings,
   } = useSideBarContext();
   const { setIsDragging, isDragging, setElement } = useMouseMove();
   const {
@@ -142,6 +146,31 @@ export function Toolbar() {
     return () => window.removeEventListener("contextmenu", handleContextMenu);
   }, []);
 
+  type ToolItem = {
+    icon?: string;
+    label?: string;
+    onClick?: () => void;
+    isImg?: boolean;
+    active?: boolean;
+  };
+
+  function buildMoreMenuOptions() {
+    return {
+      type: "normal",
+      items: (tools as ToolItem[])
+        ?.filter((tool) => tool?.active !== false)
+        .map((tool) => ({
+          icon: tool.isImg ? (
+            <img src={tool.icon} style={{ width: "20px" }} alt={tool.label} />
+          ) : (
+            <span className="material-symbols-outlined">{tool.icon}</span>
+          ),
+          title: tool.label,
+          onClick: tool.onClick,
+        })),
+    };
+  }
+
   if (!showToolbar) return <></>;
 
   return (
@@ -156,6 +185,7 @@ export function Toolbar() {
           {/* Mobile Bottom Navbar */}
           <div className="mobile-bottom-navbar">
             <button
+              style={{ display: showNavArrows ? "" : "none" }}
               className="mobile-navbar-arrow left-arrow"
               onClick={() =>
                 isRTL
@@ -173,16 +203,29 @@ export function Toolbar() {
               title="Today"
               aria-label="Today"
             >
-              <div className="mobile-btn-content">
-                <TodayIcon color="var(--text1)" />
-                <span className="mobile-btn-label">Today</span>
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  os.log("Opening mobile settings", setOpenOnMobile);
+                  setOpenOnMobile(true);
+                  setSidebarWidth(280);
+                  setCollapsed(false);
+                  setSideBarMode("default");
+                }}
+                className="mobile-btn-content"
+              >
+                <TabsIcon color="var(--text1)" />
+                <span className="mobile-btn-label">Tabs</span>
               </div>
             </button>
 
             <div
               onClick={() => {
-                globalThis.setOpenSidebar(!openSidebar);
-                globalThis.setSelectingTranslation(false);
+                globalThis.setOpenSidebar((prev) => !prev);
+                // if (globalThis.setOpenSidebar) {
+                //   globalThis.setSelectingTranslation &&
+                //     globalThis.setSelectingTranslation(false);
+                // }
               }}
               className="mobile-center-logo"
             >
@@ -199,13 +242,7 @@ export function Toolbar() {
               className="mobile-navbar-btn more-btn"
               title="More"
               aria-label="More"
-              onClick={() => {
-                if (globalThis.setOpenSidebar) {
-                  globalThis.setOpenSidebar(true);
-                  globalThis.setSelectingTranslation &&
-                    globalThis.setSelectingTranslation(false);
-                }
-              }}
+              onClick={() => openPopupSettings(buildMoreMenuOptions())}
             >
               <div className="mobile-btn-content">
                 <MoreIcon color="var(--text1)" />
@@ -214,6 +251,7 @@ export function Toolbar() {
             </button>
 
             <button
+              style={{ display: showNavArrows ? "" : "none" }}
               className="mobile-navbar-arrow right-arrow"
               onClick={() =>
                 isRTL
