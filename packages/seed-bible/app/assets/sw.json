@@ -141,6 +141,9 @@
   "historical": "Historia",
   "poetic": "Mashairi",
   "prophetic": "Unabii",
+  "addToPlaylist": "Ongeza kwenye orodha",
+  "addToNew": "Ongeza kwenye mpya",
+  "itemsAddedToPlaylistSuccessfully": "Vipengele vimeongezwa kwenye orodha kwa mafanikio."
   "discovery": "Ugunduzi",
   "reflectionMinistries": "Huduma za Reflections",
   "askKen": "Muulize Ken",

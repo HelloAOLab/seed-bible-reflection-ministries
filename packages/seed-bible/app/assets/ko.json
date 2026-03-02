@@ -141,6 +141,9 @@
   "historical": "역사서",
   "poetic": "시가서",
   "prophetic": "예언서",
+  "addToPlaylist": "재생 목록에 추가",
+  "addToNew": "새로 추가",
+  "itemsAddedToPlaylistSuccessfully": "항목이 재생 목록에 성공적으로 추가되었습니다."
   "discovery": "디스커버리",
   "reflectionMinistries": "리플렉션스 미니스트리즈",
   "askKen": "켄에게 질문하기",

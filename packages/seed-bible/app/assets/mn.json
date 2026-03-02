@@ -141,6 +141,9 @@
   "historical": "Түүхэн",
   "poetic": "Шүлгийн",
   "prophetic": "Эш үзүүлэгчийн",
+  "addToPlaylist": "Плейлистэнд нэмэх",
+  "addToNew": "Шинэ рүү нэмэх",
+  "itemsAddedToPlaylistSuccessfully": "Элементүүд плейлистэнд амжилттай нэмэгдлээ."
   "discovery": "Нээлт",
   "reflectionMinistries": "Рефлекшнс Үйлчлэл",
   "askKen": "Кенээс асуух",
