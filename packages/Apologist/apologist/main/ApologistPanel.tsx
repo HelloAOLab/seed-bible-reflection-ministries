@@ -184,7 +184,17 @@ function AskKenTab({ context, label }) {
                 className="askken-msg-avatar"
               />
               <div className="askken-bubble askken-bubble-assistant">
-                {msg.content}
+                {(msg.content || "")
+                  .trim()
+                  .split(/\n+/)
+                  .map((para, idx) => (
+                    <p
+                      key={idx}
+                      style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
+                    >
+                      {para}
+                    </p>
+                  ))}
               </div>
             </div>
           )
@@ -364,22 +374,76 @@ function ApologistPanelWrapper({ id }) {
     const interval = setInterval(() => {
       const gs = globalThis.GlobalSearch || "";
       const gsLevel = globalThis.GlobalSearchLevel || "chapter";
-      if (gs && gs !== searchQuery) {
+      const gsLabel = globalThis.GlobalSearchLabel || "";
+
+      // Detect change in search text, OR level, OR label
+      const hasChanged =
+        (gs && gs !== searchQuery) ||
+        gsLevel !== searchLevel ||
+        gsLabel !== searchLabel;
+
+      if (gs && hasChanged) {
         console.log("[ApologistPanel Poll] OVERRIDING search!", {
           oldQuery: searchQuery?.substring(0, 50),
           newQuery: gs?.substring(0, 50),
           oldLevel: searchLevel,
           newLevel: gsLevel,
+          oldLabel: searchLabel,
+          newLabel: gsLabel,
         });
         setSearchQuery(gs);
         setSearchLevel(gsLevel);
-        setSearchLabel(globalThis.GlobalSearchLabel || "");
+        setSearchLabel(gsLabel);
         setBaselineQuery(globalThis.StudyNoteParentSearch || "");
         setSearchTrigger((prev) => prev + 1);
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [searchQuery]);
+  }, [searchQuery, searchLevel, searchLabel]);
+
+  // ── Detect verse clicks by polling globalThis.ON_VERSE_CLICK ──
+  // onVerseClick.tsx sets globalThis.ON_VERSE_CLICK = { verseNumber, text, chapter, book }
+  // on every verse click. We poll this to detect verse-level searches.
+  useEffect(() => {
+    let lastVerseKey = "";
+
+    const interval = setInterval(() => {
+      try {
+        const vc = globalThis.ON_VERSE_CLICK;
+        if (!vc || !vc.text) return;
+
+        // Build a unique key to detect changes
+        const key = `${vc.book}-${vc.chapter}-${vc.verseNumber}`;
+        if (key === lastVerseKey) return;
+        lastVerseKey = key;
+
+        const verseLabel = `${vc.book || ""} ${vc.chapter || ""}:${vc.verseNumber || ""}`;
+
+        console.log(
+          "[ApologistPanel] VERSE CLICK detected via ON_VERSE_CLICK!",
+          {
+            verseLabel,
+            textSnippet: vc.text?.substring(0, 50),
+          }
+        );
+
+        // Update globals
+        globalThis.GlobalSearch = vc.text;
+        globalThis.GlobalSearchLevel = "verse";
+        globalThis.GlobalSearchLabel = verseLabel;
+
+        // Update state directly
+        setSearchQuery(vc.text);
+        setSearchLevel("verse");
+        setSearchLabel(verseLabel);
+        setSearchTrigger((prev) => prev + 1);
+      } catch (e) {
+        console.warn("[ApologistPanel] verse click poll error:", e);
+      }
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // ── Get the Apologist component ──
   const Apologist = globalThis.Apologist;
@@ -592,7 +656,7 @@ function ApologistPanelWrapper({ id }) {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 14px 18px;
+          padding: 10px 12px;
           background: var(--panelBackground, #fff);
           border-bottom: 3px solid var(--accentColor, #6b3a2a);
         }
@@ -636,7 +700,7 @@ function ApologistPanelWrapper({ id }) {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 40px 24px;
+          padding: 24px 16px;
           text-align: center;
         }
 
@@ -665,7 +729,7 @@ function ApologistPanelWrapper({ id }) {
         }
 
         .askken-chat-area {
-          padding: 16px 18px;
+          padding: 10px 12px;
           background: var(--panelBackground, #fff);
           border-top: 1px solid var(--inputBorder, #e5e5e5);
         }
@@ -749,24 +813,24 @@ function ApologistPanelWrapper({ id }) {
           text-align: center;
           font-size: 11px;
           color: var(--text2, #aaa);
-          margin: 12px 0 0;
+          margin: 8px 0 0;
         }
 
         /* ── Chat messages ── */
         .askken-messages {
           flex: 1;
           overflow-y: auto;
-          padding: 16px 18px;
+          padding: 4px 10px 8px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
         }
 
         .askken-msg {
           display: flex;
           align-items: flex-start;
           gap: 8px;
-          max-width: 85%;
+          max-width: 90%;
           animation: askken-fadeIn 0.3s ease;
         }
 
@@ -789,12 +853,13 @@ function ApologistPanelWrapper({ id }) {
         }
 
         .askken-bubble {
-          padding: 10px 14px;
+          padding: 4px 12px 8px;
           border-radius: 16px;
           font-size: 14px;
           line-height: 1.5;
           word-wrap: break-word;
-          white-space: pre-wrap;
+          white-space: normal;
+          text-indent: 0;
         }
 
         .askken-bubble-user {

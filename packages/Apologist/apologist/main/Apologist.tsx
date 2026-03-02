@@ -556,6 +556,43 @@ function SgCard({
   );
 }
 
+// ── Lazy-loading wrapper for cards (IntersectionObserver) ──
+function LazyCard({ children }) {
+  const [isVisible, setIsVisible] = useState(false);
+  const placeholderRef = useRef(null);
+
+  useEffect(() => {
+    const el = placeholderRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  if (isVisible) return children;
+
+  return (
+    <div
+      ref={placeholderRef}
+      className="sg-card-placeholder"
+      style={{
+        minHeight: "120px",
+        borderRadius: "10px",
+        background: "var(--inputBackground, #1e1e1e)",
+        opacity: 0.4,
+      }}
+    />
+  );
+}
+
 const DEFAULT_URL =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/corpus/search?cache_ttl=300";
 
@@ -591,7 +628,7 @@ function Apologist({
   const [viewMode, setViewMode] = useState("grid"); // "list" or "grid"
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [displayedCount, setDisplayedCount] = useState(20);
+  const [displayedCount, setDisplayedCount] = useState(10);
   const [showSpinner, setShowSpinner] = useState(false);
   const [allData, setAllData] = useState([]);
   const [headerLabel, setHeaderLabel] = useState("");
@@ -638,7 +675,7 @@ function Apologist({
       setErr("");
       setOpenIds(new Set());
       setHasMore(false);
-      setDisplayedCount(20);
+      setDisplayedCount(10);
       setLoading(false);
       return;
     }
@@ -662,7 +699,7 @@ function Apologist({
         setErr("");
         setOpenIds(new Set());
         setHasMore(false);
-        setDisplayedCount(20);
+        setDisplayedCount(10);
 
         return;
       }
@@ -670,11 +707,29 @@ function Apologist({
       setErr("");
       setOpenIds(new Set());
       setHasMore(false);
-      setDisplayedCount(20);
+      setDisplayedCount(10);
 
       try {
         const trimmedQuery = searchParam.trim();
-        const normalizedSearchKey = trimmedQuery.toLowerCase();
+
+        // Build the API query based on level:
+        // Chapter: use just the label (e.g., "Genesis 1")
+        // Verse: prepend the label to the verse text
+        const currentLabel = (
+          label ||
+          globalThis.GlobalSearchLabel ||
+          ""
+        ).trim();
+        let apiQuery;
+        if (resolvedLevel === "chapter") {
+          apiQuery = currentLabel || trimmedQuery;
+        } else {
+          apiQuery = currentLabel
+            ? `${currentLabel} ${trimmedQuery}`
+            : trimmedQuery;
+        }
+
+        const normalizedSearchKey = apiQuery.toLowerCase();
 
         const headers = {
           "Content-Type": "application/json",
@@ -686,7 +741,7 @@ function Apologist({
         };
 
         const payload = {
-          query: trimmedQuery,
+          query: apiQuery,
           limit: 100, // Get all results
           filters: {
             team_id: 160,
@@ -752,8 +807,8 @@ function Apologist({
         }
 
         setAllData(finalResults);
-        setData(finalResults.slice(0, 20)); // Show first 20
-        setHasMore(finalResults.length > 20); // Show "Load More" if there are more than 20 results
+        setData(finalResults.slice(0, 10)); // Show first 10
+        setHasMore(finalResults.length > 10); // Show "Load More" if there are more than 10 results
         // Open all book cards initially
         const bookIds = finalResults
           .filter((item) => item.type === "book" && item.id)
@@ -861,15 +916,127 @@ function Apologist({
 
   if (showSpinner) {
     return (
-      <div
-        className={`sg-loading ${className}`}
-        aria-busy="true"
-        aria-live="polite"
-      >
-        <div className="sg-spinner" role="status" aria-label="Loading" />
-        <div className="sg-loading-text">Loading…</div>
-
+      <div className={`sg-searchWrap ${className}`}>
+        <div className={`sg-results sg-list ${className}`}>
+          {/* Article-style skeletons */}
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={`a${i}`}
+              className="sg-skeleton-card sg-skeleton-article"
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              <div className="sg-skeleton-row">
+                <div className="sg-skeleton-circle" />
+                <div className="sg-skeleton-bar" style={{ width: "80px" }} />
+                <div className="sg-skeleton-dot" />
+                <div className="sg-skeleton-bar" style={{ width: "60px" }} />
+                <div style={{ flex: 1 }} />
+                <div className="sg-skeleton-icon" />
+              </div>
+              <div
+                className="sg-skeleton-bar sg-skeleton-title"
+                style={{ width: `${65 + i * 5}%` }}
+              />
+            </div>
+          ))}
+          {/* Book-style skeletons */}
+          {[1, 2].map((i) => (
+            <div
+              key={`b${i}`}
+              className="sg-skeleton-card sg-skeleton-book"
+              style={{ animationDelay: `${(4 + i) * 0.1}s` }}
+            >
+              <div className="sg-skeleton-cover" />
+              <div
+                className="sg-skeleton-bar sg-skeleton-title"
+                style={{ width: "60%", margin: "0 auto" }}
+              />
+              <div className="sg-skeleton-pill" />
+            </div>
+          ))}
+        </div>
         <style>{getStyleOf("apologist.css")}</style>
+        <style>{`
+          .sg-skeleton-card {
+            border-radius: 10px;
+            background: var(--inputBackground, #1e1e1e);
+            animation: sg-fadeInSkeleton 0.4s ease both;
+          }
+          .sg-skeleton-article {
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .sg-skeleton-book {
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+          }
+          .sg-skeleton-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+          .sg-skeleton-circle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--inputBorder, #333);
+            animation: sg-shimmer 1.4s ease-in-out infinite;
+            flex-shrink: 0;
+          }
+          .sg-skeleton-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--inputBorder, #333);
+            opacity: 0.5;
+            flex-shrink: 0;
+          }
+          .sg-skeleton-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            background: var(--inputBorder, #333);
+            animation: sg-shimmer 1.4s ease-in-out infinite;
+            flex-shrink: 0;
+          }
+          .sg-skeleton-bar {
+            height: 12px;
+            border-radius: 6px;
+            background: var(--inputBorder, #333);
+            animation: sg-shimmer 1.4s ease-in-out infinite;
+          }
+          .sg-skeleton-title {
+            height: 16px;
+            border-radius: 8px;
+          }
+          .sg-skeleton-cover {
+            width: 65%;
+            aspect-ratio: 2 / 3;
+            border-radius: 6px;
+            background: var(--inputBorder, #333);
+            animation: sg-shimmer 1.4s ease-in-out infinite;
+          }
+          .sg-skeleton-pill {
+            width: 100px;
+            height: 32px;
+            border-radius: 20px;
+            background: var(--inputBorder, #333);
+            animation: sg-shimmer 1.4s ease-in-out infinite;
+          }
+          @keyframes sg-shimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+          }
+          @keyframes sg-fadeInSkeleton {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </div>
     );
   }
@@ -995,14 +1162,15 @@ function Apologist({
             {data.map((item) => {
               if (item.id === nowPlayingId) return null; // Filter pinned item
               return item?.id ? (
-                <SgCard
-                  key={String(item.id)}
-                  item={item}
-                  isOpen={openIds.has(item.id)}
-                  viewMode={viewMode}
-                  isNowPlaying={nowPlayingId === item.id}
-                  setNowPlayingId={setNowPlayingId}
-                />
+                <LazyCard key={String(item.id)}>
+                  <SgCard
+                    item={item}
+                    isOpen={openIds.has(item.id)}
+                    viewMode={viewMode}
+                    isNowPlaying={nowPlayingId === item.id}
+                    setNowPlayingId={setNowPlayingId}
+                  />
+                </LazyCard>
               ) : null;
             })}
             {hasMore && (
@@ -1113,7 +1281,7 @@ function Apologist({
                     border: 1px solid var(--accentColor);
                     border-radius: 20px;
                     background: var(--accentColor, rgba(0,0,0,0.45));
-                    color: var(--text1, #fff) !important;
+                    color: #fff !important;
                     font-size: 13px !important;
                     font-weight: 500;
                     text-decoration: none !important;
@@ -1129,12 +1297,12 @@ function Apologist({
                 .sg-book-cover-btn:visited,
                 .sg-book-cover-btn:active,
                 .sg-book-cover-btn:link {
-                    color: var(--text1, #fff) !important;
+                    color: #fff !important;
                     text-decoration: none !important;
                 }
 
                 .sg-book-cover-btn svg path {
-                    fill: currentColor !important;
+                    fill: #fff !important;
                 }
                 
                 .sg-loadMore {

@@ -141,6 +141,9 @@
   "historical": "Історичні",
   "poetic": "Поетичні",
   "prophetic": "Пророчі",
+  "addToPlaylist": "Додати до списку відтворення",
+  "addToNew": "Додати до нового",
+  "itemsAddedToPlaylistSuccessfully": "Елементи успішно додано до списку відтворення."
   "discovery": "Огляд",
   "reflectionMinistries": "Служіння Reflections",
   "askKen": "Запитати Кена",
