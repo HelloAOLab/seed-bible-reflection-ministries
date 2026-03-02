@@ -1395,6 +1395,7 @@ const SettingsSidebar = ({ config }) => {
   const [labels, setLabels] = useState({});
   const [editingLabel, setEditingLabel] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
+  const { openOnMobile, setOpenOnMobile } = useSideBarContext();
 
   useEffect(() => {
     setEditMode(ReSeed);
@@ -1532,7 +1533,7 @@ const SettingsSidebar = ({ config }) => {
 
   return (
     <SettingsContext.Provider value={contextValue}>
-      <div className="settings-sidebar">
+      <div className={`settings-sidebar ${openOnMobile ? "open" : ""}`}>
         <div className="settings-header">
           <h2>{t("settings")}</h2>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

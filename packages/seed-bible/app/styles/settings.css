@@ -9,6 +9,9 @@
   /* border-left: 1px solid #e0e0e0; */
   background-color: transparent !important;
 }
+.floatsidebar .open {
+  width: 100vw !important;
+}
 @media (max-width: 480px) {
   .settings-sidebar {
     width: 100%;
