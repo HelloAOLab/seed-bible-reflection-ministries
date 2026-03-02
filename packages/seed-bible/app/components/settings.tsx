@@ -1609,7 +1609,6 @@ const SettingsSidebar = ({ config }) => {
   const [labels, setLabels] = useState({});
   const [editingLabel, setEditingLabel] = useState(null);
   const [expandedSections, setExpandedSections] = useState({});
-  const { openOnMobile, setOpenOnMobile } = useSideBarContext();
 
   useEffect(() => {
     setEditMode(ReSeed);
