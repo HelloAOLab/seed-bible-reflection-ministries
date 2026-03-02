@@ -867,6 +867,35 @@ function ThePage({
       });
     }
   }
+  useEffect(() => {
+    if (!bible?.data) return;
+
+    try {
+      const nextData = bible.data;
+
+      const combinedText = (nextData.content || [])
+        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
+        .join(" ")
+        .trim();
+
+      if (!combinedText) return;
+
+      globalThis.GlobalSearch = combinedText;
+      globalThis.GlobalSearchLevel = "chapter";
+      globalThis.GlobalSearchLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
+      globalThis.GlobalSearchChapterLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
+      globalThis.StudyNoteParentSearch = combinedText;
+
+      if (typeof globalThis.UpdateStudyNoteSearch === "function") {
+        globalThis.UpdateStudyNoteSearch(combinedText, {
+          level: "chapter",
+          forceRefresh: true,
+        });
+      }
+    } catch (e) {
+      console.warn("[Apologist] next chapter bridge error:", e);
+    }
+  }, [data]);
 
   async function openPrevChapter() {
     await bible.openPrevious();

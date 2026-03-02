@@ -678,5 +678,20 @@
   "pentateuch": "摩西五经",
   "historical": "历史书",
   "poetic": "诗歌智慧书",
-  "prophetic": "先知书"
+  "prophetic": "先知书",
+  "discovery": "发现",
+  "reflectionMinistries": "Reflections 事工",
+  "askKen": "向 Ken 提问",
+  "results": "结果",
+  "openResourceFromDiscovery": "从“发现”选项卡打开一个资源以在此查看",
+  "kenBoa": "KEN BOA",
+  "reflections": "REFLECTIONS",
+  "reflectionCopyRight": "© 2026 Reflections 事工。保留所有权利。",
+  "askQuestion": "在此提问",
+  "kenSubtitle": "探索上帝的话语以获得启发",
+  "kenHeading": "加深你的信仰",
+  "kenDescription": "Reflections 事工通过有力的圣经资源装备门徒并建立教会，帮助你去爱、学习并更好地生活。",
+  "newChat": "新聊天",
+  "learnMore": "了解更多",
+  "loadMore": "加载更多"
 }

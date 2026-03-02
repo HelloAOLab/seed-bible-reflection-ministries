@@ -111,67 +111,8 @@ export function BibleVariablesProvider({ children }) {
     //         }
     //     }
     // },
-    {
-      // icon: 'chat',
-      icon: "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/f89ebc25a02acbfb56957a90bdddb7d938f5ba54fc045fa0ef108a0ff30821bb.svg",
-      label: "Apologist",
-      hasToggle: true,
-      active: false,
-      isImg: true,
-      onHold: async () => {
-        globalThis.chatbotPresent = true;
-        const id = uuid();
-        globalThis.CHATBOT_PANEL_ID = id;
-        SetIsDragging(true);
-        globalThis.SetElement({
-          App: (
-            <ImageWrapper>
-              <img
-                src="https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/f89ebc25a02acbfb56957a90bdddb7d938f5ba54fc045fa0ef108a0ff30821bb.svg"
-                style={{ width: "20px" }}
-              />
-            </ImageWrapper>
-          ),
-          data: {
-            id,
-            App: (
-              <iframe
-                style={{ width: "100%", height: "100%" }}
-                src={"https://ao.discipleship.bot/en"}
-                id={id}
-              />
-            ),
-            to: "panel",
-            minWidth: "30rem",
-          },
-        });
-      },
-      onClick: async () => {
-        if (globalThis.chatbotPresent) {
-          RemoveApplicationByID(globalThis.CHATBOT_PANEL_ID);
-          globalThis.CHATBOT_PANEL_ID = null;
-          globalThis.chatbotPresent = false;
-          return;
-        }
-        if (!panelMode) {
-          globalThis.chatbotPresent = true;
-          const id = uuid();
-          globalThis.CHATBOT_PANEL_ID = id;
-          AddApplication({
-            id,
-            App: (
-              <iframe
-                style={{ width: "100%", height: "100%" }}
-                src={"https://ao.discipleship.bot/en"}
-                id={id}
-              />
-            ),
-            to: "panel",
-            minWidth: "30rem",
-          });
-        }
-      },
-    },
+    // Apologist tool is self-registered by the Apologist package via globalThis.AddTool()
+
     {
       // icon: 'chat',
       icon: "https://auth-aux-aobot-prod-filesbucket-141297942820.s3.amazonaws.com/aoBot/7778fa1fe5114c8b06d09505ffd6e465752ba170c21a34ea842be4a86492c7cf.webp",

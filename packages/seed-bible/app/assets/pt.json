@@ -678,5 +678,20 @@
   "pentateuch": "Pentateuco",
   "historical": "Histórico",
   "poetic": "Poético",
-  "prophetic": "Profético"
+  "prophetic": "Profético",
+  "discovery": "Descoberta",
+  "reflectionMinistries": "Ministérios Reflections",
+  "askKen": "Perguntar ao Ken",
+  "results": "Resultados",
+  "openResourceFromDiscovery": "Abra um recurso na aba Descoberta para visualizá-lo aqui",
+  "kenBoa": "KEN BOA",
+  "reflections": "REFLECTIONS",
+  "reflectionCopyRight": "© 2026 Ministérios Reflections. Todos os direitos reservados.",
+  "askQuestion": "Faça uma pergunta aqui",
+  "kenSubtitle": "Explorando a Palavra de Deus para inspirar",
+  "kenHeading": "Aprofunde sua fé",
+  "kenDescription": "Os Ministérios Reflections equipam discípulos e fortalecem igrejas por meio de poderosos recursos bíblicos para ajudá-lo a Amar, Aprender e Viver Bem.",
+  "newChat": "Novo chat",
+  "learnMore": "Saiba mais",
+  "loadMore": "Carregar mais"
 }
