@@ -596,6 +596,46 @@ function LazyCard({ children }) {
 const DEFAULT_URL =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/corpus/search?cache_ttl=300";
 
+// ── In-memory result cache (5 min TTL) ──
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const resultCache = new Map(); // key → { data: [], timestamp: number }
+
+function getCachedResults(key) {
+  const entry = resultCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    resultCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCachedResults(key, data) {
+  // Store only the fields the UI actually uses to keep memory light
+  const trimmed = data.map((item) => ({
+    id: item.id,
+    type: item.type,
+    title: item.title,
+    Name: item.Name,
+    url: item.url,
+    referral_url: item.referral_url,
+    listing_url: item.listing_url,
+    image_url: item.image_url,
+    description: item.description,
+    summary: item.summary,
+    snippet: item.snippet,
+    excerpt: item.excerpt,
+    published_on: item.published_on,
+    created_at: item.created_at,
+  }));
+  resultCache.set(key, { data: trimmed, timestamp: Date.now() });
+  // Evict oldest entries if cache grows too large (max 100 queries)
+  if (resultCache.size > 100) {
+    const oldest = resultCache.keys().next().value;
+    resultCache.delete(oldest);
+  }
+}
+
 /**
  * Props:
  * - search: string (required)
@@ -629,7 +669,6 @@ function Apologist({
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [displayedCount, setDisplayedCount] = useState(10);
-  const [showSpinner, setShowSpinner] = useState(false);
   const [allData, setAllData] = useState([]);
   const [headerLabel, setHeaderLabel] = useState("");
   const [nowPlayingId, setNowPlayingId] = useState(null);
@@ -653,16 +692,6 @@ function Apologist({
     setSearchParam(trimmed);
     setSearchRunId(trigger);
   }, [search, trigger]);
-
-  useEffect(() => {
-    let timer;
-    if (loading) {
-      timer = setTimeout(() => setShowSpinner(true), 2000);
-    } else {
-      setShowSpinner(false);
-    }
-    return () => clearTimeout(timer);
-  }, [loading]);
 
   useEffect(() => {
     baselineQueryRef.current = baselineQuery || baselineQueryRef.current;
@@ -705,6 +734,8 @@ function Apologist({
       }
       setLoading(true);
       setErr("");
+      setData([]);
+      setAllData([]);
       setOpenIds(new Set());
       setHasMore(false);
       setDisplayedCount(10);
@@ -731,39 +762,90 @@ function Apologist({
 
         const normalizedSearchKey = apiQuery.toLowerCase();
 
-        const headers = {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          ...(authHeader
-            ? { Authorization: authHeader }
-            : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
-          ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
-        };
+        // ── Check in-memory cache first ──
+        const cached = getCachedResults(normalizedSearchKey);
+        let allResults;
 
-        const payload = {
-          query: apiQuery,
-          limit: 100, // Get all results
-          filters: {
-            team_id: 160,
-            types: ["article", "book", "url", "media", "youtube", "episode"],
-          },
-        };
+        if (cached) {
+          console.log(
+            `[Apologist] Cache HIT for: ${normalizedSearchKey.substring(0, 50)}`
+          );
+          allResults = cached;
+        } else {
+          console.log(
+            `[Apologist] Cache MISS for: ${normalizedSearchKey.substring(0, 50)}`
+          );
 
-        const res = await web.post(url, payload, { headers });
+          const headers = {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            ...(authHeader
+              ? { Authorization: authHeader }
+              : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
+            ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
+          };
 
-        if (cancelled) return;
-        if (res.status !== 200) {
-          setErr(res?.error || `HTTP ${res.status}`);
-          setData([]);
-          setAllData([]);
-          setOpenIds(new Set());
-          return;
+          const payload = {
+            query: apiQuery,
+            limit: 100, // Get all results
+            filters: {
+              team_id: 160,
+              types: ["article", "book", "url", "media", "youtube", "episode"],
+            },
+          };
+
+          // Retry logic with exponential backoff
+          const MAX_RETRIES = 3;
+          let res;
+          let lastError;
+
+          for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            if (cancelled) return;
+
+            try {
+              res = await web.post(url, payload, { headers });
+
+              // Success or non-retryable client error (4xx)
+              if (res.status === 200) break;
+              if (res.status >= 400 && res.status < 500) break;
+
+              // Server error (5xx) — retryable
+              lastError = res?.error || `HTTP ${res.status}`;
+            } catch (retryErr) {
+              lastError = retryErr?.message || "Network error";
+              res = null;
+            }
+
+            // If not the last attempt, wait with exponential backoff
+            if (attempt < MAX_RETRIES - 1) {
+              const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+              console.log(
+                `[Apologist] Retry ${attempt + 1}/${MAX_RETRIES - 1} after ${delay}ms — ${lastError}`
+              );
+              await new Promise((r) => setTimeout(r, delay));
+            }
+          }
+
+          if (cancelled) return;
+          if (!res || res.status !== 200) {
+            setErr(
+              lastError || res?.error || `HTTP ${res?.status || "unknown"}`
+            );
+            setData([]);
+            setAllData([]);
+            setOpenIds(new Set());
+            return;
+          }
+
+          allResults = Array.isArray(res?.data?.results)
+            ? res.data.results
+            : [];
+
+          // Cache the raw results for future lookups
+          setCachedResults(normalizedSearchKey, allResults);
         }
 
-        const allResults = Array.isArray(res?.data?.results)
-          ? res.data.results
-          : [];
-
+        if (cancelled) return;
         const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
         const filteredResults = allResults.filter((item) =>
           allowedTypes.has(item?.type)
@@ -883,6 +965,11 @@ function Apologist({
     }
   };
 
+  const handleRetry = () => {
+    setErr("");
+    setSearchRunId((prev) => prev + 1);
+  };
+
   const loadMore = () => {
     if (loadingMore || !hasMore) return;
 
@@ -914,7 +1001,7 @@ function Apologist({
   if (!search?.trim())
     return <div className="sg-muted">Type a search to begin…</div>;
 
-  if (showSpinner) {
+  if (loading && data.length === 0) {
     return (
       <div className={`sg-searchWrap ${className}`}>
         <div className={`sg-results sg-list ${className}`}>
@@ -1044,15 +1131,58 @@ function Apologist({
   if (err) {
     return (
       <div className="sg-error">
+        <span
+          className="material-symbols-outlined"
+          style={{ fontSize: "36px", opacity: 0.7 }}
+        >
+          cloud_off
+        </span>
         <b>Search error:</b> {err}
+        <button className="sg-retry-btn" onClick={handleRetry}>
+          <span
+            className="material-symbols-outlined"
+            style={{ fontSize: "16px" }}
+          >
+            refresh
+          </span>
+          Retry
+        </button>
         <div className="sg-muted sg-small">
           If a preview is blocked, use "Open".
         </div>
         <style>{getStyleOf("apologist.css")}</style>
         <style>{`
-                    .sg-error { color: #e57373; padding: 1rem; }
-                    .sg-error .sg-muted { color: var(--text2); }
-                `}</style>
+          .sg-error {
+            color: #e57373;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+          }
+          .sg-error .sg-muted { color: var(--text2); }
+          .sg-retry-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            padding: 8px 20px;
+            border: 1px solid rgba(229, 115, 115, 0.4);
+            border-radius: 20px;
+            background: rgba(229, 115, 115, 0.1);
+            color: #e57373;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+          }
+          .sg-retry-btn:hover {
+            background: rgba(229, 115, 115, 0.2);
+            border-color: rgba(229, 115, 115, 0.6);
+          }
+        `}</style>
       </div>
     );
   }

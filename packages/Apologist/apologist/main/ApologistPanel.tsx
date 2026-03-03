@@ -313,8 +313,10 @@ function ApologistPanelWrapper({ id }) {
   const { t } = useSideBarContext();
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState("discovery");
-  const [ministriesUrl, setMinistriesUrl] = useState("");
-  const [ministriesTitle, setMinistriesTitle] = useState("");
+  const [ministriesUrl, setMinistriesUrl] = useState(
+    "https://www.kenboa.org/blog/"
+  );
+  const [ministriesTitle, setMinistriesTitle] = useState("Ken Boa Blog");
 
   // ── Search state, initialized from globalThis ──
   const [searchQuery, setSearchQuery] = useState(globalThis.GlobalSearch || "");
@@ -397,7 +399,7 @@ function ApologistPanelWrapper({ id }) {
         setBaselineQuery(globalThis.StudyNoteParentSearch || "");
         setSearchTrigger((prev) => prev + 1);
       }
-    }, 1000);
+    }, 200);
     return () => clearInterval(interval);
   }, [searchQuery, searchLevel, searchLabel]);
 
@@ -440,7 +442,7 @@ function ApologistPanelWrapper({ id }) {
       } catch (e) {
         console.warn("[ApologistPanel] verse click poll error:", e);
       }
-    }, 500);
+    }, 200);
 
     return () => clearInterval(interval);
   }, []);
