@@ -12,7 +12,7 @@
       },
       "pageSettings": {
         "disableHighlighting": true,
-        "removeAiAgent": "true"
+        "removeAiAgent": true
       },
       "onlineUsers": {
         "enabled": true,
@@ -210,11 +210,12 @@
         "removeEditMode": true,
         "removeAccountOptions": true,
         "removeBibleStack": true,
-        "removeJoinSession": true
+        "removeJoinSession": true,
+        "removeBookmark": true
       },
       "pageSettings": {
         "disableHighlighting": true,
-        "removeAiAgent": "true"
+        "removeAiAgent": true
       },
       "sections": {
         "accountHeader": {
