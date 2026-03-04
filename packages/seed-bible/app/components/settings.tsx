@@ -1591,6 +1591,7 @@ const SettingsSidebar = ({ config }) => {
     customIcon,
     setCustomIcon,
     setOpenOnMobile,
+    openOnMobile,
     setSidebarWidth,
   } = useSideBarContext();
   const { ReSeed, setReSeed } = useBibleContext();
