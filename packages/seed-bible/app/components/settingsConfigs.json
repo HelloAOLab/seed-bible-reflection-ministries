@@ -9,7 +9,7 @@
         "removeAccountOptions": true,
         "removeBibleStack": true,
         "removeJoinSession": true,
-        "removeBookmark": true,
+        "removeBookMark": true,
         "removeAddSession": true
       },
       "pageSettings": {
