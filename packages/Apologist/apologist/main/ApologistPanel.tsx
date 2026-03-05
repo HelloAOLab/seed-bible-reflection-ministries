@@ -137,15 +137,9 @@ function AskKenTab({ context, label }) {
 
   return (
     <div className="askken-container">
-      {/* Top bar */}
-      <div className="askken-topbar">
-        <div className="askken-logo-group">
-          <img src={APOLOGIST_LOGO_URL} alt="Ken Boa" className="askken-logo" />
-          <div className="askken-logo-text">
-            <span className="askken-logo-name">{t("kenBoa")}</span>
-            <span className="askken-logo-sub">{t("reflections")}</span>
-          </div>
-        </div>
+      <div className="askken-content">
+        {/* Top bar */}
+
         {hasMessages && (
           <button className="askken-newchat-btn" onClick={handleNewChat}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -157,98 +151,97 @@ function AskKenTab({ context, label }) {
             {t("newChat")}
           </button>
         )}
-      </div>
 
-      {/* Messages area */}
-      <div className="askken-messages">
-        {!hasMessages && (
-          <div className="askken-hero">
-            <p className="askken-subtitle">{t("kenSubtitle")}</p>
-            <h1 className="askken-heading">{t("kenHeading")}</h1>
-            <p className="askken-description">{t("kenDescription")}</p>
-          </div>
-        )}
-
-        {messages.map((msg, i) =>
-          msg.role === "user" ? (
-            <div key={i} className="askken-msg askken-msg-user">
-              <div className="askken-bubble askken-bubble-user">
-                {msg.content}
-              </div>
+        {/* Messages area */}
+        <div className="askken-messages">
+          {!hasMessages && (
+            <div className="askken-hero">
+              <p className="askken-subtitle">{t("kenSubtitle")}</p>
+              <h1 className="askken-heading">{t("kenHeading")}</h1>
+              <p className="askken-description">{t("kenDescription")}</p>
             </div>
-          ) : (
-            <div key={i} className="askken-msg askken-msg-assistant">
+          )}
+
+          {messages.map((msg, i) =>
+            msg.role === "user" ? (
+              <div key={i} className="askken-msg askken-msg-user">
+                <div className="askken-bubble askken-bubble-user">
+                  {msg.content}
+                </div>
+              </div>
+            ) : (
+              <div key={i} className="askken-msg askken-msg-assistant">
+                <img
+                  src={APOLOGIST_LOGO_URL}
+                  alt=""
+                  className="askken-msg-avatar"
+                />
+                <div className="askken-bubble askken-bubble-assistant">
+                  {(msg.content || "")
+                    .trim()
+                    .split(/\n+/)
+                    .map((para, idx) => (
+                      <p
+                        key={idx}
+                        style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
+                      >
+                        {para}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            )
+          )}
+
+          {isLoading && (
+            <div className="askken-msg askken-msg-assistant">
               <img
                 src={APOLOGIST_LOGO_URL}
                 alt=""
                 className="askken-msg-avatar"
               />
-              <div className="askken-bubble askken-bubble-assistant">
-                {(msg.content || "")
-                  .trim()
-                  .split(/\n+/)
-                  .map((para, idx) => (
-                    <p
-                      key={idx}
-                      style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
-                    >
-                      {para}
-                    </p>
-                  ))}
+              <div className="askken-bubble askken-bubble-assistant askken-thinking">
+                <span className="askken-dot" />
+                <span className="askken-dot" />
+                <span className="askken-dot" />
               </div>
             </div>
-          )
-        )}
+          )}
 
-        {isLoading && (
-          <div className="askken-msg askken-msg-assistant">
-            <img
-              src={APOLOGIST_LOGO_URL}
-              alt=""
-              className="askken-msg-avatar"
-            />
-            <div className="askken-bubble askken-bubble-assistant askken-thinking">
-              <span className="askken-dot" />
-              <span className="askken-dot" />
-              <span className="askken-dot" />
-            </div>
-          </div>
-        )}
+          {error && <div className="askken-error">{error}</div>}
 
-        {error && <div className="askken-error">{error}</div>}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Chat input */}
-      <div className="askken-chat-area">
-        <div className="askken-input-row">
-          <input
-            type="text"
-            className="askken-input"
-            placeholder={t("askQuestion")}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSubmit();
-            }}
-            disabled={isLoading}
-          />
-          <button
-            className="askken-send-btn"
-            onClick={handleSubmit}
-            disabled={isLoading || !query.trim()}
-            aria-label="Send"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
+          <div ref={messagesEndRef} />
         </div>
-        <p className="askken-footer">{t("reflectionCopyRight")}</p>
+
+        {/* Chat input */}
+        <div className="askken-chat-area">
+          <div className="askken-input-row">
+            <input
+              type="text"
+              className="askken-input"
+              placeholder={t("askQuestion")}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSubmit();
+              }}
+              disabled={isLoading}
+            />
+            <button
+              className="askken-send-btn"
+              onClick={handleSubmit}
+              disabled={isLoading || !query.trim()}
+              aria-label="Send"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -529,15 +522,29 @@ function ApologistPanelWrapper({ id }) {
       {/* ── Styles ── */}
       <style>{`
         /* ── Tab Bar ── */
-        .apologist-tab-bar {
-          display: flex;
-          border-bottom: 1px solid var(--inputBorder, #2d2d2d);
-          background: var(--panelBackground, #161616);
-          flex-shrink: 0;
-          padding: 0 4px;
-          gap: 2px;
-        }
+     .apologist-tab-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-bottom: 1px solid var(--inputBorder, #2d2d2d);
+  background: var(--panelBackground, #161616);
+  padding: 0 4px;
+  gap: 6px;
+  -webkit-overflow-scrolling: touch;
+}
 
+.apologist-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.apologist-tab {
+  flex: 0 0 auto;   /* VERY IMPORTANT */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+}
         .apologist-tab {
           display: flex;
           align-items: center;
@@ -646,13 +653,19 @@ function ApologistPanelWrapper({ id }) {
 
         /* ── Ask Ken Tab ── */
         .askken-container {
+          height: 100%;
+          min-height: 500px%;
+          background: var(--panelBackground, #fafafa);
+
+        }
+        .askken-content {
           display: flex;
           flex-direction: column;
-          height: 100%;
-          min-height: 500px;
-          background: var(--panelBackground, #fafafa);
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          height: 92.5%;
         }
+
+        
+
 
         .askken-topbar {
           display: flex;

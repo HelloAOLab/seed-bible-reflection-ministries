@@ -751,7 +751,9 @@ function Apologist({
           globalThis.GlobalSearchLabel ||
           ""
         ).trim();
+
         let apiQuery;
+
         if (resolvedLevel === "chapter") {
           apiQuery = currentLabel || trimmedQuery;
         } else {
@@ -784,6 +786,7 @@ function Apologist({
               : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
             ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
           };
+          console.log(apiQuery, "apiQuery");
 
           const payload = {
             query: apiQuery,

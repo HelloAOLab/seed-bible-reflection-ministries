@@ -247,14 +247,19 @@ export function Toolbar() {
                 </div>
               )}
               <button
-                className="mobile-navbar-btn more-btn"
-                title="More"
-                aria-label="More"
-                onClick={() => setShowMoreMenu((prev) => !prev)}
+                className="mobile-navbar-btn explore-btn"
+                title="Apologist"
+                aria-label="Apologist"
+                onClick={() => {
+                  const exploreTool = tools?.find(
+                    (t) => t?.label === "Apologist"
+                  );
+                  exploreTool?.onClick?.();
+                }}
               >
                 <div className="mobile-btn-content">
-                  <MoreIcon color="var(--text1)" />
-                  <span className="mobile-btn-label">More</span>
+                  <span className="material-symbols-outlined">explore</span>
+                  <span className="mobile-btn-label">Apologist</span>
                 </div>
               </button>
             </div>
