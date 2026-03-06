@@ -30,6 +30,7 @@ function AskKenTab({ context, label }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
+  const { openOnMobile, isMobile } = useSideBarContext();
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -242,6 +243,9 @@ function AskKenTab({ context, label }) {
             </button>
           </div>
         </div>
+        {!isMobile && (
+          <p className="askken-footer">{t("reflectionCopyRight")}</p>
+        )}
       </div>
     </div>
   );
@@ -522,45 +526,42 @@ function ApologistPanelWrapper({ id }) {
       {/* ── Styles ── */}
       <style>{`
         /* ── Tab Bar ── */
-     .apologist-tab-bar {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  overflow-y: hidden;
+  .apologist-tab-bar {
+  display: grid;
+  
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px; /* always > 3px */
+  padding: 4px;
   border-bottom: 1px solid var(--inputBorder, #2d2d2d);
   background: var(--panelBackground, #161616);
-  padding: 0 4px;
-  gap: 6px;
-  -webkit-overflow-scrolling: touch;
+}
+  @media (max-width: 330px) {
+  .apologist-tab-bar {
+    grid-template-columns: 1fr;
+  }
 }
 
-.apologist-tab-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.apologist-tab {
-  flex: 0 0 auto;   /* VERY IMPORTANT */
+        .apologist-tab {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 6px;
+
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+
+  color: var(--text2, #777);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  min-width: 0;          /* IMPORTANT */
+  overflow: hidden;      /* prevent overflow */
 }
-        .apologist-tab {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 10px 14px;
-          background: transparent;
-          border: none;
-          border-bottom: 2px solid transparent;
-          color: var(--text2, #777);
-          font-size: 13px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          white-space: nowrap;
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
 
         .apologist-tab:hover {
           color: var(--text1, #bbb);
@@ -587,8 +588,11 @@ function ApologistPanelWrapper({ id }) {
           }
 
         .apologist-tab-label {
-          font-size: 12px;
-        }
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
         /* ── Reflection Ministries Tab ── */
         .ministries-empty {
@@ -661,7 +665,7 @@ function ApologistPanelWrapper({ id }) {
         .askken-content {
           display: flex;
           flex-direction: column;
-          height: 92.5%;
+          height: 92%;
         }
 
         
@@ -828,7 +832,8 @@ function ApologistPanelWrapper({ id }) {
           text-align: center;
           font-size: 11px;
           color: var(--text2, #aaa);
-          margin: 8px 0 0;
+          margin-bottom: -30px;
+          
         }
 
         /* ── Chat messages ── */

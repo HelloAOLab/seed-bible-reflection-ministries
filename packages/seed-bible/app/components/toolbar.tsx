@@ -259,7 +259,7 @@ export function Toolbar() {
               >
                 <div className="mobile-btn-content">
                   <span className="material-symbols-outlined">explore</span>
-                  <span className="mobile-btn-label">Apologist</span>
+                  <span className="mobile-btn-label">Discovery</span>
                 </div>
               </button>
             </div>
