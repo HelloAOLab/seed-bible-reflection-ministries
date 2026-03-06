@@ -1643,6 +1643,9 @@ const SideBarChapters = (props: {
   }) => {
     const { bookName, chapterNo, bookData, ...data } = props;
     if (globalThis?.findNameRank) {
+      console.log(openSidebar, "openSidebar");
+      setopenSidebar(false);
+
       const booksDetails = globalThis.findNameRank(bookName);
       const dataItem = {
         type: "chapter",
