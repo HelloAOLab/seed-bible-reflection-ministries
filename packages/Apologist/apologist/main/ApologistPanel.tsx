@@ -531,15 +531,12 @@ function ApologistPanelWrapper({ id }) {
   
   grid-template-columns: repeat(3, 1fr);
   gap: 2px; /* always > 3px */
-  padding: 4px;
+  padding: 4px 4px 0px 4px;
   border-bottom: 1px solid var(--inputBorder, #2d2d2d);
   background: var(--panelBackground, #161616);
 }
-  @media (max-width: 330px) {
-  .apologist-tab-bar {
-    grid-template-columns: 1fr;
-  }
-}
+ 
+
 
         .apologist-tab {
   display: flex;
@@ -547,6 +544,7 @@ function ApologistPanelWrapper({ id }) {
   justify-content: center;
   gap: 4px;
   padding: 6px 6px;
+  height: 100%;
 
   background: transparent;
   border: none;
@@ -658,14 +656,14 @@ function ApologistPanelWrapper({ id }) {
         /* ── Ask Ken Tab ── */
         .askken-container {
           height: 100%;
-          min-height: 500px%;
+          
           background: var(--panelBackground, #fafafa);
 
         }
         .askken-content {
           display: flex;
           flex-direction: column;
-          height: 92%;
+          height: 92.8%;
         }
 
         
