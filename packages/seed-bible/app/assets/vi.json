@@ -94,6 +94,9 @@
   "fill": "Tô",
   "title": "Tiêu đề",
   "placeholder": "Giữ chỗ",
+  "playing": "Đang phát",
+  "playingNow": "Đang phát bây giờ",
+  "playingNext": "Phát tiếp theo",
   "activeState": "Trạng thái hoạt động",
   "inactiveState": "Trạng thái không hoạt động",
   "companyName": "Tên công ty",
@@ -124,6 +127,7 @@
   "done": "Hoàn tất",
   "yes": "Có",
   "no": "Không",
+  "now": "Bây giờ",
   "all": "Tất cả",
   "file": "Tệp",
   "headingsAndMediaCannotBeEmbedded": "Tiêu đề và media không thể được nhúng!",
@@ -162,5 +166,7 @@
   "kenDescription": "Mục vụ Reflections trang bị cho các môn đồ và củng cố các hội thánh thông qua những tài nguyên Kinh Thánh mạnh mẽ để giúp bạn Yêu thương, Học hỏi và Sống tốt hơn.",
   "newChat": "Cuộc trò chuyện mới",
   "learnMore": "Tìm hiểu thêm",
-  "loadMore": "Tải thêm"
+  "loadMore": "Tải thêm",
+  "translationSwitchOption": "Bạn có muốn chuyển sang bản dịch {{translationName}} không?",
+  "chooseAnother": "Chọn cái khác"
 }

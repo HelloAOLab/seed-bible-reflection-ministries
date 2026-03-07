@@ -12,11 +12,12 @@ body {
 }
 
 .material-symbols-outlined {
+  color: var(--pageTextColor);
+}
+.material-symbols-outlined {
   color: var(--iconColor) !important;
 }
-
 .coloredIcon,
-svg,
 .toolbar-button img {
   filter: var(--filter-mode);
 }

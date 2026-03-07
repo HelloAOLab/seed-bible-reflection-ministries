@@ -94,6 +94,9 @@
   "fill": "ډکول",
   "title": "سرلیک",
   "placeholder": "ځای ناست",
+  "playing": "غږېږي",
+  "playingNow": "اوس غږېږي",
+  "playingNext": "راتلونکی غږېږي",
   "activeState": "فعال حالت",
   "inactiveState": "غیر فعال حالت",
   "companyName": "د شرکت نوم",
@@ -124,6 +127,7 @@
   "done": "بشپړ شو",
   "yes": "هو",
   "no": "نه",
+  "now": "اوس",
   "all": "ټول",
   "file": "فایل",
   "headingsAndMediaCannotBeEmbedded": "سرچینې یا میډیا پریشانی کولی شي!",
@@ -162,5 +166,7 @@
   "kenDescription": "ریفلکشنز وزارتونه د پیاوړو بایبلي سرچینو له لارې شاګردان چمتو کوي او کلیساوې پیاوړې کوي، ترڅو تاسو مینه وکړئ، زده کړه وکړئ او ښه ژوند وکړئ.",
   "newChat": "نوی چیټ",
   "learnMore": "نور معلومات ترلاسه کړئ",
-  "loadMore": "نور پورته کړئ"
+  "loadMore": "نور پورته کړئ",
+  "translationSwitchOption": "ایا تاسو غواړئ چې د {{translationName}} ژباړې ته لاړ شئ؟",
+  "chooseAnother": "بل یو غوره کړئ"
 }

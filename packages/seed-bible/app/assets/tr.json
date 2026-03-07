@@ -94,6 +94,9 @@
   "fill": "Dolgu",
   "title": "Başlık",
   "placeholder": "Yer tutucu",
+  "playing": "Oynatılıyor",
+  "playingNow": "Şu an oynatılıyor",
+  "playingNext": "Sırada oynatılacak",
   "activeState": "Aktif durum",
   "inactiveState": "Pasif durum",
   "companyName": "Şirket adı",
@@ -124,6 +127,7 @@
   "done": "Bitti",
   "yes": "Evet",
   "no": "Hayır",
+  "now": "Şimdi",
   "all": "Tümü",
   "file": "Dosya",
   "headingsAndMediaCannotBeEmbedded": "Başlıklar ve medya içeriği gömülemez!",
@@ -162,5 +166,7 @@
   "kenDescription": "Reflections Hizmetleri, güçlü Kutsal Kitap kaynakları aracılığıyla öğrencileri donatır ve kiliseleri güçlendirir; sevmeniz, öğrenmeniz ve iyi yaşamanız için size yardımcı olur.",
   "newChat": "Yeni Sohbet",
   "learnMore": "Daha Fazla Bilgi",
-  "loadMore": "Daha Fazla Yükle"
+  "loadMore": "Daha Fazla Yükle",
+  "translationSwitchOption": "{{translationName}} çevirisine geçmek ister misiniz?",
+  "chooseAnother": "Başka birini seç"
 }

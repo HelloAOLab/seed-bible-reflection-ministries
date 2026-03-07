@@ -94,6 +94,9 @@
   "fill": "ምልኣ",
   "title": "ኣርእስቲ",
   "placeholder": "መተኪ ቦታ",
+  "playing": "ይጫወታል",
+  "playingNow": "ሕጂ ይጫወታል",
+  "playingNext": "ዝስዕብ ይጫወታል",
   "activeState": "ንቑሕ ሁነታ",
   "inactiveState": "ዘይንቑሕ ሁነታ",
   "companyName": "ስም ኩባንያ",
@@ -124,6 +127,7 @@
   "done": "ተዛዚሙ",
   "yes": "እወ",
   "no": "ኣይኮነን",
+  "now": "ሕጂ",
   "all": "ኩሉ",
   "file": "ፋይል",
   "headingsAndMediaCannotBeEmbedded": "መስሪያዎች & ማዘጋጃዎች አይተዳደሩም!",
@@ -162,5 +166,7 @@
   "kenDescription": "ሚኒስትሪ ሪፍሌክሽንስ ብሓይሊ መጽሓፍ ቅዱስ ምንጪ ደቂ መዝሙር ይዘጋጅእ እና ቤተክርስቲያን ይጽንዕ ንኽትፈትዉ፣ ንኽትመሃሩ እና ንኽትነብሩ ብሓላፊ መንገዲ ይሕግዝ።",
   "newChat": "ሓዲሽ ውይይት",
   "learnMore": "ተወሳኺ ፍለጥ",
-  "loadMore": "ተወሳኺ ጫን"
+  "loadMore": "ተወሳኺ ጫን",
+  "translationSwitchOption": "ናብ {{translationName}} ትርጉም ክትቀይር ትደሊ ዶ?",
+  "chooseAnother": "ካልእ ምረጽ"
 }

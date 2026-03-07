@@ -40,6 +40,7 @@ export function Toolbar() {
   } = useSideBarContext();
 
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [activeMoreApp, setActiveMoreApp] = useState(null);
   const { setIsDragging, isDragging, setElement } = useMouseMove();
   const {
     activeSpace,
@@ -199,11 +200,8 @@ export function Toolbar() {
 
             <div
               onClick={() => {
-                globalThis.setOpenSidebar((prev) => !prev);
-                // if (globalThis.setOpenSidebar) {
-                //   globalThis.setSelectingTranslation &&
-                //     globalThis.setSelectingTranslation(false);
-                // }
+                globalThis.setOpenSidebar(!openSidebar);
+                globalThis.setSelectingTranslation(false);
               }}
               className="mobile-center-logo"
             >
@@ -219,31 +217,34 @@ export function Toolbar() {
             <div className="more-btn-wrapper">
               {showMoreMenu && (
                 <div className="more-menu-popup">
-                  {moreTools.map((tool, i) => (
-                    <button
-                      key={i}
-                      className="more-menu-item"
-                      onClick={() => {
-                        tool?.onClick?.();
-                        setShowMoreMenu(false);
-                      }}
-                    >
-                      {tool?.isImg ? (
-                        <img
-                          src={tool.icon}
-                          style={{ width: "20px" }}
-                          alt={tool.label}
-                        />
-                      ) : (
-                        <span className="material-symbols-outlined">
-                          {tool?.icon}
+                  {moreTools
+                    .filter((tool) => tool.label !== "Books")
+                    .map((tool, i) => (
+                      <button
+                        key={i}
+                        className="more-menu-item"
+                        onClick={() => {
+                          tool?.onClick?.();
+                          setShowMoreMenu(false);
+                          setActiveMoreApp(tool.label);
+                        }}
+                      >
+                        {tool?.isImg ? (
+                          <img
+                            src={tool.icon}
+                            style={{ width: "20px" }}
+                            alt={tool.label}
+                          />
+                        ) : (
+                          <span className="material-symbols-outlined">
+                            {tool?.icon}
+                          </span>
+                        )}
+                        <span className="more-menu-item-label">
+                          {tool?.label}
                         </span>
-                      )}
-                      <span className="more-menu-item-label">
-                        {tool?.label}
-                      </span>
-                    </button>
-                  ))}
+                      </button>
+                    ))}
                 </div>
               )}
               <button
