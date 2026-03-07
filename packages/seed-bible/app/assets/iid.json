@@ -94,6 +94,9 @@
   "fill": "Isi",
   "title": "Judul",
   "placeholder": "Placeholder",
+  "playing": "Memutar",
+  "playingNow": "Sedang diputar sekarang",
+  "playingNext": "Berikutnya diputar",
   "activeState": "Status aktif",
   "inactiveState": "Status tidak aktif",
   "companyName": "Nama perusahaan",
@@ -124,6 +127,7 @@
   "done": "Selesai",
   "yes": "Ya",
   "no": "Tidak",
+  "now": "Sekarang",
   "all": "Semua",
   "file": "File",
   "headingsAndMediaCannotBeEmbedded": "Headings & Media cannot be embeded!",
@@ -162,5 +166,7 @@
   "kenDescription": "Pelayanan Reflections memperlengkapi murid-murid dan memberdayakan gereja melalui sumber daya Alkitab yang kuat untuk membantu Anda Mengasihi, Belajar, dan Hidup dengan Baik.",
   "newChat": "Obrolan Baru",
   "learnMore": "Pelajari Lebih Lanjut",
-  "loadMore": "Muat Lebih Banyak"
+  "loadMore": "Muat Lebih Banyak",
+  "translationSwitchOption": "Apakah Anda ingin beralih ke terjemahan {{translationName}}?",
+  "chooseAnother": "Pilih yang lain"
 }

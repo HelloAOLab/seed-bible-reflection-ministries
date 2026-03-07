@@ -94,6 +94,9 @@
   "fill": "ሙላ",
   "title": "ርዕስ",
   "placeholder": "ቦታ ያዥ",
+  "playing": "በመጫወት ላይ",
+  "playingNow": "አሁን በመጫወት ላይ",
+  "playingNext": "ቀጣይ ይጫወታል",
   "activeState": "ንቁ ሁኔታ",
   "inactiveState": "የተዘጋ ሁኔታ",
   "companyName": "የኩባንያ ስም",
@@ -124,6 +127,7 @@
   "done": "ተጠናቀቀ",
   "yes": "አዎ",
   "no": "አይ",
+  "now": "አሁን",
   "all": "ሁሉም",
   "file": "ፋይል",
   "headingsAndMediaCannotBeEmbedded": "የሚያስደምር መስሪያዎች & ማዘጋጃዎች አይተዳደሩም!",
@@ -162,5 +166,7 @@
   "kenDescription": "ሪፍሌክሽንስ ሚኒስትሪዎች ተማሪዎችን ያበረታታሉ እና ቤተክርስቲያናትን በኃይለኛ መጽሐፍ ቅዱሳዊ ምንጮች ይደግፋሉ ፣ እንዲወዱ ፣ እንዲማሩ እና በጥሩ ሁኔታ እንዲኖሩ።",
   "newChat": "አዲስ ውይይት",
   "learnMore": "ተጨማሪ ይወቁ",
-  "loadMore": "ተጨማሪ ጫን"
+  "loadMore": "ተጨማሪ ጫን",
+  "translationSwitchOption": "ወደ {{translationName}} ትርጉም መቀየር ይፈልጋሉ?",
+  "chooseAnother": "ሌላ ይምረጡ"
 }

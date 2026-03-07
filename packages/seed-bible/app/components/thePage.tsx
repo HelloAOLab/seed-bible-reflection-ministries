@@ -1587,7 +1587,7 @@ function ThePage({
   // Preload adjacent chapters whenever the current chapter changes
   useEffect(() => {
     if (!data) return;
-    const baseUrl = data.baseUrl || "https://bible.helloao.org";
+    const baseUrl = data.baseUrl || "https://vmfnri.helloao.org";
 
     const preload = async (
       url: string | null | undefined,

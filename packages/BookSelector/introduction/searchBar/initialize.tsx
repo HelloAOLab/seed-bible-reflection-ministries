@@ -1,4 +1,5 @@
 if (configBot.tags.systemPortal) return;
+import { globalAPI } from "app.controller.controllerBuilder";
 
 import SearchBar from "introduction.searchBar.SearchBar";
 await os.unregisterApp("searchBar");
@@ -46,7 +47,7 @@ const App = () => {
 
   return (
     <>
-      <style>{globalThis?.ThemeCSS ? globalThis.ThemeCSS : ""}</style>
+      <style>{globalAPI?.mainThemeCSS ? globalAPI.mainThemeCSS : ""}</style>
       <style>{css}</style>
       <link
         href="https://fonts.googleapis.com/icon?family=Material+Icons"

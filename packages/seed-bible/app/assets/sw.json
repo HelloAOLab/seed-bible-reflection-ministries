@@ -94,6 +94,9 @@
   "fill": "Jaza",
   "title": "Kichwa",
   "placeholder": "Kishikilia nafasi",
+  "playing": "Inacheza",
+  "playingNow": "Inacheza sasa",
+  "playingNext": "Inayofuata",
   "activeState": "Hali iliyo hai",
   "inactiveState": "Hali isiyo hai",
   "companyName": "Jina la kampuni",
@@ -124,6 +127,7 @@
   "done": "Imekamilika",
   "yes": "Ndiyo",
   "no": "Hapana",
+  "now": "Sasa",
   "all": "Zote",
   "file": "Faili",
   "headingsAndMediaCannotBeEmbedded": "Masharti na media hainaweza kuweka!",
@@ -162,5 +166,7 @@
   "kenDescription": "Huduma za Reflections huandaa wanafunzi na kuimarisha makanisa kupitia rasilimali zenye nguvu za Kibiblia ili kukusaidia Kupenda, Kujifunza, na Kuishi Vizuri.",
   "newChat": "Mazungumzo Mapya",
   "learnMore": "Jifunze Zaidi",
-  "loadMore": "Pakia Zaidi"
+  "loadMore": "Pakia Zaidi",
+  "translationSwitchOption": "Je, ungependa kubadili kwenye tafsiri ya {{translationName}}?",
+  "chooseAnother": "Chagua kingine"
 }

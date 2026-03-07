@@ -94,6 +94,9 @@
   "fill": "채우기",
   "title": "제목",
   "placeholder": "플레이스홀더",
+  "playing": "재생 중",
+  "playingNow": "지금 재생 중",
+  "playingNext": "다음 재생",
   "activeState": "활성 상태",
   "inactiveState": "비활성 상태",
   "companyName": "회사 이름",
@@ -124,6 +127,7 @@
   "done": "완료",
   "yes": "예",
   "no": "아니요",
+  "now": "지금",
   "all": "전체",
   "file": "파일",
   "headingsAndMediaCannotBeEmbedded": "제목과 미디어는 삽입할 수 없습니다!",
@@ -162,5 +166,7 @@
   "kenDescription": "리플렉션스 미니스트리즈는 강력한 성경적 자료를 통해 제자들을 준비시키고 교회를 세워, 당신이 사랑하고 배우며 더 나은 삶을 살도록 돕습니다.",
   "newChat": "새 채팅",
   "learnMore": "더 알아보기",
-  "loadMore": "더 불러오기"
+  "loadMore": "더 불러오기",
+  "translationSwitchOption": "{{translationName}} 번역으로 전환하시겠습니까?",
+  "chooseAnother": "다른 것을 선택하세요"
 }
