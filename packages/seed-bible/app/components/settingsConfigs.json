@@ -69,6 +69,7 @@
             "tertiaryColor": "#C0C8D7",
             "themeSideMenu": "#FFFFFF",
             "panelBackground": "#F4F4F4",
+            "pageBookBackground": "#FFFFFF",
             "tabSelection": "#2E4879",
             "activeTabBackground": "#2E48791A",
             "activeTabText": "#2E4879",
