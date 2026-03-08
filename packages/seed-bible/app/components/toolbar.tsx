@@ -215,38 +215,6 @@ export function Toolbar() {
             </div>
 
             <div className="more-btn-wrapper">
-              {showMoreMenu && (
-                <div className="more-menu-popup">
-                  {moreTools
-                    .filter((tool) => tool.label !== "Books")
-                    .map((tool, i) => (
-                      <button
-                        key={i}
-                        className="more-menu-item"
-                        onClick={() => {
-                          tool?.onClick?.();
-                          setShowMoreMenu(false);
-                          setActiveMoreApp(tool.label);
-                        }}
-                      >
-                        {tool?.isImg ? (
-                          <img
-                            src={tool.icon}
-                            style={{ width: "20px" }}
-                            alt={tool.label}
-                          />
-                        ) : (
-                          <span className="material-symbols-outlined">
-                            {tool?.icon}
-                          </span>
-                        )}
-                        <span className="more-menu-item-label">
-                          {tool?.label}
-                        </span>
-                      </button>
-                    ))}
-                </div>
-              )}
               <button
                 className="mobile-navbar-btn explore-btn"
                 title="Apologist"
