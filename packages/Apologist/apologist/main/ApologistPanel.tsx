@@ -468,6 +468,32 @@ function ApologistPanelWrapper({ id }) {
       icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png",
     },
   ];
+  // ── Swipe handling ──
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.changedTouches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+
+    const deltaX = touchStartX.current - touchEndX.current;
+    const threshold = 60;
+
+    const currentIndex = tabs.findIndex((t) => t.key === activeTab);
+
+    // swipe left
+    if (deltaX > threshold && currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1].key);
+    }
+
+    // swipe right
+    if (deltaX < -threshold && currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1].key);
+    }
+  };
 
   return (
     <div
@@ -505,7 +531,11 @@ function ApologistPanelWrapper({ id }) {
       </div>
 
       {/* ── Tab Content ── */}
-      <div style={{ flex: 1, overflow: "auto", position: "relative" }}>
+      <div
+        style={{ flex: 1, overflow: "auto", position: "relative" }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {activeTab === "discovery" && (
           <Apologist
             search={searchQuery}
