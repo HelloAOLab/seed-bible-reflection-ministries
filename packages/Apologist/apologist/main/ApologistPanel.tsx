@@ -252,7 +252,7 @@ function AskKenTab({ context, label }) {
 }
 
 // ── Reflection Ministries iframe viewer ──
-function MinistriesTab({ url, title }) {
+function MinistriesTab({ url, title, onTouchEnd, onTouchStart }) {
   if (!url) {
     return (
       <div className="ministries-empty">
@@ -296,11 +296,17 @@ function MinistriesTab({ url, title }) {
           </svg>
         </a>
       </div>
+
       <iframe
         className="ministries-iframe"
         src={url}
         title={title || "Preview"}
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+      />
+      <div
+        className="ministries-swipe-layer"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       />
     </div>
   );
@@ -469,29 +475,37 @@ function ApologistPanelWrapper({ id }) {
     },
   ];
   // ── Swipe handling ──
+  // ── Swipe handling ──
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
+  const getClientX = (e) => {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      return e.changedTouches[0].clientX;
+    }
+    return e.clientX;
+  };
+
   const handleTouchStart = (e) => {
-    touchStartX.current = e.changedTouches[0].clientX;
+    touchStartX.current = getClientX(e);
   };
 
   const handleTouchEnd = (e) => {
-    touchEndX.current = e.changedTouches[0].clientX;
+    touchEndX.current = getClientX(e);
 
-    const deltaX = touchStartX.current - touchEndX.current;
-    const threshold = 60;
+    const deltaX = touchEndX.current - touchStartX.current;
+    const threshold = 50;
 
     const currentIndex = tabs.findIndex((t) => t.key === activeTab);
 
-    // swipe left
-    if (deltaX > threshold && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1].key);
+    // Swipe Right → go to previous tab
+    if (deltaX > threshold && currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1].key);
     }
 
-    // swipe right
-    if (deltaX < -threshold && currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1].key);
+    // Swipe Left → go to next tab
+    if (deltaX < -threshold && currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1].key);
     }
   };
 
@@ -533,8 +547,8 @@ function ApologistPanelWrapper({ id }) {
       {/* ── Tab Content ── */}
       <div
         style={{ flex: 1, overflow: "auto", position: "relative" }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={activeTab !== "ministries" ? handleTouchStart : undefined}
+        onTouchEnd={activeTab !== "ministries" ? handleTouchEnd : undefined}
       >
         {activeTab === "discovery" && (
           <Apologist
@@ -546,7 +560,12 @@ function ApologistPanelWrapper({ id }) {
           />
         )}
         {activeTab === "ministries" && (
-          <MinistriesTab url={ministriesUrl} title={ministriesTitle} />
+          <MinistriesTab
+            url={ministriesUrl}
+            title={ministriesTitle}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          />
         )}
         {activeTab === "askken" && (
           <AskKenTab context={searchQuery} label={searchLabel} />
@@ -634,13 +653,30 @@ function ApologistPanelWrapper({ id }) {
           text-align: center;
           color: var(--text2, #999);
         }
+          .ministries-viewer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-        .ministries-viewer {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          min-height: 400px;
-        }
+.ministries-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
+}
+
+.ministries-swipe-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+      
 
         .ministries-toolbar {
           display: flex;
@@ -676,12 +712,7 @@ function ApologistPanelWrapper({ id }) {
           background: rgba(128, 128, 128, 0.12);
         }
 
-        .ministries-iframe {
-          flex: 1;
-          width: 100%;
-          border: none;
-          background: #fff;
-        }
+       
 
         /* ── Ask Ken Tab ── */
         .askken-container {
