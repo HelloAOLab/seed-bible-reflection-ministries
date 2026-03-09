@@ -658,6 +658,7 @@ function Apologist({
   label = "",
 }) {
   const { t } = useSideBarContext();
+  const { openOnMobile, isMobile } = useSideBarContext();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -1446,6 +1447,7 @@ function Apologist({
                     width: 100%;
                     grid-column: 1 / -1;
                     text-align: center;
+                    margin-bottom: ${isMobile ? "40px" : "0px"};
                 }
                 
                 .sg-loadMoreBtn {
