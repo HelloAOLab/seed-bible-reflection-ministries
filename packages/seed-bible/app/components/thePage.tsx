@@ -863,19 +863,163 @@ function ThePage({
 
     try {
       const nextData = bible.data;
+      const sections = nextData.content || [];
+      const chapterLabel =
+        `${nextData.book || ""} ${nextData.chapter || ""}`.trim();
 
-      const combinedText = (nextData.content || [])
-        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
-        .join(" ")
+      if (!chapterLabel) return;
+
+      // ── Ask Ken context: verse-sampled string (unchanged) ──
+      const combinedText = sections
+        .flatMap((s) =>
+          (s.verses || []).map((v) => {
+            const text = v.text || "";
+            const words = text.split(/\s+/).filter(Boolean);
+            const snippet = words.slice(0, 8).join(" ");
+            return v.verseNumber ? `[v${v.verseNumber}] ${snippet}` : snippet;
+          })
+        )
+        .filter(Boolean)
+        .join(" ... ")
         .trim();
 
       if (!combinedText) return;
 
-      globalThis.GlobalSearch = combinedText;
+      // ── Bible cross-reference extractor ──
+      const BIBLE_BOOKS = [
+        "Genesis",
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "Ruth",
+        "Samuel",
+        "Kings",
+        "Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Esther",
+        "Job",
+        "Psalms",
+        "Psalm",
+        "Proverbs",
+        "Ecclesiastes",
+        "Song",
+        "Isaiah",
+        "Jeremiah",
+        "Lamentations",
+        "Ezekiel",
+        "Daniel",
+        "Hosea",
+        "Joel",
+        "Amos",
+        "Obadiah",
+        "Jonah",
+        "Micah",
+        "Nahum",
+        "Habakkuk",
+        "Zephaniah",
+        "Haggai",
+        "Zechariah",
+        "Malachi",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "Corinthians",
+        "Galatians",
+        "Ephesians",
+        "Philippians",
+        "Colossians",
+        "Thessalonians",
+        "Timothy",
+        "Titus",
+        "Philemon",
+        "Hebrews",
+        "James",
+        "Peter",
+        "Jude",
+        "Revelation",
+      ];
+      const booksPattern = BIBLE_BOOKS.join("|");
+      const crossRefRegex = new RegExp(
+        `\\b((?:1|2|3)\\s*)?(?:${booksPattern})\\s+\\d+:\\d+`,
+        "gi"
+      );
+      const allVerseText = sections
+        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
+        .join(" ");
+      const foundRefs = [
+        ...new Set(
+          [...allVerseText.matchAll(crossRefRegex)].map((m) =>
+            m[0].replace(/\s+/g, " ").trim()
+          )
+        ),
+      ].slice(0, 2);
+
+      // ── Build the query plan ──
+      const rawChapterQueries = [
+        { q: chapterLabel, type: "label", weight: 1.0 },
+        { q: `${chapterLabel} apologetics`, type: "label-angle", weight: 0.9 },
+        ...foundRefs.map((ref) => ({
+          q: `${ref} apologetics`,
+          type: "bible-ref",
+          weight: 0.85,
+        })),
+      ];
+
+      // Section anchor queries: first verse of each section (max 6)
+      const rawSectionQueries = sections
+        .slice(0, 6)
+        .map((s) => {
+          const anchor = (s.verses || [])[0];
+          if (!anchor?.text) return null;
+          const anchorWords = anchor.text
+            .split(/\s+/)
+            .filter(Boolean)
+            .slice(0, 10)
+            .join(" ");
+
+          if (!anchorWords.trim()) return null;
+
+          return {
+            q: `${chapterLabel} ${anchorWords}`.trim(),
+            type: "section-anchor",
+            weight: 0.75,
+          };
+        })
+        .filter(Boolean);
+
+      // Deduplicate queries
+      const seenQueries = new Set();
+      const dedupeQ = (queries) =>
+        queries.filter((qObj) => {
+          if (!qObj?.q) return false;
+          const normalized = qObj.q.trim().toLowerCase();
+          if (!normalized || seenQueries.has(normalized)) return false;
+          seenQueries.add(normalized);
+          return true;
+        });
+
+      const chapterQueries = dedupeQ(rawChapterQueries);
+      const sectionQueries = dedupeQ(rawSectionQueries);
+
+      // ── Write globals ──
+      globalThis.GlobalSearch = combinedText; // Ask Ken context
       globalThis.GlobalSearchLevel = "chapter";
-      globalThis.GlobalSearchLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
-      globalThis.GlobalSearchChapterLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
+      globalThis.GlobalSearchLabel = chapterLabel;
+      globalThis.GlobalSearchChapterLabel = chapterLabel;
       globalThis.StudyNoteParentSearch = combinedText;
+      globalThis.GlobalSearchQueries = {
+        // Multi-query plan
+        level: "chapter",
+        chapterQueries,
+        sectionQueries,
+      };
 
       if (typeof globalThis.UpdateStudyNoteSearch === "function") {
         globalThis.UpdateStudyNoteSearch(combinedText, {

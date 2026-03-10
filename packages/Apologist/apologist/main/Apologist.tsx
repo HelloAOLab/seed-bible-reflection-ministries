@@ -599,6 +599,7 @@ const DEFAULT_URL =
 // ── In-memory result cache (5 min TTL) ──
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const resultCache = new Map(); // key → { data: [], timestamp: number }
+const inFlightRequests = new Map(); // key → Promise
 
 function getCachedResults(key) {
   const entry = resultCache.get(key);
@@ -721,6 +722,92 @@ function Apologist({
     let cancelled = false;
     console.log("searchParam: ", searchParam);
 
+    // ── Single-query fetch helper (handles cache + retry) ──
+    async function fetchQueryResults(q) {
+      const cacheKey = q.toLowerCase();
+      const cached = getCachedResults(cacheKey);
+      if (cached) {
+        console.log(`[Apologist] Cache HIT: ${cacheKey.substring(0, 60)}`);
+        return cached;
+      }
+
+      const inFlight = inFlightRequests.get(cacheKey);
+      if (inFlight) {
+        console.log(
+          `[Apologist] Deduplicating active fetch for: ${cacheKey.substring(0, 60)}`
+        );
+        return inFlight;
+      }
+
+      const fetchPromise = (async () => {
+        const headers = {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          ...(authHeader
+            ? { Authorization: authHeader }
+            : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
+          ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
+        };
+
+        const payload = {
+          query: q,
+          limit: 100,
+          filters: {
+            team_id: 160,
+            types: ["article", "book", "url", "media", "youtube", "episode"],
+          },
+        };
+
+        const MAX_RETRIES = 3;
+        let res;
+        let lastError;
+
+        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+          if (cancelled) return [];
+          try {
+            res = await web.post(url, payload, { headers });
+            if (res.status === 200) break;
+            if (res.status >= 400 && res.status < 500) break;
+            lastError = res?.error || `HTTP ${res.status}`;
+          } catch (retryErr) {
+            lastError = retryErr?.message || "Network error";
+            res = null;
+          }
+          if (attempt < MAX_RETRIES - 1) {
+            const delay = Math.pow(2, attempt) * 1000;
+            console.log(
+              `[Apologist] Retry ${attempt + 1} after ${delay}ms — ${lastError}`
+            );
+            await new Promise((r) => setTimeout(r, delay));
+          }
+        }
+
+        if (!res || res.status !== 200) {
+          throw new Error(lastError || `HTTP ${res?.status || "unknown"}`);
+        }
+
+        const items = Array.isArray(res?.data?.results) ? res.data.results : [];
+        setCachedResults(cacheKey, items);
+        return items;
+      })();
+
+      inFlightRequests.set(cacheKey, fetchPromise);
+      try {
+        return await fetchPromise;
+      } finally {
+        inFlightRequests.delete(cacheKey);
+      }
+    }
+
+    // ── Boost helper ──
+    function getTypeBoost(item) {
+      if ((item?.type || "").toLowerCase() === "youtube") return 3;
+      const domain = getResultDomain(item);
+      if (domain.includes("tabletalkmagazine.com")) return 2;
+      if (domain.includes("ligonier.org")) return 2;
+      return 0;
+    }
+
     async function run() {
       if (!searchParam || !searchParam.trim()) {
         setData([]);
@@ -729,7 +816,6 @@ function Apologist({
         setOpenIds(new Set());
         setHasMore(false);
         setDisplayedCount(10);
-
         return;
       }
       setLoading(true);
@@ -742,179 +828,212 @@ function Apologist({
 
       try {
         const trimmedQuery = searchParam.trim();
+        const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
+        const queryPlan =
+          resolvedLevel === "chapter" ? globalThis.GlobalSearchQueries : null;
 
-        // Build the API query based on level:
-        // Chapter: use just the label (e.g., "Genesis 1")
-        // Verse: prepend the label to the verse text
-        const currentLabel = (
-          label ||
-          globalThis.GlobalSearchLabel ||
-          ""
-        ).trim();
-        let apiQuery;
-        if (resolvedLevel === "chapter") {
-          apiQuery = currentLabel || trimmedQuery;
-        } else {
-          apiQuery = currentLabel
-            ? `${currentLabel} ${trimmedQuery}`
-            : trimmedQuery;
-        }
+        let finalResults = [];
+        let normalizedSearchKey = trimmedQuery.toLowerCase();
 
-        const normalizedSearchKey = apiQuery.toLowerCase();
+        // ════════════════════════════════════════════════════
+        //  MULTI-QUERY PATH  (chapter level with a query plan)
+        // ════════════════════════════════════════════════════
+        const hasQueryPlan =
+          queryPlan?.level === "chapter" &&
+          (queryPlan.chapterQueries?.length ?? 0) +
+            (queryPlan.sectionQueries?.length ?? 0) >
+            0;
 
-        // ── Check in-memory cache first ──
-        const cached = getCachedResults(normalizedSearchKey);
-        let allResults;
+        if (hasQueryPlan) {
+          const allQueries = [
+            ...(queryPlan.chapterQueries || []),
+            ...(queryPlan.sectionQueries || []),
+          ];
 
-        if (cached) {
           console.log(
-            `[Apologist] Cache HIT for: ${normalizedSearchKey.substring(0, 50)}`
+            `[Apologist] Multi-query: ${allQueries.length} parallel queries`
           );
-          allResults = cached;
-        } else {
-          console.log(
-            `[Apologist] Cache MISS for: ${normalizedSearchKey.substring(0, 50)}`
+          normalizedSearchKey = allQueries
+            .map((q) => q.q)
+            .join("|")
+            .toLowerCase()
+            .substring(0, 120);
+
+          // Fire all queries simultaneously
+          const responses = await Promise.allSettled(
+            allQueries.map((q) => fetchQueryResults(q.q))
           );
-
-          const headers = {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            ...(authHeader
-              ? { Authorization: authHeader }
-              : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
-            ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
-          };
-
-          const payload = {
-            query: apiQuery,
-            limit: 100, // Get all results
-            filters: {
-              team_id: 160,
-              types: ["article", "book", "url", "media", "youtube", "episode"],
-            },
-          };
-
-          // Retry logic with exponential backoff
-          const MAX_RETRIES = 3;
-          let res;
-          let lastError;
-
-          for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            if (cancelled) return;
-
-            try {
-              res = await web.post(url, payload, { headers });
-
-              // Success or non-retryable client error (4xx)
-              if (res.status === 200) break;
-              if (res.status >= 400 && res.status < 500) break;
-
-              // Server error (5xx) — retryable
-              lastError = res?.error || `HTTP ${res.status}`;
-            } catch (retryErr) {
-              lastError = retryErr?.message || "Network error";
-              res = null;
-            }
-
-            // If not the last attempt, wait with exponential backoff
-            if (attempt < MAX_RETRIES - 1) {
-              const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
-              console.log(
-                `[Apologist] Retry ${attempt + 1}/${MAX_RETRIES - 1} after ${delay}ms — ${lastError}`
-              );
-              await new Promise((r) => setTimeout(r, delay));
-            }
-          }
 
           if (cancelled) return;
-          if (!res || res.status !== 200) {
-            setErr(
-              lastError || res?.error || `HTTP ${res?.status || "unknown"}`
-            );
-            setData([]);
-            setAllData([]);
-            setOpenIds(new Set());
-            return;
+
+          // Merge results, counting how many queries returned each item
+          const hitCount = new Map(); // key → hit count
+          const itemByKey = new Map(); // key → best item (by query weight)
+
+          responses.forEach((res, i) => {
+            if (res.status !== "fulfilled") {
+              console.warn(
+                `[Apologist] Query failed: "${allQueries[i].q}"`,
+                res.reason
+              );
+              return;
+            }
+            const qWeight = allQueries[i].weight ?? 1.0;
+            const qType = allQueries[i].type ?? "unknown";
+
+            res.value
+              .filter((item) => allowedTypes.has(item?.type))
+              .forEach((item) => {
+                const key = buildResultKey(item);
+                if (!key) return;
+                hitCount.set(key, (hitCount.get(key) || 0) + 1);
+                const existing = itemByKey.get(key);
+                if (!existing || qWeight > (existing._qWeight || 0)) {
+                  itemByKey.set(key, {
+                    ...item,
+                    _qWeight: qWeight,
+                    _qType: qType,
+                  });
+                }
+              });
+          });
+
+          // Rerank: hitCount × 2 + query weight + type boost
+          const scored = [...itemByKey.values()].map((item) => {
+            const key = buildResultKey(item);
+            const hits = hitCount.get(key) || 1;
+            const score =
+              hits * 2.0 + (item._qWeight || 1.0) + getTypeBoost(item);
+            return { item, score, qType: item._qType };
+          });
+          scored.sort((a, b) => b.score - a.score);
+
+          // Diversified first 10: 4 chapter + 4 section + 2 best remaining
+          const chapterItems = scored.filter(
+            (r) =>
+              r.qType === "label" ||
+              r.qType === "label-angle" ||
+              r.qType === "bible-ref"
+          );
+          const sectionItems = scored.filter(
+            (r) => r.qType === "section-anchor"
+          );
+          const usedKeys = new Set();
+          const first10 = [];
+          const addIfNew = (r) => {
+            const k = buildResultKey(r.item);
+            if (k && !usedKeys.has(k)) {
+              usedKeys.add(k);
+              first10.push(r.item);
+            }
+          };
+          chapterItems.slice(0, 4).forEach(addIfNew);
+          sectionItems.slice(0, 4).forEach(addIfNew);
+          scored.forEach((r) => {
+            if (first10.length < 10) addIfNew(r);
+          });
+
+          finalResults = scored.map((r) => r.item);
+          setAllData(finalResults);
+          setData(first10);
+          setHasMore(finalResults.length > 10);
+
+          // Save as chapter baseline for verse-level delta later
+          baselineQueryRef.current = trimmedQuery;
+          baselineResultKeysRef.current = new Set();
+          finalResults.forEach((item) => {
+            const key = buildResultKey(item);
+            if (key) baselineResultKeysRef.current.add(key);
+          });
+        } else {
+          // ════════════════════════════════════════════════════
+          //  SINGLE-QUERY FALLBACK  (verse level or no plan)
+          // ════════════════════════════════════════════════════
+          const currentLabel = (
+            label ||
+            globalThis.GlobalSearchLabel ||
+            ""
+          ).trim();
+          const apiQuery = currentLabel
+            ? `${currentLabel} - ${trimmedQuery}`
+            : trimmedQuery;
+          normalizedSearchKey = apiQuery.toLowerCase();
+
+          const allResults = await fetchQueryResults(apiQuery);
+          if (cancelled) return;
+
+          const filteredResults = allResults.filter((item) =>
+            allowedTypes.has(item?.type)
+          );
+          const sortedResults = filteredResults.slice().sort(compareResults);
+          const dedupedResults = dedupeResults(sortedResults);
+
+          if (resolvedLevel === "chapter") {
+            baselineQueryRef.current = trimmedQuery;
+            baselineResultKeysRef.current = new Set();
+            dedupedResults.forEach((item) => {
+              const key = buildResultKey(item);
+              if (key) baselineResultKeysRef.current.add(key);
+            });
           }
 
-          allResults = Array.isArray(res?.data?.results)
-            ? res.data.results
-            : [];
+          let dedupedFinal = dedupedResults;
 
-          // Cache the raw results for future lookups
-          setCachedResults(normalizedSearchKey, allResults);
+          // Remove chapter-baseline results from verse results
+          if (
+            resolvedLevel !== "chapter" &&
+            baselineResultKeysRef.current.size
+          ) {
+            dedupedFinal = dedupedFinal.filter((item) => {
+              const key = buildResultKey(item);
+              if (!key) return true;
+              return !baselineResultKeysRef.current.has(key);
+            });
+          }
+
+          // Remove results already shown in the previous search
+          if (
+            lastSearchKeyRef.current &&
+            normalizedSearchKey &&
+            normalizedSearchKey !== lastSearchKeyRef.current &&
+            lastResultKeysRef.current.size
+          ) {
+            dedupedFinal = dedupedFinal.filter((item) => {
+              const key = buildResultKey(item);
+              if (!key) return true;
+              return !lastResultKeysRef.current.has(key);
+            });
+          }
+
+          finalResults = dedupedFinal;
+          setAllData(finalResults);
+          setData(finalResults.slice(0, 10));
+          setHasMore(finalResults.length > 10);
         }
 
         if (cancelled) return;
-        const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
-        const filteredResults = allResults.filter((item) =>
-          allowedTypes.has(item?.type)
-        );
 
-        const sortedResults = filteredResults.slice().sort(compareResults);
-        const dedupedResults = dedupeResults(sortedResults);
-
-        if (resolvedLevel === "chapter") {
-          baselineQueryRef.current = trimmedQuery;
-          baselineResultKeysRef.current = new Set();
-          dedupedResults.forEach((item) => {
-            const key = buildResultKey(item);
-            if (key) {
-              baselineResultKeysRef.current.add(key);
-            }
-          });
-        }
-
-        let finalResults = dedupedResults;
-
-        if (resolvedLevel !== "chapter" && baselineResultKeysRef.current.size) {
-          finalResults = finalResults.filter((item) => {
-            const key = buildResultKey(item);
-            if (!key) return true;
-            return !baselineResultKeysRef.current.has(key);
-          });
-        }
-
-        if (
-          lastSearchKeyRef.current &&
-          normalizedSearchKey &&
-          normalizedSearchKey !== lastSearchKeyRef.current &&
-          lastResultKeysRef.current.size
-        ) {
-          finalResults = finalResults.filter((item) => {
-            const key = buildResultKey(item);
-            if (!key) return true;
-            return !lastResultKeysRef.current.has(key);
-          });
-        }
-
-        setAllData(finalResults);
-        setData(finalResults.slice(0, 10)); // Show first 10
-        setHasMore(finalResults.length > 10); // Show "Load More" if there are more than 10 results
-        // Open all book cards initially
+        // Open book + youtube cards by default
         const bookIds = finalResults
-          .filter((item) => item.type === "book" && item.id)
-          .map((item) => item.id);
+          .filter((i) => i.type === "book" && i.id)
+          .map((i) => i.id);
         const youtubeIds = finalResults
-          .filter((item) => item.type === "youtube" && item.id)
-          .map((item) => item.id);
+          .filter((i) => i.type === "youtube" && i.id)
+          .map((i) => i.id);
         setOpenIds(new Set([...bookIds, ...youtubeIds]));
-        // Update header label AFTER results are ready
+
         const computedLabel =
           globalThis.GlobalSearchLabel ||
           (isVerseLevel && currentBaselineQuery
             ? currentBaselineQuery
             : trimmedQuery);
-
         setHeaderLabel(computedLabel);
 
         lastSearchKeyRef.current = normalizedSearchKey || null;
         lastResultKeysRef.current = new Set();
         finalResults.forEach((item) => {
           const key = buildResultKey(item);
-          if (key) {
-            lastResultKeysRef.current.add(key);
-          }
+          if (key) lastResultKeysRef.current.add(key);
         });
       } catch (e) {
         if (!cancelled) {

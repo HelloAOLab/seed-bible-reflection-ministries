@@ -52,7 +52,7 @@ function AskKenTab({ context, label }) {
     const currentContext = globalThis.GlobalSearch || context || "";
     const currentLabel = globalThis.GlobalSearchLabel || label || "";
     const contextPrefix = currentContext
-      ? `[The user is currently reading: ${currentLabel || currentContext}]\n\n`
+      ? `[The user is currently reading ${currentLabel}:\n"${currentContext.substring(0, 1500)}${currentContext.length > 1500 ? "..." : ""}"]\n\n`
       : "";
     const recentMessages = newMessages.slice(-15);
     const chatHistory =
