@@ -1,6 +1,7 @@
 const { useState, useRef, useEffect, useCallback } = os.appHooks;
 import { useBibleContext } from "app.hooks.bibleVariables";
 import { useTabsContext } from "app.hooks.tabs";
+import { useSideBarContext } from "app.hooks.sideBar";
 // import { cloneElement } from "https://cdn.jsdelivr.net/npm/react@18/";
 /**
  * useDivSpliter - Hook to manage split layout logic
@@ -166,6 +167,21 @@ export const useDivSpliter = ({
       return old;
     });
   };
+
+  const removeApplicationByLabel = (labelPrefix: string) => {
+    const prefix = labelPrefix?.toUpperCase()?.replace(/\s/g, "_");
+    if (!prefix) return;
+    const suffix = "_PANEL_ID";
+    for (const key of Object.keys(globalThis)) {
+      if (key.startsWith(prefix) && key.endsWith(suffix)) {
+        const appId = (globalThis as any)[key];
+        if (appId) {
+          removeApplicationByID(appId);
+          (globalThis as any)[key] = null;
+        }
+      }
+    }
+  };
   const handleTouchMove = (e) => {
     const touch = e.touches[0];
     if (verticalDragRef.current.isDragging) {
@@ -234,6 +250,7 @@ export const useDivSpliter = ({
     setApps,
     resetApps,
     removeApplicationByID,
+    removeApplicationByLabel,
     replaceApplication,
   };
 };
@@ -253,6 +270,7 @@ export const SplitApp = ({
   handleTouchMove,
   handleTouchEnd,
 }) => {
+  const { openOnMobile } = useSideBarContext();
   const { panelMode, screens } = useBibleContext();
   const [forcedHeightPlaylist, setForcedHeightPlaylist] = useState(0);
   useEffect(() => {
@@ -337,7 +355,10 @@ export const SplitApp = ({
   }, [activeSpace, currentContainerWidth, count]);
 
   // Overlap panel state
-  const defaultOverlapWidth = Math.max(300, currentContainerWidth * 0.4);
+  const defaultOverlapWidth = openOnMobile
+    ? window.innerWidth
+    : Math.max(300, window.innerWidth * 0.4);
+
   const [overlapWidth, setOverlapWidth] = useState(defaultOverlapWidth);
   const [overlapVisible, setOverlapVisible] = useState(false);
   const overlapDragRef = useRef({
@@ -347,7 +368,7 @@ export const SplitApp = ({
   });
 
   // Default overlap for 2 panels, or when explicitly enabled
-  const isOverlap = count >= 2 && (screens.overlap !== false);
+  const isOverlap = count >= 2 && screens.overlap !== false;
 
   useEffect(() => {
     if (isOverlap) {
@@ -437,37 +458,40 @@ export const SplitApp = ({
             position: "absolute",
             right: 0,
             top: 0,
-            width: overlapWidth,
+            width: globalThis.IsMobileNow() ? "100dvw" : overlapWidth,
             height: "100%",
-            transform: overlapVisible ? "translateX(0)" : "translateX(100%)",
+            transform: overlapVisible ? "" : "translateX(100%)",
             transition: "transform 0.3s ease",
             zIndex: 10,
             display: "flex",
+            maxWidth: "100dvw",
           }}
         >
           {/* Drag handle on left edge */}
-          <div
-            style={{
-              width: "6px",
-              cursor: "col-resize",
-              backgroundColor: "transparent",
-              flexShrink: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onMouseDown={handleOverlapDragDown}
-            onTouchStart={handleOverlapTouchDown}
-          >
+          {!globalThis.IsMobileNow() && (
             <div
               style={{
-                width: "3px",
-                height: "40px",
-                borderRadius: "2px",
-                backgroundColor: "rgba(0,0,0,0.15)",
+                width: "6px",
+                cursor: "col-resize",
+                backgroundColor: "transparent",
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
-            />
-          </div>
+              onMouseDown={handleOverlapDragDown}
+              onTouchStart={handleOverlapTouchDown}
+            >
+              <div
+                style={{
+                  width: "3px",
+                  height: "100%",
+                  borderRadius: "2px",
+                  backgroundColor: "rgba(0,0,0,0.15)",
+                }}
+              />
+            </div>
+          )}
           {/* Overlay panel content — split vertically when multiple */}
           <div
             style={{

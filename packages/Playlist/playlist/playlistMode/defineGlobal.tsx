@@ -541,8 +541,8 @@ G.getPsalmsBookData = (chapter: number) => {
   }
 
   // Generate API links
-  const firstChapterApiLink = `/api/BSB/PSA/${book.start}.json`;
-  const lastChapterApiLink = `/api/BSB/PSA/${book.end}.json`;
+  const firstChapterApiLink = `/api/NASB95/PSA/${book.start}.json`;
+  const lastChapterApiLink = `/api/NASB95/PSA/${book.end}.json`;
 
   // Return the result object
   return {
@@ -1194,3 +1194,38 @@ G.FloatBarStyle = {
   backgroundColor: "var(--panelBackground)",
   padding: "0.5rem",
 };
+
+G.PlayingPlaylistCheckedItems = {};
+
+const updateCheckedItemsPlayingPlaylist = async (
+  checkedItems: any,
+  id: string
+) => {
+  if (!G.PlayingPlaylistCheckedItems) {
+    G.PlayingPlaylistCheckedItems = {};
+  }
+  if (!G.PlayingPlaylistCheckedItems[id]) {
+    G.PlayingPlaylistCheckedItems[id] = {};
+  }
+  if (!id) {
+    return;
+  }
+  G.PlayingPlaylistCheckedItems[id] = { ...checkedItems };
+  if (authBot?.id) {
+    await os.recordData(
+      authBot.id,
+      "userCheckedItems",
+      { userCheckedItems: { ...G.PlayingPlaylistCheckedItems } },
+      {
+        marker: "userCheckedItems",
+      }
+    );
+  }
+};
+
+const userCheckedItems: any = await os.getData(authBot.id, "userCheckedItems");
+G.PlayingPlaylistCheckedItems = {
+  ...(userCheckedItems?.data?.userCheckedItems || {}),
+};
+
+G.UpdateCheckedItemsPlayingPlaylist = updateCheckedItemsPlayingPlaylist;

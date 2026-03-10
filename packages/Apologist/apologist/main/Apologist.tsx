@@ -659,6 +659,7 @@ function Apologist({
   label = "",
 }) {
   const { t } = useSideBarContext();
+  const { openOnMobile, isMobile } = useSideBarContext();
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -720,7 +721,6 @@ function Apologist({
     }
 
     let cancelled = false;
-    console.log("searchParam: ", searchParam);
 
     // ── Single-query fetch helper (handles cache + retry) ──
     async function fetchQueryResults(q) {
@@ -850,33 +850,77 @@ function Apologist({
             ...(queryPlan.sectionQueries || []),
           ];
 
-          console.log(
-            `[Apologist] Multi-query: ${allQueries.length} parallel queries`
-          );
-          normalizedSearchKey = allQueries
-            .map((q) => q.q)
-            .join("|")
-            .toLowerCase()
-            .substring(0, 120);
+        // Build the API query based on level:
+        // Chapter: use just the label (e.g., "Genesis 1")
+        // Verse: prepend the label to the verse text
+        const currentLabel = (
+          label ||
+          globalThis.GlobalSearchLabel ||
+          ""
+        ).trim();
 
-          // Fire all queries simultaneously
-          const responses = await Promise.allSettled(
-            allQueries.map((q) => fetchQueryResults(q.q))
-          );
+        let apiQuery;
 
-          if (cancelled) return;
+        if (resolvedLevel === "chapter") {
+          apiQuery = currentLabel || trimmedQuery;
+        } else {
+          apiQuery = currentLabel
+            ? `${currentLabel} ${trimmedQuery}`
+            : trimmedQuery;
+        }
+
+        const normalizedSearchKey = apiQuery.toLowerCase();
+
+        // ── Check in-memory cache first ──
+        const cached = getCachedResults(normalizedSearchKey);
+        let allResults;
+
+        if (cached) {
+          allResults = cached;
+        } else {
+          const headers = {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            ...(authHeader
+              ? { Authorization: authHeader }
+              : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
+            ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
+          };
+          console.log(apiQuery, "apiQuery");
+
+          const payload = {
+            query: apiQuery,
+            limit: 100, // Get all results
+            filters: {
+              team_id: 160,
+              types: ["article", "book", "url", "media", "youtube", "episode"],
+            },
+          };
+
+          // Retry logic with exponential backoff
+          const MAX_RETRIES = 3;
+          let res;
+          let lastError;
+
+          for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            if (cancelled) return;
+
+            try {
+              res = await web.post(url, payload, { headers });
+
+              // Success or non-retryable client error (4xx)
+              if (res.status === 200) break;
+              if (res.status >= 400 && res.status < 500) break;
 
           // Merge results, counting how many queries returned each item
           const hitCount = new Map(); // key → hit count
           const itemByKey = new Map(); // key → best item (by query weight)
 
-          responses.forEach((res, i) => {
-            if (res.status !== "fulfilled") {
-              console.warn(
-                `[Apologist] Query failed: "${allQueries[i].q}"`,
-                res.reason
-              );
-              return;
+            // If not the last attempt, wait with exponential backoff
+            if (attempt < MAX_RETRIES - 1) {
+              const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+
+              await new Promise((r) => setTimeout(r, delay));
             }
             const qWeight = allQueries[i].weight ?? 1.0;
             const qType = allQueries[i].type ?? "unknown";
@@ -938,10 +982,61 @@ function Apologist({
           setData(first10);
           setHasMore(finalResults.length > 10);
 
-          // Save as chapter baseline for verse-level delta later
+        // ---- Prioritize current chapter results ----
+        // ---- Prioritize current chapter results ----
+        // ---- Prioritize current chapter + range results ----
+        let chapterFilteredResults = dedupedResults;
+
+        if (resolvedLevel === "chapter") {
+          const labelText = (currentLabel || "").toLowerCase();
+          const parts = labelText.split(" ");
+          const book = parts[0];
+          const chapter = parseInt(parts[1], 10);
+
+          const exactRegex = new RegExp(`\\b${book}\\s+${chapter}\\b`, "i");
+
+          const rangeRegex = new RegExp(
+            `${book}\\s+(\\d+)\\s*[–-]\\s*(\\d+)`,
+            "i"
+          );
+
+          const chapterMatches = dedupedResults.filter((item) => {
+            const searchableText = (
+              (item?.title || "") +
+              " " +
+              (item?.description || "") +
+              " " +
+              (item?.content || "")
+            ).toLowerCase();
+
+            // Exact match (Exodus 18)
+            if (exactRegex.test(searchableText)) return true;
+
+            // Range match (Exodus 14–18)
+            const match = searchableText.match(rangeRegex);
+
+            if (match) {
+              const start = parseInt(match[1], 10);
+              const end = parseInt(match[2], 10);
+
+              if (chapter >= start && chapter <= end) {
+                return true;
+              }
+            }
+
+            return false;
+          });
+
+          // Only show chapter results if any exist
+          chapterFilteredResults =
+            chapterMatches.length > 0 ? chapterMatches : [];
+        }
+
+        if (resolvedLevel === "chapter") {
           baselineQueryRef.current = trimmedQuery;
           baselineResultKeysRef.current = new Set();
-          finalResults.forEach((item) => {
+
+          chapterFilteredResults.forEach((item) => {
             const key = buildResultKey(item);
             if (key) baselineResultKeysRef.current.add(key);
           });
@@ -959,8 +1054,7 @@ function Apologist({
             : trimmedQuery;
           normalizedSearchKey = apiQuery.toLowerCase();
 
-          const allResults = await fetchQueryResults(apiQuery);
-          if (cancelled) return;
+        let finalResults = chapterFilteredResults;
 
           const filteredResults = allResults.filter((item) =>
             allowedTypes.has(item?.type)
@@ -1447,7 +1541,7 @@ function Apologist({
               <div className="sg-emptyIcon">🔎</div>
               <div className="sg-emptyTitle">No results</div>
               <div className="sg-emptyHint">
-                Try a broader term or different keywords.
+                No related resources found for this chapter
               </div>
             </div>
           )
@@ -1473,7 +1567,7 @@ function Apologist({
 
                 .sg-results.sg-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
                     gap: 12px;
                 }
 
@@ -1562,6 +1656,7 @@ function Apologist({
                     width: 100%;
                     grid-column: 1 / -1;
                     text-align: center;
+                    margin-bottom: ${isMobile ? "40px" : "0px"};
                 }
                 
                 .sg-loadMoreBtn {
