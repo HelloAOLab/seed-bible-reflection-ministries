@@ -37,6 +37,7 @@ export function Toolbar() {
     setOpenOnMobile,
     setCollapsed,
     setSideBarMode,
+    setOpenSidebar,
   } = useSideBarContext();
 
   const [showMoreMenu, setShowMoreMenu] = useState(false);

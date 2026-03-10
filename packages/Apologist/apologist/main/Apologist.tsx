@@ -848,10 +848,61 @@ function Apologist({
         const sortedResults = filteredResults.slice().sort(compareResults);
         const dedupedResults = dedupeResults(sortedResults);
 
+        // ---- Prioritize current chapter results ----
+        // ---- Prioritize current chapter results ----
+        // ---- Prioritize current chapter + range results ----
+        let chapterFilteredResults = dedupedResults;
+
+        if (resolvedLevel === "chapter") {
+          const labelText = (currentLabel || "").toLowerCase();
+          const parts = labelText.split(" ");
+          const book = parts[0];
+          const chapter = parseInt(parts[1], 10);
+
+          const exactRegex = new RegExp(`\\b${book}\\s+${chapter}\\b`, "i");
+
+          const rangeRegex = new RegExp(
+            `${book}\\s+(\\d+)\\s*[–-]\\s*(\\d+)`,
+            "i"
+          );
+
+          const chapterMatches = dedupedResults.filter((item) => {
+            const searchableText = (
+              (item?.title || "") +
+              " " +
+              (item?.description || "") +
+              " " +
+              (item?.content || "")
+            ).toLowerCase();
+
+            // Exact match (Exodus 18)
+            if (exactRegex.test(searchableText)) return true;
+
+            // Range match (Exodus 14–18)
+            const match = searchableText.match(rangeRegex);
+
+            if (match) {
+              const start = parseInt(match[1], 10);
+              const end = parseInt(match[2], 10);
+
+              if (chapter >= start && chapter <= end) {
+                return true;
+              }
+            }
+
+            return false;
+          });
+
+          // Only show chapter results if any exist
+          chapterFilteredResults =
+            chapterMatches.length > 0 ? chapterMatches : [];
+        }
+
         if (resolvedLevel === "chapter") {
           baselineQueryRef.current = trimmedQuery;
           baselineResultKeysRef.current = new Set();
-          dedupedResults.forEach((item) => {
+
+          chapterFilteredResults.forEach((item) => {
             const key = buildResultKey(item);
             if (key) {
               baselineResultKeysRef.current.add(key);
@@ -859,7 +910,7 @@ function Apologist({
           });
         }
 
-        let finalResults = dedupedResults;
+        let finalResults = chapterFilteredResults;
 
         if (resolvedLevel !== "chapter" && baselineResultKeysRef.current.size) {
           finalResults = finalResults.filter((item) => {
@@ -1322,7 +1373,7 @@ function Apologist({
               <div className="sg-emptyIcon">🔎</div>
               <div className="sg-emptyTitle">No results</div>
               <div className="sg-emptyHint">
-                Try a broader term or different keywords.
+                No related resources found for this chapter
               </div>
             </div>
           )
