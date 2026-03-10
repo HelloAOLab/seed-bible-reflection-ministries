@@ -162,7 +162,6 @@ function ThePage({
   if (tab) globalThis[`SetEnableEditorOf${tab?.id}`] = setEnableEditor;
 
   const loadTranslationFromUrl = async () => {
-    console.log(configBot.tags.translationId, "translation id");
     const translationId =
       configBot.tags.translationId ||
       configBot.tags.translation ||
@@ -366,13 +365,13 @@ function ThePage({
       //   updateTab(masks["sharedTab"], data);
       //   return;
       // }
-      console.log("remoteBookChange", data);
+
       globalThis.Open?.(data.bookId, data.chapter);
     };
 
     const onHighlightChange = (data) => {
       if (!globalThis.CurrentTab?.sharedTab) return;
-      console.log("remoteHighlightChange", data);
+
       globalThis.ToggleVerseHighlight?.(
         data?.verseNumbers,
         data?.color,
@@ -405,8 +404,6 @@ function ThePage({
       });
       setBible(bible);
 
-      console.log("bible data: ", bible);
-
       await bible.fetch();
 
       if (cancelled) return; // Don't update state if navigation changed
@@ -419,7 +416,7 @@ function ThePage({
         error,
         footnotes: bibleFootnotes,
       } = bible.getState();
-      console.log(data, tab, bibleFootnotes, "the data loaded");
+
       setFootnotes(bibleFootnotes);
 
       globalThis.refreshScrollers && globalThis.refreshScrollers();
@@ -835,13 +832,12 @@ function ThePage({
 
   function handleMouseUp() {
     if (!isDragging) return;
-    console.log(Element.data, "El.data");
+
     if (Element?.data?.data?.pkgApp) {
       const handoff = Element?.data?.data;
       const App = handoff.app;
       const id = uuid();
       ReplaceApplication(panelId, { id, App, to: "panel", minWidth: "30rem" });
-      console.log("replaced");
     } else {
       Update(Element.data);
       if (globalThis.GetBooksDataForMenu)
@@ -943,7 +939,7 @@ function ThePage({
         },
       });
       setTab(newTab);
-      console.log("newTab created for open error", newTab);
+
       return;
     }
   }
@@ -1068,7 +1064,6 @@ function ThePage({
   }, [data]);
 
   function hanldNavFunctions() {
-    console.log("hanldNavFunctions", { tab, sharedTab, setActiveTab, panelId });
     if (tab && tab?.id && !sharedTab) setActiveTab(tab?.id);
     setNavFunctions({
       openNextChapter,
@@ -2751,10 +2746,6 @@ function Section({
   useEffect(() => {
     const handler = () => {
       setActiveVerse(globalThis.HighlightedVerseNumber || "");
-      console.log(
-        "verse number clicked: ",
-        globalThis.HighlightedVerseNumber || ""
-      );
     };
     window.addEventListener("highlightedVerseChanged", handler);
     return () => window.removeEventListener("highlightedVerseChanged", handler);
@@ -2957,13 +2948,9 @@ function Section({
             }`}
             style={{ animationDelay: `${i * 0.1}s` }}
             onClick={() => {
-              console.log(part.key);
               const raw = globalThis.VerseSectionMap[part.key].original;
-              console.log(raw);
               const m = /:(\d+)$/.exec(raw);
-              console.log(m);
               const sec = m ? m[1] : part.key;
-              console.log(sec);
               globalThis.HighlightStudyNoteSection(raw);
             }}
           >
@@ -3087,7 +3074,7 @@ function Section({
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log(data, "data in verse click");
+
                     if (globalThis?.SetCurrentReference) {
                       shout("ToggleReference", {
                         bookId: data?.bookId,
@@ -3453,7 +3440,7 @@ export const ThePageWithEditor = ({ tab, setPanalApp, panelId }) => {
   }, []);
 
   const activeTab = panelId ? globalThis.PanelTabsMap[panelId] || tab : tab;
-  console.log("active tab in the page", panelId, activeTab);
+
   const [enableEditor, setEnableEditor] = useState(false);
   useEffect(() => {}, [enableEditor]);
   const [data, setData] = useState(() => {

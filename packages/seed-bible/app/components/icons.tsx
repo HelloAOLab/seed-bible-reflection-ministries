@@ -129,9 +129,8 @@ export const ClientLogo = ({ handleOpenClientSite, url, alt }) => {
       style={{
         width: "36px",
         height: "36px",
-        backgroundColor: "white",
-        borderRadius: "50%",
-        overflow: "hidden",
+        backgroundColor: "var(--panelBackground)",
+
         cursor: "pointer",
       }}
     />

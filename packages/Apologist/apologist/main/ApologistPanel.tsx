@@ -352,12 +352,6 @@ function ApologistPanelWrapper({ id }) {
 
   // ── Expose update function so the Bible reader can push new search context ──
   const updateSearch = useCallback((query, options = {}) => {
-    console.log("[ApologistPanel updateSearch] called with:", {
-      query: query?.substring(0, 50),
-      level: options.level,
-      label: options.label,
-      forceRefresh: options.forceRefresh,
-    });
     setSearchQuery(query || "");
     if (options.level) setSearchLevel(options.level);
     if (options.label) setSearchLabel(options.label);
@@ -388,14 +382,6 @@ function ApologistPanelWrapper({ id }) {
         gsLabel !== searchLabel;
 
       if (gs && hasChanged) {
-        console.log("[ApologistPanel Poll] OVERRIDING search!", {
-          oldQuery: searchQuery?.substring(0, 50),
-          newQuery: gs?.substring(0, 50),
-          oldLevel: searchLevel,
-          newLevel: gsLevel,
-          oldLabel: searchLabel,
-          newLabel: gsLabel,
-        });
         setSearchQuery(gs);
         setSearchLevel(gsLevel);
         setSearchLabel(gsLabel);
@@ -423,14 +409,6 @@ function ApologistPanelWrapper({ id }) {
         lastVerseKey = key;
 
         const verseLabel = `${vc.book || ""} ${vc.chapter || ""}:${vc.verseNumber || ""}`;
-
-        console.log(
-          "[ApologistPanel] VERSE CLICK detected via ON_VERSE_CLICK!",
-          {
-            verseLabel,
-            textSnippet: vc.text?.substring(0, 50),
-          }
-        );
 
         // Update globals
         globalThis.GlobalSearch = vc.text;
