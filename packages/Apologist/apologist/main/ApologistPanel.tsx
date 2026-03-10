@@ -724,7 +724,8 @@ function ApologistPanelWrapper({ id }) {
         .askken-content {
           display: flex;
           flex-direction: column;
-          height: 92.8%;
+          height:92.8%;
+          padding: 8px 0px;
         }
 
         
