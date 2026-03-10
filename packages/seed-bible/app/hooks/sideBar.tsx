@@ -105,14 +105,14 @@ export function SideBarProvider({ children }) {
     };
   }, []);
 
-  function openPopupSettings(props, wait, popupComponent) {
+  function openPopupSettings(props, wait, popupComponent, position) {
     setWait(wait);
     if (popupSettings) {
       closePopupSettings();
       return;
     }
-    const pointerX = mousePosition.x;
-    const pointerY = mousePosition.y;
+    const pointerX = position ? position.x : mousePosition.x;
+    const pointerY = position ? position.y : mousePosition.y;
 
     // Get item count from props to determine if we should adjust position
     const itemCount = props?.items?.length ?? 0;
@@ -286,7 +286,7 @@ export function PopupSettings({ items, type, disabled, sidebarContext }) {
           {null /*<div className="triangle-up"></div>*/}
           {items.map((item) => {
             if (item.active === false) return;
-            const primary = colors ? colors[1]?.text1 : "#1A1A1A";
+            const primary = colors ? colors[1]?.pageTextColor : "#1A1A1A";
 
             if (item?.type === "line")
               return (
@@ -328,7 +328,7 @@ export function PopupSettings({ items, type, disabled, sidebarContext }) {
                   >
                     <div
                       style={{
-                        color: colors ? colors[1].text1 : "#1A1A1A",
+                        color: colors ? colors[1].pageTextColor : "#1A1A1A",
                       }}
                     >
                       {item.icon}
@@ -336,7 +336,7 @@ export function PopupSettings({ items, type, disabled, sidebarContext }) {
                     <div
                       className="font-bold"
                       style={{
-                        color: colors ? colors[1].text1 : "#1A1A1A",
+                        color: colors ? colors[1].pageTextColor : "#1A1A1A",
                       }}
                     >
                       {typeof item.title === "function"

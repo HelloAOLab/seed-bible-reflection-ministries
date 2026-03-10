@@ -169,7 +169,7 @@
   gap: 16px;
   margin-top: 15px;
   justify-content: space-between;
-  color: var(--spaceNameText, var(--text1));
+  color: var(--pageTextColor);
   font-weight: 700;
   margin-bottom: 27px;
   align-items: center;
@@ -390,7 +390,7 @@
 
 .icon-button {
   cursor: pointer;
-  color: var(--settingsIcon, var(--text1));
+  color: var(--settingsIcon, var(--pageTextColor));
   font-size: var(--sideMenu-icons-size, 24px);
 }
 
@@ -505,4 +505,15 @@
 .folderTabs {
   margin-left: 15px;
   margin-top: 5px;
+}
+
+.option-btn {
+  background: var(--primaryColor);
+  color: var(--text1);
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 6px 12px;
+  min-width: 80px;
+  width: fit-content;
+  border: 1px solid var(--buttonBorder);
 }

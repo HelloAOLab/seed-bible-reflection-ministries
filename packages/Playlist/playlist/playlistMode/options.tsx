@@ -7,7 +7,7 @@ const items = [
     title: () => (!G.IsPlaylistPlaying ? t("annotate") : t("addToQueue")),
     onClick: (selectedItem: any) => {
       const dataTempItems: any[] = [];
-      selectedItem.verseNumber?.forEach((vNumber) => {
+      selectedItem.verseNumber?.forEach((vNumber: any) => {
         const id = G.createUUID();
         const booksDetails = G.findNameRank(selectedItem.book);
         const dataItemTemp = {
@@ -78,78 +78,145 @@ const items = [
     },
   },
 
-  {
-    icon: <MenuIcon name="book" />,
-    title: (item: any = {}) => {
-      const title = `${item?.book} ${item?.chapter}:${item?.verseNumber?.join(", ")}`;
-      if (thisBot.tags.bookmarks[title]) {
-        return t("unbookmark");
-      }
-      return t("bookmark");
-    },
-    onClick: async (selectedItem: any) => {
-      if (!authBot?.id) {
-        ShowNotification({
-          message: t("pleaseLoginToUseFeature"),
-          severity: "error",
-        });
-        shout("tryUserLogin");
-        return;
-      }
+  // {
+  //   icon: <MenuIcon name="book" />,
+  //   title: (item: any = {}) => {
+  //     const title = `${item?.book} ${item?.chapter}:${item?.verseNumber?.join(", ")}`;
+  //     if (thisBot.tags.bookmarks[title]) {
+  //       return t("unbookmark");
+  //     }
+  //     return t("bookmark");
+  //   },
+  //   onClick: async (selectedItem: any) => {
+  //     if (!authBot?.id) {
+  //       ShowNotification({
+  //         message: t("pleaseLoginToUseFeature"),
+  //         severity: "error",
+  //       });
+  //       shout("tryUserLogin");
+  //       return;
+  //     }
 
-      let msg = "";
-      let errorMsg = "";
-      const oldBookmarks = { ...thisBot.tags.bookmarks };
+  //     let msg = "";
+  //     let errorMsg = "";
+  //     const oldBookmarks = { ...thisBot.tags.bookmarks };
+
+  //     selectedItem.verseNumber.forEach((vNumber: any) => {
+  //       const id = G.createUUID();
+  //       const booksDetails = G.findNameRank(selectedItem.book);
+  //       const title = `${selectedItem.book} ${selectedItem.chapter}:${vNumber}`;
+
+  //       if (oldBookmarks[title]) {
+  //         delete oldBookmarks[title];
+
+  //         msg = t("bookmarkRemovedSuccessfully");
+  //         errorMsg = t("failedToRemoveBookmark");
+  //       } else {
+  //         const dataItemTemp = {
+  //           type: "verse",
+  //           content: title,
+  //           additionalInfo: {
+  //             verse: vNumber,
+  //             chapter: selectedItem.chapter,
+  //             book: selectedItem.book,
+  //             bookRank: booksDetails.item,
+  //             data: { ...selectedItem },
+  //             chapterData: { ...G.CHAPTER_DATA },
+  //             groupID: G.ADD_VERSE_ITEM_PLAYLIST_GROUP_ID,
+  //           },
+  //           id,
+  //           time: new Date().toLocaleString(),
+  //         };
+
+  //         oldBookmarks[title] = {
+  //           ...dataItemTemp,
+  //         };
+  //         msg = t("bookmarkUpdatedSuccessfully");
+  //         errorMsg = t("failedToUpdateBookmark");
+  //       }
+  //     });
+
+  //     try {
+  //       const res = await thisBot.saveBookmarks({
+  //         bookmarks: oldBookmarks,
+  //       });
+
+  //       setTag(thisBot, "bookmarks", oldBookmarks);
+
+  //       if (G.SetBookmarks) {
+  //         G.SetBookmarks(oldBookmarks);
+  //       }
+  //       ShowNotification({ message: msg, severity: "success" });
+  //     } catch (err) {
+  //       ShowNotification({ message: errorMsg, severity: "error" });
+  //     }
+  //   },
+  // },
+  {
+    icon: <MenuIcon name="playlist_add" />,
+    title: t("addToPlaylist"),
+    onClick: (selectedItem: any) => {
+      const dataTempItems: any[] = [];
+      const joinedAndGroupedVerses: {
+        verse: number | number[];
+        content: string;
+      }[] = [];
+
+      let oldVerseNumber = 0;
 
       selectedItem.verseNumber.forEach((vNumber: any) => {
-        const id = G.createUUID();
-        const booksDetails = G.findNameRank(selectedItem.book);
-        const title = `${selectedItem.book} ${selectedItem.chapter}:${vNumber}`;
-
-        if (oldBookmarks[title]) {
-          delete oldBookmarks[title];
-
-          msg = "Bookmark Updated successfully.";
-          errorMsg = "Failed to update bookmark. Please try again.";
+        if (oldVerseNumber === 0) {
+          joinedAndGroupedVerses.push({
+            verse: vNumber,
+            content: `${vNumber}`,
+          });
+          oldVerseNumber = vNumber;
         } else {
-          const dataItemTemp = {
-            type: "verse",
-            content: title,
-            additionalInfo: {
+          const lastItem: any =
+            joinedAndGroupedVerses[joinedAndGroupedVerses.length - 1];
+          const lastVerseNumber =
+            typeof lastItem?.verse === "number"
+              ? lastItem.verse
+              : lastItem.verse[lastItem.verse.length - 1];
+          if (lastVerseNumber + 1 === vNumber) {
+            if (typeof lastItem.verse === "number") {
+              lastItem.verse = [lastItem.verse, vNumber];
+            } else {
+              lastItem.verse.push(vNumber);
+            }
+            lastItem.content = `${lastItem.verse[0]}-${vNumber}`;
+            joinedAndGroupedVerses[joinedAndGroupedVerses.length - 1] =
+              lastItem;
+          } else {
+            joinedAndGroupedVerses.push({
               verse: vNumber,
-              chapter: selectedItem.chapter,
-              book: selectedItem.book,
-              bookRank: booksDetails.item,
-              data: { ...selectedItem },
-              chapterData: { ...G.CHAPTER_DATA },
-              groupID: G.ADD_VERSE_ITEM_PLAYLIST_GROUP_ID,
-            },
-            id,
-            time: new Date().toLocaleString(),
-          };
-
-          oldBookmarks[title] = {
-            ...dataItemTemp,
-          };
-          msg = t("bookmarkUpdatedSuccessfully");
-          errorMsg = t("failedToUpdateBookmark");
+              content: `${vNumber}`,
+            });
+          }
         }
       });
 
-      try {
-        const res = await thisBot.saveBookmarks({
-          bookmarks: oldBookmarks,
-        });
-
-        setTag(thisBot, "bookmarks", oldBookmarks);
-
-        if (G.SetBookmarks) {
-          G.SetBookmarks(oldBookmarks);
-        }
-        ShowNotification({ message: msg, severity: "success" });
-      } catch (err) {
-        ShowNotification({ message: errorMsg, severity: "error" });
-      }
+      joinedAndGroupedVerses?.forEach((item) => {
+        const id = G.createUUID();
+        const booksDetails = G.findNameRank(selectedItem.book);
+        const dataItemTemp = {
+          type: "verse",
+          content: `${selectedItem.book} ${selectedItem.chapter}:${item.content}`,
+          additionalInfo: {
+            verse: item.verse,
+            chapter: selectedItem.chapter,
+            book: selectedItem.book,
+            bookRank: booksDetails.item,
+            data: { ...selectedItem },
+            chapterData: { ...G.CHAPTER_DATA },
+            groupID: G.ADD_VERSE_ITEM_PLAYLIST_GROUP_ID,
+          },
+          id,
+        };
+        dataTempItems.push(dataItemTemp);
+      });
+      G.AddToPlaylistData = dataTempItems;
+      G.SetShowAddToPlaylist(true);
     },
   },
 ];

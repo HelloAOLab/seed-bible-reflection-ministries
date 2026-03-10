@@ -30,6 +30,7 @@ function AskKenTab({ context, label }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
+  const { openOnMobile, isMobile } = useSideBarContext();
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -137,15 +138,9 @@ function AskKenTab({ context, label }) {
 
   return (
     <div className="askken-container">
-      {/* Top bar */}
-      <div className="askken-topbar">
-        <div className="askken-logo-group">
-          <img src={APOLOGIST_LOGO_URL} alt="Ken Boa" className="askken-logo" />
-          <div className="askken-logo-text">
-            <span className="askken-logo-name">{t("kenBoa")}</span>
-            <span className="askken-logo-sub">{t("reflections")}</span>
-          </div>
-        </div>
+      <div className="askken-content">
+        {/* Top bar */}
+
         {hasMessages && (
           <button className="askken-newchat-btn" onClick={handleNewChat}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -157,105 +152,107 @@ function AskKenTab({ context, label }) {
             {t("newChat")}
           </button>
         )}
-      </div>
 
-      {/* Messages area */}
-      <div className="askken-messages">
-        {!hasMessages && (
-          <div className="askken-hero">
-            <p className="askken-subtitle">{t("kenSubtitle")}</p>
-            <h1 className="askken-heading">{t("kenHeading")}</h1>
-            <p className="askken-description">{t("kenDescription")}</p>
-          </div>
-        )}
-
-        {messages.map((msg, i) =>
-          msg.role === "user" ? (
-            <div key={i} className="askken-msg askken-msg-user">
-              <div className="askken-bubble askken-bubble-user">
-                {msg.content}
-              </div>
+        {/* Messages area */}
+        <div className="askken-messages">
+          {!hasMessages && (
+            <div className="askken-hero">
+              <p className="askken-subtitle">{t("kenSubtitle")}</p>
+              <h1 className="askken-heading">{t("kenHeading")}</h1>
+              <p className="askken-description">{t("kenDescription")}</p>
             </div>
-          ) : (
-            <div key={i} className="askken-msg askken-msg-assistant">
+          )}
+
+          {messages.map((msg, i) =>
+            msg.role === "user" ? (
+              <div key={i} className="askken-msg askken-msg-user">
+                <div className="askken-bubble askken-bubble-user">
+                  {msg.content}
+                </div>
+              </div>
+            ) : (
+              <div key={i} className="askken-msg askken-msg-assistant">
+                <img
+                  src={APOLOGIST_LOGO_URL}
+                  alt=""
+                  className="askken-msg-avatar"
+                />
+                <div className="askken-bubble askken-bubble-assistant">
+                  {(msg.content || "")
+                    .trim()
+                    .split(/\n+/)
+                    .map((para, idx) => (
+                      <p
+                        key={idx}
+                        style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
+                      >
+                        {para}
+                      </p>
+                    ))}
+                </div>
+              </div>
+            )
+          )}
+
+          {isLoading && (
+            <div className="askken-msg askken-msg-assistant">
               <img
                 src={APOLOGIST_LOGO_URL}
                 alt=""
                 className="askken-msg-avatar"
               />
-              <div className="askken-bubble askken-bubble-assistant">
-                {(msg.content || "")
-                  .trim()
-                  .split(/\n+/)
-                  .map((para, idx) => (
-                    <p
-                      key={idx}
-                      style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
-                    >
-                      {para}
-                    </p>
-                  ))}
+              <div className="askken-bubble askken-bubble-assistant askken-thinking">
+                <span className="askken-dot" />
+                <span className="askken-dot" />
+                <span className="askken-dot" />
               </div>
             </div>
-          )
-        )}
+          )}
 
-        {isLoading && (
-          <div className="askken-msg askken-msg-assistant">
-            <img
-              src={APOLOGIST_LOGO_URL}
-              alt=""
-              className="askken-msg-avatar"
-            />
-            <div className="askken-bubble askken-bubble-assistant askken-thinking">
-              <span className="askken-dot" />
-              <span className="askken-dot" />
-              <span className="askken-dot" />
-            </div>
-          </div>
-        )}
+          {error && <div className="askken-error">{error}</div>}
 
-        {error && <div className="askken-error">{error}</div>}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Chat input */}
-      <div className="askken-chat-area">
-        <div className="askken-input-row">
-          <input
-            type="text"
-            className="askken-input"
-            placeholder={t("askQuestion")}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSubmit();
-            }}
-            disabled={isLoading}
-          />
-          <button
-            className="askken-send-btn"
-            onClick={handleSubmit}
-            disabled={isLoading || !query.trim()}
-            aria-label="Send"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
+          <div ref={messagesEndRef} />
         </div>
-        <p className="askken-footer">{t("reflectionCopyRight")}</p>
+
+        {/* Chat input */}
+        <div className="askken-chat-area">
+          <div className="askken-input-row">
+            <input
+              type="text"
+              className="askken-input"
+              placeholder={t("askQuestion")}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSubmit();
+              }}
+              disabled={isLoading}
+            />
+            <button
+              className="askken-send-btn"
+              onClick={handleSubmit}
+              disabled={isLoading || !query.trim()}
+              aria-label="Send"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        {!isMobile && (
+          <p className="askken-footer">{t("reflectionCopyRight")}</p>
+        )}
       </div>
     </div>
   );
 }
 
 // ── Reflection Ministries iframe viewer ──
-function MinistriesTab({ url, title }) {
+function MinistriesTab({ url, title, onTouchEnd, onTouchStart }) {
   if (!url) {
     return (
       <div className="ministries-empty">
@@ -299,11 +296,17 @@ function MinistriesTab({ url, title }) {
           </svg>
         </a>
       </div>
+
       <iframe
         className="ministries-iframe"
         src={url}
         title={title || "Preview"}
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+      />
+      <div
+        className="ministries-swipe-layer"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       />
     </div>
   );
@@ -349,12 +352,6 @@ function ApologistPanelWrapper({ id }) {
 
   // ── Expose update function so the Bible reader can push new search context ──
   const updateSearch = useCallback((query, options = {}) => {
-    console.log("[ApologistPanel updateSearch] called with:", {
-      query: query?.substring(0, 50),
-      level: options.level,
-      label: options.label,
-      forceRefresh: options.forceRefresh,
-    });
     setSearchQuery(query || "");
     if (options.level) setSearchLevel(options.level);
     if (options.label) setSearchLabel(options.label);
@@ -385,14 +382,6 @@ function ApologistPanelWrapper({ id }) {
         gsLabel !== searchLabel;
 
       if (gs && hasChanged) {
-        console.log("[ApologistPanel Poll] OVERRIDING search!", {
-          oldQuery: searchQuery?.substring(0, 50),
-          newQuery: gs?.substring(0, 50),
-          oldLevel: searchLevel,
-          newLevel: gsLevel,
-          oldLabel: searchLabel,
-          newLabel: gsLabel,
-        });
         setSearchQuery(gs);
         setSearchLevel(gsLevel);
         setSearchLabel(gsLabel);
@@ -420,14 +409,6 @@ function ApologistPanelWrapper({ id }) {
         lastVerseKey = key;
 
         const verseLabel = `${vc.book || ""} ${vc.chapter || ""}:${vc.verseNumber || ""}`;
-
-        console.log(
-          "[ApologistPanel] VERSE CLICK detected via ON_VERSE_CLICK!",
-          {
-            verseLabel,
-            textSnippet: vc.text?.substring(0, 50),
-          }
-        );
 
         // Update globals
         globalThis.GlobalSearch = vc.text;
@@ -471,6 +452,40 @@ function ApologistPanelWrapper({ id }) {
       icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png",
     },
   ];
+  // ── Swipe handling ──
+  // ── Swipe handling ──
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  const getClientX = (e) => {
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      return e.changedTouches[0].clientX;
+    }
+    return e.clientX;
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = getClientX(e);
+  };
+
+  const handleTouchEnd = (e) => {
+    touchEndX.current = getClientX(e);
+
+    const deltaX = touchEndX.current - touchStartX.current;
+    const threshold = 50;
+
+    const currentIndex = tabs.findIndex((t) => t.key === activeTab);
+
+    // Swipe Right → go to previous tab
+    if (deltaX > threshold && currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1].key);
+    }
+
+    // Swipe Left → go to next tab
+    if (deltaX < -threshold && currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1].key);
+    }
+  };
 
   return (
     <div
@@ -508,7 +523,11 @@ function ApologistPanelWrapper({ id }) {
       </div>
 
       {/* ── Tab Content ── */}
-      <div style={{ flex: 1, overflow: "auto", position: "relative" }}>
+      <div
+        style={{ flex: 1, overflow: "auto", position: "relative" }}
+        onTouchStart={activeTab !== "ministries" ? handleTouchStart : undefined}
+        onTouchEnd={activeTab !== "ministries" ? handleTouchEnd : undefined}
+      >
         {activeTab === "discovery" && (
           <Apologist
             search={searchQuery}
@@ -519,7 +538,12 @@ function ApologistPanelWrapper({ id }) {
           />
         )}
         {activeTab === "ministries" && (
-          <MinistriesTab url={ministriesUrl} title={ministriesTitle} />
+          <MinistriesTab
+            url={ministriesUrl}
+            title={ministriesTitle}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          />
         )}
         {activeTab === "askken" && (
           <AskKenTab context={searchQuery} label={searchLabel} />
@@ -529,31 +553,40 @@ function ApologistPanelWrapper({ id }) {
       {/* ── Styles ── */}
       <style>{`
         /* ── Tab Bar ── */
-        .apologist-tab-bar {
-          display: flex;
-          border-bottom: 1px solid var(--inputBorder, #2d2d2d);
-          background: var(--panelBackground, #161616);
-          flex-shrink: 0;
-          padding: 0 4px;
-          gap: 2px;
-        }
+  .apologist-tab-bar {
+  display: grid;
+  
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px; /* always > 3px */
+  padding: 4px 4px 0px 4px;
+  border-bottom: 1px solid var(--inputBorder, #2d2d2d);
+  background: var(--panelBackground, #161616);
+}
+ 
+
 
         .apologist-tab {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 10px 14px;
-          background: transparent;
-          border: none;
-          border-bottom: 2px solid transparent;
-          color: var(--text2, #777);
-          font-size: 13px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          white-space: nowrap;
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 6px;
+  height: 100%;
+
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+
+  color: var(--text2, #777);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+
+  min-width: 0;          /* IMPORTANT */
+  overflow: hidden;      /* prevent overflow */
+}
 
         .apologist-tab:hover {
           color: var(--text1, #bbb);
@@ -580,8 +613,11 @@ function ApologistPanelWrapper({ id }) {
           }
 
         .apologist-tab-label {
-          font-size: 12px;
-        }
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
         /* ── Reflection Ministries Tab ── */
         .ministries-empty {
@@ -595,13 +631,30 @@ function ApologistPanelWrapper({ id }) {
           text-align: center;
           color: var(--text2, #999);
         }
+          .ministries-viewer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-        .ministries-viewer {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          min-height: 400px;
-        }
+.ministries-iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: #fff;
+}
+
+.ministries-swipe-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+      
 
         .ministries-toolbar {
           display: flex;
@@ -637,22 +690,24 @@ function ApologistPanelWrapper({ id }) {
           background: rgba(128, 128, 128, 0.12);
         }
 
-        .ministries-iframe {
-          flex: 1;
-          width: 100%;
-          border: none;
-          background: #fff;
-        }
+       
 
         /* ── Ask Ken Tab ── */
         .askken-container {
+          height: 100%;
+          
+          background: var(--panelBackground, #fafafa);
+
+        }
+        .askken-content {
           display: flex;
           flex-direction: column;
-          height: 100%;
-          min-height: 500px;
-          background: var(--panelBackground, #fafafa);
-          font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          height:92.8%;
+          padding: 8px 0px;
         }
+
+        
+
 
         .askken-topbar {
           display: flex;
@@ -815,7 +870,8 @@ function ApologistPanelWrapper({ id }) {
           text-align: center;
           font-size: 11px;
           color: var(--text2, #aaa);
-          margin: 8px 0 0;
+          margin-bottom: -30px;
+          
         }
 
         /* ── Chat messages ── */
