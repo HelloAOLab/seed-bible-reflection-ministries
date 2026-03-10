@@ -127,10 +127,9 @@ export const ClientLogo = ({ handleOpenClientSite, url, alt }) => {
       alt={alt}
       src={url}
       style={{
-        width: "36px",
+        width: "49px",
         height: "36px",
         backgroundColor: "var(--panelBackground)",
-
         cursor: "pointer",
       }}
     />
