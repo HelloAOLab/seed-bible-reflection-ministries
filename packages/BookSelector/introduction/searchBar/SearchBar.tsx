@@ -29,68 +29,68 @@ const {
 const PsalmsData: BookInterface[] = [
   {
     id: "PSA",
-    translationId: "NASB95",
+    translationId: "BSB",
     name: "Psalms",
     commonName: "1 Psalms",
     title: "Psalms",
     order: 19,
     numberOfChapters: 41,
     firstChapterNumber: 1,
-    firstChapterApiLink: "/api/NASB95/PSA/1.json",
+    firstChapterApiLink: "/api/BSB/PSA/1.json",
     lastChapterNumber: 41,
-    lastChapterApiLink: "/api/NASB95/PSA/41.json",
+    lastChapterApiLink: "/api/BSB/PSA/41.json",
   },
   {
     id: "PSA",
-    translationId: "NASB95",
+    translationId: "BSB",
     name: "Psalms",
     commonName: "2 Psalms",
     title: "Psalms",
     order: 19,
     numberOfChapters: 31,
     firstChapterNumber: 42,
-    firstChapterApiLink: "/api/NASB95/PSA/42.json",
+    firstChapterApiLink: "/api/BSB/PSA/42.json",
     lastChapterNumber: 72,
-    lastChapterApiLink: "/api/NASB95/PSA/72.json",
+    lastChapterApiLink: "/api/BSB/PSA/72.json",
   },
   {
     id: "PSA",
-    translationId: "NASB95",
+    translationId: "BSB",
     name: "Psalms",
     commonName: "3 Psalms",
     title: "Psalms",
     order: 19,
     numberOfChapters: 17,
     firstChapterNumber: 73,
-    firstChapterApiLink: "/api/NASB95/PSA/73.json",
+    firstChapterApiLink: "/api/BSB/PSA/73.json",
     lastChapterNumber: 89,
-    lastChapterApiLink: "/api/NASB95/PSA/89.json",
+    lastChapterApiLink: "/api/BSB/PSA/89.json",
   },
   {
     id: "PSA",
-    translationId: "NASB95",
+    translationId: "BSB",
     name: "Psalms",
     commonName: "4 Psalms",
     title: "Psalms",
     order: 19,
     numberOfChapters: 16,
     firstChapterNumber: 90,
-    firstChapterApiLink: "/api/NASB95/PSA/90.json",
+    firstChapterApiLink: "/api/BSB/PSA/90.json",
     lastChapterNumber: 106,
-    lastChapterApiLink: "/api/NASB95/PSA/106.json",
+    lastChapterApiLink: "/api/BSB/PSA/106.json",
   },
   {
     id: "PSA",
-    translationId: "NASB95",
+    translationId: "BSB",
     name: "Psalms",
     commonName: "5 Psalms",
     title: "Psalms",
     order: 19,
     numberOfChapters: 20,
     firstChapterNumber: 107,
-    firstChapterApiLink: "/api/NASB95/PSA/107.json",
+    firstChapterApiLink: "/api/BSB/PSA/107.json",
     lastChapterNumber: 150,
-    lastChapterApiLink: "/api/NASB95/PSA/150.json",
+    lastChapterApiLink: "/api/BSB/PSA/150.json",
   },
 ];
 
@@ -149,8 +149,8 @@ const SearchBar = (props: { openSidebar: boolean }) => {
   const [selectedTranslation, setSelectedTranslation] = useState(
     thePage.masks?.selectedTranslation || {
       languageEnglishName: "English",
-      id: "NASB95",
-      shortName: "NASB95",
+      id: "BSB",
+      shortName: "BSB",
     }
   );
   const [showCustomTranslation, setShowCustomTranslation] = useState(false);
@@ -1657,9 +1657,6 @@ const SideBarChapters = (props: {
   }) => {
     const { bookName, chapterNo, bookData, ...data } = props;
     if (globalThis?.findNameRank) {
-      console.log(openSidebar, "openSidebar");
-      setopenSidebar(false);
-
       const booksDetails = globalThis.findNameRank(bookName);
       const dataItem = {
         type: "chapter",
@@ -1819,7 +1816,13 @@ const SideBarChapters = (props: {
       return "";
     }
   };
-  const [currentPsalms, setCurrentPsalms] = useState("1 Psalms");
+  const [currentPsalms, setCurrentPsalms] = useState([
+    "1 Psalms",
+    "2 Psalms",
+    "3 Psalms",
+    "4 Psalms",
+    "5 Psalms",
+  ]);
 
   const renderChapters = useMemo(() => {
     const renderJSX = [];
@@ -1831,10 +1834,12 @@ const SideBarChapters = (props: {
               style={{ width: "100%" }}
               onClick={() => {
                 setCurrentPsalms(
-                  currentPsalms === "1 Psalms" ? "" : "1 Psalms"
+                  currentPsalms.includes("1 Psalms")
+                    ? currentPsalms.filter((psalm) => psalm !== "1 Psalms")
+                    : [...currentPsalms, "1 Psalms"]
                 );
               }}
-              class={`psalms-btn ${currentPsalms === "1 Psalms" ? "sidebar-selected-itm" : ""}`}
+              class={`psalms-btn ${currentPsalms.includes("1 Psalms") ? "sidebar-selected-itm" : ""}`}
             >
               <span style={{ width: "100%" }} class="">
                 1 Psalms
@@ -1847,10 +1852,12 @@ const SideBarChapters = (props: {
               style={{ width: "100%" }}
               onClick={() => {
                 setCurrentPsalms(
-                  currentPsalms === "2 Psalms" ? "" : "2 Psalms"
+                  currentPsalms.includes("2 Psalms")
+                    ? currentPsalms.filter((psalm) => psalm !== "2 Psalms")
+                    : [...currentPsalms, "2 Psalms"]
                 );
               }}
-              class={`psalms-btn ${currentPsalms === "2 Psalms" ? "sidebar-selected-itm" : ""}`}
+              class={`psalms-btn ${currentPsalms.includes("2 Psalms") ? "sidebar-selected-itm" : ""}`}
             >
               <span style={{ width: "100%" }} class="">
                 2 Psalms
@@ -1863,10 +1870,12 @@ const SideBarChapters = (props: {
               style={{ width: "100%" }}
               onClick={() => {
                 setCurrentPsalms(
-                  currentPsalms === "3 Psalms" ? "" : "3 Psalms"
+                  currentPsalms.includes("3 Psalms")
+                    ? currentPsalms.filter((psalm) => psalm !== "3 Psalms")
+                    : [...currentPsalms, "3 Psalms"]
                 );
               }}
-              class={`psalms-btn ${currentPsalms === "3 Psalms" ? "sidebar-selected-itm" : ""}`}
+              class={`psalms-btn ${currentPsalms.includes("3 Psalms") ? "sidebar-selected-itm" : ""}`}
             >
               <span style={{ width: "100%" }} class="">
                 3 Psalms
@@ -1879,10 +1888,12 @@ const SideBarChapters = (props: {
               style={{ width: "100%" }}
               onClick={() => {
                 setCurrentPsalms(
-                  currentPsalms === "4 Psalms" ? "" : "4 Psalms"
+                  currentPsalms.includes("4 Psalms")
+                    ? currentPsalms.filter((psalm) => psalm !== "4 Psalms")
+                    : [...currentPsalms, "4 Psalms"]
                 );
               }}
-              class={`psalms-btn ${currentPsalms === "4 Psalms" ? "sidebar-selected-itm" : ""}`}
+              class={`psalms-btn ${currentPsalms.includes("4 Psalms") ? "sidebar-selected-itm" : ""}`}
             >
               <span style={{ width: "100%" }} class="">
                 4 Psalms
@@ -1895,10 +1906,12 @@ const SideBarChapters = (props: {
               style={{ width: "100%" }}
               onClick={() => {
                 setCurrentPsalms(
-                  currentPsalms === "5 Psalms" ? "" : "5 Psalms"
+                  currentPsalms.includes("5 Psalms")
+                    ? currentPsalms.filter((psalm) => psalm !== "5 Psalms")
+                    : [...currentPsalms, "5 Psalms"]
                 );
               }}
-              class={`psalms-btn ${currentPsalms === "5 Psalms" ? "sidebar-selected-itm" : ""}`}
+              class={`psalms-btn ${currentPsalms.includes("5 Psalms") ? "sidebar-selected-itm" : ""}`}
             >
               <span style={{ width: "100%" }} class="">
                 5 Psalms
@@ -1909,10 +1922,9 @@ const SideBarChapters = (props: {
         renderJSX.push(
           <button
             style={{
-              display:
-                currentPsalms === psalmsPartName({ index: i })
-                  ? "flex"
-                  : "none",
+              display: currentPsalms.includes(psalmsPartName({ index: i }))
+                ? "flex"
+                : "none",
             }}
             class={`chapter-btn`}
             onClick={() =>
