@@ -720,7 +720,6 @@ function Apologist({
     }
 
     let cancelled = false;
-    console.log("searchParam: ", searchParam);
 
     async function run() {
       if (!searchParam || !searchParam.trim()) {
@@ -770,15 +769,8 @@ function Apologist({
         let allResults;
 
         if (cached) {
-          console.log(
-            `[Apologist] Cache HIT for: ${normalizedSearchKey.substring(0, 50)}`
-          );
           allResults = cached;
         } else {
-          console.log(
-            `[Apologist] Cache MISS for: ${normalizedSearchKey.substring(0, 50)}`
-          );
-
           const headers = {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -823,9 +815,7 @@ function Apologist({
             // If not the last attempt, wait with exponential backoff
             if (attempt < MAX_RETRIES - 1) {
               const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
-              console.log(
-                `[Apologist] Retry ${attempt + 1}/${MAX_RETRIES - 1} after ${delay}ms — ${lastError}`
-              );
+
               await new Promise((r) => setTimeout(r, delay));
             }
           }

@@ -271,7 +271,6 @@ export const SplitApp = ({
   handleTouchEnd,
 }) => {
   const { openOnMobile } = useSideBarContext();
-  console.log(openOnMobile, "openOnMobile");
   const { panelMode, screens } = useBibleContext();
   const [forcedHeightPlaylist, setForcedHeightPlaylist] = useState(0);
   useEffect(() => {
@@ -359,7 +358,7 @@ export const SplitApp = ({
   const defaultOverlapWidth = openOnMobile
     ? window.innerWidth
     : Math.max(300, window.innerWidth * 0.4);
-  console.log("defaultOverlapWidth", defaultOverlapWidth);
+
   const [overlapWidth, setOverlapWidth] = useState(defaultOverlapWidth);
   const [overlapVisible, setOverlapVisible] = useState(false);
   const overlapDragRef = useRef({
