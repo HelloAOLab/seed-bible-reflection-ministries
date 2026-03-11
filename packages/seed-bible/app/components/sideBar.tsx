@@ -2149,7 +2149,6 @@ function SideBar({ panelsNumber }) {
             </div>
           )}
 
-          {/* rename category modal */}
           {renamingCategory && (
             <div
               className="mobile-modal-overlay"
