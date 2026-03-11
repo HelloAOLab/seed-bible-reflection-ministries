@@ -887,10 +887,20 @@ function ThePage({
       globalThis.GlobalSearchLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
       globalThis.GlobalSearchChapterLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
       globalThis.StudyNoteParentSearch = combinedText;
+      globalThis.GlobalSearchChapterData = {
+        book: nextData.book || "",
+        chapter: nextData.chapter || "",
+        translation: nextData.translation || "",
+        content: Array.isArray(nextData.content) ? nextData.content : [],
+        combinedText,
+      };
 
       if (typeof globalThis.UpdateStudyNoteSearch === "function") {
         globalThis.UpdateStudyNoteSearch(combinedText, {
           level: "chapter",
+          label: `${nextData.book || ""} ${nextData.chapter || ""}`,
+          baseline: combinedText,
+          chapterData: globalThis.GlobalSearchChapterData,
           forceRefresh: true,
         });
       }

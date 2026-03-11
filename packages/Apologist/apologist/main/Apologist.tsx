@@ -599,6 +599,7 @@ const DEFAULT_URL =
 // ── In-memory result cache (5 min TTL) ──
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const resultCache = new Map(); // key → { data: [], timestamp: number }
+const queryPlanCache = new Map(); // key → { data: string[], timestamp: number }
 
 function getCachedResults(key) {
   const entry = resultCache.get(key);
@@ -636,6 +637,748 @@ function setCachedResults(key, data) {
   }
 }
 
+function getCachedQueryPlan(key) {
+  const entry = queryPlanCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    queryPlanCache.delete(key);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCachedQueryPlan(key, data) {
+  queryPlanCache.set(key, { data, timestamp: Date.now() });
+  if (queryPlanCache.size > 200) {
+    const oldest = queryPlanCache.keys().next().value;
+    queryPlanCache.delete(oldest);
+  }
+}
+
+function normalizeQueryValue(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function uniqueQueries(queries) {
+  const seen = new Set();
+  const normalized = [];
+  queries.forEach((query) => {
+    const value = normalizeQueryValue(query);
+    if (!value) return;
+    const key = value.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    normalized.push(value);
+  });
+  return normalized;
+}
+
+function truncateText(value, maxLength = 220) {
+  const text = normalizeQueryValue(value);
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength).trim()}...`;
+}
+
+function truncateQueryPhrase(value, maxLength = 30) {
+  const text = normalizeQueryValue(value);
+  if (!text) return "";
+  if (text.length <= maxLength) return text;
+
+  const words = text.split(/\s+/);
+  let phrase = "";
+  for (const word of words) {
+    const next = phrase ? `${phrase} ${word}` : word;
+    if (next.length > maxLength) break;
+    phrase = next;
+  }
+
+  return phrase || text.slice(0, maxLength).trim();
+}
+
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getResultSearchableText(item) {
+  return normalizeQueryValue(
+    [
+      item?.title,
+      item?.Name,
+      item?.description,
+      item?.summary,
+      item?.snippet,
+      item?.excerpt,
+      item?.content,
+    ]
+      .filter(Boolean)
+      .join(" ")
+  );
+}
+
+const CANONICAL_BOOK_NAMES = [
+  "Genesis",
+  "Exodus",
+  "Leviticus",
+  "Numbers",
+  "Deuteronomy",
+  "Joshua",
+  "Judges",
+  "Ruth",
+  "1 Samuel",
+  "2 Samuel",
+  "1 Kings",
+  "2 Kings",
+  "1 Chronicles",
+  "2 Chronicles",
+  "Ezra",
+  "Nehemiah",
+  "Esther",
+  "Job",
+  "Psalms",
+  "Psalm",
+  "Proverbs",
+  "Ecclesiastes",
+  "Song of Solomon",
+  "Song of Songs",
+  "Isaiah",
+  "Jeremiah",
+  "Lamentations",
+  "Ezekiel",
+  "Daniel",
+  "Hosea",
+  "Joel",
+  "Amos",
+  "Obadiah",
+  "Jonah",
+  "Micah",
+  "Nahum",
+  "Habakkuk",
+  "Zephaniah",
+  "Haggai",
+  "Zechariah",
+  "Malachi",
+  "Matthew",
+  "Mark",
+  "Luke",
+  "John",
+  "Acts",
+  "Romans",
+  "1 Corinthians",
+  "2 Corinthians",
+  "Galatians",
+  "Ephesians",
+  "Philippians",
+  "Colossians",
+  "1 Thessalonians",
+  "2 Thessalonians",
+  "1 Timothy",
+  "2 Timothy",
+  "Titus",
+  "Philemon",
+  "Hebrews",
+  "James",
+  "1 Peter",
+  "2 Peter",
+  "1 John",
+  "2 John",
+  "3 John",
+  "Jude",
+  "Revelation",
+];
+
+const SIGNAL_STOPWORDS = new Set([
+  "the",
+  "then",
+  "than",
+  "into",
+  "over",
+  "under",
+  "about",
+  "through",
+  "after",
+  "before",
+  "because",
+  "these",
+  "those",
+  "such",
+  "this",
+  "and",
+  "but",
+  "not",
+  "you",
+  "your",
+  "yours",
+  "they",
+  "them",
+  "their",
+  "there",
+  "here",
+  "have",
+  "will",
+  "would",
+  "could",
+  "should",
+  "shall",
+  "from",
+  "with",
+  "for",
+  "that",
+  "that",
+  "what",
+  "when",
+  "where",
+  "which",
+  "were",
+  "been",
+  "being",
+  "also",
+  "does",
+  "just",
+  "with",
+  "from",
+  "chapter",
+  "verse",
+  "verses",
+  "book",
+  "bible",
+  "apologetics",
+  "theological",
+  "themes",
+  "doctrine",
+  "study",
+  "related",
+  "resource",
+  "resources",
+  "unto",
+  "said",
+  "says",
+  "say",
+  "spoke",
+  "called",
+  "made",
+  "make",
+  "came",
+  "come",
+  "went",
+  "take",
+  "took",
+  "seen",
+  "gave",
+  "give",
+  "let",
+  "upon",
+  "every",
+  "each",
+  "many",
+  "much",
+  "very",
+  "might",
+  "must",
+  "whose",
+  "whom",
+  "lord",
+  "god",
+  "gods",
+  "man",
+  "men",
+  "woman",
+  "women",
+  "son",
+  "sons",
+  "daughter",
+  "daughters",
+  "children",
+  "child",
+  "people",
+  "israel",
+  "earth",
+  "heaven",
+  "heavens",
+  "name",
+  "day",
+  "days",
+  "night",
+  "nights",
+  "hand",
+  "hands",
+  "eyes",
+  "voice",
+  "house",
+  "land",
+  "waters",
+  "water",
+  "midst",
+  "according",
+  "behold",
+  "therefore",
+  "again",
+  "indeed",
+  "among",
+  "within",
+  "without",
+  "whosever",
+]);
+
+function parseChapterLabel(label) {
+  const normalizedLabel = normalizeQueryValue(label);
+  if (!normalizedLabel) return null;
+
+  const chapterMatch = normalizedLabel.match(/^(.*?)(\d+)\s*$/);
+  if (!chapterMatch) return null;
+
+  const bookName = normalizeQueryValue(chapterMatch[1]);
+  const chapterNumber = parseInt(chapterMatch[2], 10);
+  if (!bookName || Number.isNaN(chapterNumber)) return null;
+
+  return {
+    label: normalizedLabel,
+    bookName,
+    chapterNumber,
+    escapedBookName: escapeRegExp(bookName),
+    bookTokens: bookName.toLowerCase().split(/\s+/).filter(Boolean),
+  };
+}
+
+function getExplicitChapterMatch(searchableText, chapterInfo) {
+  if (!searchableText || !chapterInfo) {
+    return { isExplicit: false, chapterScore: 0, matchType: null };
+  }
+
+  const exactRegex = new RegExp(
+    `\\b${chapterInfo.escapedBookName}\\s+${chapterInfo.chapterNumber}\\b`,
+    "i"
+  );
+  if (exactRegex.test(searchableText)) {
+    return { isExplicit: true, chapterScore: 12, matchType: "exact" };
+  }
+
+  const rangeRegex = new RegExp(
+    `\\b${chapterInfo.escapedBookName}\\s+(\\d+)\\s*[–-]\\s*(\\d+)\\b`,
+    "i"
+  );
+  const rangeMatch = searchableText.match(rangeRegex);
+  if (!rangeMatch) {
+    return { isExplicit: false, chapterScore: 0, matchType: null };
+  }
+
+  const start = parseInt(rangeMatch[1], 10);
+  const end = parseInt(rangeMatch[2], 10);
+  if (Number.isNaN(start) || Number.isNaN(end)) {
+    return { isExplicit: false, chapterScore: 0, matchType: null };
+  }
+
+  const isInRange =
+    chapterInfo.chapterNumber >= Math.min(start, end) &&
+    chapterInfo.chapterNumber <= Math.max(start, end);
+  return {
+    isExplicit: isInRange,
+    chapterScore: isInRange ? 8 : 0,
+    matchType: isInRange ? "range" : null,
+  };
+}
+
+function getOtherBookReferenceCount(searchableText, chapterInfo) {
+  if (!searchableText) return 0;
+
+  let count = 0;
+  CANONICAL_BOOK_NAMES.forEach((bookName) => {
+    if (
+      chapterInfo &&
+      bookName.toLowerCase() === chapterInfo.bookName.toLowerCase()
+    ) {
+      return;
+    }
+
+    const regex = new RegExp(`\\b${escapeRegExp(bookName)}\\s+\\d+\\b`, "i");
+    if (regex.test(searchableText)) {
+      count += 1;
+    }
+  });
+  return count;
+}
+
+function tokenizeSignalText(text, chapterInfo) {
+  const normalizedText = normalizeQueryValue(text).toLowerCase();
+  if (!normalizedText) return [];
+
+  return normalizedText
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((token) => {
+      if (!token || token.length < 4) return false;
+      if (SIGNAL_STOPWORDS.has(token)) return false;
+      if (chapterInfo?.bookTokens?.includes(token)) return false;
+      if (!Number.isNaN(Number(token))) return false;
+      return true;
+    });
+}
+
+function extractSectionSignals(chapterData) {
+  if (!chapterData || !Array.isArray(chapterData.content)) return [];
+
+  const signals = [];
+  chapterData.content.forEach((section) => {
+    const heading = normalizeQueryValue(
+      section?.heading || section?.title || section?.name || ""
+    );
+    if (heading) {
+      signals.push(heading);
+    }
+
+    const firstVerse = Array.isArray(section?.verses)
+      ? section.verses[0]
+      : null;
+    if (firstVerse?.text) {
+      signals.push(truncateText(firstVerse.text, 120));
+    }
+  });
+
+  return signals;
+}
+
+function extractSectionHeadings(chapterData) {
+  if (!chapterData || !Array.isArray(chapterData.content)) return [];
+
+  return uniqueQueries(
+    chapterData.content.map((section) =>
+      normalizeQueryValue(
+        section?.heading || section?.title || section?.name || ""
+      )
+    )
+  );
+}
+
+function extractKeywordsFromText(text, bookName) {
+  const bookTokens = normalizeQueryValue(bookName)
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean);
+  const frequencies = new Map();
+
+  normalizeQueryValue(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .forEach((token) => {
+      if (!token || token.length < 4) return;
+      if (SIGNAL_STOPWORDS.has(token)) return;
+      if (bookTokens.includes(token)) return;
+      if (!Number.isNaN(Number(token))) return;
+      frequencies.set(token, (frequencies.get(token) || 0) + 1);
+    });
+
+  const topTerms = Array.from(frequencies.entries())
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 4)
+    .map(([token]) => token);
+
+  if (!topTerms.length) return "";
+  return normalizeQueryValue([bookName, ...topTerms].filter(Boolean).join(" "));
+}
+
+function buildChapterSignalSet(chapterData, chapterInfo, queryResultPairs) {
+  const signalTokens = new Set();
+  const sources = [
+    chapterData?.combinedText,
+    ...extractSectionSignals(chapterData),
+    ...(queryResultPairs || []).map((pair) => pair?.query || ""),
+  ];
+
+  sources.forEach((source) => {
+    tokenizeSignalText(source, chapterInfo).forEach((token) =>
+      signalTokens.add(token)
+    );
+  });
+
+  return signalTokens;
+}
+
+function classifyChapterResult(item, context) {
+  const searchableText = getResultSearchableText(item);
+  const resultKey = buildResultKey(item);
+  const hitCount = resultKey ? context.hitCountByKey.get(resultKey) || 1 : 1;
+  const explicit = getExplicitChapterMatch(searchableText, context.chapterInfo);
+  const otherBookReferenceCount = getOtherBookReferenceCount(
+    searchableText,
+    context.chapterInfo
+  );
+  const resultTokens = new Set(
+    tokenizeSignalText(searchableText, context.chapterInfo)
+  );
+  const sharedSignalCount = Array.from(context.signalTokens).filter((token) =>
+    resultTokens.has(token)
+  ).length;
+
+  const sameBookMentionRegex = context.chapterInfo
+    ? new RegExp(`\\b${context.chapterInfo.escapedBookName}\\b`, "i")
+    : null;
+  const hasSameBookMention = sameBookMentionRegex
+    ? sameBookMentionRegex.test(searchableText)
+    : false;
+
+  if (explicit.isExplicit) {
+    return {
+      bucket: "explicitMatch",
+      score:
+        200 +
+        explicit.chapterScore * 5 +
+        hitCount * 12 +
+        Math.max(0, 30 - computeResultRank(item)),
+      explicit,
+      sharedSignalCount,
+      hitCount,
+      otherBookReferenceCount,
+    };
+  }
+
+  const implicitConfidence =
+    hitCount * 16 +
+    sharedSignalCount * 14 +
+    (hasSameBookMention ? 16 : 0) -
+    otherBookReferenceCount * 18;
+
+  const isImplicitMatch =
+    otherBookReferenceCount === 0 &&
+    ((hitCount >= 2 && sharedSignalCount >= 2) ||
+      sharedSignalCount >= 4 ||
+      (hasSameBookMention && sharedSignalCount >= 2));
+
+  if (isImplicitMatch) {
+    return {
+      bucket: "implicitMatch",
+      score:
+        100 + implicitConfidence + Math.max(0, 20 - computeResultRank(item)),
+      explicit,
+      sharedSignalCount,
+      hitCount,
+      otherBookReferenceCount,
+    };
+  }
+
+  return {
+    bucket: "unrelated",
+    score: implicitConfidence,
+    explicit,
+    sharedSignalCount,
+    hitCount,
+    otherBookReferenceCount,
+  };
+}
+
+function prioritizeDiverseTopResults(results, topLimit = 10) {
+  const selected = [];
+  const deferred = [];
+  const domainCount = new Map();
+
+  results.forEach((item) => {
+    const domain = getResultDomain(item) || "unknown";
+    const count = domainCount.get(domain) || 0;
+    if (selected.length < topLimit && count < 3) {
+      selected.push(item);
+      domainCount.set(domain, count + 1);
+      return;
+    }
+    deferred.push(item);
+  });
+
+  if (!selected.some((item) => item?.type === "youtube")) {
+    const youtubeCandidate = deferred.find((item) => item?.type === "youtube");
+    if (youtubeCandidate) {
+      const replacementIndex = selected.length ? selected.length - 1 : -1;
+      if (replacementIndex >= 0) {
+        deferred.push(selected[replacementIndex]);
+        selected[replacementIndex] = youtubeCandidate;
+      } else {
+        selected.push(youtubeCandidate);
+      }
+    }
+  }
+
+  const hasArticleLike = selected.some((item) =>
+    ["url", "episode", "book"].includes((item?.type || "").toLowerCase())
+  );
+  if (!hasArticleLike) {
+    const articleCandidate = deferred.find((item) =>
+      ["url", "episode", "book"].includes((item?.type || "").toLowerCase())
+    );
+    if (articleCandidate) {
+      const replacementIndex = selected.length > 1 ? selected.length - 1 : 0;
+      if (selected[replacementIndex]) {
+        deferred.push(selected[replacementIndex]);
+        selected[replacementIndex] = articleCandidate;
+      } else {
+        selected.push(articleCandidate);
+      }
+    }
+  }
+
+  const rebuiltSelectedKeys = new Set(
+    selected
+      .map((item) => buildResultKey(item))
+      .filter(Boolean)
+      .map((value) => String(value))
+  );
+  const orderedRemainder = [
+    ...deferred.filter((item) => {
+      const key = buildResultKey(item);
+      if (!key) return true;
+      return !rebuiltSelectedKeys.has(String(key));
+    }),
+    ...results.filter((item) => {
+      const key = buildResultKey(item);
+      if (!key) return false;
+      return !rebuiltSelectedKeys.has(String(key));
+    }),
+  ];
+
+  return [...selected, ...orderedRemainder];
+}
+
+function extractAnchorQueries(chapterData, fallbackLabel) {
+  if (!chapterData || !Array.isArray(chapterData.content)) return [];
+  const firstSection = chapterData.content.find(
+    (section) => Array.isArray(section?.verses) && section.verses.length
+  );
+  const firstVerse = Array.isArray(firstSection?.verses)
+    ? firstSection.verses[0]
+    : null;
+
+  if (firstVerse?.text) {
+    const book = chapterData.book || "";
+    const chapter = chapterData.chapter || "";
+    const verseNumber = firstVerse?.number || firstVerse?.verseNumber || "";
+    const verseLabel = `${book} ${chapter}:${verseNumber}`.trim();
+    const anchorText = truncateQueryPhrase(firstVerse.text, 30);
+    return uniqueQueries([`${verseLabel} ${anchorText}`]);
+  }
+
+  if (chapterData.combinedText) {
+    return uniqueQueries([
+      `${fallbackLabel} ${truncateQueryPhrase(chapterData.combinedText, 30)}`,
+    ]);
+  }
+
+  return [];
+}
+
+async function generateChapterSearchQueries({
+  chapterData,
+  chapterLabel,
+  chapterText,
+}) {
+  const normalizedLabel = normalizeQueryValue(chapterLabel);
+  const normalizedText = normalizeQueryValue(
+    chapterData?.combinedText || chapterText
+  );
+  const normalizedTranslation = normalizeQueryValue(chapterData?.translation);
+  const cacheKey = `chapter-plan:${normalizedLabel.toLowerCase()}:${normalizedTranslation.toLowerCase()}`;
+  const cachedPlan = getCachedQueryPlan(cacheKey);
+  if (cachedPlan?.length) {
+    return cachedPlan;
+  }
+
+  const queries = [normalizedLabel];
+  const headings = extractSectionHeadings(chapterData);
+  if (headings.length > 0) {
+    queries.push(headings[0]);
+  }
+  if (headings.length > 1) {
+    const middleHeading = headings[Math.floor(headings.length / 2)];
+    if (
+      middleHeading &&
+      middleHeading.toLowerCase() !== headings[0]?.toLowerCase()
+    ) {
+      queries.push(middleHeading);
+    }
+  }
+
+  if (normalizedText) {
+    const keywordQuery = extractKeywordsFromText(
+      normalizedText,
+      chapterData?.book || ""
+    );
+    if (keywordQuery) {
+      queries.push(keywordQuery);
+    }
+  }
+
+  queries.push(...extractAnchorQueries(chapterData, normalizedLabel));
+
+  const finalQueries = uniqueQueries(queries).slice(0, 5);
+  setCachedQueryPlan(cacheKey, finalQueries);
+  return finalQueries;
+}
+
+function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
+  const chapterInfo = parseChapterLabel(chapterLabel);
+  const hitCountByKey = new Map();
+  const allResults = [];
+
+  queryResultPairs.forEach(({ results }) => {
+    const seenForQuery = new Set();
+    results.forEach((item) => {
+      allResults.push(item);
+      const key = buildResultKey(item);
+      if (!key || seenForQuery.has(key)) return;
+      seenForQuery.add(key);
+      hitCountByKey.set(key, (hitCountByKey.get(key) || 0) + 1);
+    });
+  });
+
+  const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
+  const typed = allResults.filter((item) => allowedTypes.has(item?.type));
+  const deduped = dedupeResults(typed);
+  const signalTokens = buildChapterSignalSet(
+    chapterData,
+    chapterInfo,
+    queryResultPairs
+  );
+
+  const classified = deduped.map((item) => ({
+    item,
+    ...classifyChapterResult(item, {
+      chapterInfo,
+      hitCountByKey,
+      signalTokens,
+    }),
+  }));
+
+  const explicitMatches = classified.filter(
+    (entry) => entry.bucket === "explicitMatch"
+  );
+  const implicitMatches = classified.filter(
+    (entry) => entry.bucket === "implicitMatch"
+  );
+  const fallbackMatches = classified.filter(
+    (entry) => entry.bucket === "unrelated"
+  );
+
+  const sortEntries = (entries) =>
+    entries
+      .slice()
+      .sort((a, b) => b.score - a.score || compareResults(a.item, b.item))
+      .map((entry) => entry.item);
+
+  const orderedResults = prioritizeDiverseTopResults(
+    sortEntries([...explicitMatches, ...implicitMatches, ...fallbackMatches]),
+    10
+  );
+
+  console.log("[Apologist] chapter grounding", {
+    chapterLabel,
+    candidates: deduped.length,
+    explicitMatches: explicitMatches.length,
+    implicitMatches: implicitMatches.length,
+    fallbackMatches: fallbackMatches.length,
+    displayed: orderedResults.length,
+  });
+
+  return orderedResults;
+}
+
 /**
  * Props:
  * - search: string (required)
@@ -656,6 +1399,7 @@ function Apologist({
   level = "chapter",
   baselineQuery = "",
   label = "",
+  chapterData = null,
 }) {
   const { t } = useSideBarContext();
   const { openOnMobile, isMobile } = useSideBarContext();
@@ -762,140 +1506,113 @@ function Apologist({
             : trimmedQuery;
         }
 
-        const normalizedSearchKey = apiQuery.toLowerCase();
+        const headers = {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          ...(authHeader
+            ? { Authorization: authHeader }
+            : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
+          ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
+        };
 
-        // ── Check in-memory cache first ──
-        const cached = getCachedResults(normalizedSearchKey);
-        let allResults;
+        const fetchQueryResults = async (query) => {
+          const normalizedQueryKey = normalizeQueryValue(query).toLowerCase();
+          if (!normalizedQueryKey) return [];
 
-        if (cached) {
-          allResults = cached;
-        } else {
-          const headers = {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            ...(authHeader
-              ? { Authorization: authHeader }
-              : { Authorization: "Bearer apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN" }),
-            ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
-          };
-          console.log(apiQuery, "apiQuery");
+          const cached = getCachedResults(normalizedQueryKey);
+          if (cached) {
+            return cached;
+          }
 
           const payload = {
-            query: apiQuery,
-            limit: 100, // Get all results
+            query,
+            limit: 100,
             filters: {
               team_id: 160,
               types: ["article", "book", "url", "media", "youtube", "episode"],
             },
           };
 
-          // Retry logic with exponential backoff
           const MAX_RETRIES = 3;
           let res;
           let lastError;
 
           for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            if (cancelled) return;
-
+            if (cancelled) return [];
             try {
               res = await web.post(url, payload, { headers });
-
-              // Success or non-retryable client error (4xx)
               if (res.status === 200) break;
               if (res.status >= 400 && res.status < 500) break;
-
-              // Server error (5xx) — retryable
               lastError = res?.error || `HTTP ${res.status}`;
             } catch (retryErr) {
               lastError = retryErr?.message || "Network error";
               res = null;
             }
 
-            // If not the last attempt, wait with exponential backoff
             if (attempt < MAX_RETRIES - 1) {
-              const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
-
+              const delay = Math.pow(2, attempt) * 1000;
               await new Promise((r) => setTimeout(r, delay));
             }
           }
 
-          if (cancelled) return;
           if (!res || res.status !== 200) {
-            setErr(
+            throw new Error(
               lastError || res?.error || `HTTP ${res?.status || "unknown"}`
             );
-            setData([]);
-            setAllData([]);
-            setOpenIds(new Set());
-            return;
           }
 
-          allResults = Array.isArray(res?.data?.results)
+          const queryResults = Array.isArray(res?.data?.results)
             ? res.data.results
             : [];
+          setCachedResults(normalizedQueryKey, queryResults);
+          return queryResults;
+        };
 
-          // Cache the raw results for future lookups
-          setCachedResults(normalizedSearchKey, allResults);
-        }
-
-        if (cancelled) return;
-        const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
-        const filteredResults = allResults.filter((item) =>
-          allowedTypes.has(item?.type)
-        );
-
-        const sortedResults = filteredResults.slice().sort(compareResults);
-        const dedupedResults = dedupeResults(sortedResults);
-
-        // ---- Prioritize current chapter results ----
-        // ---- Prioritize current chapter results ----
-        // ---- Prioritize current chapter + range results ----
-        let chapterFilteredResults = dedupedResults;
+        const chapterContextData =
+          chapterData || globalThis.GlobalSearchChapterData;
+        let normalizedSearchKey = normalizeQueryValue(apiQuery).toLowerCase();
+        let chapterFilteredResults = [];
 
         if (resolvedLevel === "chapter") {
-          const labelText = (currentLabel || "").toLowerCase();
-          const parts = labelText.split(" ");
-          const book = parts[0];
-          const chapter = parseInt(parts[1], 10);
+          const chapterQueries = await generateChapterSearchQueries({
+            chapterData: chapterContextData,
+            chapterLabel: currentLabel || trimmedQuery,
+            chapterText: trimmedQuery,
+          });
+          const queryPlan = uniqueQueries([
+            currentLabel || trimmedQuery,
+            ...chapterQueries,
+          ]);
 
-          const exactRegex = new RegExp(`\\b${book}\\s+${chapter}\\b`, "i");
+          normalizedSearchKey = `hybrid:${queryPlan.join("|").toLowerCase()}`;
 
-          const rangeRegex = new RegExp(
-            `${book}\\s+(\\d+)\\s*[–-]\\s*(\\d+)`,
-            "i"
+          const queryResultPairs = await Promise.all(
+            queryPlan.map(async (query) => {
+              try {
+                const results = await fetchQueryResults(query);
+                return { query, results };
+              } catch (queryError) {
+                console.warn("[Apologist] query failed:", query, queryError);
+                return { query, results: [] };
+              }
+            })
           );
 
-          const chapterMatches = dedupedResults.filter((item) => {
-            const searchableText = (
-              (item?.title || "") +
-              " " +
-              (item?.description || "") +
-              " " +
-              (item?.content || "")
-            ).toLowerCase();
-
-            // Exact match (Exodus 18)
-            if (exactRegex.test(searchableText)) return true;
-
-            // Range match (Exodus 14–18)
-            const match = searchableText.match(rangeRegex);
-
-            if (match) {
-              const start = parseInt(match[1], 10);
-              const end = parseInt(match[2], 10);
-
-              if (chapter >= start && chapter <= end) {
-                return true;
-              }
-            }
-
-            return false;
-          });
-
-          // Only show chapter results if any exist
-          chapterFilteredResults =
-            chapterMatches.length > 0 ? chapterMatches : [];
+          if (cancelled) return;
+          const mergedResults = buildHybridRankedResults(
+            queryResultPairs,
+            currentLabel || trimmedQuery,
+            chapterContextData
+          );
+          chapterFilteredResults = mergedResults;
+        } else {
+          const singleResults = await fetchQueryResults(apiQuery);
+          const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
+          const filteredResults = singleResults.filter((item) =>
+            allowedTypes.has(item?.type)
+          );
+          const sortedResults = filteredResults.slice().sort(compareResults);
+          chapterFilteredResults = dedupeResults(sortedResults);
         }
 
         if (resolvedLevel === "chapter") {
@@ -986,6 +1703,8 @@ function Apologist({
     url,
     level,
     baselineQuery,
+    label,
+    chapterData,
   ]);
 
   const handleResetToBaseline = () => {
@@ -1005,6 +1724,8 @@ function Apologist({
       helper(currentBaselineQuery, {
         level: "chapter",
         label: chapterLabel,
+        baseline: currentBaselineQuery,
+        chapterData: globalThis.GlobalSearchChapterData || chapterData || null,
         forceRefresh: true,
       });
     }

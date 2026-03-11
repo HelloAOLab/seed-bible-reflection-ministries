@@ -332,6 +332,9 @@ function ApologistPanelWrapper({ id }) {
   const [baselineQuery, setBaselineQuery] = useState(
     globalThis.StudyNoteParentSearch || ""
   );
+  const [chapterData, setChapterData] = useState(
+    globalThis.GlobalSearchChapterData || null
+  );
   const [searchTrigger, setSearchTrigger] = useState(0);
 
   // ── Expose open-in-ministries-tab function ──
@@ -356,6 +359,9 @@ function ApologistPanelWrapper({ id }) {
     if (options.level) setSearchLevel(options.level);
     if (options.label) setSearchLabel(options.label);
     if (options.baseline) setBaselineQuery(options.baseline);
+    if (Object.prototype.hasOwnProperty.call(options, "chapterData")) {
+      setChapterData(options.chapterData || null);
+    }
     if (options.forceRefresh) setSearchTrigger((prev) => prev + 1);
   }, []);
 
@@ -386,6 +392,7 @@ function ApologistPanelWrapper({ id }) {
         setSearchLevel(gsLevel);
         setSearchLabel(gsLabel);
         setBaselineQuery(globalThis.StudyNoteParentSearch || "");
+        setChapterData(globalThis.GlobalSearchChapterData || null);
         setSearchTrigger((prev) => prev + 1);
       }
     }, 200);
@@ -535,6 +542,7 @@ function ApologistPanelWrapper({ id }) {
             level={searchLevel}
             baselineQuery={baselineQuery}
             label={searchLabel}
+            chapterData={chapterData}
           />
         )}
         {activeTab === "ministries" && (
