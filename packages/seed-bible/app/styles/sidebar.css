@@ -302,11 +302,12 @@
 .profileSection {
   position: absolute;
   left: 0;
+  padding: 15px;
   bottom: 0px;
   display: flex;
   flex-direction: row;
   gap: 10px;
-  justify-content: space-around;
+  justify-content: flex-start;
   width: 280px !important;
   background: var(--panelBackground, --panelBackground) !important;
   align-items: center;
