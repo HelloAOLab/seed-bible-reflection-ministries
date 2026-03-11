@@ -594,7 +594,7 @@ function LazyCard({ children }) {
 }
 
 const DEFAULT_URL =
-  "https://ken-boa-reflections-public.ministries.bot/api/v1/corpus/search?cache_ttl=300";
+  "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
 
 // ── In-memory result cache (5 min TTL) ──
 const CACHE_TTL_MS = 5 * 60 * 1000;
@@ -1096,6 +1096,33 @@ function buildChapterSignalSet(chapterData, chapterInfo, queryResultPairs) {
   return signalTokens;
 }
 
+function getResultTitle(item) {
+  return normalizeQueryValue(item?.title || item?.Name || "");
+}
+
+function hasConflictingChapterInTitle(item, chapterInfo) {
+  if (!chapterInfo) return false;
+  const title = getResultTitle(item);
+  if (!title) return false;
+
+  // Match: same book + ANY chapter number in the title
+  const anyChapterRegex = new RegExp(
+    `\\b${chapterInfo.escapedBookName}\\s+(\\d+)`,
+    "gi"
+  );
+  let match;
+  while ((match = anyChapterRegex.exec(title)) !== null) {
+    const mentionedChapter = parseInt(match[1], 10);
+    if (
+      !Number.isNaN(mentionedChapter) &&
+      mentionedChapter !== chapterInfo.chapterNumber
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function classifyChapterResult(item, context) {
   const searchableText = getResultSearchableText(item);
   const resultKey = buildResultKey(item);
@@ -1330,7 +1357,9 @@ function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
 
   const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
   const typed = allResults.filter((item) => allowedTypes.has(item?.type));
-  const deduped = dedupeResults(typed);
+  const deduped = dedupeResults(typed).filter(
+    (item) => !hasConflictingChapterInTitle(item, chapterInfo)
+  );
   const signalTokens = buildChapterSignalSet(
     chapterData,
     chapterInfo,
@@ -1528,7 +1557,7 @@ function Apologist({
             query,
             limit: 100,
             filters: {
-              team_id: 160,
+              team_ids: [160],
               types: ["article", "book", "url", "media", "youtube", "episode"],
             },
           };
