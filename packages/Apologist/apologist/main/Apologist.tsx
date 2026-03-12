@@ -1454,6 +1454,27 @@ function Apologist({
   const isVerseLevel = resolvedLevel === "verse";
   const currentBaselineQuery = baselineQuery || baselineQueryRef.current;
   const showResetControl = Boolean(isVerseLevel && currentBaselineQuery);
+  const loadMoreRef = useRef(null);
+  useEffect(() => {
+    if (!hasMore || loadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 1 }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+    };
+  }, [hasMore, loadingMore]);
 
   useEffect(() => {
     const trimmed = (search ?? "").trim();
@@ -2099,21 +2120,12 @@ function Apologist({
               ) : null;
             })}
             {hasMore && (
-              <div className="sg-loadMore">
-                <button
-                  className="sg-loadMoreBtn"
-                  onClick={loadMore}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? (
-                    <>
-                      <div className="sg-spinner-small"></div>
-                      Loading...
-                    </>
-                  ) : (
-                    t("loadMore")
-                  )}
-                </button>
+              <div ref={loadMoreRef} className="sg-loadMore">
+                {loadingMore && (
+                  <>
+                    <div className="sg-spinner"></div>
+                  </>
+                )}
               </div>
             )}
           </>
