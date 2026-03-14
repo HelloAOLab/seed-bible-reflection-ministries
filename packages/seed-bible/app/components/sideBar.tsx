@@ -44,7 +44,7 @@ import {
   CoffeBeanIcon,
 } from "app.components.phosphoricons";
 // import { CircleCounter } from 'app.components.circleCounter'
-// console.log(CircleCounter, 'CircleCounter')
+
 const Reciver = getBot("system", "app.reciver");
 const { useState, useRef, useEffect, useMemo } = os.appHooks;
 
@@ -98,7 +98,7 @@ const CircleCounter = ({ data, book, chapter }) => {
   const getUserVisual = (userId, value, index) => {
     try {
       const visual = globalThis?.GetOrSetVisualInTags(value[0]);
-      // console.log(value,'the get inside')
+
       if (visual) {
         const IconComponent = icons[visual.iconIndex];
         const color = colors[visual.colorIndex];
@@ -500,7 +500,6 @@ function Tab({
     }
     const checkEmpty = PanelsApps.find((e) => !e.tabData);
     if (el.data.type === "book" && checkEmpty) {
-      // console.log("canvas replacing");
       setActiveTab(el.id);
       const id = uuid();
       ReplaceApplication(LastClickedPanelUpdate || checkEmpty.id, {
