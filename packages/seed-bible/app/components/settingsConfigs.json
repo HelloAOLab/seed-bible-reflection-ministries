@@ -255,6 +255,7 @@
         }
       }
     },
+
     "ligonier": {
       "clientBranding": {
         "enabled": true,
@@ -409,7 +410,8 @@
       "appSettings": {
         "disablePanels": true,
         "removeSpaces": true,
-        "removeEditMode": true
+        "removeEditMode": true,
+        "removeBookMark": false
       },
       "onlineUsers": {
         "enabled": true,
@@ -450,6 +452,9 @@
     },
     "full": {
       "useTabs": true,
+      "appSettings": {
+        "removeBookMark": true
+      },
       "tabs": {
         "space": {
           "enabled": true,
