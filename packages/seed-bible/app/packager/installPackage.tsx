@@ -167,7 +167,7 @@ await (async function mainInstaller(that) {
       };
 
       return {
-        icon,
+        icon: iconUrl || icon,
         label,
         hasToggle: true,
         active:
@@ -178,6 +178,7 @@ await (async function mainInstaller(that) {
         pkgName: name,
         onClick,
         hasToggle,
+        isImg: !!iconUrl,
         showInPageToolbar,
         showInStarterToolbar,
         AppComponent,

@@ -273,28 +273,19 @@ export function Toolbar() {
                 </div>
               )}
               <button
-                className="mobile-navbar-btn more-btn"
-                title={activeMoreApp ? "Close" : "More"}
-                aria-label={activeMoreApp ? "Close" : "More"}
+                className="mobile-navbar-btn explore-btn"
+                title="Apologist"
+                aria-label="Apologist"
                 onClick={() => {
-                  if (activeMoreApp) {
-                    (globalThis as any).RemoveApplicationByLabel(activeMoreApp);
-                    (globalThis as any).makingApp = null;
-                    setActiveMoreApp(null);
-                  } else {
-                    setShowMoreMenu((prev) => !prev);
-                  }
+                  const exploreTool = tools?.find(
+                    (t) => t?.label === "Apologist"
+                  );
+                  exploreTool?.onClick?.();
                 }}
               >
                 <div className="mobile-btn-content">
-                  {activeMoreApp ? (
-                    <span className="material-symbols-outlined">close</span>
-                  ) : (
-                    <MoreIcon color="var(--text1)" />
-                  )}
-                  <span className="mobile-btn-label">
-                    {activeMoreApp ? "Close" : "More"}
-                  </span>
+                  <span className="material-symbols-outlined">explore</span>
+                  <span className="mobile-btn-label">Discovery</span>
                 </div>
               </button>
             </div>
