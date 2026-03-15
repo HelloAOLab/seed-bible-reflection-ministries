@@ -365,7 +365,7 @@ export function PopupSettings({ items, type, disabled, sidebarContext }) {
                           backgroundColor: "white",
                           position: "absolute",
                           top: "2px",
-                          left: item.toggle ? "18px" : "2px",
+                          left: item.toggle ? "16.5px" : "2px",
                           transition: "left 0.2s",
                         }}
                       />
