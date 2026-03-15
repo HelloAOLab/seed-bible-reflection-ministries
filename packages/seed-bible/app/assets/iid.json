@@ -169,5 +169,14 @@
   "learnMore": "Pelajari Lebih Lanjut",
   "loadMore": "Muat Lebih Banyak",
   "translationSwitchOption": "Apakah Anda ingin beralih ke terjemahan {{translationName}}?",
-  "chooseAnother": "Pilih yang lain"
+  "chooseAnother": "Pilih yang lain",
+  "chatHistory": "Riwayat obrolan",
+  "noChatsYet": "Belum ada percakapan sebelumnya",
+  "deleteChat": "Hapus obrolan",
+  "deleteChatConfirm": "Hapus percakapan ini?",
+  "signInToSaveChats": "Masuk untuk menyimpan riwayat obrolan",
+  "justNow": "Baru saja",
+  "minutesAgo": "{{count}} menit lalu",
+  "hoursAgo": "{{count}} jam lalu",
+  "daysAgo": "{{count}} hari lalu"
 }

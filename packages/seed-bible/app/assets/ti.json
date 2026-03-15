@@ -169,5 +169,14 @@
   "learnMore": "ተወሳኺ ፍለጥ",
   "loadMore": "ተወሳኺ ጫን",
   "translationSwitchOption": "ናብ {{translationName}} ትርጉም ክትቀይር ትደሊ ዶ?",
-  "chooseAnother": "ካልእ ምረጽ"
+  "chooseAnother": "ካልእ ምረጽ",
+  "chatHistory": "ታሪኽ ውይይት",
+  "noChatsYet": "ዝሓለፈ ውይይት የለን",
+  "deleteChat": "ውይይት ደምስስ",
+  "deleteChatConfirm": "እዚ ውይይት ደምስስ?",
+  "signInToSaveChats": "ታሪኽ ውይይት ንምዕቃብ ኣትው",
+  "justNow": "ሕጂ",
+  "minutesAgo": "ቅድሚ {{count}} ደቒቕ",
+  "hoursAgo": "ቅድሚ {{count}} ሰዓት",
+  "daysAgo": "ቅድሚ {{count}} መዓልቲ"
 }

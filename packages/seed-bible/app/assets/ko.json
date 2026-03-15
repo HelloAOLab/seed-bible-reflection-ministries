@@ -169,5 +169,14 @@
   "learnMore": "더 알아보기",
   "loadMore": "더 불러오기",
   "translationSwitchOption": "{{translationName}} 번역으로 전환하시겠습니까?",
-  "chooseAnother": "다른 것을 선택하세요"
+  "chooseAnother": "다른 것을 선택하세요",
+  "chatHistory": "채팅 기록",
+  "noChatsYet": "이전 대화가 없습니다",
+  "deleteChat": "채팅 삭제",
+  "deleteChatConfirm": "이 대화를 삭제하시겠습니까?",
+  "signInToSaveChats": "채팅 기록을 저장하려면 로그인하세요",
+  "justNow": "방금",
+  "minutesAgo": "{{count}}분 전",
+  "hoursAgo": "{{count}}시간 전",
+  "daysAgo": "{{count}}일 전"
 }

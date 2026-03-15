@@ -24,6 +24,224 @@ const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const KENBOA_API_KEY = "apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN";
 
+// ── Chat persistence helpers (CasualOS Records API + in-memory cache) ──
+const MAX_CHATS = 50;
+const chatCache = new Map(); // in-memory cache: chatId → full chat object
+
+function generateChatTitle(content) {
+  if (!content) return "New Chat";
+  const clean = content.replace(/\s+/g, " ").trim();
+  if (clean.length <= 40) return clean;
+  const truncated = clean.substring(0, 40);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 20 ? truncated.substring(0, lastSpace) : truncated) + "…";
+}
+
+function formatRelativeTime(timestamp, t) {
+  const diff = Math.floor((Date.now() - timestamp) / 1000);
+  if (diff < 60) return t("justNow");
+  if (diff < 3600)
+    return t("minutesAgo").replace("{{count}}", Math.floor(diff / 60));
+  if (diff < 86400)
+    return t("hoursAgo").replace("{{count}}", Math.floor(diff / 3600));
+  return t("daysAgo").replace("{{count}}", Math.floor(diff / 86400));
+}
+
+async function getAuthBot() {
+  try {
+    const authBot = await os.requestAuthBotInBackground();
+    console.log("[AskKen] getAuthBot result:", authBot?.id || "NOT LOGGED IN");
+    return authBot;
+  } catch (e) {
+    console.log("[AskKen] getAuthBot ERROR:", e);
+    return null;
+  }
+}
+
+async function loadChatIndex() {
+  // Try server first
+  const authBot = await getAuthBot();
+  if (authBot?.id) {
+    try {
+      const result = await os.getData(authBot.id, "askken_chats");
+      console.log("[AskKen] loadChatIndex server result:", result);
+      return result?.data?.chats || [];
+    } catch (e) {
+      console.log("[AskKen] loadChatIndex server ERROR:", e);
+    }
+  }
+  // Fallback: build index from in-memory cache
+  const cached = [];
+  chatCache.forEach((chat) => {
+    cached.push({
+      id: chat.id,
+      title: chat.title,
+      createdAt: chat.createdAt,
+      updatedAt: chat.updatedAt,
+    });
+  });
+  console.log("[AskKen] loadChatIndex from cache:", cached.length, "chats");
+  return cached;
+}
+
+async function saveChatIndex(chats) {
+  // Always attempt server save (silently fails if not logged in)
+  const authBot = await getAuthBot();
+  if (authBot?.id) {
+    try {
+      const trimmed = chats.slice(0, MAX_CHATS);
+      console.log(
+        "[AskKen] saveChatIndex: saving",
+        trimmed.length,
+        "chats to server"
+      );
+      const res = await os.recordData(
+        authBot.id,
+        "askken_chats",
+        { chats: trimmed },
+        { marker: "bookmarks" }
+      );
+      console.log("[AskKen] saveChatIndex result:", res);
+    } catch (e) {
+      console.warn("[AskKen] saveChatIndex server ERROR:", e);
+    }
+  }
+}
+
+async function loadFullChat(chatId) {
+  // Check in-memory cache first
+  if (chatCache.has(chatId)) {
+    console.log("[AskKen] loadFullChat from cache:", chatId);
+    return chatCache.get(chatId);
+  }
+  // Try server
+  const authBot = await getAuthBot();
+  if (authBot?.id) {
+    try {
+      const result = await os.getData(authBot.id, "askken_chat_" + chatId);
+      if (result?.data) {
+        chatCache.set(chatId, result.data); // cache it
+        return result.data;
+      }
+    } catch (e) {
+      console.log("[AskKen] loadFullChat server ERROR:", e);
+    }
+  }
+  return null;
+}
+
+async function saveFullChat(chat) {
+  // Always save to in-memory cache
+  chatCache.set(chat.id, chat);
+  console.log("[AskKen] saveFullChat cached:", chat.id);
+  // Attempt server save
+  const authBot = await getAuthBot();
+  if (authBot?.id) {
+    try {
+      const res = await os.recordData(
+        authBot.id,
+        "askken_chat_" + chat.id,
+        chat,
+        { marker: "bookmarks" }
+      );
+      console.log("[AskKen] saveFullChat server result:", res);
+    } catch (e) {
+      console.warn("[AskKen] saveFullChat server ERROR:", e);
+    }
+  }
+}
+
+async function deleteFullChat(chatId) {
+  chatCache.delete(chatId);
+  const authBot = await getAuthBot();
+  if (authBot?.id) {
+    try {
+      await os.recordData(authBot.id, "askken_chat_" + chatId, null, {
+        marker: "bookmarks",
+      });
+    } catch (e) {
+      console.warn("[AskKen] deleteFullChat server ERROR:", e);
+    }
+  }
+}
+
+// ── History sidebar sub-component ──
+function ChatHistoryPanel({
+  chatIndex,
+  activeChatId,
+  onSelect,
+  onDelete,
+  onClose,
+  t,
+}) {
+  return (
+    <div className="askken-history-panel">
+      <div className="askken-history-header">
+        <span className="askken-history-title">{t("chatHistory")}</span>
+        <button
+          className="askken-history-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              fill="currentColor"
+            />
+          </svg>
+        </button>
+      </div>
+      <div className="askken-history-list">
+        {chatIndex.length === 0 ? (
+          <div className="askken-history-empty">
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "32px", opacity: 0.4 }}
+            >
+              forum
+            </span>
+            <p>{t("noChatsYet")}</p>
+          </div>
+        ) : (
+          chatIndex.map((chat) => (
+            <div
+              key={chat.id}
+              className={`askken-history-item ${chat.id === activeChatId ? "askken-history-item--active" : ""}`}
+              onClick={() => onSelect(chat.id)}
+            >
+              <div className="askken-history-item-content">
+                <span className="askken-history-item-title">
+                  {chat.title || "New Chat"}
+                </span>
+                <span className="askken-history-item-time">
+                  {formatRelativeTime(chat.updatedAt, t)}
+                </span>
+              </div>
+              <button
+                className="askken-history-delete"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(chat.id);
+                }}
+                aria-label={t("deleteChat")}
+                title={t("deleteChat")}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Main AskKenTab component ──
 function AskKenTab({ context, label }) {
   const [messages, setMessages] = useState([]);
   const [query, setQuery] = useState("");
@@ -32,11 +250,136 @@ function AskKenTab({ context, label }) {
   const messagesEndRef = useRef(null);
   const { openOnMobile, isMobile } = useSideBarContext();
 
+  // ── Multi-chat state ──
+  const [chatIndex, setChatIndex] = useState([]);
+  const [activeChatId, setActiveChatId] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+  const saveTimerRef = useRef(null);
+  const chatIndexRef = useRef([]);
+
+  // Keep ref in sync with state to avoid stale closures in XHR callbacks
+  useEffect(() => {
+    chatIndexRef.current = chatIndex;
+  }, [chatIndex]);
+
+  // ── Load chat index on mount ──
+  useEffect(() => {
+    (async () => {
+      console.log("[AskKen] Mount: checking auth...");
+      const authBot = await getAuthBot();
+      const loggedIn = !!authBot?.id;
+      console.log("[AskKen] Mount: loggedIn =", loggedIn, "authBot =", authBot);
+      setIsLoggedIn(loggedIn);
+      if (loggedIn) {
+        const index = await loadChatIndex();
+        console.log("[AskKen] Mount: loaded index with", index.length, "chats");
+        const sorted = [...index].sort(
+          (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)
+        );
+        setChatIndex(sorted);
+      }
+      setHistoryLoaded(true);
+    })();
+  }, []);
+
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
+  // ── Debounced save after messages change ──
+  const persistCurrentChat = useCallback(async (msgs, chatId) => {
+    if (!chatId || msgs.length === 0) return;
+    const index = chatIndexRef.current; // always fresh via ref
+    console.log("[AskKen] Persisting chat", chatId, "msgs:", msgs.length);
+    const chat = {
+      id: chatId,
+      title: generateChatTitle(msgs.find((m) => m.role === "user")?.content),
+      messages: msgs,
+      createdAt: index.find((c) => c.id === chatId)?.createdAt || Date.now(),
+      updatedAt: Date.now(),
+    };
+    await saveFullChat(chat);
+    // Update index
+    const meta = {
+      id: chat.id,
+      title: chat.title,
+      createdAt: chat.createdAt,
+      updatedAt: chat.updatedAt,
+    };
+    const newIndex = [meta, ...index.filter((c) => c.id !== chatId)].slice(
+      0,
+      MAX_CHATS
+    );
+    setChatIndex(newIndex);
+    await saveChatIndex(newIndex);
+    console.log("[AskKen] Saved. Index now has", newIndex.length, "chats");
+  }, []);
+
+  const scheduleSave = useCallback(
+    (msgs, chatId) => {
+      if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = setTimeout(() => {
+        persistCurrentChat(msgs, chatId);
+      }, 1500);
+    },
+    [persistCurrentChat]
+  );
+
+  // ── Handle new chat ──
+  const handleNewChat = useCallback(() => {
+    // Save current before clearing (if there's content)
+    if (activeChatId && messages.length > 0) {
+      persistCurrentChat(messages, activeChatId);
+    }
+    setActiveChatId(null);
+    setMessages([]);
+    setQuery("");
+    setError(null);
+    setShowHistory(false);
+  }, [activeChatId, messages, persistCurrentChat]);
+
+  // ── Handle chat selection from history ──
+  const handleSelectChat = useCallback(
+    async (chatId) => {
+      // Save current first
+      if (activeChatId && messages.length > 0) {
+        persistCurrentChat(messages, activeChatId);
+      }
+      setShowHistory(false);
+      setMessages([]);
+      setError(null);
+      setIsLoading(true);
+      const fullChat = await loadFullChat(chatId);
+      console.log("[AskKen] Loaded chat", chatId, fullChat);
+      if (fullChat?.messages) {
+        setMessages(fullChat.messages);
+        setActiveChatId(chatId);
+      }
+      setIsLoading(false);
+    },
+    [activeChatId, messages, persistCurrentChat]
+  );
+
+  // ── Handle chat deletion ──
+  const handleDeleteChat = useCallback(
+    async (chatId) => {
+      const newIndex = chatIndex.filter((c) => c.id !== chatId);
+      setChatIndex(newIndex);
+      await saveChatIndex(newIndex);
+      await deleteFullChat(chatId);
+      if (chatId === activeChatId) {
+        setActiveChatId(null);
+        setMessages([]);
+        setError(null);
+      }
+    },
+    [chatIndex, activeChatId]
+  );
+
+  // ── Submit message ──
   const handleSubmit = async () => {
     if (!query.trim() || isLoading) return;
 
@@ -47,9 +390,14 @@ function AskKenTab({ context, label }) {
     setIsLoading(true);
     setError(null);
 
+    // Create a new chat if needed
+    let currentChatId = activeChatId;
+    if (!currentChatId) {
+      currentChatId = Date.now().toString();
+      setActiveChatId(currentChatId);
+    }
+
     // Build prompt with Bible context + conversation history
-    // Max 15 messages, truncate assistant replies to keep prompt lean
-    // Read context directly from globalThis for the freshest value
     const currentContext = globalThis.GlobalSearch || context || "";
     const currentLabel = globalThis.GlobalSearchLabel || label || "";
     const contextPrefix = currentContext
@@ -79,7 +427,6 @@ function AskKenTab({ context, label }) {
     let assistantContent = "";
     let lastParsedLength = 0;
 
-    // Parse SSE chunks progressively as they arrive
     xhr.onprogress = () => {
       const newText = xhr.responseText.substring(lastParsedLength);
       lastParsedLength = xhr.responseText.length;
@@ -106,6 +453,17 @@ function AskKenTab({ context, label }) {
       if (xhr.status >= 200 && xhr.status < 300) {
         if (!assistantContent) {
           setError("No response received. Please try again.");
+        } else {
+          // Always attempt save — storage functions check auth internally
+          const finalMessages = [
+            ...newMessages,
+            { role: "assistant", content: assistantContent },
+          ];
+          console.log(
+            "[AskKen] Response complete, scheduling save for chat",
+            currentChatId
+          );
+          scheduleSave(finalMessages, currentChatId);
         }
       } else {
         setError(`Error: ${xhr.status}. Please try again.`);
@@ -124,14 +482,7 @@ function AskKenTab({ context, label }) {
     };
 
     xhr.timeout = 120000;
-
     xhr.send(JSON.stringify({ prompt, stream: true }));
-  };
-
-  const handleNewChat = () => {
-    setMessages([]);
-    setQuery("");
-    setError(null);
   };
 
   const hasMessages = messages.length > 0;
@@ -139,27 +490,58 @@ function AskKenTab({ context, label }) {
   return (
     <div className="askken-container">
       <div className="askken-content">
-        {/* Top bar */}
-
-        {hasMessages && (
-          <button className="askken-newchat-btn" onClick={handleNewChat}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        {/* ── Top action bar ── */}
+        <div className="askken-topbar-actions">
+          <button
+            className="askken-topbar-btn"
+            onClick={() => setShowHistory(!showHistory)}
+            title={t("chatHistory")}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"
+                fill="currentColor"
+              />
+            </svg>
+            {!isMobile && <span>{t("chatHistory")}</span>}
+          </button>
+          <button
+            className="askken-topbar-btn askken-topbar-btn--new"
+            onClick={handleNewChat}
+            title={t("newChat")}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path
                 d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
                 fill="currentColor"
               />
             </svg>
-            {t("newChat")}
+            {!isMobile && <span>{t("newChat")}</span>}
           </button>
+        </div>
+
+        {/* ── History overlay ── */}
+        {showHistory && (
+          <ChatHistoryPanel
+            chatIndex={chatIndex}
+            activeChatId={activeChatId}
+            onSelect={handleSelectChat}
+            onDelete={handleDeleteChat}
+            onClose={() => setShowHistory(false)}
+            t={t}
+          />
         )}
 
-        {/* Messages area */}
+        {/* ── Messages area ── */}
         <div className="askken-messages">
-          {!hasMessages && (
+          {!hasMessages && !showHistory && (
             <div className="askken-hero">
               <p className="askken-subtitle">{t("kenSubtitle")}</p>
               <h1 className="askken-heading">{t("kenHeading")}</h1>
               <p className="askken-description">{t("kenDescription")}</p>
+              {!isLoggedIn && historyLoaded && (
+                <p className="askken-signin-hint">{t("signInToSaveChats")}</p>
+              )}
             </div>
           )}
 
@@ -214,7 +596,7 @@ function AskKenTab({ context, label }) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Chat input */}
+        {/* ── Chat input ── */}
         <div className="askken-chat-area">
           <div className="askken-input-row">
             <input
@@ -974,12 +1356,23 @@ function ApologistPanelWrapper({ id }) {
           to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ── New Chat button ── */
-        .askken-newchat-btn {
+        /* ── Top action bar ── */
+        .askken-topbar-actions {
           display: flex;
           align-items: center;
-          gap: 4px;
-          padding: 6px 12px;
+          justify-content: space-between;
+          padding: 6px 10px;
+          gap: 8px;
+          border-bottom: 1px solid var(--inputBorder, #e5e5e5);
+          background: var(--panelBackground, #fafafa);
+          flex-shrink: 0;
+        }
+
+        .askken-topbar-btn {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 5px 10px;
           border-radius: 16px;
           border: 1px solid var(--inputBorder, #ddd);
           background: transparent;
@@ -990,9 +1383,163 @@ function ApologistPanelWrapper({ id }) {
           transition: background 0.2s, color 0.2s;
         }
 
-        .askken-newchat-btn:hover {
+        .askken-topbar-btn:hover {
           background: var(--inputBackground, #f0f0f0);
           color: var(--text1, #222);
+        }
+
+        .askken-topbar-btn--new {
+          border-color: var(--accentColor, #6b3a2a);
+          color: var(--accentColor, #6b3a2a);
+        }
+
+        .askken-topbar-btn--new:hover {
+          background: var(--accentColor, #6b3a2a);
+          color: var(--panelBackground, #fff);
+        }
+
+        /* ── Chat History Panel ── */
+        .askken-history-panel {
+          position: absolute;
+          top: 40px;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: var(--panelBackground, #fafafa);
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          animation: askken-slideDown 0.25s ease;
+        }
+
+        @keyframes askken-slideDown {
+          from { opacity: 0; transform: translateY(-12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .askken-history-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px 12px;
+          border-bottom: 1px solid var(--inputBorder, #e5e5e5);
+          flex-shrink: 0;
+        }
+
+        .askken-history-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text1, #222);
+        }
+
+        .askken-history-close {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--text2, #888);
+          padding: 4px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.2s;
+        }
+
+        .askken-history-close:hover {
+          background: var(--inputBackground, #f0f0f0);
+          color: var(--text1, #222);
+        }
+
+        .askken-history-list {
+          flex: 1;
+          overflow-y: auto;
+          padding: 4px 0;
+        }
+
+        .askken-history-item {
+          display: flex;
+          align-items: center;
+          padding: 10px 12px;
+          cursor: pointer;
+          transition: background 0.15s;
+          gap: 8px;
+        }
+
+        .askken-history-item:hover {
+          background: var(--inputBackground, #f0f0f0);
+        }
+
+        .askken-history-item--active {
+          background: rgba(107, 58, 42, 0.08);
+          border-left: 3px solid var(--accentColor, #6b3a2a);
+        }
+
+        .askken-history-item-content {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .askken-history-item-title {
+          font-size: 13px;
+          font-weight: 500;
+          color: var(--text1, #222);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .askken-history-item-time {
+          font-size: 11px;
+          color: var(--text2, #999);
+        }
+
+        .askken-history-delete {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: var(--text2, #bbb);
+          padding: 4px;
+          border-radius: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: opacity 0.15s, color 0.15s;
+        }
+
+        .askken-history-item:hover .askken-history-delete {
+          opacity: 1;
+        }
+
+        .askken-history-delete:hover {
+          color: #e57373;
+          background: rgba(229, 115, 115, 0.1);
+        }
+
+        .askken-history-empty {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 48px 16px;
+          color: var(--text2, #999);
+          gap: 8px;
+        }
+
+        .askken-history-empty p {
+          margin: 0;
+          font-size: 13px;
+        }
+
+        /* ── Sign-in hint ── */
+        .askken-signin-hint {
+          margin-top: 16px;
+          font-size: 12px;
+          color: var(--text2, #aaa);
+          font-style: italic;
         }
 
         /* ── Error display ── */
