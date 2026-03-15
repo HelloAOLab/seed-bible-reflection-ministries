@@ -328,7 +328,10 @@ export function PopupSettings({ items, type, disabled, sidebarContext }) {
                   >
                     <div
                       style={{
+                        display: "flex",
+                        alignItems: "center",
                         color: colors ? colors[1].pageTextColor : "#1A1A1A",
+                        lineHeight: 1,
                       }}
                     >
                       {item.icon}
@@ -336,7 +339,10 @@ export function PopupSettings({ items, type, disabled, sidebarContext }) {
                     <div
                       className="font-bold"
                       style={{
+                        display: "flex",
+                        alignItems: "center",
                         color: colors ? colors[1].pageTextColor : "#1A1A1A",
+                        lineHeight: 1,
                       }}
                     >
                       {typeof item.title === "function"
