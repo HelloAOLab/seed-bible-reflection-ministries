@@ -702,5 +702,14 @@
   "learnMore": "Узнать больше",
   "loadMore": "Загрузить ещё",
   "translationSwitchOption": "Хотите переключиться на перевод {{translationName}}?",
-  "chooseAnother": "Выбрать другой"
+  "chooseAnother": "Выбрать другой",
+  "chatHistory": "История чатов",
+  "noChatsYet": "Нет предыдущих бесед",
+  "deleteChat": "Удалить чат",
+  "deleteChatConfirm": "Удалить эту беседу?",
+  "signInToSaveChats": "Войдите, чтобы сохранить историю чатов",
+  "justNow": "Только что",
+  "minutesAgo": "{{count}} мин назад",
+  "hoursAgo": "{{count}}ч назад",
+  "daysAgo": "{{count}}д назад"
 }

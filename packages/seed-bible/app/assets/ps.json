@@ -169,5 +169,14 @@
   "learnMore": "نور معلومات ترلاسه کړئ",
   "loadMore": "نور پورته کړئ",
   "translationSwitchOption": "ایا تاسو غواړئ چې د {{translationName}} ژباړې ته لاړ شئ؟",
-  "chooseAnother": "بل یو غوره کړئ"
+  "chooseAnother": "بل یو غوره کړئ",
+  "chatHistory": "د خبرو تاریخچه",
+  "noChatsYet": "تیر خبرې نشته",
+  "deleteChat": "خبرې ړنګې کړئ",
+  "deleteChatConfirm": "دا خبرې ړنګې کوئ؟",
+  "signInToSaveChats": "د خبرو تاریخچه خوندي کولو لپاره ننوتل",
+  "justNow": "همدا اوس",
+  "minutesAgo": "{{count}} دقیقې مخکې",
+  "hoursAgo": "{{count}} ساعتونه مخکې",
+  "daysAgo": "{{count}} ورځې مخکې"
 }

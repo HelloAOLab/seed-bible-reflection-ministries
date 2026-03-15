@@ -702,5 +702,14 @@
   "learnMore": "اعرف المزيد",
   "loadMore": "تحميل المزيد",
   "translationSwitchOption": "هل تريد التبديل إلى ترجمة {{translationName}}؟",
-  "chooseAnother": "اختر آخر"
+  "chooseAnother": "اختر آخر",
+  "chatHistory": "سجل المحادثات",
+  "noChatsYet": "لا توجد محادثات سابقة",
+  "deleteChat": "حذف المحادثة",
+  "deleteChatConfirm": "هل تريد حذف هذه المحادثة؟",
+  "signInToSaveChats": "سجّل الدخول لحفظ سجل المحادثات",
+  "justNow": "الآن",
+  "minutesAgo": "منذ {{count}} دقيقة",
+  "hoursAgo": "منذ {{count}} ساعة",
+  "daysAgo": "منذ {{count}} يوم"
 }

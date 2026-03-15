@@ -169,5 +169,14 @@
   "learnMore": "مزید جانیں",
   "loadMore": "مزید لوڈ کریں",
   "translationSwitchOption": "کیا آپ {{translationName}} ترجمے پر سوئچ کرنا چاہیں گے؟",
-  "chooseAnother": "دوسرا انتخاب کریں"
+  "chooseAnother": "دوسرا انتخاب کریں",
+  "chatHistory": "چیٹ کی تاریخ",
+  "noChatsYet": "پچھلی بات چیت نہیں ہے",
+  "deleteChat": "چیٹ حذف کریں",
+  "deleteChatConfirm": "یہ بات چیت حذف کریں؟",
+  "signInToSaveChats": "چیٹ کی تاریخ محفوظ کرنے کے لیے سائن ان کریں",
+  "justNow": "ابھی",
+  "minutesAgo": "{{count}} منٹ پہلے",
+  "hoursAgo": "{{count}} گھنٹے پہلے",
+  "daysAgo": "{{count}} دن پہلے"
 }
