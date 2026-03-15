@@ -1783,9 +1783,14 @@ function ThePage({
   }, []);
 
   const removeBibleStack =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ]?.appSettings?.removeBibleStack;
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeBibleStack;
+
+  const removeBookMark =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeBookMark;
+  const mobileBookLogo =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
 
   return (
     <>
@@ -2346,7 +2351,10 @@ function ThePage({
                       <img
                         className="coloredIcon"
                         style={{ width: "50px" }}
-                        src="https://res.cloudinary.com/dfbtwwa8p/image/upload/v1755365776/717a8527988cca7e0bdc9449ec68581a8400b977_vqc7mx.png"
+                        src={
+                          mobileBookLogo ||
+                          "https://res.cloudinary.com/dfbtwwa8p/image/upload/v1755365776/717a8527988cca7e0bdc9449ec68581a8400b977_vqc7mx.png"
+                        }
                       />
                     </div>
 
@@ -2369,11 +2377,13 @@ function ThePage({
                         position: "relative",
                       }}
                     >
-                      <PageToolbar
-                        panelId={panelId}
-                        tab={tab}
-                        path="showInStarterToolbar"
-                      />
+                      {!removeBibleStack && (
+                        <PageToolbar
+                          panelId={panelId}
+                          tab={tab}
+                          path="showInStarterToolbar"
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
