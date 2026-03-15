@@ -1,6 +1,5 @@
 const { useEffect, useState, useRef } = os.appHooks;
 import { getStyleOf } from "app.styles.styler";
-import { getSettingsPreset } from "app.components.types";
 import { MenuIcon, ThemeIcon } from "app.components.icons";
 import { useTabsContext } from "app.hooks.tabs";
 import { useSideBarContext } from "app.hooks.sideBar";
@@ -1061,7 +1060,10 @@ const defaultThemes = [
   },
 ];
 
-const presetConfig = tags?.settingsConfigs?.presets?.[getSettingsPreset()];
+const presetConfig =
+  tags?.settingsConfigs?.presets?.[
+    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+  ];
 const presetThemes: typeof defaultThemes =
   presetConfig?.availableThemes?.length > 0
     ? presetConfig.availableThemes
@@ -5861,7 +5863,8 @@ const SettingsUI = () => {
     });
   };
 
-  const settingsPreset = getSettingsPreset();
+  const settingsPreset =
+    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full";
 
   // ————————————————————————————————————————————————————————————
   // Handle Tab Icons Toggle

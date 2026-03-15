@@ -535,12 +535,6 @@ const PlayerControls = ({ parentId = "default" }) => {
   }, [handleOnButtonPress, transformedHistory]);
 
   useLayoutEffect(() => {
-    if (G.PPchecklistEnabled) {
-      setTimeout(() => {
-        thisBot.OpenSelf();
-      }, 200);
-    }
-
     return () => {
       G.IsPlaylistPlaying = false;
       G.IsQueuePresent = false;
@@ -886,13 +880,11 @@ const PlayerControls = ({ parentId = "default" }) => {
                   minWidth: "max-content",
                 }}
               >
-                {G.PPchecklistEnabled && showCurrent && currIndex.index === -1
-                  ? null
-                  : showCurrent
-                    ? `${t("playingNow")}:`
-                    : nextItemName?.content
-                      ? `${t("playingNext")}:`
-                      : null}
+                {showCurrent
+                  ? `${t("playingNow")}:`
+                  : nextItemName?.content
+                    ? `${t("playingNext")}:`
+                    : null}
               </p>
               <div style={{ gap: "0.5rem" }} className="align-center">
                 <div
@@ -943,7 +935,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                           }}
                         >
                           {nextItemName?.content
-                            ? `${nextItemName?.content}${nextItemName?.prefix}`?.substring(
+                            ? `${nextItemName?.content}${nextItemName?.prefix}`.substring(
                                 0,
                                 isMobile ? 9 : 16
                               )
@@ -957,7 +949,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                     ) : (
                       <p
                         style={{
-                          color: "var(--secondaryColor)",
+                          color: "green",
                           fontSize: "12px",
                           fontWeight: "900",
                           fontFamily: "DM Sans",
@@ -965,7 +957,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                           minWidth: "max-content",
                         }}
                       >
-                        {t("playlist")} {t("ended")}
+                        Playlist Ended
                       </p>
                     )}
                     {!G.ValidTypes[nextItemName?.type] &&
@@ -981,7 +973,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                           }}
                         >
                           {isMobile
-                            ? nextItemName?.type?.substring(0, 10)
+                            ? nextItemName?.type.substring(0, 10)
                             : nextItemName?.type}
                         </p>
                       )}
@@ -997,7 +989,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                         }}
                       >
                         {isMobile
-                          ? currentItem?.type?.substring(0, 10)
+                          ? currentItem?.type.substring(0, 10)
                           : currentItem?.type}
                       </p>
                     )}
@@ -1030,7 +1022,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                           }}
                         >
                           {currentItem?.content
-                            ? `${currentItem?.content}${currentItem?.prefix}`?.substring(
+                            ? `${currentItem?.content}${currentItem?.prefix}`.substring(
                                 0,
                                 isMobile ? 10 : 16
                               )
@@ -1044,7 +1036,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                     ) : (
                       <p
                         style={{
-                          color: "var(--secondaryColor)",
+                          color: "green",
                           fontSize: "12px",
                           fontWeight: "900",
                           fontFamily: "DM Sans",
@@ -1052,9 +1044,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                           minWidth: "max-content",
                         }}
                       >
-                        {G.PPchecklistEnabled && currIndex.index === -1
-                          ? t("checklistEnabled")
-                          : `${isMobile ? "" : t("playlist")} {t("ended")}`}
+                        Playlist Ended
                       </p>
                     )}
 
@@ -1069,7 +1059,7 @@ const PlayerControls = ({ parentId = "default" }) => {
                         }}
                       >
                         {isMobile
-                          ? currentItem?.type?.substring(0, 10)
+                          ? currentItem?.type.substring(0, 10)
                           : currentItem?.type}
                       </p>
                     )}

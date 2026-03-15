@@ -1,5 +1,4 @@
 import useBibleData from "app.hooks.bibleData";
-import { getSettingsPreset } from "app.components.types";
 import { getStyleOf } from "app.styles.styler";
 import { SideBar } from "app.components.sideBar";
 const { useEffect, useState, useRef } = os.appHooks;
@@ -94,7 +93,13 @@ const Layout = ({ children, panelsNumber }) => {
       <div className={`floatsidebar ${openOnMobile ? "open" : ""}`}>
         {sidebarMode === "settings" ? (
           <SettingsSidebar
-            config={tags?.settingsConfigs?.presets[getSettingsPreset()]}
+            config={
+              tags?.settingsConfigs?.presets[
+                configBot?.tags?.settingsPreset ||
+                  thisBot.tags.settingsPreset ||
+                  "full"
+              ]
+            }
           />
         ) : sidebarMode === "textSettings" ? (
           <TextSettings />

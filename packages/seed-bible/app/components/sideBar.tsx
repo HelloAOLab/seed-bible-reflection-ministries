@@ -25,7 +25,7 @@ import {
 import { useBibleContext } from "app.hooks.bibleVariables";
 import { useSideBarContext } from "app.hooks.sideBar";
 import SurroundingDivs from "app.components.surroundingDivs";
-import { TabOptions, getSettingsPreset } from "app.components.types";
+import { TabOptions } from "app.components.types";
 import { FolderIcon, OpenFolderIcon } from "app.components.icons";
 import {
   ImportSpaceModal,
@@ -50,11 +50,13 @@ const { useState, useRef, useEffect, useMemo } = os.appHooks;
 
 const LOCAL_ENV = !configBot.tags.pattern;
 const removeBookMark =
-  tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
-    ?.removeBookMark;
+  tags?.settingsConfigs?.presets?.[
+    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+  ]?.appSettings?.removeBookMark;
 const removeAddSession =
-  tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
-    ?.removeAddSession;
+  tags?.settingsConfigs?.presets?.[
+    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+  ]?.appSettings?.removeAddSession;
 
 const CircleCounter = ({ data, book, chapter }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -386,8 +388,9 @@ function Tab({
     tabsIcons,
   } = useTabsContext();
   const removeEditMode =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
-      ?.removeEditMode;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ]?.appSettings?.removeEditMode;
   const OPTIONS = (tab) => ({
     type: "normal",
     items: [
@@ -846,8 +849,9 @@ function SideBar({ panelsNumber }) {
     sharedTab,
   } = useTabsContext();
   const hidePanels =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
-      ?.disablePanels;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ]?.appSettings?.disablePanels;
   globalThis.AddTab = addTab;
   const { screens, setScreens, fullScreen, setFullScreen, ReSeed, setReSeed } =
     useBibleContext();
@@ -1254,8 +1258,9 @@ function SideBar({ panelsNumber }) {
     </svg>
   );
   const removeJoinSession =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
-      ?.removeJoinSession || false;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ]?.appSettings?.removeJoinSession || false;
 
   const MenuOptions = {
     type: "normal",
@@ -1513,7 +1518,8 @@ function SideBar({ panelsNumber }) {
 
   const { moveMultipleTabs } = useTabsContext();
   const holdTimeout = useRef({ time: null, clicked: null });
-  const activePreset = getSettingsPreset();
+  const activePreset =
+    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full";
   const clientSite =
     tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.clientSite;
   const clientName =
@@ -1629,20 +1635,6 @@ function SideBar({ panelsNumber }) {
               >
                 {<MenuIcon name={"person_add"} />}
               </span> */}
-              <button
-                className="mobile-icon-button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  os.log("Opening mobile settings", setOpenOnMobile);
-                  setOpenOnMobile(true);
-                  setSidebarWidth(280);
-                  setCollapsed(false);
-                  setSideBarMode("settings");
-                }}
-                title="Settings"
-              >
-                <MobileSettingsIcon />
-              </button>
               <span
                 className="mobile-header-icon"
                 onClick={() => {
@@ -2557,7 +2549,7 @@ function SideBar({ panelsNumber }) {
         {folders.length > 0 && (
           <div style={{ marginBottom: "10px" }} className={"sidebarLine"}></div>
         )}
-        {multiSelectMode && !collapsed && (
+        {multiSelectMode && (
           <div className="multiSelectActions">
             <label
               style={{
@@ -3121,8 +3113,9 @@ export const SettingsProfile = () => {
     }
   };
   const removeSpaces =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
-      ?.removeSpaces;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ]?.appSettings?.removeSpaces;
 
   return (
     <div className="dot">
@@ -3196,8 +3189,9 @@ export const UserProfile = ({ collapsed }) => {
     userData
   );
   const removeAccountOptions =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
-      ?.removeAccountOptions;
+    tags?.settingsConfigs?.presets?.[
+      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
+    ]?.appSettings?.removeAccountOptions;
   const Icon = icons[iconIndex];
 
   return (

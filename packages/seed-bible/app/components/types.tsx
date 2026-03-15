@@ -1,8 +1,5 @@
 import { Space } from "app.components.icons";
 
-export const getSettingsPreset = () =>
-  configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full";
-
 export const TabOptions = {
   Select: { id: "Select", active: true, name: "Select" },
   Delete: { id: "Delete", active: true, name: "Delete tab" },
