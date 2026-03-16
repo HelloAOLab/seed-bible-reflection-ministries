@@ -31,6 +31,8 @@
   "next": "İleri",
   "previous": "Önceki",
   "exit": "Çıkış",
+  "ended": "Sona erdi",
+  "checklistMode": "Kontrol listesi modu",
   "settings": "Ayarlar",
   "generalSettings": "Genel ayarlar",
   "spaceSettings": "Alan ayarları",
@@ -169,5 +171,14 @@
   "learnMore": "Daha Fazla Bilgi",
   "loadMore": "Daha Fazla Yükle",
   "translationSwitchOption": "{{translationName}} çevirisine geçmek ister misiniz?",
-  "chooseAnother": "Başka birini seç"
+  "chooseAnother": "Başka birini seç",
+  "chatHistory": "Sohbet Geçmişi",
+  "noChatsYet": "Önceki konuşma yok",
+  "deleteChat": "Sohbeti sil",
+  "deleteChatConfirm": "Bu konuşmayı silmek istiyor musunuz?",
+  "signInToSaveChats": "Sohbet geçmişini kaydetmek için giriş yapın",
+  "justNow": "Az önce",
+  "minutesAgo": "{{count}} dk önce",
+  "hoursAgo": "{{count}}sa önce",
+  "daysAgo": "{{count}}g önce"
 }

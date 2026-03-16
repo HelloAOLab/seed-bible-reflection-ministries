@@ -31,6 +31,8 @@
   "next": "ቀጣይ",
   "previous": "ቀዳሚ",
   "exit": "ውጣ",
+  "ended": "ተጠናቅቋል",
+  "checklistMode": "የቼክሊስት ሁኔታ",
   "settings": "ቅንብሮች",
   "generalSettings": "አጠቃላይ ቅንብሮች",
   "spaceSettings": "የቦታ ቅንብሮች",
@@ -169,5 +171,14 @@
   "learnMore": "ተጨማሪ ይወቁ",
   "loadMore": "ተጨማሪ ጫን",
   "translationSwitchOption": "ወደ {{translationName}} ትርጉም መቀየር ይፈልጋሉ?",
-  "chooseAnother": "ሌላ ይምረጡ"
+  "chooseAnother": "ሌላ ይምረጡ",
+  "chatHistory": "የውይይት ታሪክ",
+  "noChatsYet": "ያለፉ ውይይቶች የሉም",
+  "deleteChat": "ውይይት ሰርዝ",
+  "deleteChatConfirm": "ይህን ውይይት ሰርዝ?",
+  "signInToSaveChats": "የውይይት ታሪክን ለማስቀመጥ ይግቡ",
+  "justNow": "አሁን",
+  "minutesAgo": "ከ{{count}} ደቂቃ በፊት",
+  "hoursAgo": "ከ{{count}} ሰዓት በፊት",
+  "daysAgo": "ከ{{count}} ቀን በፊት"
 }

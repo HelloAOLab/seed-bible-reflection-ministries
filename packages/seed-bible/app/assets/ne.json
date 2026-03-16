@@ -31,6 +31,8 @@
   "next": "अर्को",
   "previous": "अघिल्लो",
   "exit": "निस्कनुहोस्",
+  "ended": "समाप्त",
+  "checklistMode": "चेकलिस्ट मोड",
   "settings": "सेटिङहरू",
   "generalSettings": "सामान्य सेटिङहरू",
   "spaceSettings": "स्पेस सेटिङहरू",
@@ -169,5 +171,14 @@
   "learnMore": "थप जान्नुहोस्",
   "loadMore": "थप लोड गर्नुहोस्",
   "translationSwitchOption": "के तपाईं {{translationName}} अनुवादमा स्विच गर्न चाहनुहुन्छ?",
-  "chooseAnother": "अर्को छान्नुहोस्"
+  "chooseAnother": "अर्को छान्नुहोस्",
+  "chatHistory": "च्याट इतिहास",
+  "noChatsYet": "अघिल्ला कुराकानीहरू छैनन्",
+  "deleteChat": "च्याट मेटाउनुहोस्",
+  "deleteChatConfirm": "यो कुराकानी मेटाउने?",
+  "signInToSaveChats": "च्याट इतिहास बचत गर्न साइन इन गर्नुहोस्",
+  "justNow": "भर्खरै",
+  "minutesAgo": "{{count}} मिनेट अघि",
+  "hoursAgo": "{{count}} घण्टा अघि",
+  "daysAgo": "{{count}} दिन अघि"
 }

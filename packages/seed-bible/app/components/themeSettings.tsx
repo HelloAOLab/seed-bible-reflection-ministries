@@ -1,5 +1,6 @@
 const { useEffect, useState, useRef } = os.appHooks;
 import { getStyleOf } from "app.styles.styler";
+import { getSettingsPreset } from "app.components.types";
 import { MenuIcon, ThemeIcon } from "app.components.icons";
 import { useTabsContext } from "app.hooks.tabs";
 import { useSideBarContext } from "app.hooks.sideBar";
@@ -1060,23 +1061,24 @@ const defaultThemes = [
   },
 ];
 
-const presetConfig =
-  tags?.settingsConfigs?.presets?.[
-    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-  ];
+const presetConfig = tags?.settingsConfigs?.presets?.[getSettingsPreset()];
 const presetThemes: typeof defaultThemes =
   presetConfig?.availableThemes?.length > 0
     ? presetConfig.availableThemes
     : defaultThemes;
+console.log(presetThemes, "presetConfig");
 
 if (presetThemes.length === 0) {
   console.error(
     "No themes available in preset configuration. Falling back to default themes."
   );
 }
+console.log(presetThemes, "presetThemes");
 
 export const defaultTheme = presetThemes[0]?.colors ?? builtinDefaultTheme;
+
 export const READY_THEMES = presetThemes;
+console.log(READY_THEMES, "READY_THEMES");
 
 // ----------- DEBOUNCE (no CDN needed) -----------
 function debounce(fn, delay = 250) {
@@ -5863,8 +5865,7 @@ const SettingsUI = () => {
     });
   };
 
-  const settingsPreset =
-    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full";
+  const settingsPreset = getSettingsPreset();
 
   // ————————————————————————————————————————————————————————————
   // Handle Tab Icons Toggle

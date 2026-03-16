@@ -31,6 +31,8 @@
   "next": "كېيىنكى",
   "previous": "ئالدىنقى",
   "exit": "چىقىش",
+  "ended": "ئاخىرلاشتى",
+  "checklistMode": "تەكشۈرۈش تىزىملىكى ھالىتى",
   "settings": "تەڭشەكلەر",
   "generalSettings": "ئومۇمىي تەڭشەكلەر",
   "spaceSettings": "بوشلۇق تەڭشەكلەر",
@@ -169,5 +171,14 @@
   "learnMore": "تېخىمۇ كۆپرەك بىلىڭ",
   "loadMore": "تېخىمۇ كۆپرەك يۈكلە",
   "translationSwitchOption": "{{translationName}} تەرجىمىسىگە ئالماشتۇرامسىز؟",
-  "chooseAnother": "يەنە بىرنى تاللاڭ"
+  "chooseAnother": "يەنە بىرنى تاللاڭ",
+  "chatHistory": "پاراڭ تارىخى",
+  "noChatsYet": "ئالدىنقى سۆزلىشىش يوق",
+  "deleteChat": "پاراڭنى ئۆچۈرۈش",
+  "deleteChatConfirm": "بۇ سۆزلىشىشنى ئۆچۈرەمسىز?",
+  "signInToSaveChats": "پاراڭ تارىخىنى ساقلاش ئۈچۈن كىرىڭ",
+  "justNow": "ھازىر",
+  "minutesAgo": "{{count}} مىنۇت ئىلگىرى",
+  "hoursAgo": "{{count}} سائەت ئىلگىرى",
+  "daysAgo": "{{count}} كۈن ئىلگىرى"
 }

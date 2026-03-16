@@ -31,6 +31,8 @@
   "next": "Tiếp theo",
   "previous": "Trước",
   "exit": "Thoát",
+  "ended": "Đã kết thúc",
+  "checklistMode": "Chế độ danh sách kiểm tra",
   "settings": "Cài đặt",
   "generalSettings": "Cài đặt chung",
   "spaceSettings": "Cài đặt không gian",
@@ -169,5 +171,14 @@
   "learnMore": "Tìm hiểu thêm",
   "loadMore": "Tải thêm",
   "translationSwitchOption": "Bạn có muốn chuyển sang bản dịch {{translationName}} không?",
-  "chooseAnother": "Chọn cái khác"
+  "chooseAnother": "Chọn cái khác",
+  "chatHistory": "Lịch sử trò chuyện",
+  "noChatsYet": "Chưa có cuộc trò chuyện nào",
+  "deleteChat": "Xóa cuộc trò chuyện",
+  "deleteChatConfirm": "Xóa cuộc trò chuyện này?",
+  "signInToSaveChats": "Đăng nhập để lưu lịch sử trò chuyện",
+  "justNow": "Vừa xong",
+  "minutesAgo": "{{count}} phút trước",
+  "hoursAgo": "{{count}} giờ trước",
+  "daysAgo": "{{count}} ngày trước"
 }

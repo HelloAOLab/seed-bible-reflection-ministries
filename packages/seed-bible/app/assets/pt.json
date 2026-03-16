@@ -31,6 +31,8 @@
   "next": "Proximo",
   "previous": "Anterior",
   "exit": "Sair",
+  "ended": "Terminado",
+  "checklistMode": "Modo lista de verificação",
   "settings": "Configuracoes",
   "generalSettings": "Configuracoes Gerais",
   "spaceSettings": "Configuracoes do Espaco",
@@ -702,5 +704,14 @@
   "learnMore": "Saiba mais",
   "loadMore": "Carregar mais",
   "translationSwitchOption": "Gostaria de mudar para a tradução {{translationName}}?",
-  "chooseAnother": "Escolher outro"
+  "chooseAnother": "Escolher outro",
+  "chatHistory": "Histórico de conversas",
+  "noChatsYet": "Nenhuma conversa anterior",
+  "deleteChat": "Excluir conversa",
+  "deleteChatConfirm": "Excluir esta conversa?",
+  "signInToSaveChats": "Faça login para salvar o histórico",
+  "justNow": "Agora",
+  "minutesAgo": "{{count}} min atrás",
+  "hoursAgo": "{{count}}h atrás",
+  "daysAgo": "{{count}}d atrás"
 }

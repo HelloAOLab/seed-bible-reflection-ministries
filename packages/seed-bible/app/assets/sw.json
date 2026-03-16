@@ -31,6 +31,8 @@
   "next": "Inayofuata",
   "previous": "Iliyopita",
   "exit": "Toka",
+  "ended": "Imekwisha",
+  "checklistMode": "Hali ya orodha ya ukaguzi",
   "settings": "Mipangilio",
   "generalSettings": "Mipangilio ya jumla",
   "spaceSettings": "Mipangilio ya nafasi",
@@ -169,5 +171,14 @@
   "learnMore": "Jifunze Zaidi",
   "loadMore": "Pakia Zaidi",
   "translationSwitchOption": "Je, ungependa kubadili kwenye tafsiri ya {{translationName}}?",
-  "chooseAnother": "Chagua kingine"
+  "chooseAnother": "Chagua kingine",
+  "chatHistory": "Historia ya mazungumzo",
+  "noChatsYet": "Hakuna mazungumzo ya awali",
+  "deleteChat": "Futa mazungumzo",
+  "deleteChatConfirm": "Futa mazungumzo haya?",
+  "signInToSaveChats": "Ingia ili kuhifadhi historia ya mazungumzo",
+  "justNow": "Sasa hivi",
+  "minutesAgo": "dakika {{count}} zilizopita",
+  "hoursAgo": "saa {{count}} zilizopita",
+  "daysAgo": "siku {{count}} zilizopita"
 }

@@ -3,6 +3,7 @@ import {
   getCachedBibleData,
   getCachedFootnotes,
 } from "app.hooks.bibleDataManager";
+import { getSettingsPreset } from "app.components.types";
 
 import { getStyleOf } from "app.styles.styler";
 const {
@@ -1783,9 +1784,14 @@ function ThePage({
   }, []);
 
   const removeBibleStack =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ]?.appSettings?.removeBibleStack;
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeBibleStack;
+
+  const removeBookMark =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeBookMark;
+  const mobileBookLogo =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
 
   return (
     <>
@@ -1830,7 +1836,7 @@ function ThePage({
             onMouseUp={handleMouseUp}
             onClick={hanldNavFunctions}
             onScroll={(e) => {
-              os.log("scrolling, closing popups", e);
+              // os.log("scrolling, closing popups", e);
               globalThis.closePopupSettings();
               const el = e.currentTarget;
               const currentScrollTop = el.scrollTop;
@@ -1842,6 +1848,10 @@ function ThePage({
                   currentScrollTop > 50
                 ) {
                   document.body.classList.add("scroll-hide-bars");
+                  shout("onMobileScrollDown", {
+                    book: data?.book,
+                    chapter: data?.chapter,
+                  });
                 } else if (currentScrollTop < lastScrollTopRef.current) {
                   document.body.classList.remove("scroll-hide-bars");
                 }
@@ -2105,7 +2115,7 @@ function ThePage({
           left: 0;
           right: 0;
           text-align: center;
-          padding: 8px 16px;
+          padding: 1px 16px;
           background: var(--pageBackground);
           z-index: 99;
           font-size: 14px;
@@ -2156,7 +2166,7 @@ function ThePage({
                         </div>
                       </div>
 
-                      <div className="mobile-header-right">
+                      {/* <div className="mobile-header-right">
                         <button
                           className="mobile-icon-button"
                           onClick={(e) => {
@@ -2171,9 +2181,10 @@ function ThePage({
                         >
                           <MobileSettingsIcon />
                         </button>
-                      </div>
+                      </div> */}
                     </div>
-                    {tab?.id &&
+                    {!removeBookMark &&
+                      tab?.id &&
                       masks?.mobileBookmarks &&
                       Object.values(masks.mobileBookmarks)
                         .flat()
@@ -2346,7 +2357,10 @@ function ThePage({
                       <img
                         className="coloredIcon"
                         style={{ width: "50px" }}
-                        src="https://res.cloudinary.com/dfbtwwa8p/image/upload/v1755365776/717a8527988cca7e0bdc9449ec68581a8400b977_vqc7mx.png"
+                        src={
+                          mobileBookLogo ||
+                          "https://res.cloudinary.com/dfbtwwa8p/image/upload/v1755365776/717a8527988cca7e0bdc9449ec68581a8400b977_vqc7mx.png"
+                        }
                       />
                     </div>
 
@@ -2369,11 +2383,13 @@ function ThePage({
                         position: "relative",
                       }}
                     >
-                      <PageToolbar
-                        panelId={panelId}
-                        tab={tab}
-                        path="showInStarterToolbar"
-                      />
+                      {!removeBibleStack && (
+                        <PageToolbar
+                          panelId={panelId}
+                          tab={tab}
+                          path="showInStarterToolbar"
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

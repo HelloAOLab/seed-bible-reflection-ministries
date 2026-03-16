@@ -31,6 +31,8 @@
   "next": "পরবর্তী",
   "previous": "পূর্ববর্তী",
   "exit": "প্রস্থান",
+  "ended": "শেষ হয়েছে",
+  "checklistMode": "চেকলিস্ট মোড",
   "settings": "সেটিংস",
   "generalSettings": "সাধারণ সেটিংস",
   "spaceSettings": "স্পেস সেটিংস",
@@ -169,5 +171,14 @@
   "learnMore": "আরও জানুন",
   "loadMore": "আরও লোড করুন",
   "translationSwitchOption": "আপনি কি {{translationName}} অনুবাদে স্যুইচ করতে চান?",
-  "chooseAnother": "অন্যটি বেছে নিন"
+  "chooseAnother": "অন্যটি বেছে নিন",
+  "chatHistory": "চ্যাট ইতিহাস",
+  "noChatsYet": "কোনো পূর্ববর্তী কথোপকথন নেই",
+  "deleteChat": "চ্যাট মুছুন",
+  "deleteChatConfirm": "এই কথোপকথন মুছে ফেলবেন?",
+  "signInToSaveChats": "চ্যাট ইতিহাস সংরক্ষণ করতে সাইন ইন করুন",
+  "justNow": "এইমাত্র",
+  "minutesAgo": "{{count}} মিনিট আগে",
+  "hoursAgo": "{{count}} ঘণ্টা আগে",
+  "daysAgo": "{{count}} দিন আগে"
 }

@@ -25,7 +25,7 @@ import {
 import { useBibleContext } from "app.hooks.bibleVariables";
 import { useSideBarContext } from "app.hooks.sideBar";
 import SurroundingDivs from "app.components.surroundingDivs";
-import { TabOptions } from "app.components.types";
+import { TabOptions, getSettingsPreset } from "app.components.types";
 import { FolderIcon, OpenFolderIcon } from "app.components.icons";
 import {
   ImportSpaceModal,
@@ -44,19 +44,17 @@ import {
   CoffeBeanIcon,
 } from "app.components.phosphoricons";
 // import { CircleCounter } from 'app.components.circleCounter'
-// console.log(CircleCounter, 'CircleCounter')
+
 const Reciver = getBot("system", "app.reciver");
 const { useState, useRef, useEffect, useMemo } = os.appHooks;
 
 const LOCAL_ENV = !configBot.tags.pattern;
 const removeBookMark =
-  tags?.settingsConfigs?.presets?.[
-    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-  ]?.appSettings?.removeBookMark;
+  tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+    ?.removeBookMark;
 const removeAddSession =
-  tags?.settingsConfigs?.presets?.[
-    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-  ]?.appSettings?.removeAddSession;
+  tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+    ?.removeAddSession;
 
 const CircleCounter = ({ data, book, chapter }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -98,7 +96,7 @@ const CircleCounter = ({ data, book, chapter }) => {
   const getUserVisual = (userId, value, index) => {
     try {
       const visual = globalThis?.GetOrSetVisualInTags(value[0]);
-      // console.log(value,'the get inside')
+
       if (visual) {
         const IconComponent = icons[visual.iconIndex];
         const color = colors[visual.colorIndex];
@@ -388,9 +386,8 @@ function Tab({
     tabsIcons,
   } = useTabsContext();
   const removeEditMode =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ]?.appSettings?.removeEditMode;
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeEditMode;
   const OPTIONS = (tab) => ({
     type: "normal",
     items: [
@@ -500,7 +497,6 @@ function Tab({
     }
     const checkEmpty = PanelsApps.find((e) => !e.tabData);
     if (el.data.type === "book" && checkEmpty) {
-      // console.log("canvas replacing");
       setActiveTab(el.id);
       const id = uuid();
       ReplaceApplication(LastClickedPanelUpdate || checkEmpty.id, {
@@ -850,9 +846,8 @@ function SideBar({ panelsNumber }) {
     sharedTab,
   } = useTabsContext();
   const hidePanels =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ]?.appSettings?.disablePanels;
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.disablePanels;
   globalThis.AddTab = addTab;
   const { screens, setScreens, fullScreen, setFullScreen, ReSeed, setReSeed } =
     useBibleContext();
@@ -1259,9 +1254,8 @@ function SideBar({ panelsNumber }) {
     </svg>
   );
   const removeJoinSession =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ]?.appSettings?.removeJoinSession || false;
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeJoinSession || false;
 
   const MenuOptions = {
     type: "normal",
@@ -1519,8 +1513,7 @@ function SideBar({ panelsNumber }) {
 
   const { moveMultipleTabs } = useTabsContext();
   const holdTimeout = useRef({ time: null, clicked: null });
-  const activePreset =
-    configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full";
+  const activePreset = getSettingsPreset();
   const clientSite =
     tags?.settingsConfigs?.presets?.[activePreset]?.clientBranding?.clientSite;
   const clientName =
@@ -1636,6 +1629,20 @@ function SideBar({ panelsNumber }) {
               >
                 {<MenuIcon name={"person_add"} />}
               </span> */}
+              <button
+                className="mobile-icon-button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  os.log("Opening mobile settings", setOpenOnMobile);
+                  setOpenOnMobile(true);
+                  setSidebarWidth(280);
+                  setCollapsed(false);
+                  setSideBarMode("settings");
+                }}
+                title="Settings"
+              >
+                <MobileSettingsIcon />
+              </button>
               <span
                 className="mobile-header-icon"
                 onClick={() => {
@@ -2550,7 +2557,7 @@ function SideBar({ panelsNumber }) {
         {folders.length > 0 && (
           <div style={{ marginBottom: "10px" }} className={"sidebarLine"}></div>
         )}
-        {multiSelectMode && (
+        {multiSelectMode && !collapsed && (
           <div className="multiSelectActions">
             <label
               style={{
@@ -3114,9 +3121,8 @@ export const SettingsProfile = () => {
     }
   };
   const removeSpaces =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ]?.appSettings?.removeSpaces;
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeSpaces;
 
   return (
     <div className="dot">
@@ -3190,9 +3196,8 @@ export const UserProfile = ({ collapsed }) => {
     userData
   );
   const removeAccountOptions =
-    tags?.settingsConfigs?.presets?.[
-      configBot?.tags?.settingsPreset || thisBot.tags.settingsPreset || "full"
-    ]?.appSettings?.removeAccountOptions;
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
+      ?.removeAccountOptions;
   const Icon = icons[iconIndex];
 
   return (

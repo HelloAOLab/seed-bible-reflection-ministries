@@ -31,6 +31,8 @@
   "next": "Далі",
   "previous": "Попередній",
   "exit": "Вийти",
+  "ended": "Завершено",
+  "checklistMode": "Режим чек-листа",
   "settings": "Налаштування",
   "generalSettings": "Загальні налаштування",
   "spaceSettings": "Налаштування простору",
@@ -169,5 +171,14 @@
   "learnMore": "Дізнатися більше",
   "loadMore": "Завантажити більше",
   "translationSwitchOption": "Бажаєте перейти до перекладу {{translationName}}?",
-  "chooseAnother": "Вибрати інший"
+  "chooseAnother": "Вибрати інший",
+  "chatHistory": "Історія чатів",
+  "noChatsYet": "Немає попередніх бесід",
+  "deleteChat": "Видалити чат",
+  "deleteChatConfirm": "Видалити цю бесіду?",
+  "signInToSaveChats": "Увійдіть, щоб зберегти історію чатів",
+  "justNow": "Щойно",
+  "minutesAgo": "{{count}} хв тому",
+  "hoursAgo": "{{count}}год тому",
+  "daysAgo": "{{count}}д тому"
 }

@@ -31,6 +31,8 @@
   "next": "بعدی",
   "previous": "قبلی",
   "exit": "خروج",
+  "ended": "به پایان رسید",
+  "checklistMode": "حالت لیست بررسی",
   "settings": "تنظیمات",
   "generalSettings": "تنظیمات عمومی",
   "spaceSettings": "تنظیمات فضا",
@@ -169,5 +171,14 @@
   "learnMore": "مزید جانیں",
   "loadMore": "مزید لوڈ کریں",
   "translationSwitchOption": "آیا می‌خواهید به ترجمه {{translationName}} تغییر دهید؟",
-  "chooseAnother": "یکی دیگر را انتخاب کنید"
+  "chooseAnother": "یکی دیگر را انتخاب کنید",
+  "chatHistory": "تاریخچه گفتگو",
+  "noChatsYet": "گفتگوی قبلی وجود ندارد",
+  "deleteChat": "حذف گفتگو",
+  "deleteChatConfirm": "این گفتگو حذف شود؟",
+  "signInToSaveChats": "برای ذخیره تاریخچه وارد شوید",
+  "justNow": "همین الان",
+  "minutesAgo": "{{count}} دقیقه پیش",
+  "hoursAgo": "{{count}} ساعت پیش",
+  "daysAgo": "{{count}} روز پیش"
 }
