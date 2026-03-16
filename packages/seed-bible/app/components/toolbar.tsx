@@ -193,7 +193,7 @@ export function Toolbar() {
           {/* Mobile Bottom Navbar */}
           <div className="mobile-bottom-navbar">
             <button
-              style={{ display: showNavArrows ? "" : "none" }}
+              style={{ display: showNavArrows && !activeMoreApp ? "" : "none" }}
               className="mobile-navbar-arrow left-arrow"
               onClick={() =>
                 isRTL
@@ -312,13 +312,22 @@ export function Toolbar() {
               <div className="more-btn-wrapper">
                 <button
                   className="mobile-navbar-btn"
-                  title={presetToolBarTitle}
-                  aria-label={presetToolName}
+                  title={activeMoreApp ? "Close" : presetToolBarTitle}
+                  aria-label={activeMoreApp ? "Close" : presetToolName}
                   onClick={() => {
-                    const exploreTool = tools?.find(
-                      (t) => t?.label === presetToolName
-                    );
-                    exploreTool?.onClick?.();
+                    if (activeMoreApp) {
+                      (globalThis as any).RemoveApplicationByLabel(
+                        activeMoreApp
+                      );
+                      (globalThis as any).makingApp = null;
+                      setActiveMoreApp(null);
+                    } else {
+                      const exploreTool = tools?.find(
+                        (t: any) => t?.label === presetToolName
+                      );
+                      exploreTool?.onClick?.();
+                      setActiveMoreApp(presetToolName);
+                    }
                   }}
                 >
                   <div className="mobile-btn-content">
@@ -334,7 +343,7 @@ export function Toolbar() {
             )}
 
             <button
-              style={{ display: showNavArrows ? "" : "none" }}
+              style={{ display: showNavArrows && !activeMoreApp ? "" : "none" }}
               className="mobile-navbar-arrow right-arrow"
               onClick={() =>
                 isRTL
