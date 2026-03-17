@@ -1855,7 +1855,7 @@ function ThePage({
             onMouseUp={handleMouseUp}
             onClick={hanldNavFunctions}
             onScroll={(e) => {
-              // os.log("scrolling, closing popups", e);
+              os.log("scrolling, closing popups", e);
               globalThis.closePopupSettings();
               const el = e.currentTarget;
               const currentScrollTop = el.scrollTop;
@@ -1867,10 +1867,6 @@ function ThePage({
                   currentScrollTop > 50
                 ) {
                   document.body.classList.add("scroll-hide-bars");
-                  shout("onMobileScrollDown", {
-                    book: data?.book,
-                    chapter: data?.chapter,
-                  });
                 } else if (currentScrollTop < lastScrollTopRef.current) {
                   document.body.classList.remove("scroll-hide-bars");
                 }
@@ -2134,7 +2130,7 @@ function ThePage({
           left: 0;
           right: 0;
           text-align: center;
-          padding: 1px 16px;
+          padding: 8px 16px;
           background: var(--pageBackground);
           z-index: 99;
           font-size: 14px;
@@ -2185,7 +2181,7 @@ function ThePage({
                         </div>
                       </div>
 
-                      {/* <div className="mobile-header-right">
+                      <div className="mobile-header-right">
                         <button
                           className="mobile-icon-button"
                           onClick={(e) => {
@@ -2200,7 +2196,7 @@ function ThePage({
                         >
                           <MobileSettingsIcon />
                         </button>
-                      </div> */}
+                      </div>
                     </div>
                     {!removeBookMark &&
                       tab?.id &&

@@ -98,7 +98,6 @@ await (async function mainInstaller(that) {
       hasToggle,
       showInPageToolbar,
       showInStarterToolbar,
-      runInBackground,
     }) {
       const panelKey = `${label?.toUpperCase()?.replace(/\s/g, "_")}_PANEL_ID`;
 
@@ -181,8 +180,6 @@ await (async function mainInstaller(that) {
         isImg: !!iconUrl,
         showInPageToolbar,
         showInStarterToolbar,
-        AppComponent,
-        runInBackground: runInBackground === true,
       };
     }
 
@@ -225,30 +222,19 @@ await (async function mainInstaller(that) {
       icon: toolbarConfig.icon,
       label: toolbarConfig.label,
       AppComponent: App,
+      active:
+        typeof toolbarConfig?.active === "boolean"
+          ? toolbarConfig.active
+          : true,
       iconUrl: toolbarConfig?.iconUrl,
       hasToggle: toolbarConfig.hasToggle,
       showInPageToolbar: toolbarConfig.showInPageToolbar,
       showInStarterToolbar: toolbarConfig.showInStarterToolbar,
-      runInBackground: toolbarConfig.runInBackground === true,
     });
 
     console.log("WE ARE ADDING TOOL?", toolbarOption);
 
     if (globalThis.AddTool) globalThis.AddTool(toolbarOption);
-
-    if (toolbarConfig.runInBackground && App) {
-      const bgId = `bg_${name}_${Date.now()}`;
-      if ((globalThis as any).AddBackgroundApp) {
-        (globalThis as any).AddBackgroundApp(bgId, <App id={bgId} />);
-        // Store bgId on the tool so the toggle can remove it later
-        if ((globalThis as any).UpdateTool) {
-          (globalThis as any).UpdateTool(toolbarConfig.label, {
-            runInBackground: true,
-            backgroundAppId: bgId,
-          });
-        }
-      }
-    }
 
     return toolbarOption;
   }
@@ -403,13 +389,11 @@ await (async function mainInstaller(that) {
     await SetUpApplicationWithoutApp(data.configEditor.toolbarConfig, bot);
   } else if (data?.configEditor?.app && data?.configEditor?.toolbarConfig) {
     const applicationFunction = data.configEditor.app.replace("@", "");
-    const shouldRunInBackground =
-      !!data?.configEditor?.contextMenuConfig ||
-      data?.configEditor?.toolbarConfig?.runInBackground === true;
-    await SetUpApplication(applicationFunction, bot, {
-      ...data.configEditor.toolbarConfig,
-      runInBackground: shouldRunInBackground,
-    });
+    await SetUpApplication(
+      applicationFunction,
+      bot,
+      data.configEditor.toolbarConfig
+    );
   }
 
   // Tab app
