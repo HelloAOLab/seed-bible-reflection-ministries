@@ -20,6 +20,7 @@ const App = () => {
     if (!openSidebar && globalThis?.bookModalOpen) {
       globalThis.bookModalOpen(false);
     }
+    console.log(openSidebar, "setOpenSidebar");
     globalThis.setOpenSidebar = setOpenSidebar;
     globalThis.openSidebar = openSidebar;
     return () => {

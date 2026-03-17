@@ -6,7 +6,7 @@
     "toolbarConfig": {
       "hasToggle": "true",
       "icon": "book",
-      "iconUrl": "https://res.cloudinary.com/dacw0qnpr/image/upload/v1759916122/Seed_Bible_-_All_Logos_2025-25_vvawwg.png",
+      "iconUrl": "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
       "label": "Books",
       "run": "togglePanel"
     }

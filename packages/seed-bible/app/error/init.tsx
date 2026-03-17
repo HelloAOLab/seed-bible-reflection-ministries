@@ -57,7 +57,7 @@ const seedBibleApiKey = "phc_rEUogfrnXkdTitOTrfWK2laEINF1QwNtGNQizzuMW0";
 posthog.init(thisBot.tags.posthogApiKey || seedBibleApiKey, {
   api_host: "https://i.ao.bot",
   ui_host: "https://us.posthog.com",
-  defaults: "2025-05-24",
+  defaults: "2026-01-30",
 });
 
 posthog.register({
