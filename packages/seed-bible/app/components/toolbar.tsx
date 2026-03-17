@@ -373,7 +373,7 @@ export function Toolbar() {
                       </span>
                     )}
                     <span className="mobile-btn-label">
-                      {activeMoreApp ? "close" : presetToolBarTitle}
+                      {activeMoreApp ? "Close" : presetToolBarTitle}
                     </span>
                   </div>
                 </button>
