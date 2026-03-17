@@ -1605,8 +1605,8 @@ function SideBar({ panelsNumber }) {
           book: "Genesis",
           bookId: "GEN",
           chapter: 1,
-          translation: "BSB",
-          shortName: "BSB",
+          translation: "NASB95",
+          shortName: "NASB95",
         },
       };
       addTab(newTab);
