@@ -65,12 +65,6 @@
         "toolName": "Discovery"
       },
 
-      "mobileBookLogo": "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
-      "titlesAndIcon": {
-        "icon": "explore",
-        "title": "Discovery",
-        "toolName": "Apologist"
-      },
       "useTabs": false,
       "availableThemes": [
         {
