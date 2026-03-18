@@ -406,7 +406,6 @@ function SgCard({
       className={`sg-card ${
         viewMode === "grid" ? "sg-card-grid" : "sg-card-list"
       } ${isOpen ? "is-open" : ""} ${isNowPlaying && isPinned ? "sg-now-playing-card" : ""}`}
-      style={isNowPlaying && isPinned ? { order: -1 } : {}}
     >
       <header className="sg2-head">
         <div className="sg2-headLeft">
@@ -2078,26 +2077,6 @@ function Apologist({
       </div>
 
       {/* Pinned Now Playing Section */}
-      {nowPlayingId && allData && (
-        <div style={{ marginBottom: "20px" }}>
-          {(() => {
-            const npItem = allData.find((d) => d.id === nowPlayingId);
-            if (!npItem) return null;
-            return (
-              <SgCard
-                key={`pinned-${npItem.id}`}
-                item={npItem}
-                isOpen={true}
-                viewMode="list"
-                isNowPlaying={true}
-                setNowPlayingId={setNowPlayingId}
-                onClose={() => setNowPlayingId(null)}
-                isPinned={true}
-              />
-            );
-          })()}
-        </div>
-      )}
 
       <div
         className={`sg-results ${
@@ -2107,15 +2086,22 @@ function Apologist({
         {data && data.length > 0 ? (
           <>
             {data.map((item) => {
-              if (item.id === nowPlayingId) return null; // Filter pinned item
               return item?.id ? (
                 <LazyCard key={String(item.id)}>
                   <SgCard
                     item={item}
-                    isOpen={openIds.has(item.id)}
-                    viewMode={viewMode}
+                    isOpen={
+                      nowPlayingId === item.id ? true : openIds.has(item.id)
+                    }
+                    viewMode={nowPlayingId === item.id ? "list" : viewMode}
                     isNowPlaying={nowPlayingId === item.id}
                     setNowPlayingId={setNowPlayingId}
+                    onClose={
+                      nowPlayingId === item.id
+                        ? () => setNowPlayingId(null)
+                        : undefined
+                    }
+                    isPinned={nowPlayingId === item.id}
                   />
                 </LazyCard>
               ) : null;
