@@ -247,7 +247,6 @@ function AskKenTab({ context, label }) {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const messagesEndRef = useRef(null);
   const { openOnMobile, isMobile } = useSideBarContext();
 
   // ── Multi-chat state ──
@@ -285,9 +284,9 @@ function AskKenTab({ context, label }) {
   }, []);
 
   // Auto-scroll to bottom on new messages
-  useEffect(() => {
+  /* useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+  }, [messages, isLoading]);*/
 
   // ── Debounced save after messages change ──
   const persistCurrentChat = useCallback(async (msgs, chatId) => {
@@ -593,7 +592,7 @@ function AskKenTab({ context, label }) {
 
           {error && <div className="askken-error">{error}</div>}
 
-          <div ref={messagesEndRef} />
+          <div />
         </div>
 
         {/* ── Chat input ── */}
