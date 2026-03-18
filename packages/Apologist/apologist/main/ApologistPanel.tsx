@@ -684,11 +684,12 @@ function MinistriesTab({ url, title, onTouchEnd, onTouchStart }) {
         title={title || "Preview"}
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
       />
-      <div
+      {/* TODO: Determine what this is for and how to not break scrolling in the ministries iframe */}
+      {/* <div
         className="ministries-swipe-layer"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
-      />
+      /> */}
     </div>
   );
 }
