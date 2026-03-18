@@ -21,6 +21,7 @@ import {
   ClientLogo,
   BookMarkIcon,
   MobileSettingsIcon,
+  PlusIcon,
 } from "app.components.icons";
 import { useBibleContext } from "app.hooks.bibleVariables";
 import { useSideBarContext } from "app.hooks.sideBar";
@@ -1839,7 +1840,9 @@ function SideBar({ panelsNumber }) {
             )}
 
             <button className="mobile-nav-add" onClick={mobileAddTab}>
-              <span>+</span>
+              <span>
+                <PlusIcon />
+              </span>
             </button>
 
             {!removeBookMark && (
@@ -1909,7 +1912,7 @@ function SideBar({ panelsNumber }) {
             .mobile-nav-btn{background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text1);cursor:pointer}
             .mobile-nav-label{font-size:12px}
             .mobile-nav-add{
-            border-radius: 28px;
+            border-radius: 46px;
             background: var(--selectedSpaceColor);
             border: none;
             color: white;
@@ -1920,6 +1923,7 @@ function SideBar({ panelsNumber }) {
             cursor: pointer;
             width: 82px;
             height: 52px;
+            padding-top: 7px;
             }
 
             /* bookmark folder styles */
