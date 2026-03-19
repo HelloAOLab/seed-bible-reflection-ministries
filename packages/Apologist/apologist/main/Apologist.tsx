@@ -227,14 +227,21 @@ function SgCard({
 
   const openInNewTab = (e) => {
     e.preventDefault();
+
     const previewUrl = item.url || item.referral_url || item.listing_url;
+
+    if (item.type === "book") {
+      window.open(previewUrl, "_blank", "noopener");
+      return;
+    }
+
     if (previewUrl && globalThis.ApologistOpenInMinistriesTab) {
       globalThis.ApologistOpenInMinistriesTab(
         previewUrl,
         item.title || "Preview"
       );
     } else {
-      window.open(item.url, "_blank", "noopener");
+      window.open(previewUrl, "_blank", "noopener");
     }
   };
 
@@ -270,7 +277,7 @@ function SgCard({
             key={frameKey}
             src={videoSrc}
             title={item.title || "YouTube video"}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share;fu"
             referrerpolicy="strict-origin-when-cross-origin"
             allowFullScreen
             onError={() => setVideoError(true)}
@@ -352,7 +359,7 @@ function SgCard({
 
   // ── Book cover layout ──
   if (isBook) {
-    return (
+    return url ? (
       <article
         className={`sg-card sg-card-book-cover ${
           viewMode === "grid" ? "sg-card-grid" : "sg-card-list"
@@ -370,34 +377,33 @@ function SgCard({
         )}
         <div className="sg-book-cover-footer">
           {item.title && <h3 className="sg-book-cover-title">{item.title}</h3>}
-          {url && (
-            <a
-              href={url}
-              className="sg-book-cover-btn"
-              onClick={openInNewTab}
-              title="Open in Reflection Ministries"
-              aria-label="Open in Reflection Ministries"
-              style={{ color: "#fff", textDecoration: "none" }}
+
+          <a
+            href={url}
+            className="sg-book-cover-btn"
+            onClick={openInNewTab}
+            title="Open in Reflection Ministries"
+            aria-label="Open in Reflection Ministries"
+            style={{ color: "#fff", textDecoration: "none" }}
+          >
+            {t("Buy Book")}
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 12 12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              {t("learnMore")}
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 12 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
-                  fill="currentColor"
-                  style={{ fill: "currentColor" }}
-                />
-              </svg>
-            </a>
-          )}
+              <path
+                d="M1 12C0.733333 12 0.5 11.9 0.3 11.7C0.1 11.5 0 11.2667 0 11V1C0 0.733333 0.1 0.5 0.3 0.3C0.5 0.1 0.733333 0 1 0H5.65V1H1V11H11V6.35H12V11C12 11.2667 11.9 11.5 11.7 11.7C11.5 11.9 11.2667 12 11 12H1ZM4.36667 8.35L3.66667 7.63333L10.3 1H6.65V0H12V5.35H11V1.71667L4.36667 8.35Z"
+                fill="currentColor"
+                style={{ fill: "currentColor" }}
+              />
+            </svg>
+          </a>
         </div>
       </article>
-    );
+    ) : null;
   }
 
   // ── Standard (non-book) card layout ──
@@ -480,7 +486,7 @@ function SgCard({
       </header>
 
       <div className="sg2-bodyTitle">
-        {url ? (
+        {url && !isYoutube ? (
           <a
             className="sg2-title-link"
             href={url}
@@ -2424,8 +2430,10 @@ function Apologist({
 
                 .sg-previewVideo {
                     position: relative;
-                    width: 100%;
-                    aspect-ratio: 16 / 9;
+                    width: 600px;       
+  max-width: 100%;    
+  margin: 0 auto; 
+                    aspect-ratio: 16 / 12;
                     background: #000;
                     border-radius: 10px;
                     overflow: hidden;
