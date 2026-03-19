@@ -1032,6 +1032,7 @@ function ApologistPanelWrapper({ id }) {
   flex: 1;
   width: 100%;
   border: none;
+  padding-bottom: 40px;
   background: #fff;
 }
 
