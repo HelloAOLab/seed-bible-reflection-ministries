@@ -24,9 +24,31 @@ const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const KENBOA_API_KEY = "apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN";
 
-// ── Chat persistence helpers (CasualOS Records API + in-memory cache) ──
+// ── Chat persistence helpers (CasualOS Records API + localStorage fallback) ──
 const MAX_CHATS = 50;
 const chatCache = new Map(); // in-memory cache: chatId → full chat object
+
+// ── localStorage helpers (for anonymous users) ──
+function lsGet(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+function lsSet(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.warn("[AskKen] localStorage write error:", e);
+  }
+}
+function lsRemove(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch {}
+}
 
 function generateChatTitle(content) {
   if (!content) return "New Chat";
@@ -65,12 +87,25 @@ async function loadChatIndex() {
     try {
       const result = await os.getData(authBot.id, "askken_chats");
       console.log("[AskKen] loadChatIndex server result:", result);
-      return result?.data?.chats || [];
+      return {
+        chats: result?.data?.chats || [],
+        activeId: result?.data?.activeId || null,
+      };
     } catch (e) {
       console.log("[AskKen] loadChatIndex server ERROR:", e);
     }
   }
-  // Fallback: build index from in-memory cache
+  // Fallback: localStorage
+  const stored = lsGet("askken_chats");
+  if (stored?.chats) {
+    console.log(
+      "[AskKen] loadChatIndex from localStorage:",
+      stored.chats.length,
+      "chats"
+    );
+    return { chats: stored.chats, activeId: stored.activeId || null };
+  }
+  // Final fallback: build from in-memory cache
   const cached = [];
   chatCache.forEach((chat) => {
     cached.push({
@@ -81,31 +116,33 @@ async function loadChatIndex() {
     });
   });
   console.log("[AskKen] loadChatIndex from cache:", cached.length, "chats");
-  return cached;
+  return { chats: cached, activeId: null };
 }
 
-async function saveChatIndex(chats) {
-  // Always attempt server save (silently fails if not logged in)
+async function saveChatIndex(chats, activeId) {
+  const trimmed = chats.slice(0, MAX_CHATS);
+  const payload = { chats: trimmed, activeId: activeId || null };
+  // Try server save
   const authBot = await getAuthBot();
   if (authBot?.id) {
     try {
-      const trimmed = chats.slice(0, MAX_CHATS);
       console.log(
         "[AskKen] saveChatIndex: saving",
         trimmed.length,
         "chats to server"
       );
-      const res = await os.recordData(
-        authBot.id,
-        "askken_chats",
-        { chats: trimmed },
-        { marker: "bookmarks" }
-      );
+      const res = await os.recordData(authBot.id, "askken_chats", payload, {
+        marker: "bookmarks",
+      });
       console.log("[AskKen] saveChatIndex result:", res);
+      return;
     } catch (e) {
       console.warn("[AskKen] saveChatIndex server ERROR:", e);
     }
   }
+  // Fallback: localStorage
+  lsSet("askken_chats", payload);
+  console.log("[AskKen] saveChatIndex saved to localStorage");
 }
 
 async function loadFullChat(chatId) {
@@ -120,12 +157,19 @@ async function loadFullChat(chatId) {
     try {
       const result = await os.getData(authBot.id, "askken_chat_" + chatId);
       if (result?.data) {
-        chatCache.set(chatId, result.data); // cache it
+        chatCache.set(chatId, result.data);
         return result.data;
       }
     } catch (e) {
       console.log("[AskKen] loadFullChat server ERROR:", e);
     }
+  }
+  // Fallback: localStorage
+  const stored = lsGet("askken_chat_" + chatId);
+  if (stored) {
+    chatCache.set(chatId, stored);
+    console.log("[AskKen] loadFullChat from localStorage:", chatId);
+    return stored;
   }
   return null;
 }
@@ -145,10 +189,14 @@ async function saveFullChat(chat) {
         { marker: "bookmarks" }
       );
       console.log("[AskKen] saveFullChat server result:", res);
+      return;
     } catch (e) {
       console.warn("[AskKen] saveFullChat server ERROR:", e);
     }
   }
+  // Fallback: localStorage
+  lsSet("askken_chat_" + chat.id, chat);
+  console.log("[AskKen] saveFullChat saved to localStorage:", chat.id);
 }
 
 async function deleteFullChat(chatId) {
@@ -159,10 +207,13 @@ async function deleteFullChat(chatId) {
       await os.recordData(authBot.id, "askken_chat_" + chatId, null, {
         marker: "bookmarks",
       });
+      return;
     } catch (e) {
       console.warn("[AskKen] deleteFullChat server ERROR:", e);
     }
   }
+  // Fallback: localStorage
+  lsRemove("askken_chat_" + chatId);
 }
 
 // ── History sidebar sub-component ──
@@ -263,7 +314,7 @@ function AskKenTab({ context, label }) {
     chatIndexRef.current = chatIndex;
   }, [chatIndex]);
 
-  // ── Load chat index on mount ──
+  // ── Load chat index + restore active chat on mount ──
   useEffect(() => {
     (async () => {
       console.log("[AskKen] Mount: checking auth...");
@@ -271,13 +322,26 @@ function AskKenTab({ context, label }) {
       const loggedIn = !!authBot?.id;
       console.log("[AskKen] Mount: loggedIn =", loggedIn, "authBot =", authBot);
       setIsLoggedIn(loggedIn);
-      if (loggedIn) {
-        const index = await loadChatIndex();
-        console.log("[AskKen] Mount: loaded index with", index.length, "chats");
-        const sorted = [...index].sort(
-          (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)
-        );
-        setChatIndex(sorted);
+      // Load index (works for both logged-in and anonymous)
+      const { chats: index, activeId } = await loadChatIndex();
+      console.log(
+        "[AskKen] Mount: loaded index with",
+        index.length,
+        "chats, activeId:",
+        activeId
+      );
+      const sorted = [...index].sort(
+        (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)
+      );
+      setChatIndex(sorted);
+      // Restore the last active chat
+      if (activeId) {
+        const fullChat = await loadFullChat(activeId);
+        if (fullChat?.messages) {
+          setMessages(fullChat.messages);
+          setActiveChatId(activeId);
+          console.log("[AskKen] Mount: restored active chat", activeId);
+        }
       }
       setHistoryLoaded(true);
     })();
@@ -313,7 +377,7 @@ function AskKenTab({ context, label }) {
       MAX_CHATS
     );
     setChatIndex(newIndex);
-    await saveChatIndex(newIndex);
+    await saveChatIndex(newIndex, chatId);
     console.log("[AskKen] Saved. Index now has", newIndex.length, "chats");
   }, []);
 
@@ -367,7 +431,10 @@ function AskKenTab({ context, label }) {
     async (chatId) => {
       const newIndex = chatIndex.filter((c) => c.id !== chatId);
       setChatIndex(newIndex);
-      await saveChatIndex(newIndex);
+      await saveChatIndex(
+        newIndex,
+        activeChatId === chatId ? null : activeChatId
+      );
       await deleteFullChat(chatId);
       if (chatId === activeChatId) {
         setActiveChatId(null);
@@ -492,43 +559,50 @@ function AskKenTab({ context, label }) {
         {/* ── Top action bar ── */}
         <div className="askken-topbar-actions">
           <button
-            className="askken-topbar-btn"
-            onClick={() => setShowHistory(!showHistory)}
-            title={t("chatHistory")}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"
-                fill="currentColor"
-              />
-            </svg>
-            {!isMobile && <span>{t("chatHistory")}</span>}
-          </button>
-          <button
-            className="askken-topbar-btn askken-topbar-btn--new"
+            className="askken-topbar-icon-btn"
             onClick={handleNewChat}
             title={t("newChat")}
+            aria-label={t("newChat")}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path
-                d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+                d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83a.996.996 0 0 0 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29zm-3.6 3.19L3 17.25V21h3.75L17.81 9.94l-3.75-3.75z"
+                fill="currentColor"
+              />
+              <path d="M3 21h18v2H3v-2z" fill="currentColor" />
+            </svg>
+          </button>
+          <button
+            className="askken-topbar-icon-btn"
+            onClick={() => setShowHistory(!showHistory)}
+            title={t("chatHistory")}
+            aria-label={t("chatHistory")}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"
                 fill="currentColor"
               />
             </svg>
-            {!isMobile && <span>{t("newChat")}</span>}
           </button>
         </div>
 
-        {/* ── History overlay ── */}
+        {/* ── History drawer (slides from right) ── */}
         {showHistory && (
-          <ChatHistoryPanel
-            chatIndex={chatIndex}
-            activeChatId={activeChatId}
-            onSelect={handleSelectChat}
-            onDelete={handleDeleteChat}
-            onClose={() => setShowHistory(false)}
-            t={t}
-          />
+          <>
+            <div
+              className="askken-history-backdrop"
+              onClick={() => setShowHistory(false)}
+            />
+            <ChatHistoryPanel
+              chatIndex={chatIndex}
+              activeChatId={activeChatId}
+              onSelect={handleSelectChat}
+              onDelete={handleDeleteChat}
+              onClose={() => setShowHistory(false)}
+              t={t}
+            />
+          </>
         )}
 
         {/* ── Messages area ── */}
@@ -1360,61 +1434,71 @@ function ApologistPanelWrapper({ id }) {
         .askken-topbar-actions {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          padding: 6px 10px;
-          gap: 8px;
-          border-bottom: 1px solid var(--inputBorder, #e5e5e5);
-          background: var(--panelBackground, #fafafa);
+          justify-content: flex-end;
+          padding: 10px 10px 6px;
+          gap: 12px;
           flex-shrink: 0;
         }
 
-        .askken-topbar-btn {
+        .askken-topbar-icon-btn {
+          width: 42px;
+          height: 42px;
+          border-radius: 50%;
+          border: 1.5px solid var(--inputBorder, #3a3a3a);
+          background: transparent;
+          color: var(--text2, #888);
           display: flex;
           align-items: center;
-          gap: 5px;
-          padding: 5px 10px;
-          border-radius: 16px;
-          border: 1px solid var(--inputBorder, #ddd);
-          background: transparent;
-          color: var(--text2, #666);
-          font-size: 12px;
-          font-family: inherit;
+          justify-content: center;
           cursor: pointer;
-          transition: background 0.2s, color 0.2s;
+          transition: background 0.2s, color 0.2s, border-color 0.2s;
         }
 
-        .askken-topbar-btn:hover {
-          background: var(--inputBackground, #f0f0f0);
-          color: var(--text1, #222);
+        .askken-topbar-icon-btn:hover {
+          background: rgba(128, 128, 128, 0.12);
+          color: var(--text1, #ddd);
+          border-color: var(--text2, #666);
         }
 
-        .askken-topbar-btn--new {
-          border-color: var(--accentColor, #6b3a2a);
-          color: var(--accentColor, #6b3a2a);
+        .askken-topbar-icon-btn:active {
+          background: rgba(128, 128, 128, 0.2);
         }
 
-        .askken-topbar-btn--new:hover {
-          background: var(--accentColor, #6b3a2a);
-          color: var(--panelBackground, #fff);
-        }
-
-        /* ── Chat History Panel ── */
-        .askken-history-panel {
+        /* ── Chat History Drawer (slides from right) ── */
+        .askken-history-backdrop {
           position: absolute;
-          top: 40px;
+          top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: var(--panelBackground, #fafafa);
-          z-index: 10;
-          display: flex;
-          flex-direction: column;
-          animation: askken-slideDown 0.25s ease;
+          background: rgba(0, 0, 0, 0.35);
+          z-index: 19;
+          animation: askken-fadeBackdrop 0.25s ease;
         }
 
-        @keyframes askken-slideDown {
-          from { opacity: 0; transform: translateY(-12px); }
-          to { opacity: 1; transform: translateY(0); }
+        @keyframes askken-fadeBackdrop {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .askken-history-panel {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          width: 85%;
+          max-width: 320px;
+          background: var(--panelBackground, #fafafa);
+          z-index: 20;
+          display: flex;
+          flex-direction: column;
+          box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+          animation: askken-slideRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes askken-slideRight {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
         }
 
         .askken-history-header {
