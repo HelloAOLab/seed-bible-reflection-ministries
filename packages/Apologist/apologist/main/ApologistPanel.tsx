@@ -612,9 +612,6 @@ function AskKenTab({ context, label }) {
               <p className="askken-subtitle">{t("kenSubtitle")}</p>
               <h1 className="askken-heading">{t("kenHeading")}</h1>
               <p className="askken-description">{t("kenDescription")}</p>
-              {!isLoggedIn && historyLoaded && (
-                <p className="askken-signin-hint">{t("signInToSaveChats")}</p>
-              )}
             </div>
           )}
 
