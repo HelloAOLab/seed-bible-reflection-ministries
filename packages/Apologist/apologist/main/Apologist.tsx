@@ -252,7 +252,7 @@ function SgCard({
   const videoSrc = useMemo(() => {
     if (!isYoutube || !embUrl) return "";
     const separator = embUrl.includes("?") ? "&" : "?";
-    return `${embUrl}${separator}autoplay=0&rel=0`;
+    return `${embUrl}${separator}autoplay=1&mute=1&rel=0`;
   }, [embUrl, isYoutube]);
   const canPreview = !isYoutube && (!!item.image_url || isUrl);
 
@@ -293,6 +293,7 @@ function SgCard({
           className="sg-previewVideoButton"
           onClick={() => {
             setVideoError(false);
+            setFrameKey((k) => k + 1);
             setNowPlayingId?.(item.id);
           }}
           aria-label={`Play ${item.title || "video"}`}
