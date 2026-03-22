@@ -357,7 +357,8 @@ export const SplitApp = ({
   // Overlap panel state
   const defaultOverlapWidth = openOnMobile
     ? window.innerWidth
-    : Math.max(300, window.innerWidth * 0.4);
+    : Math.max(300, window.innerWidth * 0.25);
+  console.log("Default overlap width:", defaultOverlapWidth);
 
   const [overlapWidth, setOverlapWidth] = useState(defaultOverlapWidth);
   const [overlapVisible, setOverlapVisible] = useState(false);
