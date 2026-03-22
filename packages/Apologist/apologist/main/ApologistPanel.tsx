@@ -23,6 +23,7 @@ const APOLOGIST_LOGO_URL =
 const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const KENBOA_API_KEY = "apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN";
+const G = globalThis as any;
 
 // ── Chat persistence helpers (CasualOS Records API + localStorage fallback) ──
 const MAX_CHATS = 50;
@@ -704,7 +705,15 @@ function AskKenTab({ context, label }) {
 }
 
 // ── Reflection Ministries iframe viewer ──
-function MinistriesTab({ url, title, onTouchEnd, onTouchStart }) {
+function MinistriesTab({
+  url,
+  title,
+  onTouchEnd,
+  onTouchStart,
+  cameFromDiscovery,
+  setCameFromDiscovery,
+  setActiveTab,
+}) {
   if (!url) {
     return (
       <div className="ministries-empty">
@@ -730,9 +739,22 @@ function MinistriesTab({ url, title, onTouchEnd, onTouchStart }) {
   return (
     <div className="ministries-viewer">
       <div className="ministries-toolbar">
+        {cameFromDiscovery && (
+          <span
+            title="Discovery"
+            className="material-symbols-outlined sg-back-icon"
+            onClick={() => {
+              setActiveTab("discovery");
+              setCameFromDiscovery(false);
+            }}
+          >
+            arrow_back
+          </span>
+        )}
         <span className="ministries-title" title={title}>
           {title || "Preview"}
         </span>
+
         <a
           href={url}
           target="_blank"
@@ -769,6 +791,7 @@ function ApologistPanelWrapper({ id }) {
   const { t } = useSideBarContext();
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState("discovery");
+  const [cameFromDiscovery, setCameFromDiscovery] = useState(false);
   const [ministriesUrl, setMinistriesUrl] = useState(
     "https://www.kenboa.org/blog/"
   );
@@ -980,15 +1003,34 @@ function ApologistPanelWrapper({ id }) {
             <span className="apologist-tab-label">{t(tab.label)}</span>
           </button>
         ))}
+        <span
+          title="Close"
+          className="material-symbols-outlined apologist-close"
+          onClick={() => {
+            G.RemoveApplicationByLabel(G.ActiveMoreApp);
+            G.makingApp = null;
+            G.SetActiveMoreApp(null);
+            G.ActiveMoreApp = null;
+          }}
+        >
+          arrow_back
+        </span>
       </div>
 
       {/* ── Tab Content ── */}
+
       <div
         style={{ flex: 1, overflow: "auto", position: "relative" }}
         onTouchStart={activeTab !== "ministries" ? handleTouchStart : undefined}
         onTouchEnd={activeTab !== "ministries" ? handleTouchEnd : undefined}
       >
-        {activeTab === "discovery" && (
+        {/* ── Discovery ── */}
+        <div
+          style={{
+            display: activeTab === "discovery" ? "block" : "none",
+            height: "100%",
+          }}
+        >
           <Apologist
             search={searchQuery}
             trigger={searchTrigger}
@@ -996,25 +1038,45 @@ function ApologistPanelWrapper({ id }) {
             baselineQuery={baselineQuery}
             label={searchLabel}
             chapterData={chapterData}
+            setCameFromDiscovery={setCameFromDiscovery}
           />
-        )}
-        {activeTab === "ministries" && (
+        </div>
+
+        {/* ── Ministries ── */}
+        <div
+          style={{
+            display: activeTab === "ministries" ? "block" : "none",
+            height: "100%",
+          }}
+        >
           <MinistriesTab
             url={ministriesUrl}
             title={ministriesTitle}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
+            cameFromDiscovery={cameFromDiscovery}
+            setCameFromDiscovery={setCameFromDiscovery}
+            setActiveTab={setActiveTab}
           />
-        )}
-        {activeTab === "askken" && (
+        </div>
+
+        {/* ── Ask Ken ── */}
+        <div
+          style={{
+            display: activeTab === "askken" ? "block" : "none",
+            height: "100%",
+          }}
+        >
           <AskKenTab context={searchQuery} label={searchLabel} />
-        )}
+        </div>
       </div>
 
       {/* ── Styles ── */}
       <style>{`
         /* ── Tab Bar ── */
   .apologist-tab-bar {
+  padding-right: 45px;
+
   display: grid;
   
   grid-template-columns: repeat(3, 1fr);
@@ -1024,15 +1086,16 @@ function ApologistPanelWrapper({ id }) {
   background: var(--panelBackground, #161616);
 }
  
-
+    
 
         .apologist-tab {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 6px 6px;
+  padding: 6px 8px;
   height: 100%;
+  margin-left: 5px;
 
   background: transparent;
   border: none;
@@ -1079,7 +1142,35 @@ function ApologistPanelWrapper({ id }) {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+ .apologist-close {
+  position: absolute;
 
+  top: 14px;
+  
+  left:6px;
+  font-size: 12px;
+  color: var(--text2, #aaa);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  z-index: 5;
+}
+.material-symbols-outlined.apologist-close {
+  font-size: 20px;
+}
+/* Hover — soft themed glow */
+.apologist-close:hover {
+ 
+  background: rgba(161, 189, 79, 0.12);
+}
+
+/* Active — tactile press */
+.apologist-close:active {
+  transform: scale(0.92);
+  background: rgba(161, 189, 79, 0.2);
+}
+
+/* Optional: subtle border for depth */
         /* ── Reflection Ministries Tab ── */
         .ministries-empty {
           display: flex;
@@ -1127,6 +1218,19 @@ function ApologistPanelWrapper({ id }) {
           border-bottom: 1px solid var(--inputBorder, #2d2d2d);
           flex-shrink: 0;
         }
+        .sg-back-icon {
+         display: inline-flex;
+          align-items: center;
+          padding: 4px;
+          color: var(--text2, #888);
+          text-decoration: none;
+          border-radius: 4px;
+          transition: background 0.2s;
+        }
+          .sg-back-icon:hover {
+          background: rgba(128, 128, 128, 0.12);
+        }
+
 
         .ministries-title {
           color: var(--text1, #ccc);

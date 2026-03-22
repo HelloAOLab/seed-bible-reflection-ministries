@@ -189,11 +189,17 @@ function toEmbeddableUrl(item) {
 function SgCard({
   item,
   isOpen,
-  viewMode = "list",
+
   isNowPlaying,
+
   setNowPlayingId,
   onClose,
   isPinned,
+  isActive,
+  setActiveCardId,
+  setlinkOpenId,
+  isLinkOpen,
+  setcameFromDiscovery,
 }) {
   const [previewH, setPreviewH] = useState(0);
   const previewRef = useMemo(() => ({ el: null }), []);
@@ -240,6 +246,8 @@ function SgCard({
         previewUrl,
         item.title || "Preview"
       );
+      setcameFromDiscovery?.(true);
+      setlinkOpenId?.(item.id);
     } else {
       window.open(previewUrl, "_blank", "noopener");
     }
@@ -255,6 +263,8 @@ function SgCard({
     return `${embUrl}${separator}autoplay=1&mute=1&rel=0`;
   }, [embUrl, isYoutube]);
   const canPreview = !isYoutube && (!!item.image_url || isUrl);
+
+  const showBorder = isActive && !isYoutube;
 
   const renderYoutubePlayer = () => {
     // Show error state if video failed to load
@@ -295,6 +305,7 @@ function SgCard({
             setVideoError(false);
             setFrameKey((k) => k + 1);
             setNowPlayingId?.(item.id);
+            setActiveCardId?.(null);
           }}
           aria-label={`Play ${item.title || "video"}`}
         >
@@ -362,9 +373,7 @@ function SgCard({
   if (isBook) {
     return url ? (
       <article
-        className={`sg-card sg-card-book-cover ${
-          viewMode === "grid" ? "sg-card-grid" : "sg-card-list"
-        }`}
+        className={`sg-card sg-card-book-cover `}
         style={{ padding: "16px", height: "auto" }}
       >
         {item.image_url && (
@@ -410,9 +419,12 @@ function SgCard({
   // ── Standard (non-book) card layout ──
   return (
     <article
-      className={`sg-card ${
-        viewMode === "grid" ? "sg-card-grid" : "sg-card-list"
-      } ${isOpen ? "is-open" : ""} ${isNowPlaying && isPinned ? "sg-now-playing-card" : ""}`}
+      className={`sg-card 
+ 
+   ${isActive && !isYoutube ? "sg-open-bordered" : ""} 
+  ${isOpen ? "is-open" : ""} 
+  ${isNowPlaying && isPinned ? "sg-now-playing-card" : ""}
+`}
     >
       <header className="sg2-head">
         <div className="sg2-headLeft">
@@ -454,7 +466,11 @@ function SgCard({
             <a
               className="sg2-open"
               href={url}
-              onClick={openInNewTab}
+              onClick={(e) => {
+                setActiveCardId?.(item.id);
+                setNowPlayingId?.(null);
+                openInNewTab(e);
+              }}
               title="Open in Reflection Ministries"
               aria-label="Open in Reflection Ministries"
             >
@@ -491,7 +507,11 @@ function SgCard({
           <a
             className="sg2-title-link"
             href={url}
-            onClick={openInNewTab}
+            onClick={(e) => {
+              setActiveCardId?.(item.id);
+              setNowPlayingId?.(null);
+              openInNewTab(e);
+            }}
             title="Open in Reflection Ministries"
             aria-label="Open in Reflection Ministries"
           >
@@ -1436,6 +1456,7 @@ function Apologist({
   baselineQuery = "",
   label = "",
   chapterData = null,
+  setCameFromDiscovery,
 }) {
   const { t } = useSideBarContext();
   const { openOnMobile, isMobile } = useSideBarContext();
@@ -1446,13 +1467,15 @@ function Apologist({
   const [openIds, setOpenIds] = useState(new Set());
   const [searchParam, setSearchParam] = useState("");
   const [searchRunId, setSearchRunId] = useState(0);
-  const [viewMode, setViewMode] = useState("grid"); // "list" or "grid"
+
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [displayedCount, setDisplayedCount] = useState(10);
   const [allData, setAllData] = useState([]);
+  const [activeCardId, setActiveCardId] = useState(null);
   const [headerLabel, setHeaderLabel] = useState("");
   const [nowPlayingId, setNowPlayingId] = useState(null);
+  const [linkOpenId, setLinkOpenId] = useState(null);
   const lastSearchKeyRef = useRef(null);
   const lastResultKeysRef = useRef(new Set());
   const baselineQueryRef = useRef(baselineQuery || "");
@@ -1461,6 +1484,7 @@ function Apologist({
   const isVerseLevel = resolvedLevel === "verse";
   const currentBaselineQuery = baselineQuery || baselineQueryRef.current;
   const showResetControl = Boolean(isVerseLevel && currentBaselineQuery);
+
   const loadMoreRef = useRef(null);
   useEffect(() => {
     if (!hasMore || loadingMore) return;
@@ -2029,56 +2053,6 @@ function Apologist({
             <div className="sg-resultCount">
               {t(headerLabel)} | {data.length} {t("results")}
             </div>
-            <div className="sg-viewToggle">
-              <button
-                className={`sg-toggle-btn ${viewMode === "list" ? "active" : ""}`}
-                onClick={() => setViewMode("list")}
-                title="List View"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M14 5L2 5C1.73487 4.99971 1.48069 4.89426 1.29321 4.70679C1.10574 4.51931 1.00029 4.26513 1 4L1 2C1.00028 1.73487 1.10572 1.48068 1.2932 1.2932C1.48068 1.10572 1.73487 1.00028 2 1L14 1C14.2651 1.00028 14.5193 1.10572 14.7068 1.2932C14.8943 1.48068 14.9997 1.73487 15 2V4C14.9997 4.26513 14.8943 4.51931 14.7068 4.70679C14.5193 4.89426 14.2651 4.99971 14 5ZM2 2L2 4L14 4V2L2 2Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M14 15L2 15C1.73487 14.9997 1.48069 14.8943 1.29321 14.7068C1.10574 14.5193 1.00029 14.2651 1 14L1 12C1.00028 11.7349 1.10572 11.4807 1.2932 11.2932C1.48068 11.1057 1.73487 11.0003 2 11L14 11C14.2651 11.0003 14.5193 11.1057 14.7068 11.2932C14.8943 11.4807 14.9997 11.7349 15 12V14C14.9997 14.2651 14.8943 14.5193 14.7068 14.7068C14.5193 14.8943 14.2651 14.9997 14 15ZM2 12L2 14L14 14V12L2 12Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M14 10L2 10C1.73487 9.99971 1.48069 9.89426 1.29321 9.70679C1.10574 9.51931 1.00029 9.26513 1 9L1 7C1.00028 6.73487 1.10572 6.48068 1.2932 6.2932C1.48068 6.10572 1.73487 6.00028 2 6L14 6C14.2651 6.00028 14.5193 6.10572 14.7068 6.2932C14.8943 6.48068 14.9997 6.73487 15 7V9C14.9997 9.26513 14.8943 9.51931 14.7068 9.70679C14.5193 9.89426 14.2651 9.99971 14 10ZM2 7L2 9L14 9V7L2 7Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </button>
-              <button
-                className={`sg-toggle-btn ${viewMode === "grid" ? "active" : ""}`}
-                onClick={() => setViewMode("grid")}
-                title="Grid View"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M15 2L15 14C14.9997 14.2651 14.8943 14.5193 14.7068 14.7068C14.5193 14.8943 14.2651 14.9997 14 15L10 15C9.73487 14.9997 9.48068 14.8943 9.2932 14.7068C9.10572 14.5193 9.00028 14.2651 9 14L9 2C9.00028 1.73487 9.10572 1.48068 9.2932 1.2932C9.48068 1.10572 9.73487 1.00028 10 1L14 1C14.2651 1.00028 14.5193 1.10572 14.7068 1.2932C14.8943 1.48068 14.9997 1.73487 15 2ZM10 14L14 14L14 2L10 2L10 14Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M7 2L7 14C6.99972 14.2651 6.89428 14.5193 6.7068 14.7068C6.51932 14.8943 6.26513 14.9997 6 15L2 15C1.73487 14.9997 1.48068 14.8943 1.2932 14.7068C1.10572 14.5193 1.00028 14.2651 1 14L0.999999 2C1.00028 1.73487 1.10572 1.48068 1.2932 1.2932C1.48068 1.10572 1.73487 1.00028 2 1L6 1C6.26513 1.00028 6.51932 1.10572 6.7068 1.2932C6.89428 1.48068 6.99972 1.73487 7 2ZM2 14L6 14L6 2L2 2L2 14Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </button>
-            </div>
           </div>
         )}
       </div>
@@ -2086,9 +2060,8 @@ function Apologist({
       {/* Pinned Now Playing Section */}
 
       <div
-        className={`sg-results ${
-          viewMode === "grid" ? "sg-grid" : "sg-list"
-        } ${className}`}
+        className={`sg-results sg-list
+         ${className}`}
       >
         {data && data.length > 0 ? (
           <>
@@ -2100,7 +2073,6 @@ function Apologist({
                     isOpen={
                       nowPlayingId === item.id ? true : openIds.has(item.id)
                     }
-                    viewMode={nowPlayingId === item.id ? "list" : viewMode}
                     isNowPlaying={nowPlayingId === item.id}
                     setNowPlayingId={setNowPlayingId}
                     onClose={
@@ -2109,6 +2081,11 @@ function Apologist({
                         : undefined
                     }
                     isPinned={nowPlayingId === item.id}
+                    isActive={activeCardId === item.id}
+                    isLinkOpen={linkOpenId === item.id}
+                    setlinkOpenId={setLinkOpenId}
+                    setActiveCardId={setActiveCardId}
+                    setcameFromDiscovery={setCameFromDiscovery}
                   />
                 </LazyCard>
               ) : null;
@@ -2158,6 +2135,11 @@ function Apologist({
                     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
                     gap: 12px;
                 }
+.sg-card.sg-open-bordered,
+.sg-card.sg-open-bordered.is-open,
+.sg-card.sg-open-bordered.sg-now-playing-card {
+  border: 2px solid var(--activeTabBorder, #c03076) !important;
+}
 
                 /* ─── Book cover card ─── */
                 .sg-card-book-cover {
@@ -2274,12 +2256,13 @@ function Apologist({
                 
                 .sg-card {
                     background: var(--panelBackground, #1e1e1e);
+                    border: 2px solid var(--inputBorder, #333);
                     border-radius: 12px;
-                    border: 1px solid var(--inputBorder, #2d2d2d);
+                    
                     padding: 16px;
                     margin-bottom: 0px;
                     overflow: hidden;
-                    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.08s ease;
+                    
                     display: flex;
                     flex-direction: column;
                     box-sizing: border-box;
@@ -2337,7 +2320,7 @@ function Apologist({
                 .sg-card.sg-now-playing-card,
                 .sg-card.sg-now-playing-card:hover,
                 .sg-card.sg-now-playing-card.is-open {
-                    border: 2px solid var(--text1, #fff);
+                    border: 2px solid var(--activeTabBorder, #fff);
                     box-shadow: 0 10px 30px rgba(140, 164, 67, 0.2);
                 }
                 
