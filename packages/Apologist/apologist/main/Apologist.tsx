@@ -2093,7 +2093,6 @@ function Apologist({
       </div>
     );
   }
-  console.log(data, "final data to show");
 
   return (
     <div className={`sg-searchWrap ${className}`}>
