@@ -1447,7 +1447,6 @@ function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
         )
       : false;
 
-    // ✅ MUCH LESS STRICT
     const isRelevant = sharedSignalCount >= 1 || isSameBookMention;
 
     return !hasConflict && otherBookRefs === 0 && isRelevant;

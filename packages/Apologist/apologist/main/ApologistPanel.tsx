@@ -1079,13 +1079,14 @@ function ApologistPanelWrapper({ id }) {
       <style>{`
         /* ── Tab Bar ── */
   .apologist-tab-bar {
-  padding-right: 45px;
+  
+
 
   display: grid;
   
   grid-template-columns: repeat(3, 1fr);
   gap: 2px; /* always > 3px */
-  padding: 4px 4px 0px 4px;
+  padding: 4px 12px 0px 4px;
   border-bottom: 1px solid var(--inputBorder, #2d2d2d);
   background: var(--panelBackground, #161616);
 }
@@ -1097,9 +1098,9 @@ function ApologistPanelWrapper({ id }) {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 6px 8px;
+  padding: 6px 6px;
   height: 100%;
-  margin-left: 5px;
+  margin-right: 15px;
 
   background: transparent;
   border: none;
@@ -1116,10 +1117,7 @@ function ApologistPanelWrapper({ id }) {
   overflow: hidden;      /* prevent overflow */
 }
 
-        .apologist-tab:hover {
-          color: var(--text1, #bbb);
-          background: rgba(128, 128, 128, 0.06);
-        }
+        
 
         .apologist-tab--active {
           color: var(--text1, #fff);
@@ -1149,9 +1147,9 @@ function ApologistPanelWrapper({ id }) {
  .apologist-close {
   position: absolute;
 
-  top: 0px;
+  top: 13px;
 
-  transform: translate(5px,-5px);
+  
   
   right:0px;
   font-size: 12px;
@@ -1162,18 +1160,18 @@ function ApologistPanelWrapper({ id }) {
   z-index: 5;
 }
 .material-symbols-outlined.apologist-close {
-  font-size: 21px;
+  font-size: 24px;
 }
 /* Hover — soft themed glow */
 .apologist-close:hover {
  
-  background: rgba(161, 189, 79, 0.02);
+  background: #f3f3f3;
 }
 
 /* Active — tactile press */
 .apologist-close:active {
   transform: scale(0.92);
-  background: rgba(161, 189, 79, 0.2);
+  background: #f3f3f3;
 }
 
 /* Optional: subtle border for depth */
