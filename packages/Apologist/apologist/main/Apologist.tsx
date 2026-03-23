@@ -120,13 +120,20 @@ function compareResults(a, b) {
 }
 
 function dedupeResults(results) {
-  const seen = new Map();
+  const seenIds = new Set();
+  const seenTitles = new Map();
   const deduped = [];
 
   results.forEach((item) => {
+    if (item?.id) {
+      if (seenIds.has(item.id)) return;
+      seenIds.add(item.id);
+    }
+
     const normalizedTitle = normalizeTitleValue(
       item?.title || item?.Name || ""
     );
+
     if (!normalizedTitle) {
       deduped.push(item);
       return;
@@ -134,8 +141,8 @@ function dedupeResults(results) {
 
     const candidatePriority = computeResultRank(item);
 
-    if (!seen.has(normalizedTitle)) {
-      seen.set(normalizedTitle, {
+    if (!seenTitles.has(normalizedTitle)) {
+      seenTitles.set(normalizedTitle, {
         index: deduped.length,
         priority: candidatePriority,
       });
@@ -143,7 +150,8 @@ function dedupeResults(results) {
       return;
     }
 
-    const existing = seen.get(normalizedTitle);
+    const existing = seenTitles.get(normalizedTitle);
+
     if (candidatePriority < existing.priority) {
       deduped[existing.index] = item;
       existing.priority = candidatePriority;
@@ -1196,9 +1204,8 @@ function classifyChapterResult(item, context) {
 
   const isImplicitMatch =
     otherBookReferenceCount === 0 &&
-    ((hitCount >= 2 && sharedSignalCount >= 2) ||
-      sharedSignalCount >= 4 ||
-      (hasSameBookMention && sharedSignalCount >= 2));
+    sharedSignalCount >= 2 &&
+    (hasSameBookMention || hitCount >= 2);
 
   if (isImplicitMatch) {
     return {
@@ -1288,7 +1295,20 @@ function prioritizeDiverseTopResults(results, topLimit = 10) {
     }),
   ];
 
-  return [...selected, ...orderedRemainder];
+  const seen = new Set();
+  const final = [];
+
+  [...selected, ...deferred].forEach((item) => {
+    const key = buildResultKey(item);
+    if (!key) return;
+
+    if (seen.has(key)) return;
+
+    seen.add(key);
+    final.push(item);
+  });
+
+  return final;
 }
 
 function extractAnchorQueries(chapterData, fallbackLabel) {
@@ -1371,27 +1391,67 @@ function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
   const hitCountByKey = new Map();
   const allResults = [];
 
+  const seenGlobal = new Set();
+
   queryResultPairs.forEach(({ results }) => {
-    const seenForQuery = new Set();
     results.forEach((item) => {
-      allResults.push(item);
       const key = buildResultKey(item);
-      if (!key || seenForQuery.has(key)) return;
-      seenForQuery.add(key);
-      hitCountByKey.set(key, (hitCountByKey.get(key) || 0) + 1);
+
+      if (!key) {
+        allResults.push(item);
+        return;
+      }
+
+      if (seenGlobal.has(key)) return;
+
+      seenGlobal.add(key);
+      allResults.push(item);
     });
   });
 
   const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
-  const typed = allResults.filter((item) => allowedTypes.has(item?.type));
-  const deduped = dedupeResults(typed).filter(
-    (item) => !hasConflictingChapterInTitle(item, chapterInfo)
-  );
+  const typed = allResults.filter((item) => {
+    const isAllowedType = allowedTypes.has(item?.type);
+    if (item?.type === "book") {
+      const hasUrl = item?.url || item?.referral_url || item?.listing_url;
+      return isAllowedType && !!hasUrl;
+    }
+
+    return isAllowedType;
+  });
   const signalTokens = buildChapterSignalSet(
     chapterData,
     chapterInfo,
     queryResultPairs
   );
+  const deduped = dedupeResults(typed).filter((item) => {
+    const searchableText = getResultSearchableText(item);
+
+    const hasConflict = hasConflictingChapterInTitle(item, chapterInfo);
+    const otherBookRefs = getOtherBookReferenceCount(
+      searchableText,
+      chapterInfo
+    );
+
+    const resultTokens = new Set(
+      tokenizeSignalText(searchableText, chapterInfo)
+    );
+
+    const sharedSignalCount = Array.from(signalTokens).filter((token) =>
+      resultTokens.has(token)
+    ).length;
+
+    const isSameBookMention = chapterInfo
+      ? new RegExp(`\\b${chapterInfo.escapedBookName}\\b`, "i").test(
+          searchableText
+        )
+      : false;
+
+    // ✅ MUCH LESS STRICT
+    const isRelevant = sharedSignalCount >= 1 || isSameBookMention;
+
+    return !hasConflict && otherBookRefs === 0 && isRelevant;
+  });
 
   const classified = deduped.map((item) => ({
     item,
@@ -1422,15 +1482,6 @@ function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
     sortEntries([...explicitMatches, ...implicitMatches, ...fallbackMatches]),
     10
   );
-
-  console.log("[Apologist] chapter grounding", {
-    chapterLabel,
-    candidates: deduped.length,
-    explicitMatches: explicitMatches.length,
-    implicitMatches: implicitMatches.length,
-    fallbackMatches: fallbackMatches.length,
-    displayed: orderedResults.length,
-  });
 
   return orderedResults;
 }
@@ -1709,6 +1760,15 @@ function Apologist({
         }
 
         let finalResults = chapterFilteredResults;
+        const seenFinal = new Set();
+        finalResults = finalResults.filter((item) => {
+          const key = buildResultKey(item);
+          if (!key) return true;
+
+          if (seenFinal.has(key)) return false;
+          seenFinal.add(key);
+          return true;
+        });
 
         if (resolvedLevel !== "chapter" && baselineResultKeysRef.current.size) {
           finalResults = finalResults.filter((item) => {
@@ -2033,6 +2093,7 @@ function Apologist({
       </div>
     );
   }
+  console.log(data, "final data to show");
 
   return (
     <div className={`sg-searchWrap ${className}`}>
@@ -2065,11 +2126,18 @@ function Apologist({
       >
         {data && data.length > 0 ? (
           <>
-            {data.map((item) => {
-              return item?.id ? (
-                <LazyCard key={String(item.id)}>
+            {data.map((item, index) => {
+              const key =
+                buildResultKey(item) ||
+                item?.id ||
+                item?.url ||
+                `fallback-${index}`;
+
+              return (
+                <LazyCard key={key}>
                   <SgCard
                     item={item}
+                    key={key}
                     isOpen={
                       nowPlayingId === item.id ? true : openIds.has(item.id)
                     }
@@ -2088,7 +2156,7 @@ function Apologist({
                     setcameFromDiscovery={setCameFromDiscovery}
                   />
                 </LazyCard>
-              ) : null;
+              );
             })}
             {hasMore && (
               <div ref={loadMoreRef} className="sg-loadMore">

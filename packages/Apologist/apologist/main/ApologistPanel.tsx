@@ -775,6 +775,7 @@ function MinistriesTab({
         className="ministries-iframe"
         src={url}
         title={title || "Preview"}
+        referrerpolicy="strict-origin-when-cross-origin"
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
       />
       {/* TODO: Determine what this is for and how to not break scrolling in the ministries iframe */}
@@ -788,9 +789,10 @@ function MinistriesTab({
 }
 
 function ApologistPanelWrapper({ id }) {
-  const { t } = useSideBarContext();
+  const { t, openOnMobile, isMobile } = useSideBarContext();
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState("discovery");
+
   const [cameFromDiscovery, setCameFromDiscovery] = useState(false);
   const [ministriesUrl, setMinistriesUrl] = useState(
     "https://www.kenboa.org/blog/"
@@ -1003,18 +1005,20 @@ function ApologistPanelWrapper({ id }) {
             <span className="apologist-tab-label">{t(tab.label)}</span>
           </button>
         ))}
-        <span
-          title="Close"
-          className="material-symbols-outlined apologist-close"
-          onClick={() => {
-            G.RemoveApplicationByLabel(G.ActiveMoreApp);
-            G.makingApp = null;
-            G.SetActiveMoreApp(null);
-            G.ActiveMoreApp = null;
-          }}
-        >
-          arrow_back
-        </span>
+        {(!globalThis.IsMobileNow() || !isMobile) && (
+          <span
+            title="Close"
+            className="material-symbols-outlined apologist-close"
+            onClick={() => {
+              G.RemoveApplicationByLabel(G.ActiveMoreApp);
+              G.makingApp = null;
+              G.SetActiveMoreApp(null);
+              G.ActiveMoreApp = null;
+            }}
+          >
+            close
+          </span>
+        )}
       </div>
 
       {/* ── Tab Content ── */}
@@ -1145,9 +1149,11 @@ function ApologistPanelWrapper({ id }) {
  .apologist-close {
   position: absolute;
 
-  top: 14px;
+  top: 0px;
+
+  transform: translate(5px,-5px);
   
-  left:6px;
+  right:0px;
   font-size: 12px;
   color: var(--text2, #aaa);
   cursor: pointer;
@@ -1156,12 +1162,12 @@ function ApologistPanelWrapper({ id }) {
   z-index: 5;
 }
 .material-symbols-outlined.apologist-close {
-  font-size: 20px;
+  font-size: 21px;
 }
 /* Hover — soft themed glow */
 .apologist-close:hover {
  
-  background: rgba(161, 189, 79, 0.12);
+  background: rgba(161, 189, 79, 0.02);
 }
 
 /* Active — tactile press */
