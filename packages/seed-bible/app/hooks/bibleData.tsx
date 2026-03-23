@@ -43,7 +43,7 @@ function parseContent(content) {
 }
 
 function useBibleData({
-  initialTranslation = "BSB",
+  initialTranslation = "NASB95",
   initialBookId = "GEN",
   initialChapter = 1,
   tab = null,

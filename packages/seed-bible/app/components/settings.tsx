@@ -1591,6 +1591,7 @@ const SettingsSidebar = ({ config }) => {
     customIcon,
     setCustomIcon,
     setOpenOnMobile,
+    openOnMobile,
     setSidebarWidth,
   } = useSideBarContext();
   const { ReSeed, setReSeed } = useBibleContext();
@@ -1746,7 +1747,7 @@ const SettingsSidebar = ({ config }) => {
 
   return (
     <SettingsContext.Provider value={contextValue}>
-      <div className="settings-sidebar">
+      <div className={`settings-sidebar ${openOnMobile ? "open" : ""}`}>
         <div className="settings-header">
           <h2>{t("settings")}</h2>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
