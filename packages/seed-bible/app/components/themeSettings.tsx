@@ -5615,7 +5615,9 @@ const FONT_SIZES = [
   { label: "Small", value: "14" },
   { label: "Medium", value: "16" },
   { label: "Large", value: "18" },
-  { label: "Extra Large", value: "20" },
+  { label: "Extra Large1", value: "20" },
+  { label: "Extra Large2", value: "22" },
+  { label: "Extra Large3", value: "24" },
 ];
 
 const SURPRISE_COMBINATIONS = [
@@ -6279,7 +6281,7 @@ const SettingsUI = () => {
               viewBox="0 0 12 12"
               fill="none"
             >
-              <text x="6" y="9" fontSize="8" textAnchor="middle" fill="black">
+              <text x="6" y="9" fontSize="12" textAnchor="middle" fill="black">
                 A
               </text>
             </svg>
@@ -6308,7 +6310,7 @@ const SettingsUI = () => {
               <text
                 x="10"
                 y="14"
-                fontSize="14"
+                fontSize="18"
                 textAnchor="middle"
                 fill="black"
               >
@@ -6331,7 +6333,11 @@ const SettingsUI = () => {
             onClick={handleCycleLineHeight}
           >
             <svg
-              style={{ filter: "none", stroke: "var(--heading1Color)" }}
+              style={{
+                filter: "none",
+                stroke: "var(--heading1Color)",
+                scale: 1.2,
+              }}
               width="18"
               height="18"
               viewBox="0 0 18 18"

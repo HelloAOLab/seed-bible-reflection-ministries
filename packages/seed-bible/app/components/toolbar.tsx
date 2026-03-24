@@ -62,6 +62,8 @@ export function Toolbar() {
   }, [showMoreMenu]);
 
   const [activeMoreApp, setActiveMoreApp] = useState(G.ActiveMoreApp || null);
+  globalThis.setActiveMoreApp = setActiveMoreApp;
+  globalThis.ActiveMoreApp = activeMoreApp;
   const [activeApp, setActiveApp] = useState(G.makingApp || null);
 
   // Watch globalThis.makingApp so arrows hide for ANY open app, not just More-button apps
@@ -271,9 +273,11 @@ export function Toolbar() {
               onClick={() => {
                 if (activeMoreApp || activeApp) {
                   if (activeMoreApp) {
-                    G.RemoveApplicationByLabel(activeMoreApp);
-                    setActiveMoreApp(null);
-                    G.setOpenSidebar(true);
+                    if (G.openSidebar) {
+                      G.RemoveApplicationByLabel(activeMoreApp);
+                      setActiveMoreApp(null);
+                    }
+                    G.setOpenSidebar(!G.openSidebar);
                   }
                   G.makingApp = null;
                 } else {

@@ -44,6 +44,7 @@
           "showDivider": false,
           "items": {
             "language": { "enabled": true },
+            "uiTextSize": { "enabled": false },
             "reportBug": { "enabled": true }
           }
         }
@@ -251,6 +252,7 @@
           "showDivider": false,
           "items": {
             "language": { "enabled": true },
+            "uiTextSize": { "enabled": true },
             "reportBug": { "enabled": true }
           }
         }
@@ -445,6 +447,7 @@
           "showDivider": false,
           "items": {
             "language": { "enabled": true },
+            "uiTextSize": { "enabled": true },
             "reportBug": { "enabled": true },
             "help": { "enabled": true }
           }
@@ -532,6 +535,7 @@
               "showDivider": true,
               "items": {
                 "language": { "enabled": true },
+                "uiTextSize": { "enabled": true },
                 "reseedToggle": { "enabled": true },
                 "reportBug": { "enabled": true },
                 "help": { "enabled": false }
