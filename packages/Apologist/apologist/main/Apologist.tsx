@@ -1083,7 +1083,6 @@ function Apologist({
   const isVerseLevel = resolvedLevel === "verse";
   const currentBaselineQuery = baselineQuery || baselineQueryRef.current;
   const showResetControl = Boolean(isVerseLevel && currentBaselineQuery);
-  console.log(APOLOGIST_API_KEY, "keey");
 
   const loadMoreRef = useRef(null);
   useEffect(() => {
