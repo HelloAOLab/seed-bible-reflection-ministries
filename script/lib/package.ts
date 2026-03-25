@@ -15,6 +15,10 @@ export async function packageSingle(
     const API_KEY = process.env.APOLOGIST_API_KEY;
 
     if (pkg === "Apologist") {
+      const hasApiKey = !!API_KEY;
+      console.log(
+        `Injecting API key for Apologist package: ${hasApiKey ? "found" : "not found"}`
+      );
       const botFilePath = path.resolve(
         packagePath,
         "apologist",
@@ -29,6 +33,7 @@ export async function packageSingle(
         const bot = botsData.state[id];
 
         if (bot.tags?.system === "apologist.main") {
+          console.log(`Found Apologist main bot`);
           bot.tags.APOLOGIST_API_KEY = API_KEY;
         }
       }
@@ -39,7 +44,7 @@ export async function packageSingle(
         stdio,
       });
 
-      await writeFile(botFilePath, original, "utf-8");
+      // await writeFile(botFilePath, original, "utf-8");
     } else {
       execSync(`casualos pack-aux --overwrite "${packagePath}" "${distPath}"`, {
         stdio,
