@@ -71,6 +71,7 @@
         "title": "Discovery",
         "toolName": "Discovery"
       },
+
       "useTabs": false,
       "availableThemes": [
         {
@@ -431,6 +432,9 @@
       "onlineUsers": {
         "enabled": true,
         "anonymous": true
+      },
+      "advancedSettings": {
+        "enabled": false
       },
       "sections": {
         "accountHeader": {

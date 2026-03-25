@@ -64,7 +64,7 @@ switch (typeOfInteraction) {
                           chapterData.piece.tags.parentBookName
                         ].abbreviation,
                       chapter: chapterData.pieceInfo.number,
-                      translation: "BSB",
+                      translation: "NASB95",
                     },
                   };
                   globalThis.AddTab(tab);

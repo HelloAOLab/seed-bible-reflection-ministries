@@ -1,6 +1,7 @@
 import { execSync } from "child_process";
-import { readdir, readFile } from "fs/promises";
+import { readdir, readFile, writeFile } from "fs/promises";
 import * as path from "path";
+import "dotenv/config";
 import type { BotsState } from "@casual-simulation/aux-common";
 
 export async function packageSingle(
@@ -11,9 +12,46 @@ export async function packageSingle(
     console.log(`Packaging: ${pkg}`);
     const packagePath = path.resolve("packages", pkg);
     const distPath = path.resolve("dist", `${pkg}.aux`);
-    execSync(`casualos pack-aux --overwrite "${packagePath}" "${distPath}"`, {
-      stdio,
-    });
+    const API_KEY = process.env.APOLOGIST_API_KEY;
+
+    if (pkg === "Apologist") {
+      const hasApiKey = !!API_KEY;
+      console.log(
+        `Injecting API key for Apologist package: ${hasApiKey ? "found" : "not found"}`
+      );
+      const botFilePath = path.resolve(
+        packagePath,
+        "apologist",
+        "main",
+        "apologist.main.bot.aux"
+      );
+
+      const original = await readFile(botFilePath, "utf-8");
+      const botsData = JSON.parse(original);
+
+      console.log(`Bots in Apologist package:`, botsData);
+
+      for (const id in botsData.state) {
+        const bot = botsData.state[id];
+
+        if (bot.tags?.system === "apologist.main") {
+          console.log(`Found Apologist main bot`);
+          bot.tags.APOLOGIST_API_KEY = API_KEY;
+        }
+      }
+
+      await writeFile(botFilePath, JSON.stringify(botsData, null, 2), "utf-8");
+
+      execSync(`casualos pack-aux --overwrite "${packagePath}" "${distPath}"`, {
+        stdio,
+      });
+
+      // await writeFile(botFilePath, original, "utf-8");
+    } else {
+      execSync(`casualos pack-aux --overwrite "${packagePath}" "${distPath}"`, {
+        stdio,
+      });
+    }
     console.log(`Wrote: ${distPath}`);
     return true;
   } catch (e) {
@@ -23,6 +61,7 @@ export async function packageSingle(
 }
 
 export async function packageAll(stdio: "inherit" | "ignore" = "inherit") {
+  console.log("aaaaaaaa");
   const packages = await listPackages();
   await Promise.all(packages.map((pkg) => packageSingle(pkg, stdio)));
 }

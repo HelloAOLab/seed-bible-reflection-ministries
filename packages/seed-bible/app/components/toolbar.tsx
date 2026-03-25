@@ -393,7 +393,7 @@ export function Toolbar() {
                       </span>
                     )}
                     <span className="mobile-btn-label">
-                      {activeMoreApp ? "close" : presetToolBarTitle}
+                      {activeMoreApp ? "Close" : presetToolBarTitle}
                     </span>
                   </div>
                 </button>
@@ -479,6 +479,7 @@ export function Toolbar() {
                       }}
                       onMouseUp={(e) => {
                         e.stopPropagation();
+                        G.SetActiveMoreApp(tool.label);
                         clearTimeout(holdTimeoutRef.current);
                         if (!hasHeldRef.current && tool?.onClick) {
                           tool.onClick();

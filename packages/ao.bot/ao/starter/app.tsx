@@ -196,7 +196,7 @@ export function AOBotInterface() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Build with Seed Bible form state
-  const [translationID, setTranslationID] = useState("BSB");
+  const [translationID, setTranslationID] = useState("NASB95");
   const [book, setBook] = useState("");
   const [chapter, setChapter] = useState("");
   const [enableCollaboration, setEnableCollaboration] = useState(false);
@@ -1339,7 +1339,7 @@ export function AOBotInterface() {
             </label>
             <input
               type="text"
-              placeholder="e.g., BSB, ENGWEBP, etc."
+              placeholder="e.g., NASB95, ENGWEBP, etc."
               value={translationID}
               onChange={(e) => setTranslationID(e.target.value)}
               style={{
@@ -1529,7 +1529,7 @@ export function AOBotInterface() {
                 url.searchParams.set("bios", "local inst");
               }
 
-              if (translationID && translationID !== "BSB") {
+              if (translationID && translationID !== "NASB95") {
                 url.searchParams.set("translation", translationID);
               }
 
