@@ -29,6 +29,8 @@ export async function packageSingle(
       const original = await readFile(botFilePath, "utf-8");
       const botsData = JSON.parse(original);
 
+      console.log(`Bots in Apologist package:`, botsData);
+
       for (const id in botsData.state) {
         const bot = botsData.state[id];
 
