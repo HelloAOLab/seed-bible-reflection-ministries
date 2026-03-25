@@ -244,7 +244,10 @@ function ApologistPanelWrapper({ id }) {
             title="Close"
             className="material-symbols-outlined apologist-close"
             onClick={() => {
-              G.RemoveApplicationByLabel(G.ActiveMoreApp);
+              const appToClose = G.ActiveMoreApp || "Discovery";
+
+              G.RemoveApplicationByLabel(appToClose);
+
               G.makingApp = null;
               G.SetActiveMoreApp(null);
               G.ActiveMoreApp = null;
