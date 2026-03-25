@@ -751,7 +751,7 @@ export const SpaceDescriptionSetting = ({ itemKey = "spaceDescription" }) => {
 };
 
 // ---------- Account Section ----------
-export const AccountSetting = ({
+/*export const AccountSetting = ({
   itemKey = "yourAccount",
   labelKey = "yourAccount",
 }) => {
@@ -920,10 +920,10 @@ export const AccountSetting = ({
       )}
     </div>
   );
-};
+};*/
 
 // ---------- Account Settings Row ----------
-export const AccountSettingsSetting = ({
+/*export const AccountSettingsSetting = ({
   itemKey = "accountSettings",
   labelKey = "accountSettings",
 }) => {
@@ -939,7 +939,7 @@ export const AccountSettingsSetting = ({
       }}
     />
   );
-};
+};*/
 
 // ---------- Billing ----------
 export const BillingSetting = ({
@@ -1622,8 +1622,8 @@ const COMPONENT_REGISTRY = {
   // General tab components
   generalHeader: SettingHeader,
   generalDesc: SettingDescription,
-  yourAccount: AccountSetting,
-  accountSettings: AccountSettingsSetting,
+
+  //accountSettings: AccountSettingsSetting,
   billing: BillingSetting,
   permissions: PermissionsSetting,
   notifications: NotificationsSetting,
