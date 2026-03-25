@@ -1068,7 +1068,7 @@ function Apologist({
   const [searchRunId, setSearchRunId] = useState(0);
 
   const [hasMore, setHasMore] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(true);
   const [displayedCount, setDisplayedCount] = useState(10);
   const [allData, setAllData] = useState([]);
   const [activeCardId, setActiveCardId] = useState(null);
@@ -1077,6 +1077,8 @@ function Apologist({
   const [linkOpenId, setLinkOpenId] = useState(null);
   const lastSearchKeyRef = useRef(null);
   const lastResultKeysRef = useRef(new Set());
+  const debounceRef = useRef(null);
+  const isFirstLoadRef = useRef(true);
   const baselineQueryRef = useRef(baselineQuery || "");
   const baselineResultKeysRef = useRef(new Set());
   const resolvedLevel = (level || "chapter").toLowerCase();
@@ -1134,30 +1136,18 @@ function Apologist({
       return;
     }
 
-    if (!searchParam.trim()) {
-      lastSearchKeyRef.current = null;
-      lastResultKeysRef.current = new Set();
-      if (resolvedLevel === "chapter") {
-        baselineQueryRef.current = baselineQuery || "";
-        baselineResultKeysRef.current = new Set();
-      }
-    }
-
     let cancelled = false;
 
-    async function run() {
+    const run = async () => {
       if (!searchParam || !searchParam.trim()) {
-        setData([]);
-        setAllData([]);
-        setErr("");
-        setOpenIds(new Set());
-        setHasMore(false);
-        setDisplayedCount(10);
-
         return;
       }
+
+      // ✅ ALWAYS show loading on trigger (first open + changes)
       setLoading(true);
       setErr("");
+
+      // ✅ CLEAR UI ONLY WHEN NEW SEARCH STARTS (intentional)
       setData([]);
       setAllData([]);
       setOpenIds(new Set());
@@ -1167,24 +1157,18 @@ function Apologist({
       try {
         const trimmedQuery = searchParam.trim();
 
-        // Build the API query based on level:
-        // Chapter: use just the label (e.g., "Genesis 1")
-        // Verse: prepend the label to the verse text
         const currentLabel = (
           label ||
           globalThis.GlobalSearchLabel ||
           ""
         ).trim();
 
-        let apiQuery;
-
-        if (resolvedLevel === "chapter") {
-          apiQuery = currentLabel || trimmedQuery;
-        } else {
-          apiQuery = currentLabel
-            ? `${currentLabel} ${trimmedQuery}`
-            : trimmedQuery;
-        }
+        let apiQuery =
+          resolvedLevel === "chapter"
+            ? currentLabel || trimmedQuery
+            : currentLabel
+              ? `${currentLabel} ${trimmedQuery}`
+              : trimmedQuery;
 
         const headers = {
           "Content-Type": "application/json",
@@ -1196,13 +1180,11 @@ function Apologist({
         };
 
         const fetchQueryResults = async (query) => {
-          const normalizedQueryKey = normalizeQueryValue(query).toLowerCase();
-          if (!normalizedQueryKey) return [];
+          const key = normalizeQueryValue(query).toLowerCase();
+          if (!key) return [];
 
-          const cached = getCachedResults(normalizedQueryKey);
-          if (cached) {
-            return cached;
-          }
+          const cached = getCachedResults(key);
+          if (cached) return cached;
 
           const payload = {
             query,
@@ -1213,45 +1195,24 @@ function Apologist({
             },
           };
 
-          const MAX_RETRIES = 3;
-          let res;
-          let lastError;
+          const res = await web.post(url, payload, { headers });
 
-          for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            if (cancelled) return [];
-            try {
-              res = await web.post(url, payload, { headers });
-              if (res.status === 200) break;
-              if (res.status >= 400 && res.status < 500) break;
-              lastError = res?.error || `HTTP ${res.status}`;
-            } catch (retryErr) {
-              lastError = retryErr?.message || "Network error";
-              res = null;
-            }
-
-            if (attempt < MAX_RETRIES - 1) {
-              const delay = Math.pow(2, attempt) * 1000;
-              await new Promise((r) => setTimeout(r, delay));
-            }
-          }
+          if (cancelled) return [];
 
           if (!res || res.status !== 200) {
-            throw new Error(
-              lastError || res?.error || `HTTP ${res?.status || "unknown"}`
-            );
+            throw new Error(res?.error || `HTTP ${res?.status}`);
           }
 
-          const queryResults = Array.isArray(res?.data?.results)
-            ? res.data.results
-            : [];
-          setCachedResults(normalizedQueryKey, queryResults);
-          return queryResults;
+          const results = res?.data?.results || [];
+          setCachedResults(key, results);
+          return results;
         };
 
         const chapterContextData =
           chapterData || globalThis.GlobalSearchChapterData;
+
         let normalizedSearchKey = normalizeQueryValue(apiQuery).toLowerCase();
-        let chapterFilteredResults = [];
+        let results = [];
 
         if (resolvedLevel === "chapter") {
           const chapterQueries = await generateChapterSearchQueries({
@@ -1259,129 +1220,83 @@ function Apologist({
             chapterLabel: currentLabel || trimmedQuery,
             chapterText: trimmedQuery,
           });
+
+          // ✅ RATE LIMIT (max 3 calls)
           const queryPlan = uniqueQueries([
             currentLabel || trimmedQuery,
             ...chapterQueries,
-          ]);
+          ]).slice(0, 3);
 
           normalizedSearchKey = `hybrid:${queryPlan.join("|").toLowerCase()}`;
 
           const queryResultPairs = await Promise.all(
-            queryPlan.map(async (query) => {
+            queryPlan.map(async (q) => {
               try {
-                const results = await fetchQueryResults(query);
-                return { query, results };
-              } catch (queryError) {
-                console.warn("[Apologist] query failed:", query, queryError);
-                return { query, results: [] };
+                return { query: q, results: await fetchQueryResults(q) };
+              } catch {
+                return { query: q, results: [] };
               }
             })
           );
 
           if (cancelled) return;
-          const mergedResults = buildHybridRankedResults(
+
+          results = buildHybridRankedResults(
             queryResultPairs,
             currentLabel || trimmedQuery,
             chapterContextData
           );
-          chapterFilteredResults = mergedResults;
         } else {
           const singleResults = await fetchQueryResults(apiQuery);
+
           const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
-          const filteredResults = singleResults.filter((item) =>
-            allowedTypes.has(item?.type)
+
+          results = dedupeResults(
+            singleResults.filter((item) => allowedTypes.has(item?.type))
           );
-          const sortedResults = filteredResults.slice().sort(compareResults);
-          chapterFilteredResults = dedupeResults(sortedResults);
         }
 
-        if (resolvedLevel === "chapter") {
-          baselineQueryRef.current = trimmedQuery;
-          baselineResultKeysRef.current = new Set();
+        if (cancelled) return;
 
-          chapterFilteredResults.forEach((item) => {
-            const key = buildResultKey(item);
-            if (key) {
-              baselineResultKeysRef.current.add(key);
-            }
-          });
-        }
+        setAllData(results);
+        setData(results.slice(0, 10));
+        setHasMore(results.length > 10);
 
-        let finalResults = chapterFilteredResults;
-        const seenFinal = new Set();
-        finalResults = finalResults.filter((item) => {
-          const key = buildResultKey(item);
-          if (!key) return true;
-
-          if (seenFinal.has(key)) return false;
-          seenFinal.add(key);
-          return true;
-        });
-
-        if (resolvedLevel !== "chapter" && baselineResultKeysRef.current.size) {
-          finalResults = finalResults.filter((item) => {
-            const key = buildResultKey(item);
-            if (!key) return true;
-            return !baselineResultKeysRef.current.has(key);
-          });
-        }
-
-        if (
-          lastSearchKeyRef.current &&
-          normalizedSearchKey &&
-          normalizedSearchKey !== lastSearchKeyRef.current &&
-          lastResultKeysRef.current.size
-        ) {
-          finalResults = finalResults.filter((item) => {
-            const key = buildResultKey(item);
-            if (!key) return true;
-            return !lastResultKeysRef.current.has(key);
-          });
-        }
-
-        setAllData(finalResults);
-        setData(finalResults.slice(0, 10)); // Show first 10
-        setHasMore(finalResults.length > 10); // Show "Load More" if there are more than 10 results
-        // Open all book cards initially
-        const bookIds = finalResults
-          .filter((item) => item.type === "book" && item.id)
-          .map((item) => item.id);
-        const youtubeIds = finalResults
-          .filter((item) => item.type === "youtube" && item.id)
-          .map((item) => item.id);
-        setOpenIds(new Set([...bookIds, ...youtubeIds]));
-        // Update header label AFTER results are ready
-        const computedLabel =
-          globalThis.GlobalSearchLabel ||
-          (isVerseLevel && currentBaselineQuery
-            ? currentBaselineQuery
-            : trimmedQuery);
-
-        setHeaderLabel(computedLabel);
-
-        lastSearchKeyRef.current = normalizedSearchKey || null;
-        lastResultKeysRef.current = new Set();
-        finalResults.forEach((item) => {
-          const key = buildResultKey(item);
-          if (key) {
-            lastResultKeysRef.current.add(key);
-          }
-        });
+        lastSearchKeyRef.current = normalizedSearchKey;
       } catch (e) {
         if (!cancelled) {
           setErr(e?.message || "Network error");
           setData([]);
           setAllData([]);
-          setOpenIds(new Set());
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
+    };
+    setLoading(true);
+    setErr("");
+
+    // clear UI immediately so empty state never flashes
+    setData([]);
+    setAllData([]);
+    setOpenIds(new Set());
+    setHasMore(false);
+    setDisplayedCount(10);
+
+    // ✅ DEBOUNCE (applies always, but loading shows immediately)
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
 
-    run();
+    debounceRef.current = setTimeout(() => {
+      if (!cancelled) run();
+    }, 200);
+
     return () => {
       cancelled = true;
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
     };
   }, [
     searchParam,
@@ -1603,7 +1518,9 @@ function Apologist({
             )}
           </>
         ) : (
-          !loading && (
+          !loading &&
+          searchParam &&
+          data.length === 0 && (
             <div className="sg-empty">
               <div className="sg-emptyIcon">🔎</div>
               <div className="sg-emptyTitle">No results</div>
