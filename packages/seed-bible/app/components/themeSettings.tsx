@@ -643,7 +643,7 @@ const defaultThemes = [
       unselectedSpaceColor: "#A7F3D0",
       spaceNameText: "#064E3B",
       addButtonBackground: "transparent",
-      addButtonIcon: "#E07B4C",
+      addButtonIcon: "#059669",
       selectPanelIcon: "#064E3B",
       openCloseMenuIcon: "#064E3B",
       moreIcon: "#6B7280",
@@ -800,7 +800,7 @@ const defaultThemes = [
       unselectedSpaceColor: "#BAE6FD",
       spaceNameText: "#0C4A6E",
       addButtonBackground: "transparent",
-      addButtonIcon: "#E07B4C",
+      addButtonIcon: "#0284C7",
       selectPanelIcon: "#0C4A6E",
       openCloseMenuIcon: "#0C4A6E",
       moreIcon: "#6B7280",
@@ -957,7 +957,7 @@ const defaultThemes = [
       unselectedSpaceColor: "#FDE68A",
       spaceNameText: "#78350F",
       addButtonBackground: "transparent",
-      addButtonIcon: "#E07B4C",
+      addButtonIcon: "#78350F",
       selectPanelIcon: "#78350F",
       openCloseMenuIcon: "#78350F",
       moreIcon: "#6B7280",
@@ -1587,7 +1587,7 @@ const TabSectionContent = ({
     padding: "8px 12px",
     border: "1px solid #E1E3EA",
     borderRadius: 4,
-    backgroundColor: "var(--panelBackground) !important",
+    backgroundColor: "var(--pageBackground) ",
     cursor: "pointer",
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
@@ -1599,7 +1599,7 @@ const TabSectionContent = ({
     top: "100%",
     left: 0,
     right: 0,
-    backgroundColor: "var(--panelBackground) !important",
+    backgroundColor: "var(--pageBackground) !important",
     border: "1px solid #E1E3EA",
     borderRadius: 4,
     marginTop: 4,
@@ -1615,7 +1615,7 @@ const TabSectionContent = ({
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
     borderBottom: "1px solid #F0F0F0",
-    color: "var(--panelBackground)",
+    color: "var(--pageTextColor)",
   };
 
   return (
@@ -1701,7 +1701,7 @@ const TabSectionContent = ({
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <path
                 d="M3 4.5L6 7.5L9 4.5"
-                stroke="#666666"
+                stroke="var(--pageTextColor)"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -1820,7 +1820,7 @@ const TabSectionContent = ({
                     ...dropdownItemStyle,
                     backgroundColor:
                       tabSettings.inactiveTabFont === font.name
-                        ? "#F5F5F5"
+                        ? "var(--pageBackground)"
                         : "#FFFFFF",
                   }}
                   onClick={() => {
@@ -1859,7 +1859,7 @@ const TabSectionContent = ({
                     ...dropdownItemStyle,
                     backgroundColor:
                       tabSettings.inactiveTabSize === size
-                        ? "#F5F5F5"
+                        ? "var(--pageBackground)"
                         : "#FFFFFF",
                   }}
                   onClick={() => {
@@ -1997,7 +1997,7 @@ const ButtonsSectionContent = ({
     top: "100%",
     left: 0,
     right: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "var(--pageBackground)",
     border: "1px solid #E1E3EA",
     borderRadius: 4,
     marginTop: 4,
@@ -2013,7 +2013,7 @@ const ButtonsSectionContent = ({
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
     borderBottom: "1px solid #F0F0F0",
-    color: "var(--panelBackground)",
+    color: "var(--pageTextColor)",
   };
 
   return (
@@ -2507,7 +2507,7 @@ const ScriptureTextSectionContent = ({
     padding: "8px 12px",
     border: "1px solid #E1E3EA",
     borderRadius: 4,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "var(--pageBackground)",
     cursor: "pointer",
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
@@ -2519,7 +2519,7 @@ const ScriptureTextSectionContent = ({
     top: "100%",
     left: 0,
     right: 0,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "var(--pageBackground)",
     border: "1px solid #E1E3EA",
     borderRadius: 4,
     marginTop: 4,
@@ -2535,7 +2535,7 @@ const ScriptureTextSectionContent = ({
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
     borderBottom: "1px solid #F0F0F0",
-    color: "var(--panelBackground)",
+    color: "var(--pageTextColor)",
   };
 
   return (
@@ -3050,7 +3050,7 @@ const SideMenuSectionContent = ({
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
     borderBottom: "1px solid #F0F0F0",
-    color: "var(--panelBackground)",
+    color: "var(--pageTextColor)",
   };
 
   // Reusable row with font dropdown, size dropdown, and color picker
@@ -3547,7 +3547,7 @@ const SelectionUIToolbarSectionContent = ({
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
     borderBottom: "1px solid #F0F0F0",
-    color: "var(--panelBackground)",
+    color: "var(--pageTextColor)",
   };
 
   return (
@@ -3886,7 +3886,7 @@ const InputFieldsSectionContent = ({
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
     borderBottom: "1px solid #F0F0F0",
-    color: "var(--panelBackground)",
+    color: "var(--pageTextColor)",
   };
 
   return (
@@ -4288,7 +4288,7 @@ const BrandingSectionContent = ({
     fontSize: 13,
     fontFamily: "Open Sans, sans-serif",
     borderBottom: "1px solid #F0F0F0",
-    color: "var(--panelBackground)",
+    color: "var(--pageTextColor)",
   };
 
   const inputStyle = {
@@ -5611,11 +5611,22 @@ const FONT_OPTIONS = [
 
 const LINE_HEIGHTS = [1.5, 2, 2.5];
 
+const UI_TEXT_SIZES = [
+  { label: "S", value: 0.85 },
+  { label: "M", value: 1 },
+  { label: "L", value: 1.15 },
+  { label: "XL", value: 1.3 },
+];
+
 const FONT_SIZES = [
   { label: "Small", value: "14" },
   { label: "Medium", value: "16" },
   { label: "Large", value: "18" },
-  { label: "Extra Large", value: "20" },
+  { label: "Extra Large1", value: "20" },
+  { label: "Extra Large2", value: "22" },
+  { label: "Extra Large3", value: "24" },
+  { label: "Extra Large4", value: "28" },
+  { label: "Extra Large5", value: "32" },
 ];
 
 const SURPRISE_COMBINATIONS = [
@@ -5800,6 +5811,35 @@ const SettingsUI = () => {
   const [selectedFontSize, setSelectedFontSize] = useState(3);
   const [showFontDropdown, setShowFontDropdown] = useState(false);
   const [showFontSizeMenu, setShowFontSizeMenu] = useState(false);
+  const [uiSizeIndex, setUiSizeIndex] = useState(() => {
+    const saved = globalThis.changes?.uiTextSize || 1;
+    return Math.max(
+      UI_TEXT_SIZES.findIndex((s) => s.value === saved),
+      0
+    );
+  });
+
+  const applyUiZoom = (zoom) => {
+    document
+      .querySelectorAll(".settings-sidebar, .themeSettings-container")
+      .forEach((el) => {
+        (el as HTMLElement).style.zoom = String(zoom);
+      });
+  };
+
+  useEffect(() => {
+    const saved = globalThis.changes?.uiTextSize || 1;
+    if (saved !== 1) applyUiZoom(saved);
+  }, []);
+
+  const handleUiTextSize = (index) => {
+    setUiSizeIndex(index);
+    const zoom = UI_TEXT_SIZES[index].value;
+    if (!globalThis.changes) globalThis.changes = {};
+    globalThis.changes.uiTextSize = zoom;
+    applyUiZoom(zoom);
+  };
+
   const {
     setShowHeading,
     setShowVerses,
@@ -6067,9 +6107,7 @@ const SettingsUI = () => {
     width: "98px",
     height: "89px",
     backgroundColor: "white",
-    border: isSelected
-      ? "2px solid var(--spaceSelection)"
-      : "1px solid #E1E3EA",
+    border: isSelected ? "2px solid var(--addButtonIcon)" : "1px solid #E1E3EA",
     borderRadius: "4px",
     overflow: "hidden",
     position: "relative",
@@ -6124,7 +6162,7 @@ const SettingsUI = () => {
 
   const dropdownStyle = {
     width: "100%",
-    backgroundColor: "var(--panelBackground) !important",
+    backgroundColor: "var(--pageBackground) !important",
     border: "1px solid #E1E3EA",
     borderRadius: "4px",
     padding: "12px 16px",
@@ -6152,7 +6190,7 @@ const SettingsUI = () => {
     top: "100%",
     left: 0,
     right: 0,
-    backgroundColor: "var(--panelBackground) !important",
+    backgroundColor: "var(--pageBackground) !important",
     border: "1px solid #E1E3EA",
     borderRadius: "4px",
     marginTop: "4px",
@@ -6165,10 +6203,13 @@ const SettingsUI = () => {
   const menuItemStyle = (isSelected) => ({
     padding: "12px 16px",
     cursor: "pointer",
-    backgroundColor: isSelected ? "#F5F5F5" : "white",
+    backgroundColor: isSelected
+      ? "var(--addButtonIcon)"
+      : "var(--pageBackground)",
     borderBottom: "1px solid #F0F0F0",
     fontSize: "13px",
     transition: "background-color 0.2s",
+    color: isSelected ? "var(--primaryColor)" : "var(--pageTextColor)",
   });
 
   const toggleRowStyle = {
@@ -6186,7 +6227,7 @@ const SettingsUI = () => {
   const toggleStyle = (isOn) => ({
     width: "32px",
     height: "16px",
-    backgroundColor: isOn ? "var(--spaceSelection)" : "#CCCCCD",
+    backgroundColor: isOn ? "var(--addButtonIcon)" : "#CCCCCD",
     borderRadius: "8px",
     position: "relative",
     cursor: "pointer",
@@ -6196,7 +6237,7 @@ const SettingsUI = () => {
   const toggleCircleStyle = (isOn) => ({
     width: "12px",
     height: "12px",
-    backgroundColor: "white",
+    backgroundColor: "var(--primaryColor)",
     borderRadius: "50%",
     position: "absolute",
     top: "2px",
@@ -6213,8 +6254,8 @@ const SettingsUI = () => {
   const buttonStyle = {
     width: "100%",
     padding: "12px",
-    backgroundColor: "var(--spaceSelection)",
-    color: "white",
+    backgroundColor: "var(--addButtonIcon)",
+    color: "var(--primaryColor)",
     border: "none",
     borderRadius: "4px",
     fontSize: "14px",
@@ -6257,12 +6298,67 @@ const SettingsUI = () => {
             {t("theme")} & {t("text")}
           </div>
         </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "16px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <span
+              className="material-symbols-outlined"
+              style={{ fontSize: "20px", color: "var(--heading1Color)" }}
+            >
+              format_size
+            </span>
+            <span style={{ fontSize: "13px", color: "var(--heading1Color)" }}>
+              {t("uiTextSize")}
+            </span>
+          </div>
+          <div style={{ display: "flex", gap: "4px" }}>
+            {UI_TEXT_SIZES.map((size, i) => (
+              <button
+                key={size.label}
+                onClick={() => handleUiTextSize(i)}
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "6px",
+                  border:
+                    uiSizeIndex === i
+                      ? "2px solid var(--addButtonIcon)"
+                      : "1px solid #ccc",
+                  backgroundColor:
+                    uiSizeIndex === i
+                      ? "var(--addButtonIcon)"
+                      : "var(--pageBackground, #fff)",
+                  color:
+                    uiSizeIndex === i
+                      ? "var(--primaryColor)"
+                      : "var(--pageTextColor)",
+                  cursor: "pointer",
+                  fontSize: `${size.value - 2}px`,
+                  fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 0,
+                  fontFamily: "inherit",
+                }}
+              >
+                {size.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div style={{ display: "flex", gap: "7px", marginBottom: "30px" }}>
           <div
             style={{
               width: "80px",
               height: "43px",
-              backgroundColor: "var(--panelBackground) !important",
+              backgroundColor: "var(--pageBackground) !important",
               border: "1px solid #E1E3EA",
               borderRadius: "4px",
               display: "flex",
@@ -6279,7 +6375,7 @@ const SettingsUI = () => {
               viewBox="0 0 12 12"
               fill="none"
             >
-              <text x="6" y="9" fontSize="8" textAnchor="middle" fill="black">
+              <text x="6" y="9" fontSize="12" textAnchor="middle" fill="black">
                 A
               </text>
             </svg>
@@ -6288,7 +6384,7 @@ const SettingsUI = () => {
             style={{
               width: "80px",
               height: "43px",
-              backgroundColor: "var(--panelBackground) !important",
+              backgroundColor: "var(--pageBackground) !important",
               border: "1px solid #E1E3EA",
               borderRadius: "4px",
               display: "flex",
@@ -6308,7 +6404,7 @@ const SettingsUI = () => {
               <text
                 x="10"
                 y="14"
-                fontSize="14"
+                fontSize="18"
                 textAnchor="middle"
                 fill="black"
               >
@@ -6320,7 +6416,7 @@ const SettingsUI = () => {
             style={{
               width: "80px",
               height: "43px",
-              backgroundColor: "var(--panelBackground) !important",
+              backgroundColor: "var(--pageBackground) !important",
               border: "1px solid #E1E3EA",
               borderRadius: "4px",
               display: "flex",
@@ -6331,7 +6427,11 @@ const SettingsUI = () => {
             onClick={handleCycleLineHeight}
           >
             <svg
-              style={{ filter: "none", stroke: "var(--heading1Color)" }}
+              style={{
+                filter: "none",
+                stroke: "var(--heading1Color)",
+                scale: 1.2,
+              }}
               width="18"
               height="18"
               viewBox="0 0 18 18"
@@ -6386,7 +6486,7 @@ const SettingsUI = () => {
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M8 11L3 6L3.7 5.3L8 9.6L12.3 5.3L13 6L8 11Z"
-              fill="black"
+              fill="var(--pageTextColor)"
             />
           </svg>
           {showFontDropdown && (
@@ -6400,13 +6500,6 @@ const SettingsUI = () => {
                     applyVerseFont(FONT_OPTIONS[index].value);
                     setShowFontDropdown(false);
                   }}
-                  onMouseEnter={(e) =>
-                    (e.target.style.backgroundColor = "#F5F5F5")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.target.style.backgroundColor =
-                      selectedFont === index ? "#F5F5F5" : "white")
-                  }
                 >
                   {font.name}
                 </div>
@@ -6554,7 +6647,7 @@ const SettingsUI = () => {
                         right: "8px",
                         width: "20px",
                         height: "20px",
-                        backgroundColor: "var(--spaceSelection)",
+                        backgroundColor: "var(--addButtonIcon)",
                         borderRadius: "50%",
                         display: "flex",
                         justifyContent: "center",
@@ -6569,7 +6662,7 @@ const SettingsUI = () => {
                       >
                         <path
                           d="M10 3L4.5 8.5L2 6"
-                          stroke="white"
+                          stroke="var(--primaryColor)"
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -6646,7 +6739,7 @@ const SettingsUI = () => {
                         right: "8px",
                         width: "20px",
                         height: "20px",
-                        backgroundColor: "var(--spaceSelection)",
+                        backgroundColor: "var(--addButtonIcon)",
                         borderRadius: "50%",
                         display: "flex",
                         justifyContent: "center",
@@ -6661,7 +6754,7 @@ const SettingsUI = () => {
                       >
                         <path
                           d="M10 3L4.5 8.5L2 6"
-                          stroke="white"
+                          stroke="var(--primaryColor)"
                           strokeWidth="2"
                           strokeLinecap="round"
                           strokeLinejoin="round"
