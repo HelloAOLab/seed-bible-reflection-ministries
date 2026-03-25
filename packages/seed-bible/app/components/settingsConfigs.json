@@ -255,6 +255,7 @@
           "enabled": true,
           "showDivider": false,
           "items": {
+            "anonymousUser": { "enabled": false },
             "theme": { "enabled": true },
             "notifications": { "enabled": true },
             "keepScreenAwake": { "enabled": true }
@@ -265,7 +266,7 @@
           "showDivider": false,
           "items": {
             "language": { "enabled": true },
-            "uiTextSize": { "enabled": true },
+
             "reportBug": { "enabled": true }
           }
         }
