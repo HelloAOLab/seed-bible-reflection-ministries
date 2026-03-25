@@ -45,7 +45,7 @@ import {
   CoffeBeanIcon,
 } from "app.components.phosphoricons";
 // import { CircleCounter } from 'app.components.circleCounter'
-
+// console.log(CircleCounter, 'CircleCounter')
 const Reciver = getBot("system", "app.reciver");
 const { useState, useRef, useEffect, useMemo } = os.appHooks;
 
@@ -97,7 +97,7 @@ const CircleCounter = ({ data, book, chapter }) => {
   const getUserVisual = (userId, value, index) => {
     try {
       const visual = globalThis?.GetOrSetVisualInTags(value[0]);
-
+      // console.log(value,'the get inside')
       if (visual) {
         const IconComponent = icons[visual.iconIndex];
         const color = colors[visual.colorIndex];
@@ -498,6 +498,7 @@ function Tab({
     }
     const checkEmpty = PanelsApps.find((e) => !e.tabData);
     if (el.data.type === "book" && checkEmpty) {
+      // console.log("canvas replacing");
       setActiveTab(el.id);
       const id = uuid();
       ReplaceApplication(LastClickedPanelUpdate || checkEmpty.id, {
@@ -2167,6 +2168,7 @@ function SideBar({ panelsNumber }) {
             </div>
           )}
 
+          {/* rename category modal */}
           {renamingCategory && (
             <div
               className="mobile-modal-overlay"
@@ -2541,7 +2543,7 @@ function SideBar({ panelsNumber }) {
                     clearTimeout(holdTimeout.current.time);
                     holdTimeout.current.clicked = false;
                   }}
-                  className="material-symbols-outlined  addIcon"
+                  className="material-symbols-outlined addIcon"
                 >
                   add
                 </span>
@@ -2661,14 +2663,6 @@ function SideBar({ panelsNumber }) {
               cursor: "pointer",
             }}
           >
-            {isSiteOfClient && (
-              <ClientLogo
-                handleOpenClientSite={handleOpenClientSite}
-                url={clientLogo}
-                alt={clientName}
-              />
-            )}
-            <div className="sidebarLine"></div>
             <div
               onClick={() => {
                 setSidebarWidth(280);
@@ -3009,7 +3003,7 @@ export const SpaceUI = () => {
                 onClick={() => setSideBarMode("settings")}
                 className="material-symbols-outlined"
               >
-                settings
+                <MobileSettingsIcon filter="var(--filter-mode)" />
               </span>
               <SettingsProfile />
             </>
@@ -3207,7 +3201,7 @@ export const UserProfile = ({ collapsed }) => {
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
       ?.removeUserIcon;
   const Icon = icons[iconIndex];
-  if (removeUserIcon) return null;
+  if (removeUserIcon) return <div style={{ width: 40 }} />;
   return (
     <div
       onClick={
@@ -3252,7 +3246,7 @@ export const UserProfile = ({ collapsed }) => {
           width: 30,
           height: 30,
           borderRadius: "50%",
-          border: `2px solid ${!configBot.tags.staticInst ? colors[colorIndex] : "var(--pageTextColor)"}`,
+          // border: `2px solid ${!configBot.tags.staticInst ? colors[colorIndex] : "var(--pageTextColor)"}`,
           padding: 2,
           display: "flex",
           backgroundColor: "var(--addButtonIcon)",
@@ -3271,7 +3265,7 @@ export const UserProfile = ({ collapsed }) => {
         ) : (
           <span
             className="material-symbols-outlined"
-            style={{ color: "var(--secondaryColor)" }}
+            style={{ color: "var(--primaryColor)" }}
           >
             person
           </span>
