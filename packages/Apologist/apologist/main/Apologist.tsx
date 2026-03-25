@@ -1068,7 +1068,7 @@ function Apologist({
   const [searchRunId, setSearchRunId] = useState(0);
 
   const [hasMore, setHasMore] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [displayedCount, setDisplayedCount] = useState(10);
   const [allData, setAllData] = useState([]);
   const [activeCardId, setActiveCardId] = useState(null);
@@ -1143,11 +1143,9 @@ function Apologist({
         return;
       }
 
-      // ✅ ALWAYS show loading on trigger (first open + changes)
       setLoading(true);
       setErr("");
 
-      // ✅ CLEAR UI ONLY WHEN NEW SEARCH STARTS (intentional)
       setData([]);
       setAllData([]);
       setOpenIds(new Set());
@@ -1221,7 +1219,6 @@ function Apologist({
             chapterText: trimmedQuery,
           });
 
-          // ✅ RATE LIMIT (max 3 calls)
           const queryPlan = uniqueQueries([
             currentLabel || trimmedQuery,
             ...chapterQueries,
@@ -1257,6 +1254,12 @@ function Apologist({
         }
 
         if (cancelled) return;
+        const computedLabel =
+          globalThis.GlobalSearchLabel ||
+          (isVerseLevel && currentBaselineQuery
+            ? currentBaselineQuery
+            : trimmedQuery);
+        setHeaderLabel(computedLabel);
 
         setAllData(results);
         setData(results.slice(0, 10));
@@ -1276,14 +1279,12 @@ function Apologist({
     setLoading(true);
     setErr("");
 
-    // clear UI immediately so empty state never flashes
     setData([]);
     setAllData([]);
     setOpenIds(new Set());
     setHasMore(false);
     setDisplayedCount(10);
 
-    // ✅ DEBOUNCE (applies always, but loading shows immediately)
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
