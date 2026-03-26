@@ -270,6 +270,7 @@ function ApologistPanelWrapper({ id }) {
           style={{
             display: activeTab === "discovery" ? "block" : "none",
             height: "100%",
+            marginBottom: isMobile ? "50px" : "0px",
           }}
         >
           <Apologist
