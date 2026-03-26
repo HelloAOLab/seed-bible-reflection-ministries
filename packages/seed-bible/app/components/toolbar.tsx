@@ -213,6 +213,7 @@ export function Toolbar() {
   const presetToolName =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon
       ?.toolName;
+  console.log("presetToolName:", presetToolName);
 
   if (!showToolbar) return <></>;
 
@@ -380,7 +381,9 @@ export function Toolbar() {
                       const exploreTool = tools?.find(
                         (t) => t?.label === presetToolName
                       );
-                      exploreTool?.onClick?.();
+                      setTimeout(() => {
+                        exploreTool?.onClick?.();
+                      }, 0);
                     }
                   }}
                 >
