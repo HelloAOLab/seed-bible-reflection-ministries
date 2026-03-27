@@ -1,4 +1,5 @@
 const { useState, useEffect, useRef, useMemo } = os.appHooks;
+import { useBibleContext } from "app.hooks.bibleVariables";
 import {
   MenuIcon,
   ApologistIcon,
@@ -58,6 +59,7 @@ export function VerseToolbar({
   };
 
   const selectionSettings = getSelectionSettings();
+  const { tools } = useBibleContext();
 
   const [selectedColor, setSelectedColor] = useState("#FDE047");
   const [customColors, setCustomColors] = useState(
@@ -645,6 +647,22 @@ export function VerseToolbar({
                       <span>Highlight</span>
                     </button>
                   )}
+
+                <button
+                  className="mobile-action-btn"
+                  onClick={() => {
+                    const toolToOpen = globalThis.ActiveMoreApp || "Discovery";
+                    const exploreTool = tools?.find(
+                      (t) => t?.label === toolToOpen
+                    );
+                    setTimeout(() => {
+                      exploreTool?.onClick?.();
+                    }, 0);
+                  }}
+                >
+                  <span className="material-symbols-outlined">explore</span>
+                  <span className="mobile-btn-label">Discovery</span>
+                </button>
                 {menuOptions
                   .filter((o) => o?.type !== "line")
                   .map((option, i) => (
