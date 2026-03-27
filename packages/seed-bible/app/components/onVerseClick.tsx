@@ -11,10 +11,18 @@ if(globalThis.IsEditingAnnotation) {
     });
     return;
 }
+function getUUID() {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
 
 if (!isShiftHold) {
-    globalThis.ADD_VERSE_ITEM_PLAYLIST_GROUP_ID = createUUID && createUUID();
+  globalThis.ADD_VERSE_ITEM_PLAYLIST_GROUP_ID = getUUID();
 }
+
 
 const dataItem = {
     type: "verse",
