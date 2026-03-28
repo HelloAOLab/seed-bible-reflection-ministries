@@ -120,7 +120,7 @@ function ApologistPanelWrapper({ id }) {
     const interval = setInterval(() => {
       try {
         const vc = globalThis.ON_VERSE_CLICK;
-        if (!vc || !vc.text) return;
+        if (!vc || !vc.text || !globalThis.IsVerseClicked) return;
 
         // Build a unique key to detect changes
         const key = `${vc.book}-${vc.chapter}-${vc.verseNumber}`;
@@ -244,7 +244,9 @@ function ApologistPanelWrapper({ id }) {
             title="Close"
             className="material-symbols-outlined apologist-close"
             onClick={() => {
+              globalThis.IsVerseClicked = false;
               const appToClose = G.ActiveMoreApp || "Discovery";
+              console.log(appToClose, "appto");
 
               G.RemoveApplicationByLabel(appToClose);
 

@@ -213,7 +213,6 @@ export function Toolbar() {
   const presetToolName =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon
       ?.toolName;
-  console.log("presetToolName:", presetToolName);
 
   if (!showToolbar) return <></>;
 
@@ -313,6 +312,7 @@ export function Toolbar() {
                           className="more-menu-item"
                           onClick={() => {
                             tool?.onClick?.();
+
                             setShowMoreMenu(false);
                             setActiveMoreApp(tool.label);
                           }}
@@ -370,6 +370,7 @@ export function Toolbar() {
                   title={activeMoreApp ? "Close" : presetToolBarTitle}
                   aria-label={activeMoreApp ? "Close" : presetToolName}
                   onClick={() => {
+                    globalThis.IsVerseClicked = false;
                     if (activeMoreApp) {
                       (globalThis as any).RemoveApplicationByLabel(
                         activeMoreApp

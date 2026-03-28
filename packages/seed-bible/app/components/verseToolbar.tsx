@@ -285,6 +285,14 @@ export function VerseToolbar({
   const removeBookMark =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
       ?.removeBookMark;
+  let lastKey = "";
+  const vc = globalThis.ON_VERSE_CLICK;
+  if (!vc || !vc.text) return;
+
+  // Build a unique key to detect changes
+  const key = `${vc.book}-${vc.chapter}-${vc.verseNumber}`;
+  const isKeySame = key === lastKey;
+  lastKey = key;
 
   return (
     <>
@@ -648,21 +656,25 @@ export function VerseToolbar({
                     </button>
                   )}
 
-                <button
-                  className="mobile-action-btn"
-                  onClick={() => {
-                    const toolToOpen = globalThis.ActiveMoreApp || "Discovery";
-                    const exploreTool = tools?.find(
-                      (t) => t?.label === toolToOpen
-                    );
-                    setTimeout(() => {
-                      exploreTool?.onClick?.();
-                    }, 0);
-                  }}
-                >
-                  <span className="material-symbols-outlined">explore</span>
-                  <span className="mobile-btn-label">Discovery</span>
-                </button>
+                {globalThis.IsMobileNow() && (
+                  <button
+                    className="mobile-action-btn"
+                    onClick={() => {
+                      globalThis.IsVerseClicked = true;
+                      const toolToOpen =
+                        globalThis.ActiveMoreApp || "Discovery";
+                      const exploreTool = tools?.find(
+                        (t) => t?.label === toolToOpen
+                      );
+                      setTimeout(() => {
+                        exploreTool?.onClick?.();
+                      }, 0);
+                    }}
+                  >
+                    <span className="material-symbols-outlined">explore</span>
+                    <span className="mobile-btn-label">Discover</span>
+                  </button>
+                )}
                 {menuOptions
                   .filter((o) => o?.type !== "line")
                   .map((option, i) => (
