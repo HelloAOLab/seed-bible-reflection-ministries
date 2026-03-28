@@ -809,7 +809,6 @@ function ThePage({
       // Reset toolbar drag state on new selection
       // userMovedToolbar.current = false;
 
-      // 🔥 NEW — Auto-position toolbar under final selected verse
       if (!userMovedToolbar) {
         const ele = document.getElementById(`v-${highestVerse}`);
         if (ele) {
@@ -1855,7 +1854,6 @@ function ThePage({
             onMouseUp={handleMouseUp}
             onClick={hanldNavFunctions}
             onScroll={(e) => {
-              os.log("scrolling, closing popups", e);
               globalThis.closePopupSettings();
               const el = e.currentTarget;
               const currentScrollTop = el.scrollTop;
