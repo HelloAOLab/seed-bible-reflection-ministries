@@ -715,7 +715,11 @@ interface ChapterData {
   chapter: number; // Chapter number
   verses: Verse[]; // Array of verse objects
   footnotes: Footnote[]; // Chapter footnotes
+<<<<<<< HEAD
   translation: string; // Translation ID (e.g., "AAB")
+=======
+  translation: string; // Translation ID (e.g., "NASB95")
+>>>>>>> develop
 }
 
 interface Verse {
@@ -746,7 +750,11 @@ manager.subscribe((state) => {
 });
 
 // Open a chapter
+<<<<<<< HEAD
 await manager.open("GEN", 1, "AAB");
+=======
+await manager.open("GEN", 1, "NASB95");
+>>>>>>> develop
 
 // Navigate
 await manager.openNext();
@@ -1245,7 +1253,11 @@ globalThis.AddTab({
   type: "bible",
   bookId: "GEN",
   chapter: 1,
+<<<<<<< HEAD
   translation: "AAB",
+=======
+  translation: "NASB95",
+>>>>>>> develop
 });
 
 globalThis.UpdateTab("my-tab-1", { chapter: 2 });
@@ -1271,7 +1283,11 @@ globalThis.OpenPrevChapter(): void
 **Example:**
 
 ```tsx
+<<<<<<< HEAD
 globalThis.Open("GEN", 1, "AAB"); // Open Genesis 1 (AAB translation)
+=======
+globalThis.Open("GEN", 1, "NASB95"); // Open Genesis 1 (BSB translation)
+>>>>>>> develop
 globalThis.OpenNextChapter(); // Navigate to Genesis 2
 globalThis.OpenPrevChapter(); // Back to Genesis 1
 ```
@@ -1806,7 +1822,11 @@ const { updateCurrentBookChapter, getUsersByBook, userActivities } =
 
 // Update when user navigates
 function handleNavigation(bookId, chapter) {
+<<<<<<< HEAD
   updateCurrentBookChapter(currentUserId, "Genesis", bookId, chapter, "AAB");
+=======
+  updateCurrentBookChapter(currentUserId, "Genesis", bookId, chapter, "NASB95");
+>>>>>>> develop
 }
 
 // Get all users reading the same book
@@ -1881,7 +1901,11 @@ addTab({
   type: "bible",
   bookId: "GEN",
   chapter: 1,
+<<<<<<< HEAD
   translation: "AAB",
+=======
+  translation: "NASB95",
+>>>>>>> develop
 });
 
 // Add a canvas tab
@@ -1973,7 +1997,11 @@ function MyComponent() {
     });
 
     // Load initial data
+<<<<<<< HEAD
     manager.open("GEN", 1, "AAB");
+=======
+    manager.open("GEN", 1, "NASB95");
+>>>>>>> develop
 
     return () => {
       unsubscribe();
@@ -2143,7 +2171,11 @@ function MultiUserBibleReader() {
     setCurrentBook(book);
     setCurrentChapter(chapter);
 
+<<<<<<< HEAD
     updateCurrentBookChapter(currentUserId, book, bookId, chapter, "AAB");
+=======
+    updateCurrentBookChapter(currentUserId, book, bookId, chapter, "NASB95");
+>>>>>>> develop
   };
 
   // Update when clicking verse
@@ -2616,7 +2648,11 @@ function VerseComparison() {
 
   return (
     <button
+<<<<<<< HEAD
       onClick={() => compareTranslations("GEN", 1, ["AAB", "KJV", "NIV"])}
+=======
+      onClick={() => compareTranslations("GEN", 1, ["NASB95", "KJV", "NIV"])}
+>>>>>>> develop
     >
       Compare Genesis 1 (AAB, KJV, NIV)
     </button>

@@ -373,12 +373,13 @@ export function Toolbar() {
                 </button> */}
               </div>
             ) : (
-              <div className="more-btn-wrapper">
+              <div className="more-btn-wrapper" style={{ width: "30px" }}>
                 <button
                   className="mobile-navbar-btn"
                   title={activeMoreApp ? "Close" : presetToolBarTitle}
                   aria-label={activeMoreApp ? "Close" : presetToolName}
                   onClick={() => {
+                    globalThis.IsVerseClicked = false;
                     if (activeMoreApp) {
                       (globalThis as any).RemoveApplicationByLabel(
                         activeMoreApp
@@ -390,7 +391,9 @@ export function Toolbar() {
                       const exploreTool = tools?.find(
                         (t) => t?.label === presetToolName
                       );
-                      exploreTool?.onClick?.();
+                      setTimeout(() => {
+                        exploreTool?.onClick?.();
+                      }, 0);
                     }
                   }}
                 >
@@ -408,7 +411,7 @@ export function Toolbar() {
                         zoom: (globalThis as any).changes?.uiTextSize || 1,
                       }}
                     >
-                      {activeMoreApp ? "close" : presetToolBarTitle}
+                      {activeMoreApp ? "Close" : presetToolBarTitle}
                     </span>
                   </div>
                 </button>
@@ -499,6 +502,7 @@ export function Toolbar() {
                       }}
                       onMouseUp={(e) => {
                         e.stopPropagation();
+                        G.SetActiveMoreApp(tool.label);
                         clearTimeout(holdTimeoutRef.current);
                         if (!hasHeldRef.current && tool?.onClick) {
                           tool.onClick();

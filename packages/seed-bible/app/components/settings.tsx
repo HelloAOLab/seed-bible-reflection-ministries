@@ -751,7 +751,7 @@ export const SpaceDescriptionSetting = ({ itemKey = "spaceDescription" }) => {
 };
 
 // ---------- Account Section ----------
-export const AccountSetting = ({
+/*export const AccountSetting = ({
   itemKey = "yourAccount",
   labelKey = "yourAccount",
 }) => {
@@ -920,10 +920,10 @@ export const AccountSetting = ({
       )}
     </div>
   );
-};
+};*/
 
 // ---------- Account Settings Row ----------
-export const AccountSettingsSetting = ({
+/*export const AccountSettingsSetting = ({
   itemKey = "accountSettings",
   labelKey = "accountSettings",
 }) => {
@@ -939,7 +939,7 @@ export const AccountSettingsSetting = ({
       }}
     />
   );
-};
+};*/
 
 // ---------- Billing ----------
 export const BillingSetting = ({
@@ -1627,8 +1627,8 @@ const COMPONENT_REGISTRY = {
   // General tab components
   generalHeader: SettingHeader,
   generalDesc: SettingDescription,
-  yourAccount: AccountSetting,
-  accountSettings: AccountSettingsSetting,
+
+  //accountSettings: AccountSettingsSetting,
   billing: BillingSetting,
   permissions: PermissionsSetting,
   notifications: NotificationsSetting,
@@ -1693,6 +1693,7 @@ const SettingsSidebar = ({ config }) => {
     customIcon,
     setCustomIcon,
     setOpenOnMobile,
+    openOnMobile,
     setSidebarWidth,
   } = useSideBarContext();
   const { ReSeed, setReSeed } = useBibleContext();
@@ -1865,7 +1866,7 @@ const SettingsSidebar = ({ config }) => {
 
   return (
     <SettingsContext.Provider value={contextValue}>
-      <div className="settings-sidebar">
+      <div className={`settings-sidebar ${openOnMobile ? "open" : ""}`}>
         <div className="settings-header">
           <h2>{t("settings")}</h2>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
