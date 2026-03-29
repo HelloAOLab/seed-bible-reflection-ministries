@@ -12,9 +12,11 @@ if (globalThis.IsEditingAnnotation) {
   return;
 }
 
+
 if (!isShiftHold) {
   globalThis.ADD_VERSE_ITEM_PLAYLIST_GROUP_ID = uuid();
 }
+
 
 const dataItem = {
   type: "verse",
