@@ -2165,7 +2165,7 @@ function ThePage({
     text-align: center;
     padding: 0px 13px;
     background: var(--pageBackground);
-    z-index: 99;
+    z-index: 9;
     font-size: 11px;
     font-weight: 600;
     color: var(--text1);
