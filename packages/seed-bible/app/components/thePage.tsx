@@ -140,6 +140,22 @@ function ThePage({
   const [showCommands, setShowCommands] = useState(false);
   const [lastSelectedVerse, setLastSelectedVerse] = useState(null);
   const [showMobileSettings, setShowMobileSettings] = useState(false);
+  const mobileSettingsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showMobileSettings) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        mobileSettingsRef.current &&
+        !mobileSettingsRef.current.contains(e.target as Node)
+      ) {
+        setShowMobileSettings(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showMobileSettings]);
+
   const [highlighted, setHighlighted] = useState({});
 
   // NEW: State for clicked verses
@@ -2039,6 +2055,7 @@ function ThePage({
 
         body.scroll-hide-bars .mobile-header {
           transform: translateY(-100%);
+          overflow: hidden;
         }
 
         @media (max-width: 768px) {
@@ -2186,7 +2203,12 @@ function ThePage({
                 {globalThis.IsMobileNow && globalThis.IsMobileNow() && (
                   <div className="mobile-header">
                     <div className="mobile-header-content">
-                      <div className="mobile-header-left">
+                      <div
+                        className="mobile-header-left"
+                        style={{
+                          zoom: (globalThis as any).changes?.uiTextSize || 1,
+                        }}
+                      >
                         <div>
                           <h1 className="mobile-header-title">
                             <span
@@ -2242,6 +2264,7 @@ function ThePage({
                       </div>
 
                       <div
+                        ref={mobileSettingsRef}
                         className="mobile-header-right"
                         style={{ position: "relative" }}
                       >

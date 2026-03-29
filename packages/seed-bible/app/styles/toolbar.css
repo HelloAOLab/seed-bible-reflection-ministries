@@ -76,6 +76,7 @@
 @media (max-width: 480px) {
   .mobile-bottom-navbar {
     display: flex;
+    padding: 12px 14px 15px 40px;
   }
 }
 
