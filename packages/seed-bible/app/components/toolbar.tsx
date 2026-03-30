@@ -242,16 +242,16 @@ export function Toolbar() {
                   ? navFunctions?.openNextChapter()
                   : navFunctions?.openPrevChapter()
               }
-              title="Previous"
-              aria-label="Previous chapter"
+              title={t("previous")}
+              aria-label={t("previousChapter")}
             >
               <span className="material-symbols-outlined">chevron_left</span>
             </button>
 
             <button
               className="mobile-navbar-btn today-btn"
-              title="Today"
-              aria-label="Today"
+              title={t("today")}
+              aria-label={t("today")}
             >
               <div
                 onClick={(e) => {
@@ -276,7 +276,7 @@ export function Toolbar() {
                   className="mobile-btn-label"
                   style={{ zoom: (globalThis as any).changes?.uiTextSize || 1 }}
                 >
-                  Tabs
+                  {t("tabs")}
                 </span>
               </div>
             </button>
@@ -411,7 +411,7 @@ export function Toolbar() {
                         zoom: (globalThis as any).changes?.uiTextSize || 1,
                       }}
                     >
-                      {activeMoreApp ? "Close" : presetToolBarTitle}
+                      {activeMoreApp ? t("close") : presetToolBarTitle}
                     </span>
                   </div>
                 </button>
@@ -431,8 +431,8 @@ export function Toolbar() {
                   ? navFunctions?.openPrevChapter()
                   : navFunctions?.openNextChapter()
               }
-              title="Next"
-              aria-label="Next chapter"
+              title={t("next")}
+              aria-label={t("nextChapter")}
             >
               <span className="material-symbols-outlined">chevron_right</span>
             </button>
@@ -471,7 +471,7 @@ export function Toolbar() {
             >
               <button
                 className={`toolbar-button firstToolbarbutton`}
-                title="Open menu"
+                title={t("settings")}
                 aria-label="Open menu"
               >
                 <BurgerMenuIcon size={24} color="var(--text1)" />
