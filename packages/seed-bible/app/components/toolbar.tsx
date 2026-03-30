@@ -376,21 +376,38 @@ export function Toolbar() {
               <div className="more-btn-wrapper" style={{ width: "30px" }}>
                 <button
                   className="mobile-navbar-btn"
-                  title={activeMoreApp ? "Close" : presetToolBarTitle}
-                  aria-label={activeMoreApp ? "Close" : presetToolName}
+                  title={
+                    activeMoreApp &&
+                    !globalThis.IsVerseClicked &&
+                    globalThis.isDiscoveryOpen
+                      ? "Close"
+                      : presetToolBarTitle
+                  }
+                  aria-label={
+                    activeMoreApp &&
+                    !globalThis.IsVerseClicked &&
+                    globalThis.isDiscoveryOpen
+                      ? "Close"
+                      : presetToolName
+                  }
                   onClick={() => {
+                    globalThis.IsVerseClickedOnDesktop = false;
                     globalThis.IsVerseClicked = false;
                     if (activeMoreApp) {
                       (globalThis as any).RemoveApplicationByLabel(
                         activeMoreApp
                       );
+
                       (globalThis as any).makingApp = null;
                       setActiveMoreApp(null);
                     } else {
+                      globalThis.isDiscoveryOpen = true;
+                      globalThis.IsVerseClicked = false;
                       setActiveMoreApp(presetToolName);
                       const exploreTool = tools?.find(
                         (t) => t?.label === presetToolName
                       );
+
                       setTimeout(() => {
                         exploreTool?.onClick?.();
                       }, 0);
@@ -398,7 +415,9 @@ export function Toolbar() {
                   }}
                 >
                   <div className="mobile-btn-content">
-                    {activeMoreApp ? (
+                    {activeMoreApp &&
+                    !globalThis.IsVerseClicked &&
+                    globalThis.isDiscoveryOpen ? (
                       <span className="material-symbols-outlined">close</span>
                     ) : (
                       <span className="material-symbols-outlined">
@@ -411,7 +430,11 @@ export function Toolbar() {
                         zoom: (globalThis as any).changes?.uiTextSize || 1,
                       }}
                     >
-                      {activeMoreApp ? t("close") : presetToolBarTitle}
+                      {activeMoreApp &&
+                      !globalThis.IsVerseClicked &&
+                      globalThis.isDiscoveryOpen
+                        ? "Close"
+                        : presetToolBarTitle}
                     </span>
                   </div>
                 </button>

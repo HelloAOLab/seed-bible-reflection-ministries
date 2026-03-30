@@ -911,6 +911,7 @@ function ThePage({
         .trim();
 
       if (!combinedText) return;
+      globalThis.IsVerseClickedOnDesktop = false;
 
       globalThis.GlobalSearch = combinedText;
       globalThis.GlobalSearchLevel = "chapter";
@@ -3311,6 +3312,7 @@ function Section({
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
+                    globalThis.IsVerseClickedOnDesktop = true;
 
                     if (globalThis?.SetCurrentReference) {
                       shout("ToggleReference", {
