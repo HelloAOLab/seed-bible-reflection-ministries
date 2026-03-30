@@ -1315,6 +1315,7 @@ function Apologist({
   const handleResetToBaseline = () => {
     if (!currentBaselineQuery) return;
     globalThis.IsVerseClicked = false;
+    globalThis.IsVerseClickedOnDesktop = false;
 
     // Use the stored chapter-level label (not the current which may be verse-level)
     const chapterLabel =

@@ -660,9 +660,12 @@ export function VerseToolbar({
                   <button
                     className="mobile-action-btn"
                     onClick={() => {
+                      globalThis.isDiscoveryOpen = true;
                       globalThis.IsVerseClicked = true;
+
                       const toolToOpen =
                         globalThis.ActiveMoreApp || "Discovery";
+                      globalThis.SetActiveMoreApp("Discovery");
                       const exploreTool = tools?.find(
                         (t) => t?.label === toolToOpen
                       );
