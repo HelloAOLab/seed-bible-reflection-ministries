@@ -1314,6 +1314,8 @@ function Apologist({
 
   const handleResetToBaseline = () => {
     if (!currentBaselineQuery) return;
+    globalThis.IsVerseClicked = false;
+    globalThis.IsVerseClickedOnDesktop = false;
 
     // Use the stored chapter-level label (not the current which may be verse-level)
     const chapterLabel =
@@ -1453,12 +1455,12 @@ function Apologist({
             {showResetControl && (
               <button
                 type="button"
-                className="sg-resetBtn"
+                className="material-symbols-outlined sg-resetBtn"
                 onClick={handleResetToBaseline}
-                title={`Back to ${currentBaselineQuery}`}
+                title={`Back to chapter`}
                 aria-label="Back to chapter search"
               >
-                ×
+                arrow_back
               </button>
             )}
             <div className="sg-resultCount">

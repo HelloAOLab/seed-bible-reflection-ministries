@@ -485,7 +485,7 @@ export const SplitApp = ({
               <div
                 style={{
                   width: "3px",
-                  height: "100%",
+                  height: "140px",
                   borderRadius: "2px",
                   backgroundColor: "rgba(0,0,0,0.15)",
                 }}

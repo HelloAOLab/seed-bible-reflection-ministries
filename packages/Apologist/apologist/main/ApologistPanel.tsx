@@ -120,7 +120,12 @@ function ApologistPanelWrapper({ id }) {
     const interval = setInterval(() => {
       try {
         const vc = globalThis.ON_VERSE_CLICK;
-        if (!vc || !vc.text) return;
+        if (
+          !vc ||
+          !vc.text ||
+          (!globalThis.IsVerseClicked && !globalThis.IsVerseClickedOnDesktop)
+        )
+          return;
 
         // Build a unique key to detect changes
         const key = `${vc.book}-${vc.chapter}-${vc.verseNumber}`;
@@ -239,23 +244,24 @@ function ApologistPanelWrapper({ id }) {
             <span className="apologist-tab-label">{t(tab.label)}</span>
           </button>
         ))}
-        {(!globalThis.IsMobileNow() || !isMobile) && (
-          <span
-            title="Close"
-            className="material-symbols-outlined apologist-close"
-            onClick={() => {
-              const appToClose = G.ActiveMoreApp || "Discovery";
 
-              G.RemoveApplicationByLabel(appToClose);
+        <span
+          title="Close"
+          className="material-symbols-outlined apologist-close"
+          onClick={() => {
+            globalThis.IsVerseClicked = false;
+            globalThis.ShowDiscoveryButton = true;
+            const appToClose = G.ActiveMoreApp || "Discovery";
 
-              G.makingApp = null;
-              G.SetActiveMoreApp(null);
-              G.ActiveMoreApp = null;
-            }}
-          >
-            close
-          </span>
-        )}
+            G.RemoveApplicationByLabel(appToClose);
+
+            G.makingApp = null;
+            G.SetActiveMoreApp(null);
+            G.ActiveMoreApp = null;
+          }}
+        >
+          close
+        </span>
       </div>
 
       {/* ── Tab Content ── */}
@@ -270,6 +276,7 @@ function ApologistPanelWrapper({ id }) {
           style={{
             display: activeTab === "discovery" ? "block" : "none",
             height: "100%",
+            marginBottom: isMobile ? "50px" : "0px",
           }}
         >
           <Apologist
