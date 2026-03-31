@@ -373,72 +373,68 @@ export function Toolbar() {
                 </button> */}
               </div>
             ) : (
-              <div className="more-btn-wrapper" style={{ width: "30px" }}>
-                <button
-                  className="mobile-navbar-btn"
-                  title={
-                    activeMoreApp &&
-                    !globalThis.IsVerseClicked &&
-                    globalThis.isDiscoveryOpen
-                      ? "Close"
-                      : presetToolBarTitle
-                  }
-                  aria-label={
-                    activeMoreApp &&
-                    !globalThis.IsVerseClicked &&
-                    globalThis.isDiscoveryOpen
-                      ? "Close"
-                      : presetToolName
-                  }
-                  onClick={() => {
-                    globalThis.IsVerseClickedOnDesktop = false;
+              <button
+                className="mobile-navbar-btn"
+                title={
+                  activeMoreApp &&
+                  !globalThis.IsVerseClicked &&
+                  globalThis.isDiscoveryOpen
+                    ? "Close"
+                    : presetToolBarTitle
+                }
+                aria-label={
+                  activeMoreApp &&
+                  !globalThis.IsVerseClicked &&
+                  globalThis.isDiscoveryOpen
+                    ? "Close"
+                    : presetToolName
+                }
+                onClick={() => {
+                  globalThis.IsVerseClickedOnDesktop = false;
+                  globalThis.IsVerseClicked = false;
+                  if (activeMoreApp) {
+                    (globalThis as any).RemoveApplicationByLabel(activeMoreApp);
+
+                    (globalThis as any).makingApp = null;
+                    setActiveMoreApp(null);
+                  } else {
+                    globalThis.isDiscoveryOpen = true;
                     globalThis.IsVerseClicked = false;
-                    if (activeMoreApp) {
-                      (globalThis as any).RemoveApplicationByLabel(
-                        activeMoreApp
-                      );
+                    setActiveMoreApp(presetToolName);
+                    const exploreTool = tools?.find(
+                      (t) => t?.label === presetToolName
+                    );
 
-                      (globalThis as any).makingApp = null;
-                      setActiveMoreApp(null);
-                    } else {
-                      globalThis.isDiscoveryOpen = true;
-                      globalThis.IsVerseClicked = false;
-                      setActiveMoreApp(presetToolName);
-                      const exploreTool = tools?.find(
-                        (t) => t?.label === presetToolName
-                      );
-
-                      setTimeout(() => {
-                        exploreTool?.onClick?.();
-                      }, 0);
-                    }
-                  }}
-                >
-                  <div className="mobile-btn-content">
+                    setTimeout(() => {
+                      exploreTool?.onClick?.();
+                    }, 0);
+                  }
+                }}
+              >
+                <div className="mobile-btn-content">
+                  {activeMoreApp &&
+                  !globalThis.IsVerseClicked &&
+                  globalThis.isDiscoveryOpen ? (
+                    <span className="material-symbols-outlined">close</span>
+                  ) : (
+                    <span className="material-symbols-outlined">
+                      {presetToolBarIcon}
+                    </span>
+                  )}
+                  <span
+                    className="mobile-btn-label"
+                    style={{
+                      zoom: (globalThis as any).changes?.uiTextSize || 1,
+                    }}
+                  >
                     {activeMoreApp &&
                     !globalThis.IsVerseClicked &&
-                    globalThis.isDiscoveryOpen ? (
-                      <span className="material-symbols-outlined">close</span>
-                    ) : (
-                      <span className="material-symbols-outlined">
-                        {presetToolBarIcon}
-                      </span>
-                    )}
-                    <span
-                      className="mobile-btn-label"
-                      style={{
-                        zoom: (globalThis as any).changes?.uiTextSize || 1,
-                      }}
-                    >
-                      {activeMoreApp &&
-                      !globalThis.IsVerseClicked &&
-                      globalThis.isDiscoveryOpen
-                        ? "Close"
-                        : presetToolBarTitle}
-                    </span>
-                  </div>
-                </button>
-              </div>
+                    globalThis.isDiscoveryOpen
+                      ? "Close"
+                      : presetToolBarTitle}
+                  </span>
+                </div>
+              </button>
             )}
 
             <button
