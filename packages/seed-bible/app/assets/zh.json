@@ -832,5 +832,8 @@
   "justNow": "刚刚",
   "minutesAgo": "{{count}}分钟前",
   "hoursAgo": "{{count}}小时前",
-  "daysAgo": "{{count}}天前"
+  "daysAgo": "{{count}}天前",
+  "buyBook": "购买书籍",
+  "noResources": "未找到与本章节相关的资源",
+  "noContent": "暂无内容"
 }

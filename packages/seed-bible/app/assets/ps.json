@@ -302,5 +302,9 @@
   "justNow": "همدا اوس",
   "minutesAgo": "{{count}} دقیقې مخکې",
   "hoursAgo": "{{count}} ساعتونه مخکې",
-  "daysAgo": "{{count}} ورځې مخکې"
+  "daysAgo": "{{count}} ورځې مخکې",
+  "buyBook": "کتاب واخلئ",
+  "noResources": "د دې فصل لپاره اړوند سرچینې ونه موندل شوې",
+  "discover": "ومومئ",
+  "noContent": "هیڅ منځپانګه نشته"
 }

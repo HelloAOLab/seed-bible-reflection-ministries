@@ -1526,10 +1526,8 @@ function Apologist({
           data.length === 0 && (
             <div className="sg-empty">
               <div className="sg-emptyIcon">🔎</div>
-              <div className="sg-emptyTitle">No results</div>
-              <div className="sg-emptyHint">
-                No related resources found for this chapter
-              </div>
+              <div className="sg-emptyTitle">{t("noContent")}</div>
+              <div className="sg-emptyHint">{t("noResources")}</div>
             </div>
           )
         )}

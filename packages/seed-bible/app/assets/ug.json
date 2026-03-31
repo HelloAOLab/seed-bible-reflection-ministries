@@ -302,5 +302,9 @@
   "justNow": "ھازىر",
   "minutesAgo": "{{count}} مىنۇت ئىلگىرى",
   "hoursAgo": "{{count}} سائەت ئىلگىرى",
-  "daysAgo": "{{count}} كۈن ئىلگىرى"
+  "daysAgo": "{{count}} كۈن ئىلگىرى",
+  "buyBook": "كىتاب سېتىۋېلىش",
+  "noResources": "بۇ باب ئۈچۈن مۇناسىۋەتلىك مەنبە تېپىلمىدى",
+  "discover": "بايقاش",
+  "noContent": "مەزمۇن يوق"
 }

@@ -302,5 +302,9 @@
   "justNow": "Az önce",
   "minutesAgo": "{{count}} dk önce",
   "hoursAgo": "{{count}}sa önce",
-  "daysAgo": "{{count}}g önce"
+  "daysAgo": "{{count}}g önce",
+  "buyBook": "Kitap satın al",
+  "noResources": "Bu bölüm için ilgili kaynak bulunamadı",
+  "discover": "Keşfet",
+  "noContent": "İçerik yok"
 }

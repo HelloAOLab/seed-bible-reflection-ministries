@@ -302,5 +302,8 @@
   "justNow": "አሁን",
   "minutesAgo": "ከ{{count}} ደቂቃ በፊት",
   "hoursAgo": "ከ{{count}} ሰዓት በፊት",
-  "daysAgo": "ከ{{count}} ቀን በፊት"
+  "daysAgo": "ከ{{count}} ቀን በፊት",
+  "buyBook": "መጽሐፍ ግዛ",
+  "noResources": "ለዚህ ምዕራፍ ተዛማጅ ምንጮች አልተገኙም",
+  "noContent": "ይዘት የለም"
 }

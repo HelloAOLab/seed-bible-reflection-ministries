@@ -302,5 +302,9 @@
   "justNow": "এইমাত্র",
   "minutesAgo": "{{count}} মিনিট আগে",
   "hoursAgo": "{{count}} ঘণ্টা আগে",
-  "daysAgo": "{{count}} দিন আগে"
+  "daysAgo": "{{count}} দিন আগে",
+  "buyBook": "বই কিনুন",
+  "noResources": "এই অধ্যায়ের জন্য কোনো সম্পর্কিত রিসোর্স পাওয়া যায়নি",
+  "noContent": "কোনো কনটেন্ট নেই",
+  "discover": "অন্বেষণ করুন"
 }

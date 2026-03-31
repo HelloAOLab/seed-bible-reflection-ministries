@@ -302,5 +302,9 @@
   "justNow": "Sasa hivi",
   "minutesAgo": "dakika {{count}} zilizopita",
   "hoursAgo": "saa {{count}} zilizopita",
-  "daysAgo": "siku {{count}} zilizopita"
+  "daysAgo": "siku {{count}} zilizopita",
+  "buyBook": "Nunua kitabu",
+  "noResources": "Hakuna rasilimali zinazohusiana zilizopatikana kwa sura hii",
+  "discover": "Gundua",
+  "noContent": "Hakuna maudhui"
 }

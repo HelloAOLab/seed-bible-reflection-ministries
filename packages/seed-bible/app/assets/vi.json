@@ -302,5 +302,9 @@
   "justNow": "Vừa xong",
   "minutesAgo": "{{count}} phút trước",
   "hoursAgo": "{{count}} giờ trước",
-  "daysAgo": "{{count}} ngày trước"
+  "daysAgo": "{{count}} ngày trước",
+  "buyBook": "Mua sách",
+  "noResources": "Không tìm thấy tài nguyên liên quan cho chương này",
+  "discover": "Khám phá",
+  "noContent": "Không có nội dung"
 }
