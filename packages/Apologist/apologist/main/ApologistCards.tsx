@@ -263,7 +263,7 @@ function SgCard({
             aria-label="Open in Reflection Ministries"
             style={{ color: "#fff", textDecoration: "none" }}
           >
-            {t("Buy Book")}
+            {t("buyBook")}
             <svg
               width="14"
               height="14"

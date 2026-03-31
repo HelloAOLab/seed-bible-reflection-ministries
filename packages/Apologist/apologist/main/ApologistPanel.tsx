@@ -228,7 +228,7 @@ function ApologistPanelWrapper({ id }) {
             key={tab.key}
             className={`apologist-tab ${activeTab === tab.key ? "apologist-tab--active" : ""}`}
             onClick={() => setActiveTab(tab.key)}
-            title={tab.label}
+            title={t(tab.label)}
           >
             {tab.icon.startsWith("http") ? (
               <img

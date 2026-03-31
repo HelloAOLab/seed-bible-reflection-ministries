@@ -1,5 +1,6 @@
 const { useState, useEffect, useRef, useMemo } = os.appHooks;
 import { useBibleContext } from "app.hooks.bibleVariables";
+const { useSideBarContext } = await import("app.hooks.sideBar");
 import {
   MenuIcon,
   ApologistIcon,
@@ -60,6 +61,7 @@ export function VerseToolbar({
 
   const selectionSettings = getSelectionSettings();
   const { tools } = useBibleContext();
+  const { t } = useSideBarContext();
 
   const [selectedColor, setSelectedColor] = useState("#FDE047");
   const [customColors, setCustomColors] = useState(
@@ -675,7 +677,7 @@ export function VerseToolbar({
                     }}
                   >
                     <span className="material-symbols-outlined">explore</span>
-                    <span className="mobile-btn-label">Discover</span>
+                    <span className="mobile-btn-label">{t("discover")}</span>
                   </button>
                 )}
                 {menuOptions
