@@ -302,5 +302,9 @@
   "justNow": "भर्खरै",
   "minutesAgo": "{{count}} मिनेट अघि",
   "hoursAgo": "{{count}} घण्टा अघि",
-  "daysAgo": "{{count}} दिन अघि"
+  "daysAgo": "{{count}} दिन अघि",
+  "buyBook": "किताब किन्नुहोस्",
+  "noResources": "यस अध्यायका लागि कुनै सम्बन्धित स्रोत फेला परेन",
+  "discover": "खोज्नुहोस्",
+  "noContent": "कुनै सामग्री छैन"
 }

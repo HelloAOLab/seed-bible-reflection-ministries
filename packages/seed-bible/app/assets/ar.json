@@ -832,5 +832,8 @@
   "justNow": "الآن",
   "minutesAgo": "منذ {{count}} دقيقة",
   "hoursAgo": "منذ {{count}} ساعة",
-  "daysAgo": "منذ {{count}} يوم"
+  "daysAgo": "منذ {{count}} يوم",
+  "buyBook": "شراء كتاب",
+  "noResources": "لم يتم العثور على موارد ذات صلة لهذا الفصل",
+  "noContent": "لا يوجد محتوى"
 }

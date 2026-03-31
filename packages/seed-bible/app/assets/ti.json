@@ -302,5 +302,9 @@
   "justNow": "ሕጂ",
   "minutesAgo": "ቅድሚ {{count}} ደቒቕ",
   "hoursAgo": "ቅድሚ {{count}} ሰዓት",
-  "daysAgo": "ቅድሚ {{count}} መዓልቲ"
+  "daysAgo": "ቅድሚ {{count}} መዓልቲ",
+  "buyBook": "መጽሓፍ ግዛ",
+  "noResources": "ንዚ ምዕራፍ ዝተያያዙ ምንጮች ኣይተረኽቡን",
+  "discover": "ርአ",
+  "noContent": "የለን ይዘት"
 }

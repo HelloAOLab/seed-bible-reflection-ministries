@@ -302,5 +302,9 @@
   "justNow": "همین الان",
   "minutesAgo": "{{count}} دقیقه پیش",
   "hoursAgo": "{{count}} ساعت پیش",
-  "daysAgo": "{{count}} روز پیش"
+  "daysAgo": "{{count}} روز پیش",
+  "buyBook": "خرید کتاب",
+  "noResources": "هیچ منبع مرتبطی برای این فصل یافت نشد",
+  "discover": "کشف کنید",
+  "noContent": "محتوایی وجود ندارد"
 }

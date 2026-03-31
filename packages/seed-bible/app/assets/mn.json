@@ -302,5 +302,9 @@
   "justNow": "Саяхан",
   "minutesAgo": "{{count}} минутын өмнө",
   "hoursAgo": "{{count}} цагийн өмнө",
-  "daysAgo": "{{count}} өдрийн өмнө"
+  "daysAgo": "{{count}} өдрийн өмнө",
+  "buyBook": "Ном худалдаж авах",
+  "noResources": "Энэ бүлэгт холбогдох материал олдсонгүй",
+  "discover": "Нээх",
+  "noContent": "Агуулга алга"
 }

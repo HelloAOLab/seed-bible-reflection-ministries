@@ -832,5 +832,8 @@
   "justNow": "Ahora",
   "minutesAgo": "hace {{count}} min",
   "hoursAgo": "hace {{count}}h",
-  "daysAgo": "hace {{count}}d"
+  "daysAgo": "hace {{count}}d",
+  "buyBook": "Comprar libro",
+  "noResources": "No se encontraron recursos relacionados para este capítulo",
+  "noContent": "Sin contenido"
 }

@@ -832,5 +832,8 @@
   "justNow": "Только что",
   "minutesAgo": "{{count}} мин назад",
   "hoursAgo": "{{count}}ч назад",
-  "daysAgo": "{{count}}д назад"
+  "daysAgo": "{{count}}д назад",
+  "buyBook": "Купить книгу",
+  "noResources": "Для этой главы не найдено связанных ресурсов",
+  "noContent": "Нет содержимого"
 }

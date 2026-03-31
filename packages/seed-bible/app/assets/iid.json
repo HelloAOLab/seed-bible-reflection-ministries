@@ -302,5 +302,9 @@
   "justNow": "Baru saja",
   "minutesAgo": "{{count}} menit lalu",
   "hoursAgo": "{{count}} jam lalu",
-  "daysAgo": "{{count}} hari lalu"
+  "daysAgo": "{{count}} hari lalu",
+  "buyBook": "Beli Buku",
+  "noResources": "Tidak ada sumber terkait untuk bab ini",
+  "discover": "Jelajahi",
+  "noContent": "Tidak ada konten"
 }
