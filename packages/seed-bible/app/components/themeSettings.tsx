@@ -6671,7 +6671,7 @@ const SettingsUI = () => {
           </>
         )}
         {/* Heading Font */}
-        <div
+        {/*<div
           style={{
             fontSize: "14px",
             fontWeight: "500",
@@ -6720,7 +6720,7 @@ const SettingsUI = () => {
               ))}
             </div>
           )}
-        </div>
+        </div>*/}
 
         {/* Body Font */}
         <div

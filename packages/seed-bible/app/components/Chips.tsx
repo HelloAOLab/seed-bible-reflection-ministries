@@ -158,7 +158,7 @@ const SharePopup = ({
         <div
           onClick={(e) => e.stopPropagation()}
           style={{
-            background: "var(--pageBackground)",
+            background: "var(--pageBackground, #ffff)",
             borderRadius: 16,
             padding: "20px 24px",
             maxWidth: 380,
