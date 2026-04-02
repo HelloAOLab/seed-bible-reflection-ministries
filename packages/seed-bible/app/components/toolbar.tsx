@@ -405,9 +405,7 @@ export function Toolbar() {
                       (t) => t?.label === presetToolName
                     );
 
-                    setTimeout(() => {
-                      exploreTool?.onClick?.();
-                    }, 0);
+                    exploreTool?.onClick?.();
                   }
                 }}
               >
