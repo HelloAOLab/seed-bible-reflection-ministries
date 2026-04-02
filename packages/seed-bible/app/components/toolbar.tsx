@@ -405,7 +405,9 @@ export function Toolbar() {
                       (t) => t?.label === presetToolName
                     );
 
-                    exploreTool?.onClick?.();
+                   requestAnimationFrame(() => {
+      exploreTool?.onClick?.();
+    });
                   }
                 }}
               >
