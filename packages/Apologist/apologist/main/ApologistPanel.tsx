@@ -47,6 +47,7 @@ function ApologistPanelWrapper({ id }) {
   const [chapterData, setChapterData] = useState(
     globalThis.GlobalSearchChapterData || null
   );
+  const [isApologistLoading, setIsApologistLoading] = useState(true);
   const [searchTrigger, setSearchTrigger] = useState(0);
 
   // ── Expose open-in-ministries-tab function ──
@@ -55,6 +56,11 @@ function ApologistPanelWrapper({ id }) {
     setMinistriesTitle(title || "Preview");
     setActiveTab("ministries");
   }, []);
+  useEffect(() => {
+    if (activeTab === "discovery") {
+      setIsApologistLoading(true);
+    }
+  }, [activeTab, searchTrigger]);
 
   useEffect(() => {
     globalThis.ApologistOpenInMinistriesTab = openInMinistriesTab;
@@ -277,8 +283,31 @@ function ApologistPanelWrapper({ id }) {
             display: activeTab === "discovery" ? "block" : "none",
             height: "100%",
             marginBottom: isMobile ? "50px" : "0px",
+            position: "relative",
           }}
         >
+          {/* 🔥 Fallback UI (mobile only) */}
+          {isMobile && isApologistLoading && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "var(--background, #000)",
+                zIndex: 10,
+              }}
+            >
+              <div style={{ textAlign: "center" }}>
+                <div className="sg-spinner" />
+                <div style={{ marginTop: "10px", fontSize: "14px" }}>
+                  Loading Discovery...
+                </div>
+              </div>
+            </div>
+          )}
+
           <Apologist
             search={searchQuery}
             trigger={searchTrigger}
@@ -287,6 +316,8 @@ function ApologistPanelWrapper({ id }) {
             label={searchLabel}
             chapterData={chapterData}
             setCameFromDiscovery={setCameFromDiscovery}
+            // 👇 ADD THIS LINE
+            onReady={() => setIsApologistLoading(false)}
           />
         </div>
 
