@@ -1186,7 +1186,7 @@ function Apologist({
 
           const payload = {
             query,
-            limit: 100,
+            limit: 20,
             filters: {
               team_ids: [160],
               types: ["article", "book", "url", "media", "youtube", "episode"],
@@ -1238,11 +1238,25 @@ function Apologist({
 
           if (cancelled) return;
 
-          results = buildHybridRankedResults(
-            queryResultPairs,
-            currentLabel || trimmedQuery,
-            chapterContextData
-          );
+          setAllData([]);
+          setData([]);
+          setHasMore(false);
+          setLoading(true);
+
+          setTimeout(() => {
+            const processed = buildHybridRankedResults(
+              queryResultPairs,
+              currentLabel || trimmedQuery,
+              chapterContextData
+            );
+
+            if (cancelled) return;
+
+            setAllData(processed);
+            setData(processed.slice(0, 10));
+            setHasMore(processed.length > 10);
+            setLoading(false);
+          }, 0);
         } else {
           const singleResults = await fetchQueryResults(apiQuery);
 
