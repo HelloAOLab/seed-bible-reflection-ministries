@@ -400,12 +400,13 @@ export function Toolbar() {
                   } else {
                     globalThis.isDiscoveryOpen = true;
                     globalThis.IsVerseClicked = false;
-                    setActiveMoreApp(presetToolName);
+
                     const exploreTool = tools?.find(
                       (t) => t?.label === presetToolName
                     );
 
                     exploreTool?.onClick?.();
+                    setActiveMoreApp(presetToolName);
                   }
                 }}
               >

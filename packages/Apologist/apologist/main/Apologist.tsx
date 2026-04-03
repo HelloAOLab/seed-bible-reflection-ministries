@@ -1239,20 +1239,13 @@ function Apologist({
           if (cancelled) return;
 
           // 📱 MOBILE FALLBACK (ADD THIS BLOCK)
-          if (globalThis.IsMobileNow()) {
-            results = dedupeResults(
-              queryResultPairs.flatMap((q) => q.results)
-            ).slice(0, 20);
 
-            console.log("⚡ MOBILE FALLBACK");
-          } else {
-            // 💻 EXISTING LOGIC (unchanged)
-            results = buildHybridRankedResults(
-              queryResultPairs,
-              currentLabel || trimmedQuery,
-              chapterContextData
-            );
-          }
+          // 💻 EXISTING LOGIC (unchanged)
+          results = buildHybridRankedResults(
+            queryResultPairs,
+            currentLabel || trimmedQuery,
+            chapterContextData
+          );
         } else {
           const singleResults = await fetchQueryResults(apiQuery);
 
