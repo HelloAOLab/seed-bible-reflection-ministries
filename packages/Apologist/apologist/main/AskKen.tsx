@@ -605,4 +605,6 @@ function AskKenTab({ context, label }) {
     </div>
   );
 }
+globalThis.AskKenTab = AskKenTab;
+
 return AskKenTab;

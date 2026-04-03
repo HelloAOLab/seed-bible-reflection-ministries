@@ -1056,7 +1056,6 @@ function Apologist({
   label = "",
   chapterData = null,
   setCameFromDiscovery,
-  onReady,
 }) {
   const { t } = useSideBarContext();
   const { openOnMobile, isMobile } = useSideBarContext();
@@ -1274,7 +1273,7 @@ function Apologist({
 
         setAllData(results);
         setData(results.slice(0, 10));
-        if (onReady) onReady();
+
         setHasMore(results.length > 10);
 
         lastSearchKeyRef.current = normalizedSearchKey;

@@ -12,10 +12,8 @@
  */
 const { useSideBarContext } = await import("app.hooks.sideBar");
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
-
-const AskKenTab = await thisBot.AskKen();
-const MinistriesTab = await thisBot.MinistriesTab();
 const getStyleOf = await thisBot.GetStyle();
+
 const G = globalThis as any;
 
 // ── Logo URL (same icon used in the Apologist toolbar) ──
@@ -47,8 +45,10 @@ function ApologistPanelWrapper({ id }) {
   const [chapterData, setChapterData] = useState(
     globalThis.GlobalSearchChapterData || null
   );
-  const [isApologistLoading, setIsApologistLoading] = useState(true);
+
   const [searchTrigger, setSearchTrigger] = useState(0);
+  const isNothingReady =
+    !globalThis.AskKenTab || !globalThis.MinistriesTab || !globalThis.Apologist;
 
   // ── Expose open-in-ministries-tab function ──
   const openInMinistriesTab = useCallback((url, title) => {
@@ -56,11 +56,6 @@ function ApologistPanelWrapper({ id }) {
     setMinistriesTitle(title || "Preview");
     setActiveTab("ministries");
   }, []);
-  useEffect(() => {
-    if (activeTab === "discovery") {
-      setIsApologistLoading(true);
-    }
-  }, [activeTab, searchTrigger]);
 
   useEffect(() => {
     globalThis.ApologistOpenInMinistriesTab = openInMinistriesTab;
@@ -159,16 +154,20 @@ function ApologistPanelWrapper({ id }) {
   }, []);
 
   // ── Get the Apologist component ──
-  const Apologist = globalThis.Apologist;
-
-  if (!Apologist) {
+  if (isNothingReady) {
     return (
-      <div className="apologist-not-loaded">
-        <span className="material-symbols-outlined">extension_off</span>
-        <p>Apologist component not loaded.</p>
-        <p style={{ fontSize: "0.75rem", opacity: 0.6 }}>
-          Ensure the Apologist package is active.
-        </p>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div className="sg-spinner" />
+          <div style={{ marginTop: 10 }}>Opening panel...</div>
+        </div>
       </div>
     );
   }
@@ -287,28 +286,8 @@ function ApologistPanelWrapper({ id }) {
           }}
         >
           {/* 🔥 Fallback UI (mobile only) */}
-          {globalThis.IsMobileNow() && isApologistLoading && (
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "var(--background, #000)",
-                zIndex: 10,
-              }}
-            >
-              <div style={{ textAlign: "center" }}>
-                <div className="sg-spinner" />
-                <div style={{ marginTop: "10px", fontSize: "14px" }}>
-                  Loading Discovery...
-                </div>
-              </div>
-            </div>
-          )}
 
-          <Apologist
+          <globalThis.Apologist
             search={searchQuery}
             trigger={searchTrigger}
             level={searchLevel}
@@ -317,7 +296,6 @@ function ApologistPanelWrapper({ id }) {
             chapterData={chapterData}
             setCameFromDiscovery={setCameFromDiscovery}
             // 👇 ADD THIS LINE
-            onReady={() => setIsApologistLoading(false)}
           />
         </div>
 
@@ -328,7 +306,7 @@ function ApologistPanelWrapper({ id }) {
             height: "100%",
           }}
         >
-          <MinistriesTab
+          <globalThis.MinistriesTab
             url={ministriesUrl}
             title={ministriesTitle}
             onTouchStart={handleTouchStart}
@@ -346,7 +324,7 @@ function ApologistPanelWrapper({ id }) {
             height: "100%",
           }}
         >
-          <AskKenTab context={searchQuery} label={searchLabel} />
+          <globalThis.AskKenTab context={searchQuery} label={searchLabel} />
         </div>
       </div>
 

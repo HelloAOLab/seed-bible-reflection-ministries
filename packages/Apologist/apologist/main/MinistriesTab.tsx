@@ -80,4 +80,5 @@ function MinistriesTab({
     </div>
   );
 }
+globalThis.MinistriesTab = MinistriesTab;
 return MinistriesTab;
