@@ -7,6 +7,12 @@
 if (!globalThis.Apologist) {
   await thisBot.Apologist();
 }
+if (!globalThis.AskKenTab) {
+  await thisBot.AskKen();
+}
+if (!globalThis.MinistriesTab) {
+  await thisBot.MinistriesTab();
+}
 
 // Now get or load the panel wrapper
 const ApologistPanelWrapper = globalThis.ApologistPanelWrapper;
