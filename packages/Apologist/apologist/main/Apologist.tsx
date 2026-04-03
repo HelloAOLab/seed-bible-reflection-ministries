@@ -1056,6 +1056,7 @@ function Apologist({
   label = "",
   chapterData = null,
   setCameFromDiscovery,
+  onReady,
 }) {
   const { t } = useSideBarContext();
   const { openOnMobile, isMobile } = useSideBarContext();
@@ -1222,7 +1223,7 @@ function Apologist({
           const queryPlan = uniqueQueries([
             currentLabel || trimmedQuery,
             ...chapterQueries,
-          ]).slice(0, 1);
+          ]).slice(0, 3);
 
           normalizedSearchKey = `hybrid:${queryPlan.join("|").toLowerCase()}`;
 
@@ -1273,6 +1274,7 @@ function Apologist({
 
         setAllData(results);
         setData(results.slice(0, 10));
+        if (onReady) onReady();
         setHasMore(results.length > 10);
 
         lastSearchKeyRef.current = normalizedSearchKey;
