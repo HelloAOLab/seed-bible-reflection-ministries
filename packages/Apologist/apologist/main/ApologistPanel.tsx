@@ -287,7 +287,7 @@ function ApologistPanelWrapper({ id }) {
           }}
         >
           {/* 🔥 Fallback UI (mobile only) */}
-          {isMobile && isApologistLoading && (
+          {globalThis.IsMobileNow() && isApologistLoading && (
             <div
               style={{
                 position: "absolute",
