@@ -1222,7 +1222,7 @@ function Apologist({
           const queryPlan = uniqueQueries([
             currentLabel || trimmedQuery,
             ...chapterQueries,
-          ]).slice(0, 3);
+          ]).slice(0, 1);
 
           normalizedSearchKey = `hybrid:${queryPlan.join("|").toLowerCase()}`;
 
@@ -1238,25 +1238,21 @@ function Apologist({
 
           if (cancelled) return;
 
-          setAllData([]);
-          setData([]);
-          setHasMore(false);
-          setLoading(true);
+          // 📱 MOBILE FALLBACK (ADD THIS BLOCK)
+          if (globalThis.IsMobileNow()) {
+            results = dedupeResults(
+              queryResultPairs.flatMap((q) => q.results)
+            ).slice(0, 20);
 
-          setTimeout(() => {
-            const processed = buildHybridRankedResults(
+            console.log("⚡ MOBILE FALLBACK");
+          } else {
+            // 💻 EXISTING LOGIC (unchanged)
+            results = buildHybridRankedResults(
               queryResultPairs,
               currentLabel || trimmedQuery,
               chapterContextData
             );
-
-            if (cancelled) return;
-
-            setAllData(processed);
-            setData(processed.slice(0, 10));
-            setHasMore(processed.length > 10);
-            setLoading(false);
-          }, 0);
+          }
         } else {
           const singleResults = await fetchQueryResults(apiQuery);
 
