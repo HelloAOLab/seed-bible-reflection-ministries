@@ -416,7 +416,7 @@ export function Toolbar() {
                       setIsDummyLoading(true);
                       setTimeout(() => {
                         exploreTool.onClick();
-                      }, 7000);
+                      }, 3000);
                       setHasOpenedOnce(true);
                     } else {
                       exploreTool.onClick();
@@ -425,7 +425,7 @@ export function Toolbar() {
                     setActiveMoreApp(presetToolName);
                     setTimeout(() => {
                       setIsDummyLoading(false);
-                    }, 7000);
+                    }, 3000);
                   }
                 }}
               >

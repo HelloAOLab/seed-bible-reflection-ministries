@@ -694,6 +694,7 @@ export function TabsProvider({ children }) {
         tabs,
         addTab,
         removeTab,
+
         updateTab,
         folders,
         addFolder,
@@ -710,6 +711,7 @@ export function TabsProvider({ children }) {
         moveMultipleTabs,
         updateToolsForSpace,
         getAllTabsInSpace,
+
         replaceActiveSpaceWithJSON,
         updateSpace,
         addSpace,
