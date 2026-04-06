@@ -1758,16 +1758,6 @@ function SideBar({ panelsNumber }) {
                                         type: "normal",
                                         items: [
                                           {
-                                            icon: (
-                                              <MenuIcon name="bookmark_remove" />
-                                            ),
-                                            title: "Remove Bookmark",
-                                            onClick: () => {
-                                              handleRemoveBookmark(tabId);
-                                              closePopupSettings();
-                                            },
-                                          },
-                                          {
                                             icon: <MenuIcon name="delete" />,
                                             title: t("deleteTab"),
                                             onClick: () => {
@@ -1775,7 +1765,6 @@ function SideBar({ panelsNumber }) {
                                               removeTab(tabId);
                                               closePopupSettings();
                                             },
-                                            active: TabOptions.Delete.active,
                                           },
                                         ].filter(Boolean),
                                       };
@@ -1833,21 +1822,12 @@ function SideBar({ panelsNumber }) {
                         type: "normal",
                         items: [
                           {
-                            icon: <MenuIcon name="bookmark" />,
-                            title: "Bookmark",
-                            onClick: () => {
-                              closePopupSettings();
-                              setTimeout(() => handleBookmarkTab(el.id), 100);
-                            },
-                          },
-                          {
                             icon: <MenuIcon name="delete" />,
                             title: t("deleteTab"),
                             onClick: () => {
                               removeTab(el.id);
                               closePopupSettings();
                             },
-                            active: TabOptions.Delete.active,
                           },
                         ].filter(Boolean),
                       };
@@ -2560,22 +2540,27 @@ function SideBar({ panelsNumber }) {
                       openPopupSettings(AddingOption(), true);
                     }, 600);
                   }}
-                  onMouseUp={() => {
+                  onMouseUp={(e) => {
                     clearTimeout(holdTimeout.current.time);
                     if (!holdTimeout.current.clicked) {
-                      addTab({
-                        id: uuid(),
-                        taken: false,
-                        data: {
-                          use: "thePage",
-                          type: "book",
-                          book: "Genesis",
-                          bookId: "GEN",
-                          chapter: 1,
-                          translation: "NASB95",
-                          shortName: "NASB95",
-                        },
-                      });
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setOpenSidebar(true);
+                      // setCurrentExperience(0);
+                      globalThis.MakingNewTab = true;
+                      // addTab({
+                      //   id: uuid(),
+                      //   taken: false,
+                      //   data: {
+                      //     use: "thePage",
+                      //     type: "book",
+                      //     book: "Genesis",
+                      //     bookId: "GEN",
+                      //     chapter: 1,
+                      //     translation: "AAB",
+                      //     shortName: "AAB",
+                      //   },
+                      // });
                     }
                     holdTimeout.current.clicked = false;
                   }}
