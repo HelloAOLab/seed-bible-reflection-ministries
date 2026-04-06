@@ -1749,7 +1749,7 @@ function SideBar({ panelsNumber }) {
                                     </div>
                                   </div>
                                 </div>
-                                <div
+                                { tabs.length>1 && <div
                                   className="mobile-tab-actions"
                                   onClick={(e: any) => {
                                     e.stopPropagation();
@@ -1770,7 +1770,7 @@ function SideBar({ panelsNumber }) {
                                     }}
                                   >
                                     <MenuIcon name={"more_vert"} />
-                                  </div>
+                                  </div>}
                                 )}
                               </div>
                             ) : null;
@@ -1811,7 +1811,7 @@ function SideBar({ panelsNumber }) {
                     </div>
                   </div>
                 </div>
-                <div
+                {tabs.length>1 <div
                   className="mobile-tab-actions"
                   onClick={(e: any) => {
                     e.stopPropagation();
@@ -1831,7 +1831,7 @@ function SideBar({ panelsNumber }) {
                     }}
                   >
                     <MenuIcon name={"more_vert"} />
-                  </div>
+                  </div>}
                 )}
               </div>
             ))}
