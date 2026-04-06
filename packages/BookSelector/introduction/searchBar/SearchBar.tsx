@@ -1804,7 +1804,6 @@ const SideBarChapters = (props: {
         if (globalThis.CloseNewList) CloseNewList();
         setTimeout(() => {
           if (globalThis.MakingNewTab) {
-            console.log("[SearchBar] Add new tab!");
             const tab = {
               id: uuid(),
               taken: false,

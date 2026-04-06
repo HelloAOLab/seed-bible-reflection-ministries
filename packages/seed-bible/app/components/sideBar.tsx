@@ -2539,10 +2539,8 @@ function SideBar({ panelsNumber }) {
                     }, 600);
                   }}
                   onMouseUp={(e) => {
-                    console.log("[SideBar] Add tab button: Mouse up!");
                     clearTimeout(holdTimeout.current.time);
                     if (!holdTimeout.current.clicked) {
-                      console.log("[SideBar] Add new tab!");
                       e.preventDefault();
                       e.stopPropagation();
                       setOpenSidebar(true);
