@@ -46,6 +46,16 @@ export function Toolbar() {
 
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const moreMenuRef = useRef<any>(null);
+  const moreTools = tools ? tools.filter((t: any) => t?.active !== false) : [];
+  const mobileBookLogo =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
+  const presetToolBarIcon =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.icon;
+  const presetToolBarTitle =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.title;
+  const presetToolName =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon
+      ?.toolName;
   useEffect(() => {
     os.addBotListener(thisBot, "onMobileScrollDown", (data) => {
       setShowMoreMenu(false);
@@ -62,6 +72,21 @@ export function Toolbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showMoreMenu]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const exploreTool = tools?.find(
+        (t) => t?.label || "Discovery" === presetToolName
+      );
+
+      exploreTool?.onClick?.();
+
+      setTimeout(() => {
+        globalThis.RemoveApplicationByLabel?.(presetToolName);
+      }, 100);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const [activeMoreApp, setActiveMoreApp] = useState(G.ActiveMoreApp || null);
   globalThis.setActiveMoreApp = setActiveMoreApp;
@@ -204,17 +229,6 @@ export function Toolbar() {
     });
     return () => window.removeEventListener("contextmenu", handleContextMenu);
   }, []);
-
-  const moreTools = tools ? tools.filter((t: any) => t?.active !== false) : [];
-  const mobileBookLogo =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
-  const presetToolBarIcon =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.icon;
-  const presetToolBarTitle =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.title;
-  const presetToolName =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon
-      ?.toolName;
 
   if (!showToolbar) return <></>;
 
@@ -404,7 +418,6 @@ export function Toolbar() {
                     const exploreTool = tools?.find(
                       (t) => t?.label === presetToolName
                     );
-
                     exploreTool?.onClick?.();
                     setActiveMoreApp(presetToolName);
                   }
