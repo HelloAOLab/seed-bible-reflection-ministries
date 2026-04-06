@@ -14,6 +14,8 @@ const G = globalThis as any;
 // Simple, single-toolbar component (no edit layer). Main logic unchanged.
 export function Toolbar() {
   const [mounted, setMounted] = useState(false);
+  const [isDummyLoading, setIsDummyLoading] = useState(false);
+  const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -73,14 +75,11 @@ export function Toolbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showMoreMenu]);
   useEffect(() => {
-    
-      const exploreTool = tools?.find(
-        (t) => t?.label || "Discovery" === presetToolName
-      );
-      exploreTool?.onClick?.();
-      setTimeout(() => {
-  globalThis.RemoveApplicationByLabel?.(presetToolName);
-}, 100);
+    const exploreTool = tools?.find(
+      (t) => t?.label || "Discovery" === presetToolName
+    );
+
+    exploreTool?.onClick?.();
   }, []);
 
   const [activeMoreApp, setActiveMoreApp] = useState(G.ActiveMoreApp || null);
@@ -226,6 +225,26 @@ export function Toolbar() {
   }, []);
 
   if (!showToolbar) return <></>;
+
+  if (isDummyLoading) {
+    return (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(0,0,0,0.7)",
+          zIndex: 999,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#fff",
+          fontSize: "16px",
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <>
@@ -413,8 +432,20 @@ export function Toolbar() {
                     const exploreTool = tools?.find(
                       (t) => t?.label === presetToolName
                     );
-                    exploreTool?.onClick?.();
+                    if (!hasOpenedOnce) {
+                      setIsDummyLoading(true);
+                      setTimeout(() => {
+                        exploreTool.onClick();
+                      }, 4000);
+                      setHasOpenedOnce(true);
+                    } else {
+                      exploreTool.onClick();
+                    }
+
                     setActiveMoreApp(presetToolName);
+                    setTimeout(() => {
+                      setIsDummyLoading(false);
+                    }, 4000);
                   }
                 }}
               >
