@@ -358,8 +358,10 @@ const CircleCounter = ({ data, book, chapter }) => {
 };
 
 function Tab({
+  tabs,
   el,
   activeTab,
+
   setActiveTab,
   setIsDragging,
   setElement,
@@ -676,7 +678,7 @@ function Tab({
             />
           </div>
 
-          {!sharedTab && (
+          {!sharedTab && tabs.length > 1 && (
             <div className="tab-actions">
               {!removeBookMark && onBookmarkClick && (
                 <span
@@ -1472,8 +1474,8 @@ function SideBar({ panelsNumber }) {
                 book: "Genesis",
                 bookId: "GEN",
                 chapter: 1,
-                translation: "AAB",
-                shortName: "AAB",
+                translation: "NASB95",
+                shortName: "NASB95",
               },
             });
             closePopupSettings();
@@ -1610,8 +1612,8 @@ function SideBar({ panelsNumber }) {
           book: "Genesis",
           bookId: "GEN",
           chapter: 1,
-          translation: "AAB",
-          shortName: "AAB",
+          translation: "NASB95",
+          shortName: "NASB95",
         },
       };
       addTab(newTab);
@@ -1762,15 +1764,14 @@ function SideBar({ panelsNumber }) {
                                             removeTab(tabId);
                                             closePopupSettings();
                                           },
-                                          active: TabOptions.Delete.active,
-                                        },
-                                      ].filter(Boolean),
-                                    };
-                                    openPopupSettings(options);
-                                  }}
-                                >
-                                  <MenuIcon name={"more_vert"} />
-                                </div>
+                                        ].filter(Boolean),
+                                      };
+                                      openPopupSettings(options);
+                                    }}
+                                  >
+                                    <MenuIcon name={"more_vert"} />
+                                  </div>
+                                )}
                               </div>
                             ) : null;
                           })
@@ -1824,15 +1825,14 @@ function SideBar({ panelsNumber }) {
                             removeTab(el.id);
                             closePopupSettings();
                           },
-                          active: TabOptions.Delete.active,
-                        },
-                      ].filter(Boolean),
-                    };
-                    openPopupSettings(options);
-                  }}
-                >
-                  <MenuIcon name={"more_vert"} />
-                </div>
+                        ].filter(Boolean),
+                      };
+                      openPopupSettings(options);
+                    }}
+                  >
+                    <MenuIcon name={"more_vert"} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -2820,6 +2820,7 @@ function SideBar({ panelsNumber }) {
             .map((el, index) => (
               <Tab
                 key={el.id}
+                tabs={tabs}
                 el={el}
                 index={index}
                 onlineUsers={onlineUsers}
@@ -2864,8 +2865,8 @@ function SideBar({ panelsNumber }) {
                       book: "Genesis",
                       bookId: "GEN",
                       chapter: 1,
-                      translation: "AAB",
-                      shortName: "AAB",
+                      translation: "NASB95",
+                      shortName: "NASB95",
                     },
                   });
                 }
@@ -3027,7 +3028,6 @@ export const SpaceUI = () => {
                 <MobileSettingsIcon filter="var(--filter-mode)" />
               </span>
               <SettingsProfile />
-              <UserProfile />
             </>
           ) : (
             <>

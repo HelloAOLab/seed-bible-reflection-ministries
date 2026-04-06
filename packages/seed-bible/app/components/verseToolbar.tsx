@@ -1,4 +1,6 @@
 const { useState, useEffect, useRef, useMemo } = os.appHooks;
+import { useBibleContext } from "app.hooks.bibleVariables";
+const { useSideBarContext } = await import("app.hooks.sideBar");
 import {
   MenuIcon,
   ApologistIcon,
@@ -58,6 +60,8 @@ export function VerseToolbar({
   };
 
   const selectionSettings = getSelectionSettings();
+  const { tools } = useBibleContext();
+  const { t } = useSideBarContext();
 
   const [selectedColor, setSelectedColor] = useState("#FDE047");
   const [customColors, setCustomColors] = useState(
@@ -288,6 +292,14 @@ export function VerseToolbar({
   const removeBookMark =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.appSettings
       ?.removeBookMark;
+  let lastKey = "";
+  const vc = globalThis.ON_VERSE_CLICK;
+  if (!vc || !vc.text) return;
+
+  // Build a unique key to detect changes
+  const key = `${vc.book}-${vc.chapter}-${vc.verseNumber}`;
+  const isKeySame = key === lastKey;
+  lastKey = key;
 
   return (
     <>
@@ -650,6 +662,29 @@ export function VerseToolbar({
                       <span>{t("highlight")}</span>
                     </button>
                   )}
+
+                {globalThis.IsMobileNow() && (
+                  <button
+                    className="mobile-action-btn"
+                    onClick={() => {
+                      globalThis.isDiscoveryOpen = true;
+                      globalThis.IsVerseClicked = true;
+
+                      const toolToOpen =
+                        globalThis.ActiveMoreApp || "Discovery";
+                      globalThis.SetActiveMoreApp("Discovery");
+                      const exploreTool = tools?.find(
+                        (t) => t?.label === toolToOpen
+                      );
+                      setTimeout(() => {
+                        exploreTool?.onClick?.();
+                      }, 0);
+                    }}
+                  >
+                    <span className="material-symbols-outlined">explore</span>
+                    <span className="mobile-btn-label">{t("discover")}</span>
+                  </button>
+                )}
                 {menuOptions
                   .filter((o: any) => {
                     const title =
