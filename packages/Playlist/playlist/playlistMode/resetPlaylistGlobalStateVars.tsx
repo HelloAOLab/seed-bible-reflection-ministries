@@ -8,6 +8,7 @@ G.CustomIconRestorePlaylist = null;
 G.SelectedIconRestorePlaylist = null;
 G.DescriptionRestorePlaylist = "";
 G.OpenModalEditName = false;
+G.EDIT_ANNOTATION_DATA = false;
 G.EditAttachmentItem = null;
 G.StopAttachLinkRetainData = true;
 G.EditRichText = null;
@@ -18,6 +19,10 @@ G.EditAnnoDataRestorePlaylist = null;
 G.RenamingPlaylist = false;
 G.EditAnnoDataRestorePlaylist = null;
 G.LastEditingAnnotationAddress = null;
+G.RecordingValue = false;
+G.EditAnnoDataRestorePlaylist = null;
+G.AddAnotationUI = false;
+G.EditIDRestore = false;
 G.SetEditData?.((prev: any) => ({
   ...prev,
   id: null,
@@ -33,7 +38,11 @@ G.SetEditData?.((prev: any) => ({
 G.HISTORYExploreMode = false;
 G[`${id}creatingPlaylistName`] = "";
 G[`${id}creatingPlaylist`] = false;
+G.PreviousHTML = "";
 G[`${id}SetCreatingPlaylist`]?.(false);
+G.AnnotationsRecordingData = null;
+G.hasRecording = false;
+G.VideoRecordTab = null;
 G.SetRenamingPlaylistEditTitle?.(false);
 G.SetRenamingPlaylist?.(false);
 G.SetOpenModalEditName?.(false);

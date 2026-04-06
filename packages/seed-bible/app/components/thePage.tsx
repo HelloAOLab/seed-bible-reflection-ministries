@@ -1371,6 +1371,10 @@ function ThePage({
           }
         }
 
+        shout("onVerseHighlightUpdated", {
+          highlightedVerses: newHighlighted,
+        });
+
         return newHighlighted;
       });
     },
@@ -1420,6 +1424,10 @@ function ThePage({
         };
         setTagMask(thisBot, "tabHighlights", updatedMaskHighlights, "local");
 
+        shout("onVerseHighlightUpdated", {
+          highlightedVerses: newHighlighted,
+        });
+
         return newHighlighted;
       });
     },
@@ -1466,6 +1474,10 @@ function ThePage({
           [tab.id]: newHighlighted,
         };
         setTagMask(thisBot, "tabHighlights", updatedMaskHighlights, "local");
+
+        shout("onVerseHighlightUpdated", {
+          highlightedVerses: newHighlighted,
+        });
 
         return newHighlighted;
       });
@@ -1588,9 +1600,10 @@ function ThePage({
       if (clickedVerses.length === 0) return;
       setWordHighlightsBC(color);
       // Apply the selected color to all clicked verses
-      clickedVerses.forEach((verseNum) => {
-        toggleVerseHighlight(verseNum, color);
-      });
+      // clickedVerses.forEach((verseNum) => {
+      //   toggleVerseHighlight(verseNum, color);
+      // });
+      toggleVerseHighlight(clickedVerses, color);
       EmitData("highlight", { verseNumbers: clickedVerses, color }); // Fixed: use clickedVerses instead of undefined verseNum
       // Clear clicked verses and hide toolbar
       setClickedVerses([]);

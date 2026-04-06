@@ -1186,7 +1186,7 @@ function Apologist({
 
           const payload = {
             query,
-            limit: 100,
+            limit: 20,
             filters: {
               team_ids: [160],
               types: ["article", "book", "url", "media", "youtube", "episode"],
@@ -1238,6 +1238,9 @@ function Apologist({
 
           if (cancelled) return;
 
+          // 📱 MOBILE FALLBACK (ADD THIS BLOCK)
+
+          // 💻 EXISTING LOGIC (unchanged)
           results = buildHybridRankedResults(
             queryResultPairs,
             currentLabel || trimmedQuery,
@@ -1263,6 +1266,7 @@ function Apologist({
 
         setAllData(results);
         setData(results.slice(0, 10));
+
         setHasMore(results.length > 10);
 
         lastSearchKeyRef.current = normalizedSearchKey;

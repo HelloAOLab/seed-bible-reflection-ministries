@@ -1,6 +1,6 @@
 import { getStyleOf } from "app.styles.styler";
 import { useTabsContext } from "app.hooks.tabs";
-import { useMouseMove, useClickAndHold } from "app.hooks.mouseMove";
+import { useMouseMove } from "app.hooks.mouseMove";
 import {
   DualScreenIcon,
   ThreeScreenIcon,
@@ -44,8 +44,7 @@ import {
   DogIcon,
   CoffeBeanIcon,
 } from "app.components.phosphoricons";
-// import { CircleCounter } from 'app.components.circleCounter'
-// console.log(CircleCounter, 'CircleCounter')
+
 const Reciver = getBot("system", "app.reciver");
 const { useState, useRef, useEffect, useMemo } = os.appHooks;
 
@@ -93,11 +92,10 @@ const CircleCounter = ({ data, book, chapter }) => {
     "#F59E0B",
   ];
 
-  // Helper to get user's visual style
   const getUserVisual = (userId, value, index) => {
     try {
       const visual = globalThis?.GetOrSetVisualInTags(value[0]);
-      // console.log(value,'the get inside')
+
       if (visual) {
         const IconComponent = icons[visual.iconIndex];
         const color = colors[visual.colorIndex];
@@ -358,8 +356,10 @@ const CircleCounter = ({ data, book, chapter }) => {
 };
 
 function Tab({
+  tabs,
   el,
   activeTab,
+
   setActiveTab,
   setIsDragging,
   setElement,
@@ -676,7 +676,7 @@ function Tab({
             />
           </div>
 
-          {!sharedTab && (
+          {!sharedTab && tabs.length > 1 && (
             <div className="tab-actions">
               {!removeBookMark && onBookmarkClick && (
                 <span
@@ -1600,23 +1600,13 @@ function SideBar({ panelsNumber }) {
       setRenameValue("");
     };
 
-    const mobileAddTab = () => {
-      const newTab = {
-        id: uuid(),
-        taken: false,
-        data: {
-          use: "thePage",
-          type: "book",
-          book: "Genesis",
-          bookId: "GEN",
-          chapter: 1,
-          translation: "NASB95",
-          shortName: "NASB95",
-        },
-      };
-      addTab(newTab);
-      setActiveTab(newTab.id);
-      globalThis.UpdateTab(newTab);
+    const mobileAddTab = (e) => {
+      setOpenOnMobile(false);
+      e.preventDefault();
+      e.stopPropagation();
+      setOpenSidebar(true);
+      // setCurrentExperience(0);
+      globalThis.MakingNewTab = true;
     };
 
     return (
@@ -1747,40 +1737,31 @@ function SideBar({ panelsNumber }) {
                                     </div>
                                   </div>
                                 </div>
-                                <div
-                                  className="mobile-tab-actions"
-                                  onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    const options = {
-                                      type: "normal",
-                                      items: [
-                                        {
-                                          icon: (
-                                            <MenuIcon name="bookmark_remove" />
-                                          ),
-                                          title: "Remove Bookmark",
-                                          onClick: () => {
-                                            handleRemoveBookmark(tabId);
-                                            closePopupSettings();
+                                {tabs.length > 1 && (
+                                  <div
+                                    className="mobile-tab-actions"
+                                    onClick={(e: any) => {
+                                      e.stopPropagation();
+                                      const options = {
+                                        type: "normal",
+                                        items: [
+                                          {
+                                            icon: <MenuIcon name="delete" />,
+                                            title: t("deleteTab"),
+                                            onClick: () => {
+                                              handleRemoveBookmark(tabId);
+                                              removeTab(tabId);
+                                              closePopupSettings();
+                                            },
                                           },
-                                        },
-                                        {
-                                          icon: <MenuIcon name="delete" />,
-                                          title: t("deleteTab"),
-                                          onClick: () => {
-                                            handleRemoveBookmark(tabId);
-                                            removeTab(tabId);
-                                            closePopupSettings();
-                                          },
-                                          active: TabOptions.Delete.active,
-                                        },
-                                      ].filter(Boolean),
-                                    };
-                                    openPopupSettings(options);
-                                  }}
-                                >
-                                  <MenuIcon name={"more_vert"} />
-                                </div>
+                                        ].filter(Boolean),
+                                      };
+                                      openPopupSettings(options);
+                                    }}
+                                  >
+                                    <MenuIcon name={"more_vert"} />
+                                  </div>
+                                )}
                               </div>
                             ) : null;
                           })
@@ -1820,37 +1801,30 @@ function SideBar({ panelsNumber }) {
                     </div>
                   </div>
                 </div>
-                <div
-                  className="mobile-tab-actions"
-                  onClick={(e: any) => {
-                    e.stopPropagation();
-                    const options = {
-                      type: "normal",
-                      items: [
-                        {
-                          icon: <MenuIcon name="bookmark" />,
-                          title: "Bookmark",
-                          onClick: () => {
-                            closePopupSettings();
-                            setTimeout(() => handleBookmarkTab(el.id), 100);
+                {tabs.length > 1 && (
+                  <div
+                    className="mobile-tab-actions"
+                    onClick={(e: any) => {
+                      e.stopPropagation();
+                      const options = {
+                        type: "normal",
+                        items: [
+                          {
+                            icon: <MenuIcon name="delete" />,
+                            title: t("deleteTab"),
+                            onClick: () => {
+                              removeTab(el.id);
+                              closePopupSettings();
+                            },
                           },
-                        },
-                        {
-                          icon: <MenuIcon name="delete" />,
-                          title: t("deleteTab"),
-                          onClick: () => {
-                            removeTab(el.id);
-                            closePopupSettings();
-                          },
-                          active: TabOptions.Delete.active,
-                        },
-                      ].filter(Boolean),
-                    };
-                    openPopupSettings(options);
-                  }}
-                >
-                  <MenuIcon name={"more_vert"} />
-                </div>
+                        ].filter(Boolean),
+                      };
+                      openPopupSettings(options);
+                    }}
+                  >
+                    <MenuIcon name={"more_vert"} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -2554,22 +2528,27 @@ function SideBar({ panelsNumber }) {
                       openPopupSettings(AddingOption(), true);
                     }, 600);
                   }}
-                  onMouseUp={() => {
+                  onMouseUp={(e) => {
                     clearTimeout(holdTimeout.current.time);
                     if (!holdTimeout.current.clicked) {
-                      addTab({
-                        id: uuid(),
-                        taken: false,
-                        data: {
-                          use: "thePage",
-                          type: "book",
-                          book: "Genesis",
-                          bookId: "GEN",
-                          chapter: 1,
-                          translation: "NASB95",
-                          shortName: "NASB95",
-                        },
-                      });
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setOpenSidebar(true);
+                      // setCurrentExperience(0);
+                      globalThis.MakingNewTab = true;
+                      // addTab({
+                      //   id: uuid(),
+                      //   taken: false,
+                      //   data: {
+                      //     use: "thePage",
+                      //     type: "book",
+                      //     book: "Genesis",
+                      //     bookId: "GEN",
+                      //     chapter: 1,
+                      //     translation: "AAB",
+                      //     shortName: "AAB",
+                      //   },
+                      // });
                     }
                     holdTimeout.current.clicked = false;
                   }}
@@ -2833,6 +2812,7 @@ function SideBar({ panelsNumber }) {
             .map((el, index) => (
               <Tab
                 key={el.id}
+                tabs={tabs}
                 el={el}
                 index={index}
                 onlineUsers={onlineUsers}

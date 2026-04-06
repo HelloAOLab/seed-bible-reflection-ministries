@@ -14,6 +14,8 @@ const G = globalThis as any;
 // Simple, single-toolbar component (no edit layer). Main logic unchanged.
 export function Toolbar() {
   const [mounted, setMounted] = useState(false);
+  const [isDummyLoading, setIsDummyLoading] = useState(false);
+  const [hasOpenedOnce, setHasOpenedOnce] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -46,6 +48,16 @@ export function Toolbar() {
 
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const moreMenuRef = useRef<any>(null);
+  const moreTools = tools ? tools.filter((t: any) => t?.active !== false) : [];
+  const mobileBookLogo =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
+  const presetToolBarIcon =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.icon;
+  const presetToolBarTitle =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.title;
+  const presetToolName =
+    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon
+      ?.toolName;
   useEffect(() => {
     os.addBotListener(thisBot, "onMobileScrollDown", (data) => {
       setShowMoreMenu(false);
@@ -62,6 +74,13 @@ export function Toolbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showMoreMenu]);
+  useEffect(() => {
+    const exploreTool = tools?.find(
+      (t) => t?.label || "Discovery" === presetToolName
+    );
+
+    exploreTool?.onClick?.();
+  }, []);
 
   const [activeMoreApp, setActiveMoreApp] = useState(G.ActiveMoreApp || null);
   globalThis.setActiveMoreApp = setActiveMoreApp;
@@ -205,17 +224,6 @@ export function Toolbar() {
     return () => window.removeEventListener("contextmenu", handleContextMenu);
   }, []);
 
-  const moreTools = tools ? tools.filter((t: any) => t?.active !== false) : [];
-  const mobileBookLogo =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
-  const presetToolBarIcon =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.icon;
-  const presetToolBarTitle =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon?.title;
-  const presetToolName =
-    tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.titlesAndIcon
-      ?.toolName;
-
   if (!showToolbar) return <></>;
 
   return (
@@ -344,7 +352,7 @@ export function Toolbar() {
                     ))}
                   </div>
                 )}
-                {/* <button
+                <button
                   className="mobile-navbar-btn more-btn"
                   title={activeMoreApp ? "Close" : "More"}
                   aria-label={activeMoreApp ? "Close" : "More"}
@@ -366,11 +374,16 @@ export function Toolbar() {
                     ) : (
                       <MoreIcon color="var(--text1)" />
                     )}
-                    <span className="mobile-btn-label" style={{ zoom: (globalThis as any).changes?.uiTextSize || 1 }}>
+                    <span
+                      className="mobile-btn-label"
+                      style={{
+                        zoom: (globalThis as any).changes?.uiTextSize || 1,
+                      }}
+                    >
                       {activeMoreApp ? "Close" : "More"}
                     </span>
                   </div>
-                </button> */}
+                </button>
               </div>
             ) : (
               <button
@@ -400,21 +413,35 @@ export function Toolbar() {
                   } else {
                     globalThis.isDiscoveryOpen = true;
                     globalThis.IsVerseClicked = false;
-                    setActiveMoreApp(presetToolName);
+
                     const exploreTool = tools?.find(
                       (t) => t?.label === presetToolName
                     );
+                    if (!hasOpenedOnce) {
+                      setIsDummyLoading(true);
+                      setTimeout(() => {
+                        exploreTool.onClick();
+                      }, 3000);
+                      setHasOpenedOnce(true);
+                    } else {
+                      exploreTool.onClick();
+                    }
 
+                    setActiveMoreApp(presetToolName);
                     setTimeout(() => {
-                      exploreTool?.onClick?.();
-                    }, 0);
+                      setIsDummyLoading(false);
+                    }, 3000);
                   }
                 }}
               >
                 <div className="mobile-btn-content">
-                  {activeMoreApp &&
-                  !globalThis.IsVerseClicked &&
-                  globalThis.isDiscoveryOpen ? (
+                  {isDummyLoading ? (
+                    <span className="material-symbols-outlined">
+                      hourglass_top
+                    </span>
+                  ) : activeMoreApp &&
+                    !globalThis.IsVerseClicked &&
+                    globalThis.isDiscoveryOpen ? (
                     <span className="material-symbols-outlined">close</span>
                   ) : (
                     <span className="material-symbols-outlined">
@@ -427,11 +454,13 @@ export function Toolbar() {
                       zoom: (globalThis as any).changes?.uiTextSize || 1,
                     }}
                   >
-                    {activeMoreApp &&
-                    !globalThis.IsVerseClicked &&
-                    globalThis.isDiscoveryOpen
-                      ? "Close"
-                      : presetToolBarTitle}
+                    {isDummyLoading
+                      ? "Loading..."
+                      : activeMoreApp &&
+                          !globalThis.IsVerseClicked &&
+                          globalThis.isDiscoveryOpen
+                        ? "Close"
+                        : presetToolBarTitle}
                   </span>
                 </div>
               </button>
