@@ -1749,20 +1749,22 @@ function SideBar({ panelsNumber }) {
                                     </div>
                                   </div>
                                 </div>
-                                { tabs.length>1 && <div
-                                  className="mobile-tab-actions"
-                                  onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    const options = {
-                                      type: "normal",
-                                      items: [
-                                        {
-                                          icon: <MenuIcon name="delete" />,
-                                          title: t("deleteTab"),
-                                          onClick: () => {
-                                            handleRemoveBookmark(tabId);
-                                            removeTab(tabId);
-                                            closePopupSettings();
+                                {tabs.length > 1 && (
+                                  <div
+                                    className="mobile-tab-actions"
+                                    onClick={(e: any) => {
+                                      e.stopPropagation();
+                                      const options = {
+                                        type: "normal",
+                                        items: [
+                                          {
+                                            icon: <MenuIcon name="delete" />,
+                                            title: t("deleteTab"),
+                                            onClick: () => {
+                                              handleRemoveBookmark(tabId);
+                                              removeTab(tabId);
+                                              closePopupSettings();
+                                            },
                                           },
                                         ].filter(Boolean),
                                       };
@@ -1770,7 +1772,7 @@ function SideBar({ panelsNumber }) {
                                     }}
                                   >
                                     <MenuIcon name={"more_vert"} />
-                                  </div>}
+                                  </div>
                                 )}
                               </div>
                             ) : null;
@@ -1811,19 +1813,21 @@ function SideBar({ panelsNumber }) {
                     </div>
                   </div>
                 </div>
-                {tabs.length>1 <div
-                  className="mobile-tab-actions"
-                  onClick={(e: any) => {
-                    e.stopPropagation();
-                    const options = {
-                      type: "normal",
-                      items: [
-                        {
-                          icon: <MenuIcon name="delete" />,
-                          title: t("deleteTab"),
-                          onClick: () => {
-                            removeTab(el.id);
-                            closePopupSettings();
+                {tabs.length > 1 && (
+                  <div
+                    className="mobile-tab-actions"
+                    onClick={(e: any) => {
+                      e.stopPropagation();
+                      const options = {
+                        type: "normal",
+                        items: [
+                          {
+                            icon: <MenuIcon name="delete" />,
+                            title: t("deleteTab"),
+                            onClick: () => {
+                              removeTab(el.id);
+                              closePopupSettings();
+                            },
                           },
                         ].filter(Boolean),
                       };
@@ -1831,7 +1835,7 @@ function SideBar({ panelsNumber }) {
                     }}
                   >
                     <MenuIcon name={"more_vert"} />
-                  </div>}
+                  </div>
                 )}
               </div>
             ))}
