@@ -1,6 +1,6 @@
 import { getStyleOf } from "app.styles.styler";
 import { useTabsContext } from "app.hooks.tabs";
-import { useMouseMove, useClickAndHold } from "app.hooks.mouseMove";
+import { useMouseMove } from "app.hooks.mouseMove";
 import {
   DualScreenIcon,
   ThreeScreenIcon,
@@ -92,11 +92,10 @@ const CircleCounter = ({ data, book, chapter }) => {
     "#F59E0B",
   ];
 
-  // Helper to get user's visual style
   const getUserVisual = (userId, value, index) => {
     try {
       const visual = globalThis?.GetOrSetVisualInTags(value[0]);
-      // console.log(value,'the get inside')
+
       if (visual) {
         const IconComponent = icons[visual.iconIndex];
         const color = colors[visual.colorIndex];
