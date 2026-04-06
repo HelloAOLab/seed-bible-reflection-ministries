@@ -358,8 +358,10 @@ const CircleCounter = ({ data, book, chapter }) => {
 };
 
 function Tab({
+  tabs,
   el,
   activeTab,
+
   setActiveTab,
   setIsDragging,
   setElement,
@@ -676,7 +678,7 @@ function Tab({
             />
           </div>
 
-          {!sharedTab && (
+          {!sharedTab && tabs.length > 1 && (
             <div className="tab-actions">
               {!removeBookMark && onBookmarkClick && (
                 <span
@@ -1747,40 +1749,42 @@ function SideBar({ panelsNumber }) {
                                     </div>
                                   </div>
                                 </div>
-                                <div
-                                  className="mobile-tab-actions"
-                                  onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    const options = {
-                                      type: "normal",
-                                      items: [
-                                        {
-                                          icon: (
-                                            <MenuIcon name="bookmark_remove" />
-                                          ),
-                                          title: "Remove Bookmark",
-                                          onClick: () => {
-                                            handleRemoveBookmark(tabId);
-                                            closePopupSettings();
+                                {tabs.length > 1 && (
+                                  <div
+                                    className="mobile-tab-actions"
+                                    onClick={(e: any) => {
+                                      e.stopPropagation();
+                                      const options = {
+                                        type: "normal",
+                                        items: [
+                                          {
+                                            icon: (
+                                              <MenuIcon name="bookmark_remove" />
+                                            ),
+                                            title: "Remove Bookmark",
+                                            onClick: () => {
+                                              handleRemoveBookmark(tabId);
+                                              closePopupSettings();
+                                            },
                                           },
-                                        },
-                                        {
-                                          icon: <MenuIcon name="delete" />,
-                                          title: t("deleteTab"),
-                                          onClick: () => {
-                                            handleRemoveBookmark(tabId);
-                                            removeTab(tabId);
-                                            closePopupSettings();
+                                          {
+                                            icon: <MenuIcon name="delete" />,
+                                            title: t("deleteTab"),
+                                            onClick: () => {
+                                              handleRemoveBookmark(tabId);
+                                              removeTab(tabId);
+                                              closePopupSettings();
+                                            },
+                                            active: TabOptions.Delete.active,
                                           },
-                                          active: TabOptions.Delete.active,
-                                        },
-                                      ].filter(Boolean),
-                                    };
-                                    openPopupSettings(options);
-                                  }}
-                                >
-                                  <MenuIcon name={"more_vert"} />
-                                </div>
+                                        ].filter(Boolean),
+                                      };
+                                      openPopupSettings(options);
+                                    }}
+                                  >
+                                    <MenuIcon name={"more_vert"} />
+                                  </div>
+                                )}
                               </div>
                             ) : null;
                           })
@@ -1820,37 +1824,39 @@ function SideBar({ panelsNumber }) {
                     </div>
                   </div>
                 </div>
-                <div
-                  className="mobile-tab-actions"
-                  onClick={(e: any) => {
-                    e.stopPropagation();
-                    const options = {
-                      type: "normal",
-                      items: [
-                        {
-                          icon: <MenuIcon name="bookmark" />,
-                          title: "Bookmark",
-                          onClick: () => {
-                            closePopupSettings();
-                            setTimeout(() => handleBookmarkTab(el.id), 100);
+                {tabs.length > 1 && (
+                  <div
+                    className="mobile-tab-actions"
+                    onClick={(e: any) => {
+                      e.stopPropagation();
+                      const options = {
+                        type: "normal",
+                        items: [
+                          {
+                            icon: <MenuIcon name="bookmark" />,
+                            title: "Bookmark",
+                            onClick: () => {
+                              closePopupSettings();
+                              setTimeout(() => handleBookmarkTab(el.id), 100);
+                            },
                           },
-                        },
-                        {
-                          icon: <MenuIcon name="delete" />,
-                          title: t("deleteTab"),
-                          onClick: () => {
-                            removeTab(el.id);
-                            closePopupSettings();
+                          {
+                            icon: <MenuIcon name="delete" />,
+                            title: t("deleteTab"),
+                            onClick: () => {
+                              removeTab(el.id);
+                              closePopupSettings();
+                            },
+                            active: TabOptions.Delete.active,
                           },
-                          active: TabOptions.Delete.active,
-                        },
-                      ].filter(Boolean),
-                    };
-                    openPopupSettings(options);
-                  }}
-                >
-                  <MenuIcon name={"more_vert"} />
-                </div>
+                        ].filter(Boolean),
+                      };
+                      openPopupSettings(options);
+                    }}
+                  >
+                    <MenuIcon name={"more_vert"} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -2833,6 +2839,7 @@ function SideBar({ panelsNumber }) {
             .map((el, index) => (
               <Tab
                 key={el.id}
+                tabs={tabs}
                 el={el}
                 index={index}
                 onlineUsers={onlineUsers}
