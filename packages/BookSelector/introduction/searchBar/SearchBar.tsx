@@ -1717,6 +1717,7 @@ const SideBarChapters = (props: {
     const { bookName, chapterNo, bookData, ...data } = props;
     setQuery("");
     if (globalThis?.findNameRank) {
+      console.log("[SearchBar] Open chapter with findNameRank!");
       const booksDetails = globalThis.findNameRank(bookName);
       const dataItem = {
         type: "chapter",
@@ -1796,6 +1797,7 @@ const SideBarChapters = (props: {
       globalThis.LAST_CLICKED_BOOK_CHAPTER = { ...dataItem };
 
       if (!dontOpen) {
+        console.log("[SearchBar] Were going to open the chapter!");
         shout("playSound", { soundName: "UI_Numpad_Click" });
 
         globalThis.SetSelectedVerses && SetSelectedVerses([]);
@@ -1828,6 +1830,7 @@ const SideBarChapters = (props: {
               globalThis?.setActiveMoreApp(null);
             }, 100);
           } else {
+            console.log("[SearchBar] Open chapter!");
             let chapterUrl = bookData.firstChapterApiLink.replace(
               "1.json",
               `${chapterNo}.json`
@@ -1853,6 +1856,7 @@ const SideBarChapters = (props: {
           setBookData(null);
         }
       } else {
+        console.log("[SearchBar] Dont open chapter, add to queue/playlist!");
         if (globalThis.SetQueue) {
           SetQueue(dataItem);
         } else {
@@ -1860,6 +1864,7 @@ const SideBarChapters = (props: {
         }
       }
     } else {
+      console.log("[SearchBar] Open chapter without findNameRank!");
       const chapterUrl = bookData.firstChapterApiLink.replace(
         "1.json",
         `${chapterNo}.json`
