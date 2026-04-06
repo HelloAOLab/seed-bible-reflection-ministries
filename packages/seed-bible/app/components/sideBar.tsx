@@ -44,8 +44,7 @@ import {
   DogIcon,
   CoffeBeanIcon,
 } from "app.components.phosphoricons";
-// import { CircleCounter } from 'app.components.circleCounter'
-// console.log(CircleCounter, 'CircleCounter')
+
 const Reciver = getBot("system", "app.reciver");
 const { useState, useRef, useEffect, useMemo } = os.appHooks;
 
