@@ -1071,15 +1071,19 @@ const presetThemes: typeof defaultThemes =
   presetConfig?.availableThemes?.length > 0
     ? presetConfig.availableThemes
     : defaultThemes;
+console.log(presetThemes, "presetConfig");
 
 if (presetThemes.length === 0) {
   console.error(
     "No themes available in preset configuration. Falling back to default themes."
   );
 }
+console.log(presetThemes, "presetThemes");
 
 export const defaultTheme = presetThemes[0]?.colors ?? builtinDefaultTheme;
+
 export const READY_THEMES = presetThemes;
+console.log(READY_THEMES, "READY_THEMES");
 
 // ----------- DEBOUNCE (no CDN needed) -----------
 function debounce(fn, delay = 250) {
@@ -6684,7 +6688,7 @@ const SettingsUI = () => {
           </>
         )}
         {/* Heading Font */}
-        <div
+        {/*<div
           style={{
             fontSize: "14px",
             fontWeight: "500",
@@ -6733,7 +6737,7 @@ const SettingsUI = () => {
               ))}
             </div>
           )}
-        </div>
+        </div>*/}
 
         {/* Body Font */}
         <div
