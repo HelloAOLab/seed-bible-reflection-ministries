@@ -1600,23 +1600,13 @@ function SideBar({ panelsNumber }) {
       setRenameValue("");
     };
 
-    const mobileAddTab = () => {
-      const newTab = {
-        id: uuid(),
-        taken: false,
-        data: {
-          use: "thePage",
-          type: "book",
-          book: "Genesis",
-          bookId: "GEN",
-          chapter: 1,
-          translation: "NASB95",
-          shortName: "NASB95",
-        },
-      };
-      addTab(newTab);
-      setActiveTab(newTab.id);
-      globalThis.UpdateTab(newTab);
+    const mobileAddTab = (e) => {
+      setOpenOnMobile(false);
+      e.preventDefault();
+      e.stopPropagation();
+      setOpenSidebar(true);
+      // setCurrentExperience(0);
+      globalThis.MakingNewTab = true;
     };
 
     return (
