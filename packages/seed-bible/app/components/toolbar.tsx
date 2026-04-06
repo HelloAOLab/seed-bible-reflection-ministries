@@ -73,19 +73,14 @@ export function Toolbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showMoreMenu]);
   useEffect(() => {
-    const timer = setTimeout(() => {
+    
       const exploreTool = tools?.find(
         (t) => t?.label || "Discovery" === presetToolName
       );
-
       exploreTool?.onClick?.();
-
       setTimeout(() => {
-        globalThis.RemoveApplicationByLabel?.(presetToolName);
-      }, 100);
-    }, 1500);
-
-    return () => clearTimeout(timer);
+  globalThis.RemoveApplicationByLabel?.(presetToolName);
+}, 100);
   }, []);
 
   const [activeMoreApp, setActiveMoreApp] = useState(G.ActiveMoreApp || null);
