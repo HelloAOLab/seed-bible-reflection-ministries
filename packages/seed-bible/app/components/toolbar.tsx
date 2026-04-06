@@ -226,26 +226,6 @@ export function Toolbar() {
 
   if (!showToolbar) return <></>;
 
-  if (isDummyLoading) {
-    return (
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "rgba(0,0,0,0.7)",
-          zIndex: 999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-          fontSize: "16px",
-        }}
-      >
-        Loading...
-      </div>
-    );
-  }
-
   return (
     <>
       <link
@@ -436,7 +416,7 @@ export function Toolbar() {
                       setIsDummyLoading(true);
                       setTimeout(() => {
                         exploreTool.onClick();
-                      }, 4000);
+                      }, 7000);
                       setHasOpenedOnce(true);
                     } else {
                       exploreTool.onClick();
@@ -445,14 +425,18 @@ export function Toolbar() {
                     setActiveMoreApp(presetToolName);
                     setTimeout(() => {
                       setIsDummyLoading(false);
-                    }, 4000);
+                    }, 7000);
                   }
                 }}
               >
                 <div className="mobile-btn-content">
-                  {activeMoreApp &&
-                  !globalThis.IsVerseClicked &&
-                  globalThis.isDiscoveryOpen ? (
+                  {isDummyLoading ? (
+                    <span className="material-symbols-outlined">
+                      hourglass_top
+                    </span>
+                  ) : activeMoreApp &&
+                    !globalThis.IsVerseClicked &&
+                    globalThis.isDiscoveryOpen ? (
                     <span className="material-symbols-outlined">close</span>
                   ) : (
                     <span className="material-symbols-outlined">
@@ -465,11 +449,13 @@ export function Toolbar() {
                       zoom: (globalThis as any).changes?.uiTextSize || 1,
                     }}
                   >
-                    {activeMoreApp &&
-                    !globalThis.IsVerseClicked &&
-                    globalThis.isDiscoveryOpen
-                      ? "Close"
-                      : presetToolBarTitle}
+                    {isDummyLoading
+                      ? "Loading..."
+                      : activeMoreApp &&
+                          !globalThis.IsVerseClicked &&
+                          globalThis.isDiscoveryOpen
+                        ? "Close"
+                        : presetToolBarTitle}
                   </span>
                 </div>
               </button>
