@@ -67,6 +67,7 @@ function MinistriesTab({
       <iframe
         className="ministries-iframe"
         src={url}
+        style={{ pointerEvents: globalThis.IsDragging ? "none" : "auto" }}
         title={title || "Preview"}
         referrerpolicy="strict-origin-when-cross-origin"
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"

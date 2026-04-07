@@ -1703,12 +1703,6 @@ const SideBarChapters = (props: {
     bookData: BookInterface;
     [key: string]: any;
   }) => {
-    if (globalThis?.ActiveMoreApp) {
-      (globalThis as any).RemoveApplicationByLabel(ActiveMoreApp);
-      (globalThis as any).makingApp = null;
-      globalThis?.SetActiveMoreApp(null);
-      await os.sleep(100);
-    }
     try {
       if (globalThis.IsMobileNow()) {
         setOpenOnMobile(false);
@@ -1890,6 +1884,7 @@ const SideBarChapters = (props: {
         globalThis.Open(data.id, chapterNo, selectedTranslation.id, chapterUrl);
         setOpenSidebar((prev) => !prev);
         setCurrentExperience(0);
+        setBookData(null);
       }
     }
   };
