@@ -2845,22 +2845,27 @@ function SideBar({ panelsNumber }) {
                   openPopupSettings(AddingOption(), true);
                 }, 600);
               }}
-              onMouseUp={() => {
+              onMouseUp={(e) => {
                 clearTimeout(holdTimeout.current.time);
                 if (!holdTimeout.current.clicked) {
-                  addTab({
-                    id: uuid(),
-                    taken: false,
-                    data: {
-                      use: "thePage",
-                      type: "book",
-                      book: "Genesis",
-                      bookId: "GEN",
-                      chapter: 1,
-                      translation: "NASB95",
-                      shortName: "NASB95",
-                    },
-                  });
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setOpenSidebar(true);
+                  // setCurrentExperience(0);
+                  globalThis.MakingNewTab = true;
+                  // addTab({
+                  //   id: uuid(),
+                  //   taken: false,
+                  //   data: {
+                  //     use: "thePage",
+                  //     type: "book",
+                  //     book: "Genesis",
+                  //     bookId: "GEN",
+                  //     chapter: 1,
+                  //     translation: "AAB",
+                  //     shortName: "AAB",
+                  //   },
+                  // });
                 }
                 holdTimeout.current.clicked = false;
               }}

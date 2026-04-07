@@ -1884,8 +1884,8 @@ const SideBarChapters = (props: {
         globalThis.Open(data.id, chapterNo, selectedTranslation.id, chapterUrl);
         setOpenSidebar((prev) => !prev);
         setCurrentExperience(0);
-        setBookData(null);
       }
+      setBookData(null);
     }
   };
   const psalmsPartName = (props: { index: number }) => {
