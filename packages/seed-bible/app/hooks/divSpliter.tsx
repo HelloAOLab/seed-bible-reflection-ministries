@@ -106,11 +106,15 @@ export const useDivSpliter = ({
       );
       setTopHeight(newTopHeight);
     }
+    globalThis.IsDragging = true;
+
+    console.log("Dragging START", globalThis.IsDragging); // ✅
   };
 
   const handleMouseUp = () => {
     verticalDragRef.current.isDragging = false;
     horizontalDragRef.current.isDragging = false;
+    globalThis.IsDragging = false;
   };
 
   const updateContainerSize = (newWidth, newHeight) => {
@@ -378,8 +382,22 @@ export const SplitApp = ({
       setOverlapVisible(false);
     }
   }, [isOverlap]);
+  useEffect(() => {
+    const stopDrag = () => {
+      globalThis.IsDragging = false;
+    };
+
+    document.addEventListener("mouseup", stopDrag);
+    document.addEventListener("touchend", stopDrag);
+
+    return () => {
+      document.removeEventListener("mouseup", stopDrag);
+      document.removeEventListener("touchend", stopDrag);
+    };
+  }, []);
 
   const handleOverlapDragDown = (e) => {
+    globalThis.IsDragging = true;
     e.preventDefault();
     overlapDragRef.current = {
       isDragging: true,
@@ -403,6 +421,7 @@ export const SplitApp = ({
   };
 
   const handleOverlapTouchDown = (e) => {
+    globalThis.IsDragging = true;
     const touch = e.touches[0];
     overlapDragRef.current = {
       isDragging: true,
@@ -424,6 +443,9 @@ export const SplitApp = ({
     };
     document.addEventListener("touchmove", onMove);
     document.addEventListener("touchend", onEnd);
+  };
+  const handleMouseMoveUp = () => {
+    globalThis.IsDragging = false;
   };
 
   useEffect(() => {
