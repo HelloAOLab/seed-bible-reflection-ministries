@@ -124,7 +124,7 @@ async function SetUpApplication(applicationFunction, bot, toolbarConfig) {
     };
 
     return {
-      icon,
+      icon: iconUrl || icon,
       label,
       hasToggle: true,
       active:
@@ -135,6 +135,7 @@ async function SetUpApplication(applicationFunction, bot, toolbarConfig) {
       pkgName: name,
       onClick,
       hasToggle,
+      isImg: !!iconUrl,
       showInPageToolbar,
       showInStarterToolbar,
     };

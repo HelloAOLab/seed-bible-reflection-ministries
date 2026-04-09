@@ -176,7 +176,6 @@ function ThePage({
   if (tab) globalThis[`SetEnableEditorOf${tab?.id}`] = setEnableEditor;
 
   const loadTranslationFromUrl = async () => {
-    console.log(configBot.tags.translationId, "translation id");
     const translationId =
       configBot.tags.translationId ||
       configBot.tags.translation ||
@@ -380,13 +379,13 @@ function ThePage({
       //   updateTab(masks["sharedTab"], data);
       //   return;
       // }
-      console.log("remoteBookChange", data);
+
       globalThis.Open?.(data.bookId, data.chapter);
     };
 
     const onHighlightChange = (data) => {
       if (!globalThis.CurrentTab?.sharedTab) return;
-      console.log("remoteHighlightChange", data);
+
       globalThis.ToggleVerseHighlight?.(
         data?.verseNumbers,
         data?.color,
@@ -419,8 +418,6 @@ function ThePage({
       });
       setBible(bible);
 
-      console.log("bible data: ", bible);
-
       await bible.fetch();
 
       if (cancelled) return; // Don't update state if navigation changed
@@ -433,7 +430,7 @@ function ThePage({
         error,
         footnotes: bibleFootnotes,
       } = bible.getState();
-      console.log(data, tab, bibleFootnotes, "the data loaded");
+
       setFootnotes(bibleFootnotes);
 
       globalThis.refreshScrollers && globalThis.refreshScrollers();
@@ -695,7 +692,7 @@ function ThePage({
       await bible.open(
         configBot.tags.book.toUpperCase(),
         configBot.tags.chapter,
-        configBot.tags.translation || "AAB"
+        configBot.tags.translation || "NASB95"
       );
       setData(bible.data);
       configBot.tags.defaultChecked = true;
@@ -826,7 +823,6 @@ function ThePage({
       // Reset toolbar drag state on new selection
       // userMovedToolbar.current = false;
 
-      // 🔥 NEW — Auto-position toolbar under final selected verse
       if (!userMovedToolbar) {
         const ele = document.getElementById(`v-${highestVerse}`);
         if (ele) {
@@ -866,13 +862,12 @@ function ThePage({
 
   function handleMouseUp() {
     if (!isDragging) return;
-    console.log(Element.data, "El.data");
+
     if (Element?.data?.data?.pkgApp) {
       const handoff = Element?.data?.data;
       const App = handoff.app;
       const id = uuid();
       ReplaceApplication(panelId, { id, App, to: "panel", minWidth: "30rem" });
-      console.log("replaced");
     } else {
       Update(Element.data);
       if (globalThis.GetBooksDataForMenu)
@@ -904,6 +899,46 @@ function ThePage({
       });
     }
   }
+  useEffect(() => {
+    if (!bible?.data) return;
+
+    try {
+      const nextData = bible.data;
+
+      const combinedText = (nextData.content || [])
+        .flatMap((s) => (s.verses || []).map((v) => v.text || ""))
+        .join(" ")
+        .trim();
+
+      if (!combinedText) return;
+      globalThis.IsVerseClickedOnDesktop = false;
+
+      globalThis.GlobalSearch = combinedText;
+      globalThis.GlobalSearchLevel = "chapter";
+      globalThis.GlobalSearchLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
+      globalThis.GlobalSearchChapterLabel = `${nextData.book || ""} ${nextData.chapter || ""}`;
+      globalThis.StudyNoteParentSearch = combinedText;
+      globalThis.GlobalSearchChapterData = {
+        book: nextData.book || "",
+        chapter: nextData.chapter || "",
+        translation: nextData.translation || "",
+        content: Array.isArray(nextData.content) ? nextData.content : [],
+        combinedText,
+      };
+
+      if (typeof globalThis.UpdateStudyNoteSearch === "function") {
+        globalThis.UpdateStudyNoteSearch(combinedText, {
+          level: "chapter",
+          label: `${nextData.book || ""} ${nextData.chapter || ""}`,
+          baseline: combinedText,
+          chapterData: globalThis.GlobalSearchChapterData,
+          forceRefresh: true,
+        });
+      }
+    } catch (e) {
+      console.warn("[Apologist] next chapter bridge error:", e);
+    }
+  }, [data]);
 
   async function openPrevChapter() {
     await bible.openPrevious();
@@ -941,11 +976,11 @@ function ThePage({
           book: bookId,
           bookId: bookId,
           chapter: chapter,
-          translation: translation || "AAB",
+          translation: translation || "NASB95",
         },
       });
       setTab(newTab);
-      console.log("newTab created for open error", newTab);
+
       return;
     }
   }
@@ -1070,7 +1105,6 @@ function ThePage({
   }, [data]);
 
   function hanldNavFunctions() {
-    console.log("hanldNavFunctions", { tab, sharedTab, setActiveTab, panelId });
     if (tab && tab?.id && !sharedTab) setActiveTab(tab?.id);
     setNavFunctions({
       openNextChapter,
@@ -1862,7 +1896,6 @@ function ThePage({
             onMouseUp={handleMouseUp}
             onClick={hanldNavFunctions}
             onScroll={(e) => {
-              os.log("scrolling, closing popups", e);
               globalThis.closePopupSettings();
               const el = e.currentTarget;
               const currentScrollTop = el.scrollTop;
@@ -2150,7 +2183,7 @@ function ThePage({
     text-align: center;
     padding: 0px 13px;
     background: var(--pageBackground);
-    z-index: 99;
+    z-index: 9;
     font-size: 11px;
     font-weight: 600;
     color: var(--text1);
@@ -2964,10 +2997,6 @@ function Section({
   useEffect(() => {
     const handler = () => {
       setActiveVerse(globalThis.HighlightedVerseNumber || "");
-      console.log(
-        "verse number clicked: ",
-        globalThis.HighlightedVerseNumber || ""
-      );
     };
     window.addEventListener("highlightedVerseChanged", handler);
     return () => window.removeEventListener("highlightedVerseChanged", handler);
@@ -3170,13 +3199,9 @@ function Section({
             }`}
             style={{ animationDelay: `${i * 0.1}s` }}
             onClick={() => {
-              console.log(part.key);
               const raw = globalThis.VerseSectionMap[part.key].original;
-              console.log(raw);
               const m = /:(\d+)$/.exec(raw);
-              console.log(m);
               const sec = m ? m[1] : part.key;
-              console.log(sec);
               globalThis.HighlightStudyNoteSection(raw);
             }}
           >
@@ -3300,7 +3325,8 @@ function Section({
                   }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    console.log(data, "data in verse click");
+                    globalThis.IsVerseClickedOnDesktop = true;
+
                     if (globalThis?.SetCurrentReference) {
                       shout("ToggleReference", {
                         bookId: data?.bookId,
@@ -3666,7 +3692,7 @@ export const ThePageWithEditor = ({ tab, setPanalApp, panelId }) => {
   }, []);
 
   const activeTab = panelId ? globalThis.PanelTabsMap[panelId] || tab : tab;
-  console.log("active tab in the page", panelId, activeTab);
+
   const [enableEditor, setEnableEditor] = useState(false);
   useEffect(() => {}, [enableEditor]);
   const [data, setData] = useState(() => {

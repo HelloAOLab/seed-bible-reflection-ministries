@@ -71,6 +71,7 @@
         "title": "Discovery",
         "toolName": "Discovery"
       },
+
       "useTabs": false,
       "availableThemes": [
         {
@@ -119,7 +120,7 @@
             "unselectedSpaceColor": "#E1E3EA",
             "spaceNameText": "#333333",
             "addButtonBackground": "#2E4879",
-            "addButtonIcon": "#FFFFFF",
+            "addButtonIcon": "#2E4879",
             "selectPanelIcon": "#333333",
             "openCloseMenuIcon": "#333333",
             "moreIcon": "#666666",
@@ -254,6 +255,7 @@
           "enabled": true,
           "showDivider": false,
           "items": {
+            "anonymousUser": { "enabled": false },
             "theme": { "enabled": true },
             "notifications": { "enabled": true },
             "keepScreenAwake": { "enabled": true }
@@ -264,7 +266,7 @@
           "showDivider": false,
           "items": {
             "language": { "enabled": true },
-            "uiTextSize": { "enabled": true },
+
             "reportBug": { "enabled": true }
           }
         }
@@ -431,6 +433,9 @@
       "onlineUsers": {
         "enabled": true,
         "anonymous": true
+      },
+      "advancedSettings": {
+        "enabled": false
       },
       "sections": {
         "accountHeader": {
