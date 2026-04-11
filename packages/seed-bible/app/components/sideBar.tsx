@@ -1756,7 +1756,6 @@ function SideBar({ panelsNumber }) {
                                             icon: <MenuIcon name="delete" />,
                                             title: t("deleteTab"),
                                             onClick: () => {
-                                              handleRemoveBookmark(tabId);
                                               removeTab(tabId);
                                               closePopupSettings();
                                             },

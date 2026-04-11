@@ -1167,6 +1167,7 @@ function Apologist({
             : currentLabel
               ? `${currentLabel} ${trimmedQuery}`
               : trimmedQuery;
+        console.log(apiQuery, "apiQuery");
 
         const headers = {
           "Content-Type": "application/json",
@@ -1235,17 +1236,16 @@ function Apologist({
               }
             })
           );
+          console.log(queryResultPairs, "queryresultpairs");
 
           if (cancelled) return;
 
-          // 📱 MOBILE FALLBACK (ADD THIS BLOCK)
-
-          // 💻 EXISTING LOGIC (unchanged)
           results = buildHybridRankedResults(
             queryResultPairs,
             currentLabel || trimmedQuery,
             chapterContextData
           );
+          console.log(results, "results");
         } else {
           const singleResults = await fetchQueryResults(apiQuery);
 
