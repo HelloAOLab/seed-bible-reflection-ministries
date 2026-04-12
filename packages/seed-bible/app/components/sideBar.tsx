@@ -1812,6 +1812,7 @@ function SideBar({ panelsNumber }) {
                   <div
                     className="mobile-tab-actions"
                     onClick={(e: any) => {
+                      console.log("elid", el.id);
                       e.stopPropagation();
                       const options = {
                         type: "normal",
@@ -1820,7 +1821,7 @@ function SideBar({ panelsNumber }) {
                             icon: <MenuIcon name="delete" />,
                             title: t("deleteTab"),
                             onClick: () => {
-                              console.log("onclick", el.id);
+                              console.log("elid", el.id);
                               removeTab(el.id);
                               closePopupSettings();
                             },
