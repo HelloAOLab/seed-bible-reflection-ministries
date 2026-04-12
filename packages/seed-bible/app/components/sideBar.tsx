@@ -1756,6 +1756,7 @@ function SideBar({ panelsNumber }) {
                                             icon: <MenuIcon name="delete" />,
                                             title: t("deleteTab"),
                                             onClick: () => {
+                                              console.log("onclick");
                                               removeTab(tabId);
                                               closePopupSettings();
                                             },
@@ -1819,6 +1820,7 @@ function SideBar({ panelsNumber }) {
                             icon: <MenuIcon name="delete" />,
                             title: t("deleteTab"),
                             onClick: () => {
+                              console.log("onclick", el.id);
                               removeTab(el.id);
                               closePopupSettings();
                             },
