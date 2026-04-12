@@ -152,14 +152,6 @@ export function BibleVariablesProvider({ children }) {
         });
       },
       onClick: async () => {
-        const TapozChat = await Tapoz.ChatbotUI();
-
-        if (globalThis.TapozChatboxPresent) {
-          RemoveApplicationByID(globalThis.TAPOZ_CHATBOX_UI_ID);
-          globalThis.TAPOZ_CHATBOX_UI_ID = null;
-          globalThis.TapozChatboxPresent = false;
-          return;
-        }
         if (!panelMode) {
           globalThis.TapozChatboxPresent = true;
           const id = uuid();
