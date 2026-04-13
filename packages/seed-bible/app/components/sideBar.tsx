@@ -1565,6 +1565,7 @@ function SideBar({ panelsNumber }) {
     );
 
     const handleMobileTabClick = (el) => {
+      console.log('clickedmobtab')
       setActiveTab(el.id);
       globalThis.UpdateTab(el);
 
