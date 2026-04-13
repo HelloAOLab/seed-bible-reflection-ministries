@@ -1822,7 +1822,7 @@ function SideBar({ panelsNumber }) {
                             title: t("deleteTab"),
                             onClick: () => {
                               console.log("elid", el.id);
-                              removeTab(el.id);
+                              removeTab(tabId);
                               closePopupSettings();
                             },
                           },
