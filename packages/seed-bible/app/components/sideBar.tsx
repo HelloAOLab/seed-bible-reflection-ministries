@@ -1824,6 +1824,7 @@ function SideBar({ panelsNumber }) {
                             icon: <MenuIcon name="delete" />,
                             title: t("deleteTab"),
                             onClick: () => {
+                              e.stopPropagation();
                               console.log("elid", el.id);
                               removeTab(tabId);
                               closePopupSettings();
