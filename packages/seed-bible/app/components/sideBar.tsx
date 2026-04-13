@@ -1810,7 +1810,7 @@ function SideBar({ panelsNumber }) {
                     </div>
                   </div>
                 </div>
-                { (
+                { tabs.length > 1 &&(
                   <div
                     className="mobile-tab-actions"
                     onClick={(e: any) => {
