@@ -1811,8 +1811,9 @@ function SideBar({ panelsNumber }) {
                   <div
                     className="mobile-tab-actions"
                     onClick={(e: any) => {
-                      console.log("elid", el.id);
                       e.stopPropagation();
+                      const tabId = el.id;
+                      console.log("elid (open)", tabId);
                       const options = {
                         type: "normal",
                         items: [
