@@ -1938,7 +1938,10 @@ function SideBar({ panelsNumber }) {
             .mobile-tab-title{font-weight:600;font-size:16px}
             .mobile-tab-sub{font-size:14px;color:rgba(0,0,0,0.45);margin-top:4px;display: inline;}
             .mobile-tab-left{display:flex;flex-direction:column}
-            .mobile-tab-actions{opacity:0.6;cursor:pointer;display:flex;align-items:center; z-index: 5;}
+             .mobile-tab-actions{opacity:0.6;display: flex;
+        align-items: center;
+        gap: 2px;
+        flex-shrink: 0;}
             .mobile-tab-actions:hover{opacity:1; z-index: 5;}
             .mobile-bottom-nav{display:flex;align-items:center;padding:12px 30px;border-top:1px solid #eee}
             .mobile-bottom-nav.single {justify-content: center;}
