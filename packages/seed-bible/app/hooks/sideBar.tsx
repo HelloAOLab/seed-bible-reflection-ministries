@@ -112,7 +112,7 @@ export function SideBarProvider({ children }) {
       return;
     }
     const pointerX = position ? position.x : mousePosition.x;
-    const pointerY = position ? position.y : mousePosition.y;
+    const pointerY = position ? position.y : mousePosition.y+3;
 
     // Get item count from props to determine if we should adjust position
     const itemCount = props?.items?.length ?? 0;
