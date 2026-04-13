@@ -1829,7 +1829,7 @@ function SideBar({ panelsNumber }) {
                           },
                         ].filter(Boolean),
                       };
-                      openPopupSettings(options);
+                 openPopupSettings(...options,key: Date.now()});
                     }}
                   >
                     <MenuIcon name={"more_vert"} />
