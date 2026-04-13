@@ -485,6 +485,7 @@ function Tab({
   }, [selectedTabs]);
 
   const handleTabClick = () => {
+     console.log('clickedyt')
     if (globalThis.IsMobileNow()) {
       setSidebarWidth(0);
       // setCollapsed(true);
