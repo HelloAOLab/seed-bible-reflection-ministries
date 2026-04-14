@@ -180,6 +180,7 @@ export function TabsProvider({ children }) {
 
   // Remove standalone tab
   const removeTab = (tabId) => {
+    console.log(tabId, "tabid");
     if (sharedTab?.id === tabId) {
       setSharedTab(null);
       return;

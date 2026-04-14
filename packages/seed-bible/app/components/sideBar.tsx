@@ -864,7 +864,10 @@ function SideBar({ panelsNumber }) {
   const [showSearch, setShowSearch] = useState(false); // New state for search visibility
   const [searchQuery, setSearchQuery] = useState(""); // Search filter for tabs
   const [editMode, setEditMode] = useState(false); // New state for edit mode
-  const [keepAwake, setKeepAwake] = useState(false); // New state for keep device awaken
+  const [keepAwake, setKeepAwake] = useState(
+    () => !!(globalThis as any).keepAwakeActive
+  ); // New state for keep device awaken
+  (globalThis as any).setKeepAwake = setKeepAwake;
 
   // Bookmark state (shared between mobile and desktop)
   const [bookmarks, setBookmarks] = useState(
@@ -1135,6 +1138,8 @@ function SideBar({ panelsNumber }) {
       try {
         await os.disableWakeLock();
         setKeepAwake(false);
+        (globalThis as any).keepAwakeActive = false;
+        (globalThis as any).setKeepScreenAwakeActive?.(false);
       } catch (err: any) {
         os.toast("Could not disable keep awake: " + err?.message);
       }
@@ -1143,6 +1148,8 @@ function SideBar({ panelsNumber }) {
       try {
         await os.requestWakeLock();
         setKeepAwake(true);
+        (globalThis as any).keepAwakeActive = true;
+        (globalThis as any).setKeepScreenAwakeActive?.(true);
       } catch (err: any) {
         os.toast("Could not enable keep awake: " + err?.message);
       }
@@ -1749,7 +1756,6 @@ function SideBar({ panelsNumber }) {
                                             icon: <MenuIcon name="delete" />,
                                             title: t("deleteTab"),
                                             onClick: () => {
-                                              handleRemoveBookmark(tabId);
                                               removeTab(tabId);
                                               closePopupSettings();
                                             },
@@ -1806,6 +1812,8 @@ function SideBar({ panelsNumber }) {
                     className="mobile-tab-actions"
                     onClick={(e: any) => {
                       e.stopPropagation();
+                      const tabId = el.id;
+
                       const options = {
                         type: "normal",
                         items: [
@@ -1813,13 +1821,18 @@ function SideBar({ panelsNumber }) {
                             icon: <MenuIcon name="delete" />,
                             title: t("deleteTab"),
                             onClick: () => {
-                              removeTab(el.id);
+                              e.stopPropagation();
+
+                              removeTab(tabId);
                               closePopupSettings();
                             },
                           },
                         ].filter(Boolean),
                       };
-                      openPopupSettings(options);
+                      openPopupSettings({
+                        ...options,
+                        key: Date.now(),
+                      });
                     }}
                   >
                     <MenuIcon name={"more_vert"} />
@@ -1852,7 +1865,7 @@ function SideBar({ panelsNumber }) {
               </button>
             )}
 
-            <button className="mobile-nav-add" onClick={mobileAddTab}>
+            <button className="mobile-nav-add" onClick={(e) => mobileAddTab(e)}>
               <span>
                 <PlusIcon />
               </span>
@@ -1922,8 +1935,11 @@ function SideBar({ panelsNumber }) {
             .mobile-tab-title{font-weight:600;font-size:16px}
             .mobile-tab-sub{font-size:14px;color:rgba(0,0,0,0.45);margin-top:4px;display: inline;}
             .mobile-tab-left{display:flex;flex-direction:column}
-            .mobile-tab-actions{opacity:0.6;cursor:pointer;display:flex;align-items:center;}
-            .mobile-tab-actions:hover{opacity:1;}
+             .mobile-tab-actions{opacity:0.6;display: flex;
+        align-items: center;
+        gap: 2px;
+        flex-shrink: 0;}
+            .mobile-tab-actions:hover{opacity:1; z-index: 5;}
             .mobile-bottom-nav{display:flex;align-items:center;padding:12px 30px;border-top:1px solid #eee}
             .mobile-bottom-nav.single {justify-content: center;}
             .mobile-bottom-nav.multiple {justify-content: space-between;}

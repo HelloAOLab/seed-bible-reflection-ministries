@@ -41,7 +41,7 @@ const SharePopup = ({
     },
     {
       name: "Whatsapp",
-      icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png",
+      icon: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
       share: () => os.openURL(`https://wa.me/?text=${shareText}`),
     },
     // {
@@ -205,7 +205,7 @@ const SharePopup = ({
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
+              gridTemplateColumns: "repeat(auto-fit, minmax(60px, 1fr))",
               gap: 12,
             }}
           >
