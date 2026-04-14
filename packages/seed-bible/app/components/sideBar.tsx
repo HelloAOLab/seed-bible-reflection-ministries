@@ -485,7 +485,6 @@ function Tab({
   }, [selectedTabs]);
 
   const handleTabClick = () => {
-     console.log('clickedyt')
     if (globalThis.IsMobileNow()) {
       setSidebarWidth(0);
       // setCollapsed(true);
@@ -1565,7 +1564,6 @@ function SideBar({ panelsNumber }) {
     );
 
     const handleMobileTabClick = (el) => {
-      console.log('clickedmobtab')
       setActiveTab(el.id);
       globalThis.UpdateTab(el);
 
@@ -1758,7 +1756,6 @@ function SideBar({ panelsNumber }) {
                                             icon: <MenuIcon name="delete" />,
                                             title: t("deleteTab"),
                                             onClick: () => {
-                                              console.log("onclick");
                                               removeTab(tabId);
                                               closePopupSettings();
                                             },
@@ -1810,13 +1807,13 @@ function SideBar({ panelsNumber }) {
                     </div>
                   </div>
                 </div>
-                { tabs.length > 1 &&(
+                {tabs.length > 1 && (
                   <div
                     className="mobile-tab-actions"
                     onClick={(e: any) => {
                       e.stopPropagation();
                       const tabId = el.id;
-                      console.log("elid (open)", tabId);
+
                       const options = {
                         type: "normal",
                         items: [
@@ -1825,17 +1822,17 @@ function SideBar({ panelsNumber }) {
                             title: t("deleteTab"),
                             onClick: () => {
                               e.stopPropagation();
-                              console.log("elid", el.id);
+
                               removeTab(tabId);
                               closePopupSettings();
                             },
                           },
                         ].filter(Boolean),
                       };
-                 openPopupSettings({
-  ...options,
-  key: Date.now(), 
-})
+                      openPopupSettings({
+                        ...options,
+                        key: Date.now(),
+                      });
                     }}
                   >
                     <MenuIcon name={"more_vert"} />
