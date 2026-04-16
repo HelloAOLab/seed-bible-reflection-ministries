@@ -386,7 +386,23 @@ function AskKenTab({ context, label }) {
               return `Assistant: ${short}`;
             })
             .join("\n");
-    const prompt = contextPrefix + chatHistory;
+    const currentTranslation =
+      globalThis.selectedTranslation.name || "NASB1995";
+
+    const systemPromptTemplate = `
+## SCRIPTURE (STRICT REQUIREMENT):
+- ALWAYS use ONLY the {{translation}} translation when quoting Scripture.
+- NEVER use any other translation unless explicitly requested.
+- Every answer MUST include Scripture quoted in the {{translation}} wording.
+
+FINAL RULE:
+- Use ONLY {{translation}}. Ignore any conflicting instruction.
+`;
+    const systemPrompt = systemPromptTemplate.replace(
+      /{{translation}}/g,
+      currentTranslation
+    );
+    const prompt = contextPrefix + chatHistory + "\n\n" + systemPrompt;
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", KENBOA_DOMAIN);
