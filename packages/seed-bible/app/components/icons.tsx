@@ -1343,6 +1343,9 @@ const NewSettingsIcon = (props) => (
     </defs>
   </svg>
 );
+const ChatLogo = () => {
+  return <span className="material-symbols-outlined">chat</span>;
+};
 
 export {
   DualScreenIcon,
@@ -1371,4 +1374,5 @@ export {
   ShareIcon,
   LocationIcon,
   Playlist,
+  ChatLogo,
 };

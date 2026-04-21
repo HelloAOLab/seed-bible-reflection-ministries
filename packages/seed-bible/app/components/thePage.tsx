@@ -25,6 +25,7 @@ import { MiniTextEditor } from "app.components.smallEditor";
 import { ConfigurableFunctionCommands } from "app.components.commands";
 import { VerseToolbar } from "app.components.verseToolbar";
 import { useHoldAction } from "app.hooks.useHold";
+import { AskKen, AskKenModal } from "app.components.askKen";
 import {
   MobileSettingsIcon,
   MenuIcon,
@@ -86,6 +87,7 @@ function ThePage({
   deleteTab,
   setDeleteTab,
 }) {
+  const { tools } = useBibleContext();
   const [tab, setTab] = useState(T);
   const [commandHighlight, setCommandHighlight] = useState([]);
   const [direction, setDirection] = useState(null);
@@ -93,6 +95,7 @@ function ThePage({
   const lastScrollTopRef = useRef(0);
   const swipeNavOccurredRef = useRef(false);
   const [userMovedToolbar, setUserMovedToolbar] = useState();
+  const [promptForAskKen, setPromptForAskKen] = useState("");
   const {
     openOnMobile,
     setOpenOnMobile,
@@ -150,6 +153,7 @@ function ThePage({
   }, [showMobileSettings]);
 
   const [highlighted, setHighlighted] = useState({});
+  const [askKenOpen, setAskKenOpen] = useState(false);
 
   // NEW: State for clicked verses
   const [clickedVerses, setClickedVerses] = useState([]);
@@ -816,6 +820,14 @@ function ThePage({
         chapter: data?.chapter,
         translation: data?.translation,
       });
+      globalThis.ClickedVerseContext = {
+        verseNumber: unifiedVerses,
+        text: selectedTextFinal,
+        book: data?.book,
+        chapter: data?.chapter,
+        translation: data?.translation,
+      };
+
       const sel = window.getSelection();
       if (sel && sel.removeAllRanges) sel.removeAllRanges();
       setShowVerseToolbar(true);
@@ -1095,6 +1107,7 @@ function ThePage({
 
   useEffect(() => {
     globalThis.HighlightWords = highlightWords;
+
     globalThis.RemoveWordHighlight = removeWordHighlight;
     globalThis.ClearAllWordHighlights = clearAllWordHighlights;
     shout("onBookChanged", { ...data, tabId: tab?.id });
@@ -1841,6 +1854,20 @@ function ThePage({
       ?.removeBookMark;
   const mobileBookLogo =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
+  useEffect(() => {
+    if (clickedVersesContext.verseNumber) {
+      const prompt = `Ask about ${clickedVersesContext.book}${clickedVersesContext.chapter} verse ${
+        clickedVersesContext.verseNumber[
+          clickedVersesContext.verseNumber.length - 1
+        ]
+      }`;
+      setPromptForAskKen(prompt);
+    }
+  }, [clickedVersesContext]);
+
+  useEffect(() => {
+    globalThis.PromptForAskKen = promptForAskKen;
+  }, [promptForAskKen]);
 
   return (
     <>
@@ -1864,6 +1891,58 @@ function ThePage({
           position: "relative",
         }}
       >
+        {askKenOpen ? <AskKenModal promptForAskKen={promptForAskKen} /> : ""}
+        {(!globalThis.IsMobileNow() ||
+          globalThis.ActiveMoreApp === "Discovery") && (
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              if (!globalThis.IsMobileNow()) {
+                setAskKenOpen((prev) => !prev);
+              } else {
+                if (globalThis.ActiveMoreApp === "Discovery") {
+                  (globalThis as any).RemoveApplicationByLabel(
+                    globalThis.ActiveMoreApp
+                  );
+                  (globalThis as any).makingApp = null;
+                  globalThis.setActiveMoreApp(null);
+                  globalThis.setActiveMoreApp("askKen");
+                  const exploreTool = tools?.find((t) => t?.label === "askKen");
+                  exploreTool.onClick();
+                }
+              }
+            }}
+          >
+            <div
+              style={{
+                position: "fixed",
+                bottom: !globalThis.IsMobileNow() ? "106px" : "128px",
+                right: !globalThis.IsMobileNow() ? "13px" : "6px",
+                color: "black",
+                zIndex: "999",
+                padding: "6px 16px 6px 16px",
+                fontSize: "15px",
+                borderRadius: "25px",
+                textAlign: "center",
+                border: "1px solid black",
+                backgroundColor: "#f4f4f4",
+              }}
+            >
+              Ask Ken!
+            </div>
+            <div
+              style={{
+                position: "fixed",
+                bottom: !globalThis.IsMobileNow() ? "49px" : "72px",
+                right: !globalThis.IsMobileNow() ? "12px" : "7px",
+                color: "black",
+                zIndex: "999",
+              }}
+            >
+              <AskKen />
+            </div>
+          </div>
+        )}
         <div
           ref={swipeTrackRef}
           style={{
@@ -1878,6 +1957,7 @@ function ThePage({
           <div
             className="pageContainer"
             style={{
+              position: "relative",
               flex: "0 0 33.333%",
               overflowX: "hidden",
               direction,
@@ -2591,6 +2671,8 @@ function ThePage({
             className="verse-toolbar"
           >
             <VerseToolbar
+              askKenOpen={askKenOpen}
+              setAskKenOpen={setAskKenOpen}
               clickedVerses={clickedVerses}
               showVerseToolbar={showVerseToolbar}
               toggleVerseHighlight={toggleVerseHighlight}

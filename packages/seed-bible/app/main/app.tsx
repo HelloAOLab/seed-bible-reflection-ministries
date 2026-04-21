@@ -10,9 +10,6 @@ const { useState } = os.appHooks;
  * The default application component concerned with root composition.
  */
 export function App() {
-  const hasSelected = localStorage.getItem("seedBibleLangSelected") === "true";
-  const [showLangModal, setShowLangModal] = useState(!hasSelected);
-
   return (
     <BibleVariablesProvider>
       <TabsProvider>

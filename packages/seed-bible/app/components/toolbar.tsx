@@ -63,6 +63,7 @@ export function Toolbar() {
       setShowMoreMenu(false);
     });
   }, []);
+  const filteredTools = tools.filter((t) => t.label !== "askKen");
 
   useEffect(() => {
     if (!showMoreMenu) return;
@@ -320,39 +321,39 @@ export function Toolbar() {
               </div>
             </div>
 
-            {!mobileBookLogo ? (
-              <div className="more-btn-wrapper" ref={moreMenuRef}>
-                {showMoreMenu && (
-                  <div className="more-menu-popup">
-                    {moreTools.map((tool: any, i: any) => (
-                      <button
-                        key={i}
-                        className="more-menu-item"
-                        onClick={() => {
-                          tool?.onClick?.();
-                          setShowMoreMenu(false);
-                          setActiveMoreApp(tool.label);
-                        }}
-                      >
-                        {tool?.isImg ? (
-                          <img
-                            src={tool.icon}
-                            style={{ width: "20px" }}
-                            alt={tool.label}
-                          />
-                        ) : (
-                          <span className="material-symbols-outlined">
-                            {tool?.icon}
-                          </span>
-                        )}
-                        <span className="more-menu-item-label">
-                          {tool?.label}
+            <div className="more-btn-wrapper" ref={moreMenuRef}>
+              {showMoreMenu && (
+                <div className="more-menu-popup">
+                  {moreTools.map((tool: any, i: any) => (
+                    <button
+                      key={i}
+                      className="more-menu-item"
+                      onClick={() => {
+                        tool?.onClick?.();
+                        setShowMoreMenu(false);
+                        setActiveMoreApp(tool.label);
+                      }}
+                    >
+                      {tool?.isImg ? (
+                        <img
+                          src={tool.icon}
+                          style={{ width: "20px" }}
+                          alt={tool.label}
+                        />
+                      ) : (
+                        <span className="material-symbols-outlined">
+                          {tool?.icon}
                         </span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {/* <button
+                      )}
+                      <span className="more-menu-item-label">
+                        {tool?.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {
+                <button
                   className="mobile-navbar-btn more-btn"
                   title={activeMoreApp ? "Close" : "More"}
                   aria-label={activeMoreApp ? "Close" : "More"}
@@ -383,88 +384,9 @@ export function Toolbar() {
                       {activeMoreApp ? "Close" : "More"}
                     </span>
                   </div>
-                </button> */}
-              </div>
-            ) : (
-              <button
-                className="mobile-navbar-btn"
-                title={
-                  activeMoreApp &&
-                  !globalThis.IsVerseClicked &&
-                  globalThis.isDiscoveryOpen
-                    ? "Close"
-                    : presetToolBarTitle
-                }
-                aria-label={
-                  activeMoreApp &&
-                  !globalThis.IsVerseClicked &&
-                  globalThis.isDiscoveryOpen
-                    ? "Close"
-                    : presetToolName
-                }
-                onClick={() => {
-                  globalThis.IsVerseClickedOnDesktop = false;
-                  globalThis.IsVerseClicked = false;
-                  if (activeMoreApp) {
-                    (globalThis as any).RemoveApplicationByLabel(activeMoreApp);
-
-                    (globalThis as any).makingApp = null;
-                    setActiveMoreApp(null);
-                  } else {
-                    globalThis.isDiscoveryOpen = true;
-                    globalThis.IsVerseClicked = false;
-
-                    const exploreTool = tools?.find(
-                      (t) => t?.label === presetToolName
-                    );
-                    if (!hasOpenedOnce) {
-                      setIsDummyLoading(true);
-                      setTimeout(() => {
-                        exploreTool.onClick();
-                      }, 3000);
-                      setHasOpenedOnce(true);
-                    } else {
-                      exploreTool.onClick();
-                    }
-
-                    setActiveMoreApp(presetToolName);
-                    setTimeout(() => {
-                      setIsDummyLoading(false);
-                    }, 3000);
-                  }
-                }}
-              >
-                <div className="mobile-btn-content">
-                  {isDummyLoading ? (
-                    <span className="material-symbols-outlined">
-                      hourglass_top
-                    </span>
-                  ) : activeMoreApp &&
-                    !globalThis.IsVerseClicked &&
-                    globalThis.isDiscoveryOpen ? (
-                    <span className="material-symbols-outlined">close</span>
-                  ) : (
-                    <span className="material-symbols-outlined">
-                      {presetToolBarIcon}
-                    </span>
-                  )}
-                  <span
-                    className="mobile-btn-label"
-                    style={{
-                      zoom: (globalThis as any).changes?.uiTextSize || 1,
-                    }}
-                  >
-                    {isDummyLoading
-                      ? "Loading..."
-                      : activeMoreApp &&
-                          !globalThis.IsVerseClicked &&
-                          globalThis.isDiscoveryOpen
-                        ? "Close"
-                        : presetToolBarTitle}
-                  </span>
-                </div>
-              </button>
-            )}
+                </button>
+              }
+            </div>
 
             <button
               style={{
@@ -525,7 +447,7 @@ export function Toolbar() {
                 <BurgerMenuIcon size={24} color="var(--text1)" />
               </button>
             </div>
-            {tools?.map((tool: any, index: any) =>
+            {filteredTools?.map((tool: any, index: any) =>
               tool?.active === false ? null : (
                 <div
                   key={`${tool.icon || "tool"}-${index}`}

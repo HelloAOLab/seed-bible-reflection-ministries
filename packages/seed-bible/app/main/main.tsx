@@ -109,6 +109,7 @@ export const MainContent = ({ controller }: { controller: MainController }) => {
 
       for (let i = 0; i < screens.value; i++) {
         const id = `panel-${i}-${activeSpace}`;
+
         if (prevApps[i]) {
           newApps.push({
             ...prevApps[i],
@@ -130,7 +131,7 @@ export const MainContent = ({ controller }: { controller: MainController }) => {
         }
       }
 
-      return [...newApps];
+      return newApps.filter((app) => app?.panelKey !== "ASKKEN_PANEL_ID");
     });
 
     globalThis.SpaceScreens[activeSpace] = screens.value;
