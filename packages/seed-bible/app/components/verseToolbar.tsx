@@ -10,12 +10,15 @@ import {
   AskIcon,
   BookMarkIcon,
   HighlightIcon,
+  ChatLogo,
 } from "app.components.icons";
 import { getStyleOf } from "app.styles.styler";
 import { getSettingsPreset } from "app.components.types";
 import { globalAPI } from "app.controller.controllerBuilder";
 
 export function VerseToolbar({
+  askKenOpen,
+  setAskKenOpen,
   clickedVersesContext,
   clickedVerses,
   toggleVerseHighlight,
@@ -283,7 +286,15 @@ export function VerseToolbar({
 
   const menuOptions = useMemo(() => {
     return (
-      getMenuActions(clickedVersesContext, onClose, activeSpace, spaces) || []
+      getMenuActions(
+        clickedVersesContext,
+        onClose,
+        activeSpace,
+        spaces,
+        setAskKenOpen,
+        askKenOpen,
+        tools
+      ) || []
     );
   }, [clickedVersesContext, activeSpace, spaces]);
   const disableHighlighting =
@@ -724,7 +735,15 @@ export function VerseToolbar({
   );
 }
 
-function getMenuActions(that, onClose, activeSpace, spaces) {
+function getMenuActions(
+  that,
+  onClose,
+  activeSpace,
+  spaces,
+  setAskKenOpen,
+  askKenOpen,
+  tools
+) {
   os.log("GET MENU ACTIONS VERSE TOOLBAR", that);
   const { SharePopup } = thisBot.Chips();
   // copy mode is fixed to always include reference – ignore any stored setting
@@ -758,24 +777,28 @@ function getMenuActions(that, onClose, activeSpace, spaces) {
   const MenuOptions = {
     type: "normal",
     items: [
-      {
-        icon: (
-          <CopyIcon
-            height="24"
-            width="24"
-            stroke="var(--pageTextColor)"
-            style={{ color: "var(--pageTextColor)" }}
-          />
-        ),
-        onClick: () => {
-          // always include the verse reference when copying
-          const textToCopy = `${that.text}\n— ${buildReference()}`;
-          os.setClipboard(textToCopy);
-          SetInHold(null);
-          onClose();
-        },
-        title: t("copy"),
-      },
+      !globalThis.IsMobileNow()
+        ? [
+            {
+              icon: (
+                <CopyIcon
+                  height="24"
+                  width="24"
+                  stroke="var(--pageTextColor)"
+                  style={{ color: "var(--pageTextColor)" }}
+                />
+              ),
+              onClick: () => {
+                // always include the verse reference when copying
+                const textToCopy = `${that.text}\n— ${buildReference()}`;
+                os.setClipboard(textToCopy);
+                SetInHold(null);
+                onClose();
+              },
+              title: t("copy"),
+            },
+          ]
+        : [],
 
       ...(!removeAiAgent
         ? [
@@ -833,6 +856,24 @@ function getMenuActions(that, onClose, activeSpace, spaces) {
         },
         title: t("share"),
       },
+      ...(!askKenOpen
+        ? [
+            {
+              icon: <ChatLogo />,
+              onClick: () => {
+                closePopupSettings();
+                if (!globalThis.IsMobileNow()) {
+                  setAskKenOpen((prev) => !prev);
+                } else {
+                  globalThis.setActiveMoreApp("askKen");
+                  const exploreTool = tools?.find((t) => t?.label === "askKen");
+                  exploreTool.onClick();
+                }
+              },
+              title: t("askKen"),
+            },
+          ]
+        : ""),
     ],
   };
 

@@ -47,8 +47,7 @@ function ApologistPanelWrapper({ id }) {
   );
 
   const [searchTrigger, setSearchTrigger] = useState(0);
-  const isNothingReady =
-    !globalThis.AskKenTab || !globalThis.MinistriesTab || !globalThis.Apologist;
+  const isNothingReady = !globalThis.MinistriesTab || !globalThis.Apologist;
 
   // ── Expose open-in-ministries-tab function ──
   const openInMinistriesTab = useCallback((url, title) => {
@@ -174,7 +173,6 @@ function ApologistPanelWrapper({ id }) {
 
   const tabs = [
     { key: "discovery", label: "discovery", icon: "explore" },
-    { key: "askken", label: "askKen", icon: "chat" },
     {
       key: "ministries",
       label: "reflectionMinistries",
@@ -318,14 +316,6 @@ function ApologistPanelWrapper({ id }) {
         </div>
 
         {/* ── Ask Ken ── */}
-        <div
-          style={{
-            display: activeTab === "askken" ? "block" : "none",
-            height: "100%",
-          }}
-        >
-          <globalThis.AskKenTab context={searchQuery} label={searchLabel} />
-        </div>
       </div>
 
       {/* ── Styles ── */}

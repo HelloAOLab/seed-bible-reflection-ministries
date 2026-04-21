@@ -30,7 +30,10 @@ function MinistriesTab({
   }
 
   return (
-    <div className="ministries-viewer">
+    <div
+      className="ministries-viewer"
+      style={{ height: globalThis.IsMobileNow() ? "97%" : "100%" }}
+    >
       <div className="ministries-toolbar">
         {cameFromDiscovery && (
           <span
