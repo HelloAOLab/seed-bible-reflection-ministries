@@ -4,6 +4,8 @@ import { TabsProvider } from "app.hooks.tabs";
 import { SideBarProvider } from "app.hooks.sideBar";
 import { mainController } from "app.controller.controllerBuilder";
 
+const { useState } = os.appHooks;
+
 /**
  * The default application component concerned with root composition.
  */

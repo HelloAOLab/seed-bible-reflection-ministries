@@ -832,7 +832,7 @@ const SearchBar = (props: { openSidebar: boolean }) => {
       globalThis.setSelectedTranslation = null;
       globalThis.selectedTranslation = null;
     };
-  }, []);
+  }, [selectedTranslation]);
 
   useEffect(() => {
     if (!openSidebar && globalThis?.bookModalOpen) {
