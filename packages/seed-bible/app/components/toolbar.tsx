@@ -324,32 +324,35 @@ export function Toolbar() {
             <div className="more-btn-wrapper" ref={moreMenuRef}>
               {showMoreMenu && (
                 <div className="more-menu-popup">
-                  {moreTools.map((tool: any, i: any) => (
-                    <button
-                      key={i}
-                      className="more-menu-item"
-                      onClick={() => {
-                        tool?.onClick?.();
-                        setShowMoreMenu(false);
-                        setActiveMoreApp(tool.label);
-                      }}
-                    >
-                      {tool?.isImg ? (
-                        <img
-                          src={tool.icon}
-                          style={{ width: "20px" }}
-                          alt={tool.label}
-                        />
-                      ) : (
-                        <span className="material-symbols-outlined">
-                          {tool?.icon}
+                  {moreTools
+                    .filter((tool) => tool.label?.toLowerCase() !== "books")
+                    .map((tool: any, i: any) => (
+                      <button
+                        key={i}
+                        className="more-menu-item"
+                        onClick={() => {
+                          tool?.onClick?.();
+                          setShowMoreMenu(false);
+                          setActiveMoreApp(tool.label);
+                        }}
+                      >
+                        {tool?.isImg ? (
+                          <img
+                            src={tool.icon}
+                            style={{ width: "20px" }}
+                            alt={tool.label}
+                          />
+                        ) : (
+                          <span className="material-symbols-outlined">
+                            {tool?.icon}
+                          </span>
+                        )}
+                        <span className="more-menu-item-label">
+                          {tool?.label?.charAt(0).toUpperCase() +
+                            tool?.label?.slice(1)}
                         </span>
-                      )}
-                      <span className="more-menu-item-label">
-                        {tool?.label}
-                      </span>
-                    </button>
-                  ))}
+                      </button>
+                    ))}
                 </div>
               )}
               {

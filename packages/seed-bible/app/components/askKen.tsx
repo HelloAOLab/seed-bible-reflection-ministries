@@ -10,16 +10,19 @@ const AskKen = () => {
         alignItems: "center",
         justifyContent: "center",
         display: "flex",
-        width: "52px",
-        height: "52px",
+        width: "32px",
+        height: "32px",
         borderRadius: "60px",
-        border: "1px solid black",
-        backgroundColor: "#F4F4F4",
+        border: "0.5px solid black",
+        backgroundColor: "white",
         color: "black",
         gap: "3px",
       }}
     >
-      <span className="material-symbols-outlined">chat</span>
+      <img
+        src="https://res.cloudinary.com/dpudrufae/image/upload/v1769591647/kenboa_clean_circle_b9zmpr.png"
+        alt="askKen"
+      />
     </div>
   );
 };
@@ -305,14 +308,6 @@ function AskKenModal({ promptForAskKen, context, label }) {
   const [openActionModal, setOpenActionModal] = useState(false);
   const offsetRef = useRef({ x: 0, y: 0 });
 
-  const handleMouseDown = (e) => {
-    setDragging(true);
-    offsetRef.current = {
-      x: e.clientX + position.x,
-      y: e.clientY + position.y,
-    };
-  };
-
   const handleMouseMove = (e) => {
     if (!dragging) return;
 
@@ -325,19 +320,24 @@ function AskKenModal({ promptForAskKen, context, label }) {
     setOpenActionModal(false);
   };
 
-  const handleMouseUp = () => {
-    setDragging(false);
-  };
-
   useEffect(() => {
     window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [dragging]);
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setDragging(false);
+    };
+
+    window.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  });
+  }, []);
 
   // Keep ref in sync with state to avoid stale closures in XHR callbacks
   useEffect(() => {
@@ -615,16 +615,20 @@ FINAL RULE:
   return (
     <div>
       <div
-        onMouseDown={handleMouseDown}
         style={{
           position: "fixed",
-          width: "318px",
-          height: "391px",
+
+          width: "45vw",
+          maxWidth: "410px",
+
           bottom: position.y,
           right: position.x,
+          aspectRatio: "410 / 490",
+          minWidth: "310px",
+          minHeight: "390px",
 
           background: "#F4F4F4",
-          border: "2px solid #f4f4f4ca ",
+          border: "2px solid #f4f4f4ca",
           color: "black",
           borderRadius: "4px",
           boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
@@ -636,29 +640,28 @@ FINAL RULE:
           <div className="askken-content">
             {/* ── Top action bar ── */}
             <div className="askken-topbar-actions">
-              <div className="askken-topbar-actions-heaader">
-                <img
-                  src="https://res.cloudinary.com/dpudrufae/image/upload/v1769591647/kenboa_clean_circle_b9zmpr.png"
-                  alt="ken_logo"
-                  style={{
-                    height: "32.4px",
-                    width: "32.4px",
-                    border: "1px solid black",
-                    borderRadius: "50%",
-                  }}
-                />
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span style={{ fontWeight: "800", color: "#666666" }}>
-                    K E N B O A
-                  </span>
-                  <span style={{ fontWeight: "500", color: "#666666" }}>
-                    R E F L E C T I O N S
-                  </span>
-                </div>
-              </div>
-              <div className="askken-topbar-actions-btns">
+              <div
+                className="askken-topbar-actions-btns"
+                style={{ cursor: "pointer" }}
+              >
                 <span
                   className="material-symbols-outlined"
+                  style={{ cursor: "grab", fontSize: "18px" }}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    offsetRef.current = {
+                      x: e.clientX + position.x,
+                      y: e.clientY + position.y,
+                    };
+
+                    setDragging(true);
+                  }}
+                >
+                  open_with
+                </span>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ cursor: "pointer", fontSize: "18px" }}
                   onClick={() => setOpenActionModal((prev) => !prev)}
                 >
                   more_vert

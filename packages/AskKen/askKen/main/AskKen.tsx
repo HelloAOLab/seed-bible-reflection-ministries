@@ -594,30 +594,28 @@ FINAL RULE:
         <div className="askken-content">
           {/* ── Top action bar ── */}
           <div className="askken-topbar-actions">
-            <div className="askken-topbar-actions-heaader">
-              <img
-                src="https://res.cloudinary.com/dpudrufae/image/upload/v1769591647/kenboa_clean_circle_b9zmpr.png"
-                alt="ken_logo"
-                style={{
-                  height: "32.4px",
-                  width: "32.4px",
-                  border: "1px solid black",
-                  borderRadius: "50%",
-                }}
-              />
-              <div style={{ display: "flex", flexDirection: "column" }}>
-                <span style={{ fontWeight: "800", color: "#666666" }}>
-                  K E N B O A
-                </span>
-                <span style={{ fontWeight: "500", color: "#666666" }}>
-                  R E F L E C T I O N S
-                </span>
-              </div>
-            </div>
-            <div className="askken-topbar-actions-btns">
-              <span className="material-symbols-outlined">open_with</span>
+            <div
+              className="askken-topbar-actions-btns"
+              style={{ cursor: "pointer" }}
+            >
               <span
                 className="material-symbols-outlined"
+                style={{ cursor: "grab", fontSize: "18px" }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  offsetRef.current = {
+                    x: e.clientX + position.x,
+                    y: e.clientY + position.y,
+                  };
+
+                  setDragging(true);
+                }}
+              >
+                open_with
+              </span>
+              <span
+                className="material-symbols-outlined"
+                style={{ cursor: "pointer", fontSize: "18px" }}
                 onClick={() => setOpenActionModal((prev) => !prev)}
               >
                 more_vert

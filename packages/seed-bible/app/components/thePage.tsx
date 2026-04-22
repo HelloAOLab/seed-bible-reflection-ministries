@@ -129,6 +129,7 @@ function ThePage({
   } = useTabsContext();
   const { isDragging, setIsDragging, Element, position } = useMouseMove();
   const { navFunctions, setNavFunctions, scrollToVerse } = useBibleContext();
+  const [isHovered, setIsHovered] = useState(false);
   const [inHold, setInHold] = useState();
   const [contextData, setContextData] = useState({
     verse:
@@ -1891,7 +1892,11 @@ function ThePage({
           position: "relative",
         }}
       >
-        {askKenOpen ? <AskKenModal promptForAskKen={promptForAskKen} /> : ""}
+        {askKenOpen && !globalThis.IsMobileNow() ? (
+          <AskKenModal promptForAskKen={promptForAskKen} />
+        ) : (
+          ""
+        )}
         {(!globalThis.IsMobileNow() ||
           globalThis.ActiveMoreApp === "Discovery") && (
           <div
@@ -1914,32 +1919,56 @@ function ThePage({
             }}
           >
             <div
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              className="askKen-text"
               style={{
                 position: "fixed",
                 bottom: !globalThis.IsMobileNow() ? "106px" : "128px",
                 right: !globalThis.IsMobileNow() ? "13px" : "6px",
-                color: "black",
+                color: "white",
                 zIndex: "999",
                 padding: "6px 16px 6px 16px",
                 fontSize: "15px",
                 borderRadius: "25px",
                 textAlign: "center",
-                border: "1px solid black",
-                backgroundColor: "#f4f4f4",
+                backgroundColor: isHovered
+                  ? "rgba(17, 24, 39, 0.9)"
+                  : "rgba(17, 24, 39, 0.6)",
               }}
             >
               Ask Ken!
             </div>
             <div
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
               style={{
                 position: "fixed",
                 bottom: !globalThis.IsMobileNow() ? "49px" : "72px",
                 right: !globalThis.IsMobileNow() ? "12px" : "7px",
                 color: "black",
                 zIndex: "999",
+                backgroundColor: isHovered
+                  ? "rgba(255, 255, 255, 0.9)"
+                  : "rgba(255, 255, 255, 0.3)",
               }}
             >
-              <AskKen />
+              <div
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  display: "flex",
+                  width: "52px",
+                  height: "52px",
+                  borderRadius: "60px",
+                  border: "1px solid black",
+                  backgroundColor: "white",
+                  color: "black",
+                  gap: "3px",
+                }}
+              >
+                <AskKen />
+              </div>
             </div>
           </div>
         )}
@@ -2316,6 +2345,13 @@ function ThePage({
           box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
           animation: slideUpSheet 0.25s ease-out;
         }
+          .askKen-text{
+           background-color:rgba(17, 24, 39, 0.6)
+          }
+          .askKen-text:hover {
+  background-color: rgba(17, 24, 39, 0.9);
+
+}
 
         @keyframes slideUpSheet {
           from { transform: translateY(100%); }

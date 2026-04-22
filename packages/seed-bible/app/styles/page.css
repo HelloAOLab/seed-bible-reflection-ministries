@@ -310,3 +310,6 @@
   right: -5px;
   color: white;
 }
+.askKen-text:hover {
+  background-color: rgba(17, 24, 39, 0.9);
+}
