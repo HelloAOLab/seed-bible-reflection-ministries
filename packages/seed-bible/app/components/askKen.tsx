@@ -286,7 +286,7 @@ async function deleteFullChat(chatId) {
   lsRemove("askken_chat_" + chatId);
 }
 
-function AskKenModal({ promptForAskKen, context, label }) {
+function AskKenModal({ versePrompt, setVersePrompt, context, label }) {
   const [messages, setMessages] = useState([]);
 
   const [query, setQuery] = useState("");
@@ -300,6 +300,7 @@ function AskKenModal({ promptForAskKen, context, label }) {
   const [showHistory, setShowHistory] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [autoSend, setAutoSend] = useState(false);
   const [isCleared, setIsCleared] = useState(false);
   const saveTimerRef = useRef(null);
   const chatIndexRef = useRef([]);
@@ -344,10 +345,11 @@ function AskKenModal({ promptForAskKen, context, label }) {
     chatIndexRef.current = chatIndex;
   }, [chatIndex]);
   useEffect(() => {
-    if (promptForAskKen) {
-      setQuery(promptForAskKen);
+    if (versePrompt) {
+      setQuery(versePrompt);
+      setAutoSend(true);
     }
-  }, [promptForAskKen]);
+  }, [versePrompt]);
 
   // ── Load chat index + restore active chat on mount ──
   useEffect(() => {
@@ -609,6 +611,17 @@ FINAL RULE:
     xhr.timeout = 120000;
     xhr.send(JSON.stringify({ prompt, stream: true }));
   };
+  useEffect(() => {
+    if (autoSend && query.trim() && !isLoading) {
+      handleSubmit();
+      setTimeout(() => {
+        setVersePrompt("");
+      }, 200);
+
+      setAutoSend(false);
+      // reset so typing won't trigger
+    }
+  }, [query, autoSend]);
 
   const hasMessages = messages.length > 0;
 
@@ -763,9 +776,7 @@ FINAL RULE:
                 <input
                   type="text"
                   className="askken-input"
-                  placeholder={
-                    promptForAskKen ? promptForAskKen : t("askQuestion")
-                  }
+                  placeholder={versePrompt ? versePrompt : t("askQuestion")}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => {

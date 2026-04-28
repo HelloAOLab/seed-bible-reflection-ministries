@@ -17,7 +17,6 @@ export const useDivSpliter = ({
   const count = apps.length;
   globalThis.SetApps = setApps;
   globalThis.PanelsApps = apps;
-  console.log(globalThis.PanelsApps, "globalThis.PanelsApps");
 
   const { activeSpace } = useTabsContext();
   const { panelMode } = useBibleContext();

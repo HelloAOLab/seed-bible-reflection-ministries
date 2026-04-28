@@ -17,6 +17,8 @@ import { getSettingsPreset } from "app.components.types";
 import { globalAPI } from "app.controller.controllerBuilder";
 
 export function VerseToolbar({
+  setVersePrompt,
+  promptForAskKen,
   askKenOpen,
   setAskKenOpen,
   clickedVersesContext,
@@ -293,7 +295,9 @@ export function VerseToolbar({
         spaces,
         setAskKenOpen,
         askKenOpen,
-        tools
+        tools,
+        setVersePrompt,
+        promptForAskKen
       ) || []
     );
   }, [clickedVersesContext, activeSpace, spaces]);
@@ -742,7 +746,9 @@ function getMenuActions(
   spaces,
   setAskKenOpen,
   askKenOpen,
-  tools
+  tools,
+  setVersePrompt,
+  promptForAskKen
 ) {
   os.log("GET MENU ACTIONS VERSE TOOLBAR", that);
   const { SharePopup } = thisBot.Chips();
@@ -856,24 +862,24 @@ function getMenuActions(
         },
         title: t("share"),
       },
-      ...(!askKenOpen
-        ? [
-            {
-              icon: <ChatLogo />,
-              onClick: () => {
-                closePopupSettings();
-                if (!globalThis.IsMobileNow()) {
-                  setAskKenOpen((prev) => !prev);
-                } else {
-                  globalThis.setActiveMoreApp("askKen");
-                  const exploreTool = tools?.find((t) => t?.label === "askKen");
-                  exploreTool.onClick();
-                }
-              },
-              title: t("askKen"),
-            },
-          ]
-        : ""),
+
+      {
+        icon: <ChatLogo />,
+        onClick: () => {
+          closePopupSettings();
+          if (!globalThis.IsMobileNow()) {
+            setAskKenOpen(true);
+            console.log(promptForAskKen, "jjj");
+            setVersePrompt(promptForAskKen);
+          } else {
+            globalThis.setActiveMoreApp("askKen");
+            globalThis.AskKenPrompt = promptForAskKen;
+            const exploreTool = tools?.find((t) => t?.label === "askKen");
+            exploreTool.onClick();
+          }
+        },
+        title: t("askKen"),
+      },
     ],
   };
 
