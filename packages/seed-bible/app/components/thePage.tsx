@@ -95,7 +95,8 @@ function ThePage({
   const lastScrollTopRef = useRef(0);
   const swipeNavOccurredRef = useRef(false);
   const [userMovedToolbar, setUserMovedToolbar] = useState();
-  const [promptForAskKen, setPromptForAskKen] = useState("");
+
+  const [versePrompt, setVersePrompt] = useState("");
   const {
     openOnMobile,
     setOpenOnMobile,
@@ -1855,20 +1856,25 @@ function ThePage({
       ?.removeBookMark;
   const mobileBookLogo =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
-  useEffect(() => {
-    if (clickedVersesContext.verseNumber) {
-      const prompt = `Ask about ${clickedVersesContext.book}${clickedVersesContext.chapter} verse ${
+  const promptForAskKen = useMemo(() => {
+    if (!clickedVersesContext?.verseNumber) return "";
+
+    if (clickedVersesContext.verseNumber.length > 1) {
+      return `Explain ${clickedVersesContext.book} ${clickedVersesContext.chapter} verse ${
+        clickedVersesContext.verseNumber[0]
+      } to ${
         clickedVersesContext.verseNumber[
           clickedVersesContext.verseNumber.length - 1
         ]
       }`;
-      setPromptForAskKen(prompt);
     }
-  }, [clickedVersesContext]);
 
-  useEffect(() => {
-    globalThis.PromptForAskKen = promptForAskKen;
-  }, [promptForAskKen]);
+    return `Explain ${clickedVersesContext.book} ${clickedVersesContext.chapter} verse ${
+      clickedVersesContext.verseNumber[
+        clickedVersesContext.verseNumber.length - 1
+      ]
+    }`;
+  }, [clickedVersesContext]);
 
   return (
     <>
@@ -1893,7 +1899,10 @@ function ThePage({
         }}
       >
         {askKenOpen && !globalThis.IsMobileNow() ? (
-          <AskKenModal promptForAskKen={promptForAskKen} />
+          <AskKenModal
+            versePrompt={versePrompt}
+            setVersePrompt={setVersePrompt}
+          />
         ) : (
           ""
         )}
@@ -2707,6 +2716,8 @@ function ThePage({
             className="verse-toolbar"
           >
             <VerseToolbar
+              setVersePrompt={setVersePrompt}
+              promptForAskKen={promptForAskKen}
               askKenOpen={askKenOpen}
               setAskKenOpen={setAskKenOpen}
               clickedVerses={clickedVerses}

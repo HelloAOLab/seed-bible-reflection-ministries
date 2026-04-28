@@ -279,6 +279,8 @@ function AskKenTab({ context, label }) {
   const [isCleared, setIsCleared] = useState(false);
   const saveTimerRef = useRef(null);
   const chatIndexRef = useRef([]);
+  const [promptForAskKen, setPromptForAskKen] = useState();
+  const [autoSend, setAutoSend] = useState(false);
   const [position, setPosition] = useState({ x: 13, y: 106 });
   const [dragging, setDragging] = useState(false);
   const [openActionModal, setOpenActionModal] = useState(false);
@@ -308,6 +310,14 @@ function AskKenTab({ context, label }) {
   const handleMouseUp = () => {
     setDragging(false);
   };
+  useEffect(() => {
+    if (globalThis.AskKenPrompt) {
+      setPromptForAskKen(globalThis.AskKenPrompt);
+
+      // optional: clear it so it doesn't re-trigger
+      globalThis.AskKenPrompt = null;
+    }
+  }, []);
 
   useEffect(() => {
     window.addEventListener("mousemove", handleMouseMove);
@@ -356,6 +366,12 @@ function AskKenTab({ context, label }) {
       setHistoryLoaded(true);
     })();
   }, []);
+  useEffect(() => {
+    if (promptForAskKen) {
+      setQuery(promptForAskKen);
+      setAutoSend(true);
+    }
+  }, [promptForAskKen]);
 
   // Auto-scroll to bottom on new messages
   /* useEffect(() => {
@@ -584,9 +600,18 @@ FINAL RULE:
     xhr.timeout = 120000;
     xhr.send(JSON.stringify({ prompt, stream: true }));
   };
+  useEffect(() => {
+    if (autoSend && query.trim() && !isLoading) {
+      handleSubmit();
+      setAutoSend(false);
+      setTimeout(() => {
+        setPromptForAskKen("");
+      }, 200);
+      // reset so typing won't trigger
+    }
+  }, [query, autoSend]);
 
   const hasMessages = messages.length > 0;
-  let promptForAskKen;
 
   return (
     <div style={{ height: "100%", width: "100%" }}>
@@ -598,21 +623,23 @@ FINAL RULE:
               className="askken-topbar-actions-btns"
               style={{ cursor: "pointer" }}
             >
-              <span
-                className="material-symbols-outlined"
-                style={{ cursor: "grab", fontSize: "18px" }}
-                onMouseDown={(e) => {
-                  e.stopPropagation();
-                  offsetRef.current = {
-                    x: e.clientX + position.x,
-                    y: e.clientY + position.y,
-                  };
+              {!globalThis.IsMobileNow() && (
+                <span
+                  className="material-symbols-outlined"
+                  style={{ cursor: "grab", fontSize: "18px" }}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    offsetRef.current = {
+                      x: e.clientX + position.x,
+                      y: e.clientY + position.y,
+                    };
 
-                  setDragging(true);
-                }}
-              >
-                open_with
-              </span>
+                    setDragging(true);
+                  }}
+                >
+                  open_with
+                </span>
+              )}
               <span
                 className="material-symbols-outlined"
                 style={{ cursor: "pointer", fontSize: "18px" }}
