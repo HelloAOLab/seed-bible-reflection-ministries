@@ -34,7 +34,8 @@ const ActionModal = ({
         background: "#fff",
         borderRadius: "12px",
         padding: "10px",
-        right: "0px",
+        right: "25px",
+        bottom: "110px",
         width: "165px",
         position: "absolute",
         height: "138px",
@@ -436,7 +437,7 @@ function AskKenTab({ context, label }) {
   }, [activeChatId, messages, persistCurrentChat]);
   const handleClearChat = () => {
     setMessages([]);
-    setIsCleared(true); // 👈 important
+
     setOpenActionModal(false); // optional UX
   };
   // ── Handle chat selection from history ──
@@ -614,50 +615,16 @@ FINAL RULE:
   const hasMessages = messages.length > 0;
 
   return (
-    <div style={{ height: "100%", width: "100%" }}>
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        fontFamily: "Satoshi, sans-serif",
+      }}
+    >
       <div className="askken-container">
         <div className="askken-content">
           {/* ── Top action bar ── */}
-          <div className="askken-topbar-actions">
-            <div
-              className="askken-topbar-actions-btns"
-              style={{ cursor: "pointer" }}
-            >
-              {!globalThis.IsMobileNow() && (
-                <span
-                  className="material-symbols-outlined"
-                  style={{ cursor: "grab", fontSize: "18px" }}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    offsetRef.current = {
-                      x: e.clientX + position.x,
-                      y: e.clientY + position.y,
-                    };
-
-                    setDragging(true);
-                  }}
-                >
-                  open_with
-                </span>
-              )}
-              <span
-                className="material-symbols-outlined"
-                style={{ cursor: "pointer", fontSize: "18px" }}
-                onClick={() => setOpenActionModal((prev) => !prev)}
-              >
-                more_vert
-              </span>
-              {openActionModal && (
-                <ActionModal
-                  open={openActionModal}
-                  onClose={onClose}
-                  handleNewChat={handleNewChat}
-                  handleChatHistory={handleChatHistory}
-                  handleClearChat={handleClearChat}
-                />
-              )}
-            </div>
-          </div>
 
           {/* ── History drawer (slides from right) ── */}
           {showHistory && (
@@ -767,6 +734,42 @@ FINAL RULE:
                   />
                 </svg>
               </button>
+              <div
+                style={{
+                  backgroundColor: "rgb(107,114,128)",
+                  width: "44px",
+                  height: "44px",
+
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "black",
+                  fontSize: "12px",
+                }}
+              >
+                {openActionModal && (
+                  <ActionModal
+                    open={openActionModal}
+                    onClose={onClose}
+                    handleNewChat={handleNewChat}
+                    handleChatHistory={handleChatHistory}
+                    handleClearChat={handleClearChat}
+                  />
+                )}
+
+                <span
+                  className="material-symbols-outlined"
+                  style={{
+                    cursor: "pointer",
+                    fontSize: "24px",
+                    color: "white",
+                  }}
+                  onClick={() => setOpenActionModal((prev) => !prev)}
+                >
+                  more_vert
+                </span>
+              </div>
             </div>
           </div>
           {!isMobile && (

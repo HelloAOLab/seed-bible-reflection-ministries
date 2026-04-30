@@ -77,7 +77,7 @@ body {
   color: var(--pageTextColor);
 }
 .material-symbols-outlined {
-  color: var(--iconColor) !important;
+  color: var(--iconColor);
 }
 .coloredIcon,
 .toolbar-button img {
