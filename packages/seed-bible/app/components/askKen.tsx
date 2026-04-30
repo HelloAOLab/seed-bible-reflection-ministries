@@ -58,7 +58,8 @@ const ActionModal = ({
         background: "#fff",
         borderRadius: "12px",
         padding: "10px",
-        right: "0px",
+        right: "30px",
+        bottom: "80px",
         width: "165px",
         position: "absolute",
         height: "138px",
@@ -447,8 +448,8 @@ function AskKenModal({ versePrompt, setVersePrompt, context, label }) {
   }, [activeChatId, messages, persistCurrentChat]);
   const handleClearChat = () => {
     setMessages([]);
-    setIsCleared(true); // 👈 important
-    setOpenActionModal(false); // optional UX
+
+    setOpenActionModal(false);
   };
   // ── Handle chat selection from history ──
   const handleSelectChat = useCallback(
@@ -491,11 +492,12 @@ function AskKenModal({ versePrompt, setVersePrompt, context, label }) {
   );
 
   // ── Submit message ──
-  const handleSubmit = async () => {
+  const handleSubmit = async (overrideMessages = null) => {
     if (!query.trim() || isLoading) return;
+    const baseMessages = overrideMessages ?? messages;
 
     const userMessage = { role: "user", content: query.trim() };
-    const newMessages = [...messages, userMessage];
+    const newMessages = [...baseMessages, userMessage];
     setMessages(newMessages);
     setQuery("");
     setIsLoading(true);
@@ -613,8 +615,10 @@ FINAL RULE:
   };
   useEffect(() => {
     if (autoSend && query.trim() && !isLoading) {
-      handleSubmit();
+      handleNewChat();
+
       setTimeout(() => {
+        handleSubmit([]);
         setVersePrompt("");
       }, 200);
 
@@ -630,17 +634,18 @@ FINAL RULE:
       <div
         style={{
           position: "fixed",
+          fontFamily: "Satoshi, sans-serif",
 
-          width: "45vw",
-          maxWidth: "410px",
+          width: "42vw",
+          maxWidth: "480px",
 
           bottom: position.y,
           right: position.x,
-          aspectRatio: "410 / 490",
+          aspectRatio: "480 / 620",
           minWidth: "310px",
           minHeight: "390px",
 
-          background: "#F4F4F4",
+          background: "#f6f6f6",
           border: "2px solid #f4f4f4ca",
           color: "black",
           borderRadius: "4px",
@@ -659,7 +664,7 @@ FINAL RULE:
               >
                 <span
                   className="material-symbols-outlined"
-                  style={{ cursor: "grab", fontSize: "18px" }}
+                  style={{ cursor: "grab", fontSize: "22px" }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
                     offsetRef.current = {
@@ -672,22 +677,6 @@ FINAL RULE:
                 >
                   open_with
                 </span>
-                <span
-                  className="material-symbols-outlined"
-                  style={{ cursor: "pointer", fontSize: "18px" }}
-                  onClick={() => setOpenActionModal((prev) => !prev)}
-                >
-                  more_vert
-                </span>
-                {openActionModal && (
-                  <ActionModal
-                    open={openActionModal}
-                    onClose={onClose}
-                    handleNewChat={handleNewChat}
-                    handleChatHistory={handleChatHistory}
-                    handleClearChat={handleClearChat}
-                  />
-                )}
               </div>
             </div>
 
@@ -797,6 +786,42 @@ FINAL RULE:
                     />
                   </svg>
                 </button>
+                <div
+                  style={{
+                    backgroundColor: "rgb(107,114,128)",
+                    width: "44px",
+                    height: "44px",
+
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "black",
+                    fontSize: "12px",
+                  }}
+                >
+                  {openActionModal && (
+                    <ActionModal
+                      open={openActionModal}
+                      onClose={onClose}
+                      handleNewChat={handleNewChat}
+                      handleChatHistory={handleChatHistory}
+                      handleClearChat={handleClearChat}
+                    />
+                  )}
+
+                  <span
+                    className="material-symbols-outlined"
+                    style={{
+                      cursor: "pointer",
+                      fontSize: "24px",
+                      color: "white",
+                    }}
+                    onClick={() => setOpenActionModal((prev) => !prev)}
+                  >
+                    more_vert
+                  </span>
+                </div>
               </div>
             </div>
             {!isMobile && (
