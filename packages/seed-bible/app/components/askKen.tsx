@@ -305,7 +305,7 @@ function AskKenModal({
   const [chatIndex, setChatIndex] = useState([]);
   const [askKenModalSize, setAskKenModalSize] = useState({
     width: "38",
-    height: "55",
+    height: "65",
   });
   const [activeChatId, setActiveChatId] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
