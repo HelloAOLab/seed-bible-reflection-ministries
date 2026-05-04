@@ -314,6 +314,7 @@ function AskKenModal({
   const [autoSend, setAutoSend] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const [isCleared, setIsCleared] = useState(false);
+  const [sizeLabel, setSizeLabel] = useState("Medium");
   const saveTimerRef = useRef(null);
   const chatIndexRef = useRef([]);
   const [position, setPosition] = useState({ x: 13, y: 106 });
@@ -733,15 +734,15 @@ FINAL RULE:
                     drag_indicator
                   </span>
 
-                  <span className="label">Medium</span>
+                  <span className="label">{sizeLabel}</span>
 
                   <select
                     id="sizeSelect"
                     defaultValue="medium"
                     onChange={(e) => {
-                       document.querySelector(".label").innerText =
-                        e.target.options[e.target.selectedIndex].text;
-                      const value = e.target?.value; 
+  const value = e.target?.value;
+
+  if (!value) return;
 
   const sizeMap = {
     small: { width: 32, height: 35 },
@@ -749,11 +750,17 @@ FINAL RULE:
     large: { width: 44, height: 80 },
   };
 
-  if (!value) return; 
-
   setAskKenModalSize(sizeMap[value]);
-                     
-                    }}
+
+ 
+  const labels = {
+    small: "Small",
+    medium: "Medium",
+    large: "Large",
+  };
+
+  setSizeLabel(labels[value]);
+}}
                   >
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
