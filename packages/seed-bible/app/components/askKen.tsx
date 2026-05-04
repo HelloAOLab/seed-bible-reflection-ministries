@@ -739,15 +739,20 @@ FINAL RULE:
                     id="sizeSelect"
                     defaultValue="medium"
                     onChange={(e) => {
-                      const sizeMap = {
-                        small: { width: 32, height: 35 },
-                        medium: { width: 38, height: 65 },
-                        large: { width: 44, height: 80 },
-                      };
-
-                      setAskKenModalSize(sizeMap[e.target?.value]);
-                      document.querySelector(".label").innerText =
+                       document.querySelector(".label").innerText =
                         e.target.options[e.target.selectedIndex].text;
+                      const value = e.target?.value; 
+
+  const sizeMap = {
+    small: { width: 32, height: 35 },
+    medium: { width: 38, height: 65 },
+    large: { width: 44, height: 80 },
+  };
+
+  if (!value) return; 
+
+  setAskKenModalSize(sizeMap[value]);
+                     
                     }}
                   >
                     <option value="small">Small</option>
