@@ -287,7 +287,13 @@ async function deleteFullChat(chatId) {
   lsRemove("askken_chat_" + chatId);
 }
 
-function AskKenModal({ versePrompt, setVersePrompt, context, label }) {
+function AskKenModal({
+  versePrompt,
+  setVersePrompt,
+  setAskKenOpen,
+  context,
+  label,
+}) {
   const [messages, setMessages] = useState([]);
 
   const [query, setQuery] = useState("");
@@ -297,11 +303,16 @@ function AskKenModal({ versePrompt, setVersePrompt, context, label }) {
 
   // ── Multi-chat state ──
   const [chatIndex, setChatIndex] = useState([]);
+  const [askKenModalSize, setAskKenModalSize] = useState({
+    width: "38",
+    height: "65",
+  });
   const [activeChatId, setActiveChatId] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const [autoSend, setAutoSend] = useState(false);
+  const [showModal, setShowModal] = useState(true);
   const [isCleared, setIsCleared] = useState(false);
   const saveTimerRef = useRef(null);
   const chatIndexRef = useRef([]);
@@ -309,6 +320,7 @@ function AskKenModal({ versePrompt, setVersePrompt, context, label }) {
   const [dragging, setDragging] = useState(false);
   const [openActionModal, setOpenActionModal] = useState(false);
   const offsetRef = useRef({ x: 0, y: 0 });
+  const selectRef = useRef(null);
 
   const handleMouseMove = (e) => {
     if (!dragging) return;
@@ -384,6 +396,12 @@ function AskKenModal({ versePrompt, setVersePrompt, context, label }) {
       setHistoryLoaded(true);
     })();
   }, []);
+  const openSelect = () => {
+    if (selectRef.current) {
+      selectRef.current.focus(); // opens dropdown in most browsers
+      selectRef.current.click(); // fallback
+    }
+  };
 
   // Auto-scroll to bottom on new messages
   /* useEffect(() => {
@@ -628,7 +646,6 @@ FINAL RULE:
   }, [query, autoSend]);
 
   const hasMessages = messages.length > 0;
-
   return (
     <div>
       <div
@@ -636,20 +653,27 @@ FINAL RULE:
           position: "fixed",
           fontFamily: "Satoshi, sans-serif",
 
-          width: "42vw",
-          maxWidth: "480px",
+          width: `${askKenModalSize.width}vw`,
+          height: `${askKenModalSize.height}vh`,
 
           bottom: position.y,
           right: position.x,
-          aspectRatio: "480 / 620",
-          minWidth: "310px",
-          minHeight: "390px",
+          minWidth: "350px",
+          minHeight: "410px",
+          maxWidth: "450px",
 
-          background: "#f6f6f6",
-          border: "2px solid #f4f4f4ca",
+          background: "#fff",
           color: "black",
-          borderRadius: "4px",
-          boxShadow: "0 8px 20px rgba(0,0,0,0.3)",
+
+          borderRadius: "15px",
+
+          boxShadow: `
+    0 10px 30px rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.05)
+  `,
+
+          border: "1px solid rgba(0,0,0,0.06)",
+
           zIndex: 999999,
           userSelect: "none",
         }}
@@ -659,12 +683,91 @@ FINAL RULE:
             {/* ── Top action bar ── */}
             <div className="askken-topbar-actions">
               <div
+                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              >
+                <img
+                  src={APOLOGIST_LOGO_URL}
+                  alt=""
+                  className="askken-msg-avatar"
+                />
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  <span style={{ fontWeight: 600, fontSize: "14px" }}>
+                    Ask Ken
+                  </span>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "2px",
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: "5px",
+                        height: "5px",
+                        backgroundColor: "#22c55e",
+                        borderRadius: "50%",
+                      }}
+                    />
+
+                    <span style={{ fontSize: "10px", color: "#777" }}>
+                      AI Bible Assistant
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div
                 className="askken-topbar-actions-btns"
                 style={{ cursor: "pointer" }}
               >
+                <div className="select-wrapper">
+                  <span className="material-symbols-outlined icon">
+                    drag_indicator
+                  </span>
+
+                  <span className="label">Medium</span>
+
+                  <select
+                    id="sizeSelect"
+                    defaultValue="medium"
+                    onChange={(e) => {
+                      const sizeMap = {
+                        small: { width: 32, height: 35 },
+                        medium: { width: 38, height: 65 },
+                        large: { width: 44, height: 80 },
+                      };
+
+                      setAskKenModalSize(sizeMap[e.target.value]);
+                      document.querySelector(".label").innerText =
+                        e.target.options[e.target.selectedIndex].text;
+                    }}
+                  >
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                  </select>
+                </div>
+                <div
+                  style={{
+                    display: "inline-block",
+                    width: "1px",
+                    height: "20px",
+                    backgroundColor: "black",
+                    marginRight: "10px",
+                  }}
+                />
+
                 <span
                   className="material-symbols-outlined"
-                  style={{ cursor: "grab", fontSize: "22px" }}
+                  style={{ cursor: "grab", fontSize: "24px" }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
                     offsetRef.current = {
@@ -676,6 +779,13 @@ FINAL RULE:
                   }}
                 >
                   open_with
+                </span>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ cursor: "pointer", fontSize: "24px" }}
+                  onClick={() => setAskKenOpen(false)}
+                >
+                  expand_more
                 </span>
               </div>
             </div>
@@ -824,9 +934,6 @@ FINAL RULE:
                 </div>
               </div>
             </div>
-            {!isMobile && (
-              <p className="askken-footer">{t("reflectionCopyRight")}</p>
-            )}
           </div>
         </div>
         <style>{getStyleOf("askken.css")}</style>

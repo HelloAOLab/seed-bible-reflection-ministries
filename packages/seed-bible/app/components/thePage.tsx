@@ -1856,24 +1856,34 @@ function ThePage({
       ?.removeBookMark;
   const mobileBookLogo =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
-  const promptForAskKen = useMemo(() => {
-    if (!clickedVersesContext?.verseNumber) return "";
 
-    if (clickedVersesContext.verseNumber.length > 1) {
-      return `Explain ${clickedVersesContext.book} ${clickedVersesContext.chapter} verse ${
-        clickedVersesContext.verseNumber[0]
-      } to ${
-        clickedVersesContext.verseNumber[
-          clickedVersesContext.verseNumber.length - 1
-        ]
-      }`;
+  const promptForAskKen = useMemo(() => {
+    const ctx = clickedVersesContext;
+
+    if (!ctx?.verseNumber || ctx.verseNumber.length === 0) return "";
+
+    const sorted = [...ctx.verseNumber].sort((a, b) => a - b);
+
+    const ranges = [];
+    let start = sorted[0];
+    let end = sorted[0];
+
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i] === end + 1) {
+        end = sorted[i];
+      } else {
+        ranges.push(start === end ? `${start}` : `${start}–${end}`);
+        start = sorted[i];
+        end = sorted[i];
+      }
     }
 
-    return `Explain ${clickedVersesContext.book} ${clickedVersesContext.chapter} verse ${
-      clickedVersesContext.verseNumber[
-        clickedVersesContext.verseNumber.length - 1
-      ]
-    }`;
+    // push last range
+    ranges.push(start === end ? `${start}` : `${start}–${end}`);
+
+    const verseText = ranges.join(", ");
+
+    return `Explain ${ctx.book} ${ctx.chapter}:${verseText}`;
   }, [clickedVersesContext]);
 
   return (
@@ -1902,6 +1912,7 @@ function ThePage({
           <AskKenModal
             versePrompt={versePrompt}
             setVersePrompt={setVersePrompt}
+            setAskKenOpen={setAskKenOpen}
           />
         ) : (
           ""
