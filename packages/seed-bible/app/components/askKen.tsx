@@ -745,7 +745,7 @@ FINAL RULE:
                         large: { width: 44, height: 80 },
                       };
 
-                      setAskKenModalSize(sizeMap[e.target.value]);
+                      setAskKenModalSize(sizeMap[e.target?.value]);
                       document.querySelector(".label").innerText =
                         e.target.options[e.target.selectedIndex].text;
                     }}
