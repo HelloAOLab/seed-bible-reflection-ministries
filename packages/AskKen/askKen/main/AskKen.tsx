@@ -625,6 +625,44 @@ FINAL RULE:
       <div className="askken-container">
         <div className="askken-content">
           {/* ── Top action bar ── */}
+          <div className="askken-topbar-actions">
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <img
+                src={APOLOGIST_LOGO_URL}
+                alt=""
+                className="askken-msg-avatar"
+              />
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  lineHeight: 1.2,
+                }}
+              >
+                <span style={{ fontWeight: 600, fontSize: "14px" }}>
+                  Ask Ken
+                </span>
+
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "2px" }}
+                >
+                  <span
+                    style={{
+                      width: "5px",
+                      height: "5px",
+                      backgroundColor: "#22c55e",
+                      borderRadius: "50%",
+                    }}
+                  />
+
+                  <span style={{ fontSize: "10px", color: "#777" }}>
+                    AI Bible Assistant
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* ── History drawer (slides from right) ── */}
           {showHistory && (
