@@ -303,10 +303,7 @@ function AskKenModal({
 
   // ── Multi-chat state ──
   const [chatIndex, setChatIndex] = useState([]);
-  const [askKenModalSize, setAskKenModalSize] = useState({
-    width: 38,
-    height: 65,
-  });
+  const [askKenModalSize, setAskKenModalSize] = useState('65');
   const [activeChatId, setActiveChatId] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
