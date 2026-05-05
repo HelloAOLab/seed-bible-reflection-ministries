@@ -738,11 +738,7 @@ FINAL RULE:
                   <select
                     id="sizeSelect"
                     defaultValue="medium"
-                    onChange={(e) => {
-                      
-                      document.querySelector(".label").innerText =
-                        e.target?.options[e.target?.selectedIndex].text;
-                    }}
+                    
                   >
                     <option value="45">Small</option>
                     <option value="65">Medium</option>
