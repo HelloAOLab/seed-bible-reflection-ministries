@@ -730,7 +730,7 @@ FINAL RULE:
               >
                 <select
                     id="sizeSelect"
-                    defaultValue="medium"
+            
                   
                   >
                     <option value="45">Small</option>
