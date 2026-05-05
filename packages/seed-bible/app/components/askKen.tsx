@@ -729,40 +729,7 @@ FINAL RULE:
                 className="askken-topbar-actions-btns"
                 style={{ cursor: "pointer" }}
               >
-                <div className="select-wrapper">
-                  <span className="material-symbols-outlined icon">
-                    drag_indicator
-                  </span>
-
-                  <span className="label">{sizeLabel}</span>
-
-                  <select
-                    id="sizeSelect"
-                    defaultValue="medium"
-                    onChange={(e) => {
-  
-
-  const sizeMap = {
-    small: { width: 32, height: 35 },
-    medium: { width: 38, height: 65 },
-    large: { width: 44, height: 80 },
-  };
-
-
-
- 
-  const labels = {
-    small: "Small",
-    medium: "Medium",
-    large: "Large",
-  };
-}}
-                  >
-                    <option value="small">Small</option>
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                  </select>
-                </div>
+                
                 <div
                   style={{
                     display: "inline-block",
