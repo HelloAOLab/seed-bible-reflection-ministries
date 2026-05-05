@@ -739,7 +739,7 @@ FINAL RULE:
                     id="sizeSelect"
                     defaultValue="medium"
                     onChange={(e) => {
-                      setAskKenModalSize(e.target?.value);
+                      
                       document.querySelector(".label").innerText =
                         e.target?.options[e.target?.selectedIndex].text;
                     }}
