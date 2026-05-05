@@ -728,15 +728,27 @@ FINAL RULE:
                 className="askken-topbar-actions-btns"
                 style={{ cursor: "pointer" }}
               >
-                <select
+                <div className="select-wrapper">
+                  <span className="material-symbols-outlined icon">
+                    drag_indicator
+                  </span>
+
+                  <span className="label">Medium</span>
+
+                  <select
                     id="sizeSelect"
-            
                   
+                    onChange={(e) => {
+                      setAskKenModalSize(e.target?.value);
+                      document.querySelector(".label").innerText =
+                        e.target?.options[e.target?.selectedIndex].text;
+                    }}
                   >
                     <option value="45">Small</option>
                     <option value="65">Medium</option>
                     <option value="80">Large</option>
                   </select>
+                </div>
               
                 <div
                   style={{
