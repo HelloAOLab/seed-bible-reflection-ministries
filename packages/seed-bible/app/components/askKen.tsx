@@ -728,6 +728,15 @@ FINAL RULE:
                 className="askken-topbar-actions-btns"
                 style={{ cursor: "pointer" }}
               >
+                <select
+                    id="sizeSelect"
+                    defaultValue="medium"
+                  
+                  >
+                    <option value="45">Small</option>
+                    <option value="65">Medium</option>
+                    <option value="80">Large</option>
+                  </select>
               
                 <div
                   style={{
