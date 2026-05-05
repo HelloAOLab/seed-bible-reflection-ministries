@@ -740,9 +740,7 @@ FINAL RULE:
                     id="sizeSelect"
                     defaultValue="medium"
                     onChange={(e) => {
-  const value = e.target?.value;
-
-  if (!value) return;
+  
 
   const sizeMap = {
     small: { width: 32, height: 35 },
@@ -750,7 +748,7 @@ FINAL RULE:
     large: { width: 44, height: 80 },
   };
 
-  setAskKenModalSize(sizeMap[value]);
+
 
  
   const labels = {
@@ -758,8 +756,6 @@ FINAL RULE:
     medium: "Medium",
     large: "Large",
   };
-
-  setSizeLabel(labels[value]);
 }}
                   >
                     <option value="small">Small</option>
