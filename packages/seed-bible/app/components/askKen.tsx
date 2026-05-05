@@ -305,7 +305,7 @@ function AskKenModal({
   const [chatIndex, setChatIndex] = useState([]);
   const [askKenModalSize, setAskKenModalSize] = useState({
     width: "38",
-    height: "55",
+    height: "65",
   });
   const [activeChatId, setActiveChatId] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
@@ -646,7 +646,6 @@ FINAL RULE:
   }, [query, autoSend]);
 
   const hasMessages = messages.length > 0;
-
   return (
     <div>
       <div
@@ -654,15 +653,14 @@ FINAL RULE:
           position: "fixed",
           fontFamily: "Satoshi, sans-serif",
 
-          height: `${askKenModalSize}vh`,
+          width: `${askKenModalSize.width}vw`,
+          height: `${askKenModalSize.height}vh`,
 
           bottom: position.y,
           right: position.x,
-          aspectRatio: "570 / 670",
           minWidth: "350px",
           minHeight: "410px",
-          maxWidth: "600px",
-          maxHeight: "670px",
+          maxWidth: "450px",
 
           background: "#fff",
           color: "black",
@@ -739,16 +737,21 @@ FINAL RULE:
 
                   <select
                     id="sizeSelect"
-                    defaultValue="medium"
                     onChange={(e) => {
-                      setAskKenModalSize(e.target?.value);
+                      const sizeMap = {
+                        small: { width: 32, height: 35 },
+                        medium: { width: 38, height: 65 },
+                        large: { width: 44, height: 80 },
+                      };
+
+                      setAskKenModalSize(sizeMap[e.target.value]);
                       document.querySelector(".label").innerText =
-                        e.target?.options[e.target?.selectedIndex].text;
+                        e.target.options[e.target.selectedIndex].text;
                     }}
                   >
-                    <option value="45">Small</option>
-                    <option value="65">Medium</option>
-                    <option value="80">Large</option>
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
                   </select>
                 </div>
                 <div
