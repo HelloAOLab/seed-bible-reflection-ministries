@@ -304,8 +304,8 @@ function AskKenModal({
   // ── Multi-chat state ──
   const [chatIndex, setChatIndex] = useState([]);
   const [askKenModalSize, setAskKenModalSize] = useState({
-    width: "38",
-    height: "55",
+    width: 38,
+    height: 65,
   });
   const [activeChatId, setActiveChatId] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
@@ -314,6 +314,7 @@ function AskKenModal({
   const [autoSend, setAutoSend] = useState(false);
   const [showModal, setShowModal] = useState(true);
   const [isCleared, setIsCleared] = useState(false);
+  const [sizeLabel, setSizeLabel] = useState("Medium");
   const saveTimerRef = useRef(null);
   const chatIndexRef = useRef([]);
   const [position, setPosition] = useState({ x: 13, y: 106 });
