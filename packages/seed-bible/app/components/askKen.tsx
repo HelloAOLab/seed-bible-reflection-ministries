@@ -286,6 +286,11 @@ async function deleteFullChat(chatId) {
   // Fallback: localStorage
   lsRemove("askken_chat_" + chatId);
 }
+const SIZE_MAP = {
+  small: { width: 20, height: 35 },
+  medium: { width: 38, height: 65 },
+  large: { width: 48, height: 83 },
+};
 
 function AskKenModal({
   versePrompt,
@@ -303,9 +308,15 @@ function AskKenModal({
 
   // ── Multi-chat state ──
   const [chatIndex, setChatIndex] = useState([]);
-  const [askKenModalSize, setAskKenModalSize] = useState({
-    width: "38",
-    height: "65",
+
+  const [askKenSize, setAskKenSize] = useState(() => {
+    return localStorage.getItem("askKenSize") || "medium";
+  });
+
+  const [askKenModalSize, setAskKenModalSize] = useState(() => {
+    const savedSize = localStorage.getItem("askKenSize") || "medium";
+
+    return SIZE_MAP[savedSize];
   });
   const [activeChatId, setActiveChatId] = useState(null);
   const [showHistory, setShowHistory] = useState(false);
@@ -319,6 +330,7 @@ function AskKenModal({
   const [position, setPosition] = useState({ x: 13, y: 106 });
   const [dragging, setDragging] = useState(false);
   const [openActionModal, setOpenActionModal] = useState(false);
+
   const offsetRef = useRef({ x: 0, y: 0 });
   const selectRef = useRef(null);
 
@@ -658,9 +670,9 @@ FINAL RULE:
 
           bottom: position.y,
           right: position.x,
-          minWidth: "350px",
+          minWidth: "310px",
           minHeight: "410px",
-          maxWidth: "450px",
+          maxWidth: "500px",
 
           background: "#fff",
           color: "black",
@@ -733,18 +745,23 @@ FINAL RULE:
                     drag_indicator
                   </span>
 
-                  <span className="label">Medium</span>
+                  <span className="label">
+                    {askKenSize.charAt(0).toUpperCase() + askKenSize.slice(1)}
+                  </span>
 
                   <select
                     id="sizeSelect"
+                    value={askKenSize}
                     onChange={(e) => {
-                      const sizeMap = {
-                        small: { width: 32, height: 35 },
-                        medium: { width: 38, height: 65 },
-                        large: { width: 44, height: 80 },
-                      };
+                      const selectedSize = e.target.value;
 
-                      setAskKenModalSize(sizeMap[e.target.value]);
+                      setAskKenSize(selectedSize);
+
+                      const selectedModalSize = SIZE_MAP[selectedSize];
+
+                      setAskKenModalSize(selectedModalSize);
+
+                      localStorage.setItem("askKenSize", selectedSize);
                       document.querySelector(".label").innerText =
                         e.target.options[e.target.selectedIndex].text;
                     }}

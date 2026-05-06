@@ -2080,7 +2080,7 @@ function ThePage({
         }
 
         .verse-clicked {
-          border-bottom: 2px dashed var(--tertiaryColor) !important;
+          border-bottom: 2px dashed var(--activeTabBorder) !important;
 
         }
 
