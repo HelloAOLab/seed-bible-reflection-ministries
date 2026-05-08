@@ -656,6 +656,26 @@ FINAL RULE:
       // reset so typing won't trigger
     }
   }, [query, autoSend]);
+  const FONT_SIZE_MAP = {
+    small: {
+      heading: "clamp(22px, 2vw, 28px)",
+      subheading: "clamp(10px, 1vw, 12px)",
+      description: "clamp(12px, 1.2vw, 14px)",
+    },
+
+    medium: {
+      heading: "clamp(26px, 3vw, 38px)",
+      subheading: "clamp(11px, 1.2vw, 14px)",
+      description: "clamp(13px, 1.4vw, 16px)",
+    },
+
+    large: {
+      heading: "clamp(32px, 4vw, 52px)",
+      subheading: "clamp(13px, 1.5vw, 16px)",
+      description: "clamp(15px, 1.8vw, 20px)",
+    },
+  };
+  const currentFonts = FONT_SIZE_MAP[askKenSize];
 
   const hasMessages = messages.length > 0;
   return (
@@ -828,9 +848,30 @@ FINAL RULE:
             <div className="askken-messages">
               {!hasMessages && !showHistory && !isCleared && (
                 <div className="askken-hero">
-                  <p className="askken-subtitle">{t("kenSubtitle")}</p>
-                  <h1 className="askken-heading">{t("kenHeading")}</h1>
-                  <p className="askken-description">{t("kenDescription")}</p>
+                  <p
+                    className="askken-subtitle"
+                    style={{
+                      fontSize: currentFonts.subheading,
+                    }}
+                  >
+                    {t("kenSubtitle")}
+                  </p>
+                  <h1
+                    className="askken-heading"
+                    style={{
+                      fontSize: currentFonts.heading,
+                    }}
+                  >
+                    {t("kenHeading")}
+                  </h1>
+                  <p
+                    className="askken-description"
+                    style={{
+                      fontSize: currentFonts.description,
+                    }}
+                  >
+                    {t("kenDescription")}
+                  </p>
                 </div>
               )}
 
