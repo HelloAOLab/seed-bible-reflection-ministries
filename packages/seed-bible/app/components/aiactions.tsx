@@ -64,6 +64,10 @@ export function AIBibleActionHandler({ query, booksData, children }) {
     return false;
   }
 
+  if (typeof children !== "function") {
+    return null;
+  }
+
   return children({
     handleAIAction,
   });
