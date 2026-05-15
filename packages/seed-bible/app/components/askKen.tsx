@@ -1,6 +1,10 @@
 const { useSideBarContext } = await import("app.hooks.sideBar");
+import { VerseRenderer } from "app.components.VerseRenderer";
+import { AIBibleActionHandler } from "app.components.aiactions";
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
 const ChatHistoryPanel = await thisBot.AskKenChatHistory();
+import { bibleRefrenceParser } from "app.components.bibleRefrenceParser";
+import { parseTranslation } from "app.components.bibleRefrenceParser";
 const getStyleOf = await thisBot.GetStyle();
 
 const AskKen = () => {
@@ -898,7 +902,10 @@ FINAL RULE:
                             key={idx}
                             style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
                           >
-                            {para}
+                            <VerseRenderer
+                              text={para}
+                              booksData={tags.booksData}
+                            />
                           </p>
                         ))}
                     </div>
@@ -935,24 +942,67 @@ FINAL RULE:
                   placeholder={versePrompt ? versePrompt : t("askQuestion")}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSubmit();
-                  }}
                   disabled={isLoading}
                 />
-                <button
-                  className="askken-send-btn"
-                  onClick={handleSubmit}
-                  disabled={isLoading || !query.trim()}
-                  aria-label="Send"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
+
+                <AIBibleActionHandler query={query} booksData={tags.booksData}>
+                  {({ handleAIAction }) => (
+                    <button
+                      className="askken-send-btn"
+                      onClick={async () => {
+                        const handled = await handleAIAction();
+
+                        // if app action handled
+                        // optionally stop AI request
+                        if (handled) {
+                          const refs = bibleRefrenceParser(query);
+
+                          const translation = parseTranslation(query);
+
+                          if (refs.length > 0) {
+                            const ref = refs[0];
+
+                            setMessages((prev) => [
+                              ...prev,
+                              {
+                                role: "assistant",
+                                content: `Opened ${ref.book} ${ref.chapter}${
+                                  ref.verse ? ":" + ref.verse : ""
+                                }${
+                                  translation
+                                    ? " in " + translation.shortName
+                                    : ""
+                                }.`,
+                              },
+                            ]);
+                          }
+
+                          setQuery("");
+
+                          return;
+                        }
+
+                        // otherwise continue AI
+                        handleSubmit();
+                      }}
+                      disabled={isLoading || !query.trim()}
+                      aria-label="Send"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </AIBibleActionHandler>
+
                 <div
                   style={{
                     backgroundColor: "rgb(107,114,128)",

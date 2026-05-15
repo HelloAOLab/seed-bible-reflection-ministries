@@ -503,6 +503,7 @@ const LanguageComponent = (props: {
               return (
                 <div
                   onClick={async () => {
+                    console.log(value);
                     setSelectedTranslation(value);
                     setSelectingTranslation(false);
                     if (value?.listOfBooksApiLink?.includes("https")) {
