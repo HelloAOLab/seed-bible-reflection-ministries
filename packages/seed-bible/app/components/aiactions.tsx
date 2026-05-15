@@ -64,11 +64,13 @@ export function AIBibleActionHandler({ query, booksData, children }) {
     return false;
   }
 
-  if (typeof children !== "function") {
+  const renderChild = Array.isArray(children) ? children[0] : children;
+
+  if (typeof renderChild !== "function") {
     return null;
   }
 
-  return children({
+  return renderChild({
     handleAIAction,
   });
 }
