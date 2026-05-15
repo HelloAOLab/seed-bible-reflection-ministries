@@ -1714,6 +1714,7 @@ const SideBarChapters = (props: {
     setQuery("");
     if (globalThis?.findNameRank) {
       const booksDetails = globalThis.findNameRank(bookName);
+
       const dataItem = {
         type: "chapter",
         content: `${bookName} ${chapterNo}`,
@@ -1826,6 +1827,14 @@ const SideBarChapters = (props: {
             let chapterUrl = bookData.firstChapterApiLink.replace(
               "1.json",
               `${chapterNo}.json`
+            );
+            console.log(
+              data,
+              data.id,
+              chapterUrl,
+              selectedTranslation.id,
+              chapterUrl,
+              "alldataa"
             );
             globalThis.Open(
               data.id,
