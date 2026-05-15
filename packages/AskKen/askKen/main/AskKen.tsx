@@ -1,7 +1,7 @@
 const { useSideBarContext } = await import("app.hooks.sideBar");
 import { VerseRenderer } from "app.components.VerseRenderer";
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
-import { AIBibleActionHandler } from "app.components.aiactions";
+import { useAIBibleAction } from "app.components.aiactions";
 const thePage = getBot("system", "app.components");
 
 const ChatHistoryPanel = await thisBot.AskKenChatHistory();
@@ -318,6 +318,10 @@ function AskKenTab({ context, label }) {
   const handleMouseUp = () => {
     setDragging(false);
   };
+  const { handleAIAction } = useAIBibleAction({
+    query,
+    booksData: thePage.masks?.booksData || tags.booksData,
+  });
   useEffect(() => {
     if (globalThis.AskKenPrompt) {
       setPromptForAskKen(globalThis.AskKenPrompt);
@@ -768,61 +772,57 @@ FINAL RULE:
                 onChange={(e) => setQuery(e.target.value)}
                 disabled={isLoading}
               />
-              <AIBibleActionHandler
-                query={query}
-                booksData={thePage.masks?.booksData || tags.booksData}
+              <button
+                className="askken-send-btn"
+                onClick={async () => {
+                  if (isLoading || !query.trim()) {
+                    return;
+                  }
+
+                  const currentQuery = query.trim();
+
+                  const handled = await handleAIAction();
+
+                  // Bible navigation handled
+                  if (handled) {
+                    const refs = bibleRefrenceParser(currentQuery);
+
+                    const translation = parseTranslation(currentQuery);
+
+                    if (refs.length > 0) {
+                      const ref = refs[0];
+
+                      setMessages((prev) => [
+                        ...prev,
+                        {
+                          role: "assistant",
+                          content: `Opened ${ref.book} ${ref.chapter}${
+                            ref.verse ? ":" + ref.verse : ""
+                          }${
+                            translation ? " in " + translation.shortName : ""
+                          }.`,
+                        },
+                      ]);
+                    }
+
+                    setQuery("");
+
+                    return;
+                  }
+
+                  // Otherwise continue AI
+                  handleSubmit();
+                }}
+                disabled={isLoading || !query.trim()}
+                aria-label="Send"
               >
-                {({ handleAIAction }) => (
-                  <button
-                    className="askken-send-btn"
-                    onClick={async () => {
-                      const handled = await handleAIAction();
-
-                      // if app action handled
-                      // optionally stop AI request
-                      if (handled) {
-                        const refs = bibleRefrenceParser(query);
-
-                        const translation = parseTranslation(query);
-
-                        if (refs.length > 0) {
-                          const ref = refs[0];
-
-                          setMessages((prev) => [
-                            ...prev,
-                            {
-                              role: "assistant",
-                              content: `Opened ${ref.book} ${ref.chapter}${
-                                ref.verse ? ":" + ref.verse : ""
-                              }${
-                                translation
-                                  ? " in " + translation.shortName
-                                  : ""
-                              }.`,
-                            },
-                          ]);
-                        }
-
-                        setQuery("");
-
-                        return;
-                      }
-
-                      // otherwise continue AI
-                      handleSubmit();
-                    }}
-                    disabled={isLoading || !query.trim()}
-                    aria-label="Send"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </button>
-                )}
-              </AIBibleActionHandler>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
               <div
                 style={{
                   backgroundColor: "rgb(107,114,128)",
