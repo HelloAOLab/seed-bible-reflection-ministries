@@ -385,38 +385,36 @@ function AskKenModal({
     }
   }, [versePrompt]);
 
-  // ── Load chat index + restore active chat on mount ──
   useEffect(() => {
     (async () => {
       console.log("[AskKen] Mount: checking auth...");
+
       const authBot = await getAuthBot();
+
       const loggedIn = !!authBot?.id;
-      console.log("[AskKen] Mount: loggedIn =", loggedIn, "authBot =", authBot);
+
       setIsLoggedIn(loggedIn);
-      // Load index (works for both logged-in and anonymous)
-      const { chats: index, activeId } = await loadChatIndex();
-      console.log(
-        "[AskKen] Mount: loaded index with",
-        index.length,
-        "chats, activeId:",
-        activeId
-      );
+
+      // Load chat history ONLY
+      const { chats: index } = await loadChatIndex();
+
       const sorted = [...index].sort(
         (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)
       );
+
       setChatIndex(sorted);
-      // Restore the last active chat
-      if (activeId) {
-        const fullChat = await loadFullChat(activeId);
-        if (fullChat?.messages) {
-          setMessages(fullChat.messages);
-          setActiveChatId(activeId);
-          console.log("[AskKen] Mount: restored active chat", activeId);
-        }
-      }
+
+      // ALWAYS start new chat
+      setMessages([]);
+      setActiveChatId(null);
+      setQuery("");
+
       setHistoryLoaded(true);
     })();
   }, []);
+
+  // ── Load chat index + restore active chat on mount ──
+
   const openSelect = () => {
     if (selectRef.current) {
       selectRef.current.focus(); // opens dropdown in most browsers
@@ -454,6 +452,7 @@ function AskKenModal({
       MAX_CHATS
     );
     setChatIndex(newIndex);
+
     await saveChatIndex(newIndex, chatId);
     console.log("[AskKen] Saved. Index now has", newIndex.length, "chats");
   }, []);
@@ -946,6 +945,49 @@ FINAL RULE:
                   className="askken-input"
                   placeholder={versePrompt ? versePrompt : t("askQuestion")}
                   value={query}
+                  onKeyDown={async (e) => {
+                    if (e.key === "Enter") {
+                      if (isLoading || !query.trim()) {
+                        return;
+                      }
+
+                      const currentQuery = query.trim();
+
+                      const handled = await handleAIAction();
+
+                      // Bible navigation handled
+                      if (handled) {
+                        const refs = bibleRefrenceParser(currentQuery);
+
+                        const translation = parseTranslation(currentQuery);
+
+                        if (refs.length > 0) {
+                          const ref = refs[0];
+
+                          setMessages((prev) => [
+                            ...prev,
+                            {
+                              role: "assistant",
+                              content: `Opened ${ref.book} ${ref.chapter}${
+                                ref.verse ? ":" + ref.verse : ""
+                              }${
+                                translation
+                                  ? " in " + translation.shortName
+                                  : ""
+                              }.`,
+                            },
+                          ]);
+                        }
+
+                        setQuery("");
+
+                        return;
+                      }
+
+                      // Otherwise continue AI
+                      handleSubmit();
+                    }
+                  }}
                   onChange={(e) => setQuery(e.target.value)}
                   disabled={isLoading}
                 />
