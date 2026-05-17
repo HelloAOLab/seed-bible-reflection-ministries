@@ -294,6 +294,7 @@ const SIZE_MAP = {
   small: { width: 20, height: 35 },
   medium: { width: 38, height: 65 },
   large: { width: 48, height: 83 },
+  largeSlim: { width: 20, height: 83 },
 };
 
 function AskKenModal({
@@ -335,17 +336,65 @@ function AskKenModal({
   const [dragging, setDragging] = useState(false);
   const [openActionModal, setOpenActionModal] = useState(false);
 
+  const [resizing, setResizing] = useState(false);
+
+  const resizeStartRef = useRef({
+    startX: 0,
+    startY: 0,
+    startWidth: 0,
+    startHeight: 0,
+  });
+
   const offsetRef = useRef({ x: 0, y: 0 });
   const selectRef = useRef(null);
 
   const handleMouseMove = (e) => {
     if (!dragging) return;
 
+    const modalWidth = window.innerWidth * (askKenModalSize.width / 100);
+
+    const modalHeight = window.innerHeight * (askKenModalSize.height / 100);
+
+    // Calculate new position
+    let newX = offsetRef.current.x - e.clientX;
+
+    let newY = offsetRef.current.y - e.clientY;
+
+    // Clamp horizontally
+    newX = Math.max(0, Math.min(newX, window.innerWidth - modalWidth));
+
+    // Clamp vertically
+    newY = Math.max(0, Math.min(newY, window.innerHeight - modalHeight));
+
     setPosition({
-      x: offsetRef.current.x - e.clientX,
-      y: offsetRef.current.y - e.clientY,
+      x: newX,
+      y: newY,
     });
+
+    if (resizing) {
+      const dx = e.clientX - resizeStartRef.current.startX;
+
+      const dy = e.clientY - resizeStartRef.current.startY;
+
+      let newWidth = resizeStartRef.current.startWidth + dx;
+
+      let newHeight = resizeStartRef.current.startHeight + dy;
+
+      // min/max sizes
+      newWidth = Math.max(310, Math.min(newWidth, 700));
+
+      newHeight = Math.max(410, Math.min(newHeight, 900));
+
+      setAskKenModalSize({
+        width: (newWidth / window.innerWidth) * 100,
+
+        height: (newHeight / window.innerHeight) * 100,
+      });
+
+      return;
+    }
   };
+
   const onClose = () => {
     setOpenActionModal(false);
   };
@@ -365,6 +414,7 @@ function AskKenModal({
   useEffect(() => {
     const handleMouseUp = () => {
       setDragging(false);
+      setResizing(false);
     };
 
     window.addEventListener("mouseup", handleMouseUp);
@@ -412,6 +462,18 @@ function AskKenModal({
       setHistoryLoaded(true);
     })();
   }, []);
+
+  useEffect(() => {
+    const modalWidth = window.innerWidth * (askKenModalSize.width / 100);
+
+    const modalHeight = window.innerHeight * (askKenModalSize.height / 100);
+
+    setPosition((prev) => ({
+      x: Math.max(0, Math.min(prev.x, window.innerWidth - modalWidth)),
+
+      y: Math.max(0, Math.min(prev.y, window.innerHeight - modalHeight)),
+    }));
+  }, [askKenModalSize]);
 
   // ── Load chat index + restore active chat on mount ──
 
@@ -682,6 +744,11 @@ FINAL RULE:
       subheading: "clamp(13px, 1.5vw, 16px)",
       description: "clamp(15px, 1.8vw, 20px)",
     },
+    largeSlim: {
+      heading: "clamp(26px, 3vw, 38px)",
+      subheading: "clamp(11px, 1.2vw, 14px)",
+      description: "clamp(13px, 1.4vw, 16px)",
+    },
   };
   const currentFonts = FONT_SIZE_MAP[askKenSize];
 
@@ -797,6 +864,7 @@ FINAL RULE:
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
                     <option value="large">Large</option>
+                    <option value="largeSlim">Large/Slim</option>
                   </select>
                 </div>
                 <div
@@ -1084,6 +1152,8 @@ FINAL RULE:
             </div>
           </div>
         </div>
+        <style>{getStyleOf("askken.css")}</style>
+
         <style>{getStyleOf("askken.css")}</style>
       </div>
     </div>
