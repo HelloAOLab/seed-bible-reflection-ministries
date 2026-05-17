@@ -769,6 +769,47 @@ FINAL RULE:
                   promptForAskKen ? promptForAskKen : t("askQuestion")
                 }
                 value={query}
+                onKeyDown={async (e) => {
+                  if (e.key === "Enter") {
+                    if (isLoading || !query.trim()) {
+                      return;
+                    }
+
+                    const currentQuery = query.trim();
+
+                    const handled = await handleAIAction();
+
+                    // Bible navigation handled
+                    if (handled) {
+                      const refs = bibleRefrenceParser(currentQuery);
+
+                      const translation = parseTranslation(currentQuery);
+
+                      if (refs.length > 0) {
+                        const ref = refs[0];
+
+                        setMessages((prev) => [
+                          ...prev,
+                          {
+                            role: "assistant",
+                            content: `Opened ${ref.book} ${ref.chapter}${
+                              ref.verse ? ":" + ref.verse : ""
+                            }${
+                              translation ? " in " + translation.shortName : ""
+                            }.`,
+                          },
+                        ]);
+                      }
+
+                      setQuery("");
+
+                      return;
+                    }
+
+                    // Otherwise continue AI
+                    handleSubmit();
+                  }
+                }}
                 onChange={(e) => setQuery(e.target.value)}
                 disabled={isLoading}
               />
