@@ -287,7 +287,7 @@ async function deleteFullChat(chatId) {
       console.warn("[AskKen] deleteFullChat server ERROR:", e);
     }
   }
-  // Fallback: localStorage
+
   lsRemove("askken_chat_" + chatId);
 }
 const SIZE_MAP = {
@@ -338,6 +338,8 @@ function AskKenModal({
 
   const [resizing, setResizing] = useState(false);
 
+  const [resizeDirection, setResizeDirection] = useState(null);
+
   const resizeStartRef = useRef({
     startX: 0,
     startY: 0,
@@ -348,51 +350,95 @@ function AskKenModal({
   const offsetRef = useRef({ x: 0, y: 0 });
   const selectRef = useRef(null);
 
+  const startResize = (e, direction) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging(false);
+
+    setResizing(true);
+
+    setResizeDirection(direction);
+
+    resizeStartRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+
+      startWidth: window.innerWidth * (askKenModalSize.width / 100),
+
+      startHeight: window.innerHeight * (askKenModalSize.height / 100),
+    };
+  };
+
   const handleMouseMove = (e) => {
+    if (resizing) {
+      const dx = e.clientX - resizeStartRef.current.startX;
+
+      const dy = e.clientY - resizeStartRef.current.startY;
+
+      const MIN_WIDTH = 310;
+      const MIN_HEIGHT = 410;
+
+      const MAX_WIDTH = window.innerWidth - 20;
+
+      const MAX_HEIGHT = window.innerHeight - 20;
+
+      let width = resizeStartRef.current.startWidth;
+
+      let height = resizeStartRef.current.startHeight;
+
+      // RIGHT
+      if (resizeDirection?.includes("right")) {
+        width += dx;
+      }
+
+      // LEFT
+      if (resizeDirection?.includes("left")) {
+        width -= dx;
+      }
+
+      // BOTTOM
+      if (resizeDirection?.includes("bottom")) {
+        height += dy;
+      }
+
+      // TOP
+      if (resizeDirection?.includes("top")) {
+        height -= dy;
+      }
+
+      // LIMITS
+      width = Math.max(MIN_WIDTH, Math.min(width, MAX_WIDTH));
+
+      height = Math.max(MIN_HEIGHT, Math.min(height, MAX_HEIGHT));
+
+      setAskKenModalSize({
+        width: (width / window.innerWidth) * 100,
+
+        height: (height / window.innerHeight) * 100,
+      });
+
+      return;
+    }
+
+    // DRAGGING
     if (!dragging) return;
 
     const modalWidth = window.innerWidth * (askKenModalSize.width / 100);
 
     const modalHeight = window.innerHeight * (askKenModalSize.height / 100);
 
-    // Calculate new position
     let newX = offsetRef.current.x - e.clientX;
 
     let newY = offsetRef.current.y - e.clientY;
 
-    // Clamp horizontally
     newX = Math.max(0, Math.min(newX, window.innerWidth - modalWidth));
 
-    // Clamp vertically
     newY = Math.max(0, Math.min(newY, window.innerHeight - modalHeight));
 
     setPosition({
       x: newX,
       y: newY,
     });
-
-    if (resizing) {
-      const dx = e.clientX - resizeStartRef.current.startX;
-
-      const dy = e.clientY - resizeStartRef.current.startY;
-
-      let newWidth = resizeStartRef.current.startWidth + dx;
-
-      let newHeight = resizeStartRef.current.startHeight + dy;
-
-      // min/max sizes
-      newWidth = Math.max(310, Math.min(newWidth, 700));
-
-      newHeight = Math.max(410, Math.min(newHeight, 900));
-
-      setAskKenModalSize({
-        width: (newWidth / window.innerWidth) * 100,
-
-        height: (newHeight / window.innerHeight) * 100,
-      });
-
-      return;
-    }
   };
 
   const onClose = () => {
@@ -405,22 +451,29 @@ function AskKenModal({
   });
 
   useEffect(() => {
-    window.addEventListener("mousemove", handleMouseMove);
+    const move = (e) => {
+      handleMouseMove(e);
+    };
+
+    window.addEventListener("mousemove", move);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousemove", move);
     };
-  }, [dragging]);
+  }, [dragging, resizing, resizeDirection, askKenModalSize, position]);
   useEffect(() => {
-    const handleMouseUp = () => {
+    const up = () => {
       setDragging(false);
+
       setResizing(false);
+
+      setResizeDirection(null);
     };
 
-    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mouseup", up);
 
     return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mouseup", up);
     };
   }, []);
 
@@ -881,7 +934,10 @@ FINAL RULE:
                   className="material-symbols-outlined"
                   style={{ cursor: "grab", fontSize: "24px" }}
                   onMouseDown={(e) => {
+                    if (resizing) return;
+
                     e.stopPropagation();
+
                     offsetRef.current = {
                       x: e.clientX + position.x,
                       y: e.clientY + position.y,
@@ -1152,6 +1208,72 @@ FINAL RULE:
             </div>
           </div>
         </div>
+
+        {/* RIGHT */}
+        <div
+          onMouseDown={(e) => startResize(e, "right")}
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: "6px",
+            height: "100%",
+            cursor: "ew-resize",
+          }}
+        />
+
+        {/* LEFT */}
+        <div
+          onMouseDown={(e) => startResize(e, "left")}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "6px",
+            height: "100%",
+            cursor: "ew-resize",
+          }}
+        />
+
+        {/* TOP */}
+        <div
+          onMouseDown={(e) => startResize(e, "top")}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "6px",
+            cursor: "ns-resize",
+          }}
+        />
+
+        {/* BOTTOM */}
+        <div
+          onMouseDown={(e) => startResize(e, "bottom")}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            width: "100%",
+            height: "6px",
+            cursor: "ns-resize",
+          }}
+        />
+
+        {/* BOTTOM RIGHT */}
+        <div
+          onMouseDown={(e) => startResize(e, "bottom-right")}
+          style={{
+            position: "absolute",
+            right: 0,
+            bottom: 0,
+            width: "14px",
+            height: "14px",
+            cursor: "nwse-resize",
+          }}
+        />
+
         <style>{getStyleOf("askken.css")}</style>
 
         <style>{getStyleOf("askken.css")}</style>
