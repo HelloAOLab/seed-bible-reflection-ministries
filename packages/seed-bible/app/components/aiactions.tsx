@@ -7,7 +7,7 @@ import { navigateToBibleReference } from "app.components.navigateToBibleReferenc
 import { useBibleContext } from "app.hooks.bibleVariables";
 import useBibleData from "app.hooks.bibleData";
 
-export function useAIBibleAction({ query, booksData }) {
+export function useAIBibleAction({ query, booksData, tabs }) {
   const { scrollToVerse } = useBibleContext();
 
   async function handleAIAction() {
@@ -43,6 +43,7 @@ export function useAIBibleAction({ query, booksData }) {
 
         booksData,
         scrollToVerse,
+        tabs,
       });
 
       return true;
