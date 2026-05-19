@@ -302,6 +302,9 @@ function AskKenTab({ context, label }) {
       y: e.clientY + position.y,
     };
   };
+  useEffect(() => {
+    globalThis.SetHighlighted({});
+  }, []);
 
   const handleMouseMove = (e) => {
     if (!dragging) return;

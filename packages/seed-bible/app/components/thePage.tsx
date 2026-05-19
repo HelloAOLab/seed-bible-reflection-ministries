@@ -1913,6 +1913,7 @@ function ThePage({
             versePrompt={versePrompt}
             setVersePrompt={setVersePrompt}
             setAskKenOpen={setAskKenOpen}
+            askKenOpen={askKenOpen}
           />
         ) : (
           ""
@@ -3850,7 +3851,11 @@ export const ThePageWithEditor = ({ tab, setPanalApp, panelId }) => {
       );
     }
   });
+
   const [deleteTab, setDeleteTab] = useState(false);
+  useEffect(() => {
+    globalThis.CurrentBookData = data;
+  }, [data]);
   if (tab) globalThis[`SetEnableEditorOf${tab?.id}`] = setEnableEditor;
   useEffect(() => {
     os.addBotListener(thisBot, "onTabDelete", (data) => {

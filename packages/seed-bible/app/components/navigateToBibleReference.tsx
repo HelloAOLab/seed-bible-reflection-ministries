@@ -10,10 +10,12 @@ export async function navigateToBibleReference({
   booksData,
   verseNumber,
   scrollToVerse,
+  tabs,
 }) {
   const bookData = booksData.find((book) =>
     book.commonName?.toLowerCase().includes(bookName.toLowerCase())
   );
+  console.log(bookData, "bookdata");
 
   if (!bookData) {
     console.log("Book not found");
@@ -26,17 +28,77 @@ export async function navigateToBibleReference({
     "1.json",
     `${chapter}.json`
   );
-  setTimeout(() => {
+  console.log(
+    globalThis.CurrentBookData,
+    bookName,
+    "globalThis.CurrentBookData"
+  );
+
+  if (bookName?.slice(0, 4) === globalThis.CurrentBookData.book?.slice(0, 4)) {
     globalThis.Open(bookData.id, chapter, translationId, chapterUrl);
+  } else {
+    // find existing tab with same book
+    const existingTab = tabs.find(
+      (t) =>
+        t?.data?.type === "book" &&
+        t?.data?.book?.slice(0, 4)?.toLowerCase() ===
+          bookName?.slice(0, 4)?.toLowerCase()
+    );
 
-    if (verseNumber) {
-      setTimeout(() => {
-        scrollToVerse(Number(verseNumber));
-        globalThis.UnHighlightVerse?.();
-        globalThis.HighlightVerse(Number(verseNumber), "#2e48791a");
+    if (existingTab) {
+      // update existing tab
+      existingTab.data.chapter = chapter;
+      existingTab.data.translation = translationId || bookData.translationId;
 
-        prevVerse = Number(verseNumber);
-      }, 800);
+      globalThis.UpdateTab(existingTab);
+
+      globalThis.Open(bookData.id, chapter, translationId, chapterUrl);
+    } else {
+      // create new tab
+      const tab = {
+        id: uuid(),
+        taken: false,
+        data: {
+          use: "thePage",
+          type: "book",
+          book: bookName,
+          bookId: bookData.id,
+          chapter: chapter,
+          translation: translationId || bookData.translationId,
+          shortName: globalThis.CurrentBookData.shortName || "",
+        },
+      };
+
+      globalThis.AddTab(tab);
+      globalThis.UpdateTab(tab);
+
+      globalThis.Open(bookData.id, chapter, translationId, chapterUrl);
     }
-  }, 200);
+  }
+
+  if (verseNumber) {
+    setTimeout(() => {
+      const currentVerse = Number(verseNumber);
+
+      scrollToVerse(currentVerse);
+
+      // remove old highlighted verse
+      if (prevVerse !== null) {
+        globalThis.SetHighlighted((prev) => {
+          const updated = { ...prev };
+
+          delete updated[
+            `${globalThis.CurrentBookData.book}-${globalThis.CurrentBookData.chapter}-${prevVerse}`
+          ];
+
+          return updated;
+        });
+      }
+
+      // highlight new verse
+      globalThis.HighlightVerse([currentVerse], "#2E48791A");
+
+      prevVerse = currentVerse;
+    }, 1200);
+  }
 }

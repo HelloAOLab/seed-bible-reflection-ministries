@@ -2,7 +2,8 @@ import { bibleRefrenceParser } from "app.components.bibleRefrenceParser";
 import { navigateToBibleReference } from "app.components.navigateToBibleReference";
 import { parseTranslation } from "app.components.bibleRefrenceParser";
 import { useBibleContext } from "app.hooks.bibleVariables";
-export function VerseRenderer({ text, booksData }) {
+
+export function VerseRenderer({ text, booksData, tabs }) {
   const { scrollToVerse } = useBibleContext();
 
   const refs = bibleRefrenceParser(text);
@@ -37,6 +38,7 @@ export function VerseRenderer({ text, booksData }) {
             booksData,
             verseNumber: ref.verse,
             scrollToVerse,
+            tabs,
           })
         }
         style={{

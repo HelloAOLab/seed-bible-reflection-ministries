@@ -1,10 +1,13 @@
 const { useSideBarContext } = await import("app.hooks.sideBar");
+const { useTabsContext } = await import("app.hooks.tabs");
 import { VerseRenderer } from "app.components.VerseRenderer";
 import { useAIBibleAction } from "app.components.aiactions";
+
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
 const ChatHistoryPanel = await thisBot.AskKenChatHistory();
 import { bibleRefrenceParser } from "app.components.bibleRefrenceParser";
 import { parseTranslation } from "app.components.bibleRefrenceParser";
+import { median } from "es-toolkit";
 const getStyleOf = await thisBot.GetStyle();
 
 const AskKen = () => {
@@ -292,8 +295,9 @@ async function deleteFullChat(chatId) {
 }
 const SIZE_MAP = {
   small: { width: 20, height: 35 },
-  medium: { width: 38, height: 65 },
-  large: { width: 48, height: 83 },
+  medium: { width: 32, height: 65 },
+  large: { width: 36, height: 83 },
+  mediumSlim: { width: 20, height: 65 },
   largeSlim: { width: 20, height: 83 },
 };
 
@@ -303,6 +307,7 @@ function AskKenModal({
   setAskKenOpen,
   context,
   label,
+  askKenOpen,
 }) {
   const [messages, setMessages] = useState([]);
 
@@ -315,11 +320,11 @@ function AskKenModal({
   const [chatIndex, setChatIndex] = useState([]);
 
   const [askKenSize, setAskKenSize] = useState(() => {
-    return localStorage.getItem("askKenSize") || "medium";
+    return localStorage.getItem("askKenSize") || "mediumSlim";
   });
 
   const [askKenModalSize, setAskKenModalSize] = useState(() => {
-    const savedSize = localStorage.getItem("askKenSize") || "medium";
+    const savedSize = localStorage.getItem("askKenSize") || "mediumSlim";
 
     return SIZE_MAP[savedSize];
   });
@@ -339,6 +344,7 @@ function AskKenModal({
   const [resizing, setResizing] = useState(false);
 
   const [resizeDirection, setResizeDirection] = useState(null);
+  const { tabs } = useTabsContext();
 
   const resizeStartRef = useRef({
     startX: 0,
@@ -448,6 +454,7 @@ function AskKenModal({
   const { handleAIAction } = useAIBibleAction({
     query,
     booksData: tags.booksData,
+    tabs: tabs,
   });
 
   useEffect(() => {
@@ -476,7 +483,9 @@ function AskKenModal({
       window.removeEventListener("mouseup", up);
     };
   }, []);
-
+  useEffect(() => {
+    globalThis.SetHighlighted({});
+  }, [askKenOpen]);
   // Keep ref in sync with state to avoid stale closures in XHR callbacks
   useEffect(() => {
     chatIndexRef.current = chatIndex;
@@ -797,6 +806,12 @@ FINAL RULE:
       subheading: "clamp(13px, 1.5vw, 16px)",
       description: "clamp(15px, 1.8vw, 20px)",
     },
+    mediumSlim: {
+      heading: "clamp(22px, 2vw, 28px)",
+      subheading: "clamp(10px, 1vw, 12px)",
+      description: "clamp(12px, 1.2vw, 14px)",
+    },
+
     largeSlim: {
       heading: "clamp(26px, 3vw, 38px)",
       subheading: "clamp(11px, 1.2vw, 14px)",
@@ -820,7 +835,7 @@ FINAL RULE:
           right: position.x,
           minWidth: "310px",
           minHeight: "410px",
-          maxWidth: "500px",
+          maxWidth: "700px",
 
           background: "#fff",
           color: "black",
@@ -917,7 +932,8 @@ FINAL RULE:
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
                     <option value="large">Large</option>
-                    <option value="largeSlim">Large/Slim</option>
+                    <option value="mediumSlim">Medium,slim</option>
+                    <option value="largeSlim">Large,slim</option>
                   </select>
                 </div>
                 <div
@@ -1031,6 +1047,7 @@ FINAL RULE:
                             style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
                           >
                             <VerseRenderer
+                              tabs={tabs}
                               text={para}
                               booksData={tags.booksData}
                             />
