@@ -955,7 +955,7 @@ FINAL RULE:
 
                 <span
                   className="material-symbols-outlined"
-                  style={{ cursor: "grab", fontSize: "24px" }}
+                  style={{ cursor: "grab", fontSize: "22px" }}
                   onMouseDown={(e) => {
                     if (resizing) return;
 
@@ -973,7 +973,7 @@ FINAL RULE:
                 </span>
                 <span
                   className="material-symbols-outlined"
-                  style={{ cursor: "pointer", fontSize: "24px" }}
+                  style={{ cursor: "pointer", fontSize: "22px" }}
                   onClick={() => setAskKenOpen(false)}
                 >
                   expand_more
