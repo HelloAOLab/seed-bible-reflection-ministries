@@ -908,8 +908,11 @@ FINAL RULE:
                     drag_indicator
                   </span>
 
-                  <span className="label">
-                    {askKenSize.charAt(0).toUpperCase() + askKenSize.slice(1)}
+                  <span className="label" style={{ fontSize: "12px" }}>
+                    {askKenSize === "mediumSlim"
+                      ? "Medium,slim"
+                      : askKenSize.charAt(0).toUpperCase() +
+                        askKenSize.slice(1)}
                   </span>
 
                   <select
