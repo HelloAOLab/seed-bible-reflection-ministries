@@ -500,27 +500,31 @@ function AskKenModal({
   useEffect(() => {
     (async () => {
       console.log("[AskKen] Mount: checking auth...");
-
       const authBot = await getAuthBot();
-
       const loggedIn = !!authBot?.id;
-
+      console.log("[AskKen] Mount: loggedIn =", loggedIn, "authBot =", authBot);
       setIsLoggedIn(loggedIn);
-
-      // Load chat history ONLY
-      const { chats: index } = await loadChatIndex();
-
+      // Load index (works for both logged-in and anonymous)
+      const { chats: index, activeId } = await loadChatIndex();
+      console.log(
+        "[AskKen] Mount: loaded index with",
+        index.length,
+        "chats, activeId:",
+        activeId
+      );
       const sorted = [...index].sort(
         (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)
       );
-
       setChatIndex(sorted);
-
-      // ALWAYS start new chat
-      setMessages([]);
-      setActiveChatId(null);
-      setQuery("");
-
+      // Restore the last active chat
+      if (activeId) {
+        const fullChat = await loadFullChat(activeId);
+        if (fullChat?.messages) {
+          setMessages(fullChat.messages);
+          setActiveChatId(activeId);
+          console.log("[AskKen] Mount: restored active chat", activeId);
+        }
+      }
       setHistoryLoaded(true);
     })();
   }, []);
@@ -910,7 +914,7 @@ FINAL RULE:
 
                   <span className="label" style={{ fontSize: "12px" }}>
                     {askKenSize === "mediumSlim"
-                      ? "Medium,slim"
+                      ? "Medium, slim"
                       : askKenSize.charAt(0).toUpperCase() +
                         askKenSize.slice(1)}
                   </span>
@@ -935,8 +939,8 @@ FINAL RULE:
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
                     <option value="large">Large</option>
-                    <option value="mediumSlim">Medium,slim</option>
-                    <option value="largeSlim">Large,slim</option>
+                    <option value="mediumSlim">Medium, slim</option>
+                    <option value="largeSlim">Large, slim</option>
                   </select>
                 </div>
                 <div
