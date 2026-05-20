@@ -97,6 +97,9 @@ export async function navigateToBibleReference({
 
       // highlight new verse
       globalThis.HighlightVerse([currentVerse], "#2E48791A");
+      setTimeout(() => {
+        globalThis.SetHighlighted({});
+      }, 10000);
 
       prevVerse = currentVerse;
     }, 1200);
