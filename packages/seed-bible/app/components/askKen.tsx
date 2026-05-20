@@ -297,8 +297,8 @@ const SIZE_MAP = {
   small: { width: 20, height: 35 },
   medium: { width: 32, height: 65 },
   large: { width: 36, height: 83 },
-  mediumSlim: { width: 20, height: 65 },
-  largeSlim: { width: 20, height: 83 },
+  mediumSlim: { width: 21, height: 65 },
+  largeSlim: { width: 21, height: 83 },
 };
 
 function AskKenModal({
@@ -938,8 +938,8 @@ FINAL RULE:
                   >
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
+                     <option value="mediumSlim">Medium, slim</option>
                     <option value="large">Large</option>
-                    <option value="mediumSlim">Medium, slim</option>
                     <option value="largeSlim">Large, slim</option>
                   </select>
                 </div>
