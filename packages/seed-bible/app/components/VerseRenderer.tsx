@@ -7,6 +7,7 @@ export function VerseRenderer({ text, booksData, tabs }) {
   const { scrollToVerse } = useBibleContext();
 
   const refs = bibleRefrenceParser(text);
+
   const translationId = parseTranslation(text);
 
   if (!refs.length) {
@@ -14,7 +15,6 @@ export function VerseRenderer({ text, booksData, tabs }) {
   }
 
   let currentIndex = 0;
-
   const elements = [];
 
   refs.forEach((ref, i) => {
@@ -34,9 +34,10 @@ export function VerseRenderer({ text, booksData, tabs }) {
           navigateToBibleReference({
             bookName: ref.book,
             chapter: ref.chapter,
-            translationId: translationId,
+            translationId,
             booksData,
             verseNumber: ref.verse,
+            endVerseNumber: ref.endVerse || ref.verse, // range support
             scrollToVerse,
             tabs,
           })

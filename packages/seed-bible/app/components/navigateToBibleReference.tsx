@@ -9,6 +9,7 @@ export async function navigateToBibleReference({
   translationId,
   booksData,
   verseNumber,
+  endVerseNumber,
   scrollToVerse,
   tabs,
 }) {
@@ -27,11 +28,6 @@ export async function navigateToBibleReference({
   const chapterUrl = bookData.firstChapterApiLink.replace(
     "1.json",
     `${chapter}.json`
-  );
-  console.log(
-    globalThis.CurrentBookData,
-    bookName,
-    "globalThis.CurrentBookData"
   );
 
   if (bookName?.slice(0, 4) === globalThis.CurrentBookData.book?.slice(0, 4)) {
@@ -78,30 +74,55 @@ export async function navigateToBibleReference({
 
   if (verseNumber) {
     setTimeout(() => {
-      const currentVerse = Number(verseNumber);
+      const startVerse = Number(verseNumber);
+      const endVerse = Number(endVerseNumber || verseNumber);
 
-      scrollToVerse(currentVerse);
+      const verses = [];
 
-      // remove old highlighted verse
+      for (let i = startVerse; i <= endVerse; i++) {
+        verses.push(i);
+      }
+
+      scrollToVerse(startVerse);
+
       if (prevVerse !== null) {
         globalThis.SetHighlighted((prev) => {
           const updated = { ...prev };
 
-          delete updated[
-            `${globalThis.CurrentBookData.book}-${globalThis.CurrentBookData.chapter}-${prevVerse}`
-          ];
+          for (let i = prevVerse.start; i <= prevVerse.end; i++) {
+            delete updated[
+              `${globalThis.CurrentBookData.book}-${globalThis.CurrentBookData.chapter}-${i}`
+            ];
+          }
 
           return updated;
         });
       }
 
-      // highlight new verse
-      globalThis.HighlightVerse([currentVerse], "#2E48791A");
-      setTimeout(() => {
-        globalThis.SetHighlighted({});
-      }, 10000);
+      globalThis.HighlightVerse(verses, "#2E48791A");
 
-      prevVerse = currentVerse;
+      prevVerse = {
+        start: startVerse,
+        end: endVerse,
+        chapter: globalThis.CurrentBookData.chapter,
+        book: globalThis.CurrentBookData.book,
+      };
+
+      setTimeout(() => {
+        globalThis.SetHighlighted((prev) => {
+          const updated = { ...prev };
+
+          for (let i = startVerse; i <= endVerse; i++) {
+            delete updated[
+              `${globalThis.CurrentBookData.book}-${globalThis.CurrentBookData.chapter}-${i}`
+            ];
+          }
+
+          return updated;
+        });
+
+        prevVerse = null;
+      }, 10000);
     }, 1200);
   }
 }

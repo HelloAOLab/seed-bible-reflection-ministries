@@ -938,7 +938,7 @@ FINAL RULE:
                   >
                     <option value="small">Small</option>
                     <option value="medium">Medium</option>
-                     <option value="mediumSlim">Medium, slim</option>
+                    <option value="mediumSlim">Medium, slim</option>
                     <option value="large">Large</option>
                     <option value="largeSlim">Large, slim</option>
                   </select>
@@ -1116,7 +1116,7 @@ FINAL RULE:
                             ...prev,
                             {
                               role: "assistant",
-                              content: `Opened ${ref.book} ${ref.chapter}${
+                              content: `Opened ${ref.book.charAt(0).toUpperCase() + ref.book.slice(1).toLowerCase()} ${ref.chapter}${
                                 ref.verse ? ":" + ref.verse : ""
                               }${
                                 translation
@@ -1164,7 +1164,7 @@ FINAL RULE:
                           ...prev,
                           {
                             role: "assistant",
-                            content: `Opened ${ref.book} ${ref.chapter}${
+                            content: `Opened ${ref.book.charAt(0).toUpperCase() + ref.book.slice(1).toLowerCase()} ${ref.chapter}${
                               ref.verse ? ":" + ref.verse : ""
                             }${
                               translation ? " in " + translation.shortName : ""

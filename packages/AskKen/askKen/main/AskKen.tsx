@@ -795,7 +795,7 @@ FINAL RULE:
                           ...prev,
                           {
                             role: "assistant",
-                            content: `Opened ${ref.book} ${ref.chapter}${
+                            content: `Opened ${ref.book.charAt(0).toUpperCase() + ref.book.slice(1).toLowerCase()} ${ref.chapter}${
                               ref.verse ? ":" + ref.verse : ""
                             }${
                               translation ? " in " + translation.shortName : ""
@@ -840,7 +840,7 @@ FINAL RULE:
                         ...prev,
                         {
                           role: "assistant",
-                          content: `Opened ${ref.book} ${ref.chapter}${
+                          content: `Opened ${ref.book.charAt(0).toUpperCase() + ref.book.slice(1).toLowerCase()} ${ref.chapter}${
                             ref.verse ? ":" + ref.verse : ""
                           }${
                             translation ? " in " + translation.shortName : ""
