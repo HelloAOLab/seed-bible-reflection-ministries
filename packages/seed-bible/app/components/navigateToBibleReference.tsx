@@ -14,13 +14,9 @@ export async function navigateToBibleReference({
   scrollToVerse,
   tabs,
 }) {
-  console.log(booksData, "boook");
   const bookData = booksData.find((book) =>
     book.commonName?.toLowerCase().includes(bookName.toLowerCase())
   );
-  console.log(bookData);
-
-  console.log(bookData, "bookdata");
 
   if (!bookData) {
     console.log("Book not found");
@@ -39,8 +35,6 @@ export async function navigateToBibleReference({
     normalizeBook(bookName) === normalizeBook(globalThis.CurrentBookData?.book);
 
   if (isSameBook) {
-    console.log("123");
-
     setTimeout(() => {
       globalThis.Open(
         bookData.id,
@@ -59,19 +53,7 @@ export async function navigateToBibleReference({
         normalizeBook(t?.data?.book) === normalizeBook(bookName)
     );
 
-    console.log(
-      existingTab,
-      bookData.id,
-      chapter,
-      translationId,
-      chapterUrl,
-      "daata"
-    );
-
     if (existingTab) {
-      console.log("456");
-      console.log(existingTab, "existingTab");
-
       const updatedTab = {
         ...existingTab,
         data: {
@@ -80,7 +62,6 @@ export async function navigateToBibleReference({
           translation: translationId || bookData.translationId,
         },
       };
-      console.log(updatedTab, "updatedtab");
 
       // switch to existing tab
       setTimeout(() => {
@@ -98,8 +79,6 @@ export async function navigateToBibleReference({
         );
       }, 800);
     } else {
-      console.log("789");
-
       // create new tab
       const tab = {
         id: uuid(),
