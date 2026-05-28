@@ -1,12 +1,12 @@
 export function bibleRefrenceParser(text: string) {
   const regex =
-    /\b((?:[1-3]\s)?(?:genesis|exodus|leviticus|numbers|deuteronomy|joshua|judges|ruth|(?:1|2)\s+samuel|(?:1|2)\s+kings|(?:1|2)\s+chronicles|ezra|nehemiah|esther|job|psalms?|proverbs|ecclesiastes|song of songs|song of solomon|isaiah|jeremiah|lamentations|ezekiel|daniel|hosea|joel|amos|obadiah|jonah|micah|nahum|habakkuk|zephaniah|haggai|zechariah|malachi|matthew|mark|luke|john|acts|romans|(?:1|2)\s+corinthians|galatians|ephesians|philippians|colossians|(?:1|2)\s+thessalonians|(?:1|2)\s+timothy|titus|philemon|hebrews|james|(?:1|2)\s+peter|(?:1|2|3)\s+john|jude|revelation))\s+(\d+):(\d+)(?:[-–](\d+))?/gi;
+    /\b((?:[1-3]\s)?(?:genesis|exodus|leviticus|numbers|deuteronomy|joshua|judges|ruth|(?:1|2)\s+samuel|(?:1|2)\s+kings|(?:1|2)\s+chronicles|ezra|nehemiah|esther|job|psalms?|proverbs|ecclesiastes|song of songs|song of solomon|isaiah|jeremiah|lamentations|ezekiel|daniel|hosea|joel|amos|obadiah|jonah|micah|nahum|habakkuk|zephaniah|haggai|zechariah|malachi|matthew|mark|luke|john|acts|romans|(?:1|2)\s+corinthians|galatians|ephesians|philippians|colossians|(?:1|2)\s+thessalonians|(?:1|2)\s+timothy|titus|philemon|hebrews|james|(?:1|2)\s+peter|(?:1|2|3)\s+john|jude|revelation))\s+(\d+)(?::(\d+)(?:[-–](\d+))?)?/gi;
 
   return [...text.matchAll(regex)].map((match) => ({
     full: match[0],
     book: match[1]?.trim(),
     chapter: Number(match[2]),
-    verse: Number(match[3]),
+    verse: match[3] ? Number(match[3]) : null,
     endVerse: match[4] ? Number(match[4]) : null,
   }));
 }

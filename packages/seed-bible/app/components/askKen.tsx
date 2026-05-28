@@ -1150,6 +1150,7 @@ FINAL RULE:
                     const currentQuery = query.trim();
 
                     const handled = await handleAIAction();
+                    console.log(handled, "handled");
 
                     // Bible navigation handled
                     if (handled) {

@@ -3,6 +3,7 @@ import { VerseRenderer } from "app.components.VerseRenderer";
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
 import { useAIBibleAction } from "app.components.aiactions";
 const thePage = getBot("system", "app.components");
+const { useTabsContext } = await import("app.hooks.tabs");
 
 const ChatHistoryPanel = await thisBot.AskKenChatHistory();
 import { bibleRefrenceParser } from "app.components.bibleRefrenceParser";
@@ -294,6 +295,7 @@ function AskKenTab({ context, label }) {
   const [openActionModal, setOpenActionModal] = useState(false);
 
   const offsetRef = useRef({ x: 0, y: 0 });
+  const { tabs } = useTabsContext();
 
   const handleMouseDown = (e) => {
     setDragging(true);
@@ -324,6 +326,7 @@ function AskKenTab({ context, label }) {
   const { handleAIAction } = useAIBibleAction({
     query,
     booksData: thePage.masks?.booksData || tags.booksData,
+    tabs: tabs,
   });
   useEffect(() => {
     if (globalThis.AskKenPrompt) {
@@ -383,8 +386,14 @@ function AskKenTab({ context, label }) {
   }, []);
   useEffect(() => {
     if (promptForAskKen) {
-      setQuery(promptForAskKen);
-      setAutoSend(true);
+      handleClearChat();
+
+      setMessages([]);
+
+      setTimeout(() => {
+        setQuery(promptForAskKen);
+        setAutoSend(true);
+      }, 0);
     }
   }, [promptForAskKen]);
 
@@ -499,7 +508,7 @@ function AskKenTab({ context, label }) {
     if (!query.trim() || isLoading) return;
 
     const userMessage = { role: "user", content: query.trim() };
-    const newMessages = [...messages, userMessage];
+    const newMessages = autoSend ? [userMessage] : [...messages, userMessage];
     setMessages(newMessages);
     setQuery("");
     setIsLoading(true);
@@ -617,11 +626,13 @@ FINAL RULE:
   };
   useEffect(() => {
     if (autoSend && query.trim() && !isLoading) {
-      handleSubmit();
-      setAutoSend(false);
+      handleClearChat();
       setTimeout(() => {
+        handleSubmit();
+        setAutoSend(false);
         setPromptForAskKen("");
-      }, 200);
+      }, 0);
+
       // reset so typing won't trigger
     }
   }, [query, autoSend]);
@@ -734,6 +745,7 @@ FINAL RULE:
                             booksData={
                               thePage.masks?.booksData || tags.booksData
                             }
+                            tabs={tabs}
                           />
                         </p>
                       ))}
