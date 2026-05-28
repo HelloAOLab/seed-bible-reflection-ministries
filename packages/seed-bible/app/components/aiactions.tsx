@@ -9,6 +9,7 @@ import useBibleData from "app.hooks.bibleData";
 
 export function useAIBibleAction({ query, booksData, tabs }) {
   const { scrollToVerse } = useBibleContext();
+  console.log(query, "query");
 
   async function handleAIAction() {
     if (!query?.trim()) {
@@ -16,18 +17,22 @@ export function useAIBibleAction({ query, booksData, tabs }) {
     }
 
     const lowerQuery = query.toLowerCase().trim();
+    console.log(lowerQuery, "lowerquery");
 
     const shouldNavigate =
-      lowerQuery.startsWith("open ") ||
-      lowerQuery.startsWith("go to ") ||
-      lowerQuery.startsWith("show ") ||
-      lowerQuery.startsWith("take me to ");
+      lowerQuery.startsWith("open") ||
+      lowerQuery.startsWith("go to") ||
+      lowerQuery.startsWith("show") ||
+      lowerQuery.startsWith("take me to") ||
+      lowerQuery.startsWith("navigate") ||
+      lowerQuery.startsWith("take to");
 
     if (!shouldNavigate) {
       return false;
     }
 
     const refs = bibleRefrenceParser(query);
+    console.log(refs, "refs");
 
     const translation = parseTranslation(query);
 
