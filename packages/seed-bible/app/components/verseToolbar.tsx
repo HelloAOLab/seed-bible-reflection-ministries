@@ -874,7 +874,7 @@ function getMenuActions(
           } else {
             globalThis.setActiveMoreApp("askKen");
             globalThis.AskKenPrompt = promptForAskKen;
-            const exploreTool = tools?.find((t) => t?.label === "askKen");
+            const exploreTool = tools?.find((t) => t?.label === "askKen!");
             exploreTool.onClick();
           }
         },
