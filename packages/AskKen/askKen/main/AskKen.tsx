@@ -931,9 +931,6 @@ FINAL RULE:
               </div>
             </div>
           </div>
-          {!isMobile && (
-            <p className="askken-footer">{t("reflectionCopyRight")}</p>
-          )}
         </div>
       </div>
       <style>{getStyleOf("askken.css")}</style>
