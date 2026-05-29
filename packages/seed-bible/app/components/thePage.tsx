@@ -1944,58 +1944,117 @@ function ThePage({
               }
             }}
           >
-            <div
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              className="askKen-text"
-              style={{
-                position: "fixed",
-                bottom: !globalThis.IsMobileNow() ? "106px" : "128px",
-                right: !globalThis.IsMobileNow() ? "13px" : "6px",
-                color: "white",
-                zIndex: "999",
-                padding: "6px 16px 6px 16px",
-                fontSize: "15px",
-                borderRadius: "25px",
-                textAlign: "center",
-                backgroundColor: isHovered
-                  ? "rgba(17, 24, 39, 0.9)"
-                  : "rgba(17, 24, 39, 0.6)",
-              }}
-            >
-              Ask Ken!
-            </div>
-            <div
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              style={{
-                position: "fixed",
-                bottom: !globalThis.IsMobileNow() ? "49px" : "72px",
-                right: !globalThis.IsMobileNow() ? "12px" : "7px",
-                color: "black",
-                zIndex: "999",
-                backgroundColor: isHovered
-                  ? "rgba(255, 255, 255, 0.9)"
-                  : "rgba(255, 255, 255, 0.3)",
-              }}
-            >
+            {globalThis.ActiveMoreApp === "Discovery" ? (
               <div
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
                 style={{
+                  position: "fixed",
+                  bottom: !globalThis.IsMobileNow() ? "46px" : "60px",
+                  right: !globalThis.IsMobileNow() ? "8px" : "4px",
+                  zIndex: 999,
+
+                  display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  display: "flex",
-                  width: "52px",
-                  height: "52px",
-                  borderRadius: "60px",
-                  border: "1px solid black",
-                  backgroundColor: "white",
-                  color: "black",
-                  gap: "3px",
+
+                  padding: "12px",
+                  minWidth: "100px",
+                  minHeight: "95px",
+
+                  borderRadius: "24px",
+                  background: "rgba(17, 24, 39, 1.0)",
+
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+                  gap: "8px",
                 }}
               >
-                <AskKen />
+                <div
+                  className="askKen-text"
+                  style={{
+                    color: "white",
+                    fontSize: "15px",
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
+                    fontWeight: 500,
+                  }}
+                >
+                  Ask Ken!
+                </div>
+
+                <div
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    display: "flex",
+                    width: "52px",
+                    height: "52px",
+                    borderRadius: "60px",
+                    border: "1px solid black",
+                    backgroundColor: "white",
+                    color: "black",
+                  }}
+                >
+                  <AskKen />
+                </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <div
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  className="askKen-text"
+                  style={{
+                    position: "fixed",
+                    bottom: !globalThis.IsMobileNow() ? "106px" : "128px",
+                    right: !globalThis.IsMobileNow() ? "13px" : "6px",
+                    color: "white",
+                    zIndex: "999",
+                    padding: "6px 16px 6px 16px",
+                    fontSize: "15px",
+                    borderRadius: "25px",
+                    textAlign: "center",
+                    backgroundColor: isHovered
+                      ? "rgba(17, 24, 39, 0.9)"
+                      : "rgba(17, 24, 39, 0.6)",
+                  }}
+                >
+                  Ask Ken!
+                </div>
+                <div
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  style={{
+                    position: "fixed",
+                    bottom: !globalThis.IsMobileNow() ? "49px" : "72px",
+                    right: !globalThis.IsMobileNow() ? "12px" : "7px",
+                    color: "black",
+                    zIndex: "999",
+                    backgroundColor: isHovered
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(255, 255, 255, 0.3)",
+                  }}
+                >
+                  <div
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      display: "flex",
+                      width: "52px",
+                      height: "52px",
+                      borderRadius: "60px",
+                      border: "1px solid black",
+                      backgroundColor: "white",
+                      color: "black",
+                      gap: "3px",
+                    }}
+                  >
+                    <AskKen />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
         <div
