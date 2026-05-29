@@ -23,7 +23,8 @@ export function useAIBibleAction({ query, booksData, tabs }) {
       lowerQuery.startsWith("show") ||
       lowerQuery.startsWith("take me to") ||
       lowerQuery.startsWith("navigate") ||
-      lowerQuery.startsWith("take to");
+      lowerQuery.startsWith("take to") ||
+      lowerQuery.startsWith("change");
 
     if (!shouldNavigate) {
       return false;
@@ -49,6 +50,10 @@ export function useAIBibleAction({ query, booksData, tabs }) {
         tabs,
       });
 
+      return true;
+    }
+    if (translation) {
+      globalThis.ChangeTranslation(translation.shortName, booksData);
       return true;
     }
 
