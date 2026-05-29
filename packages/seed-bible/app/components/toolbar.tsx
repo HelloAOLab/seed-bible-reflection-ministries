@@ -63,7 +63,7 @@ export function Toolbar() {
       setShowMoreMenu(false);
     });
   }, []);
-  const filteredTools = tools.filter((t) => t.label !== "askKen!");
+  const filteredTools = tools.filter((t) => t.label !== "ask Ken!");
 
   useEffect(() => {
     if (!showMoreMenu) return;
