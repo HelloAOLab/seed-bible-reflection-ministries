@@ -9,7 +9,7 @@
       "icon": "chat",
 
       "isImg": true,
-      "label": "askKen!",
+      "label": "ask Ken!",
       "to": "panel"
     }
   },
