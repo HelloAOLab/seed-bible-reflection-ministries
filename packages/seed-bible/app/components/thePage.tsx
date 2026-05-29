@@ -186,6 +186,7 @@ function ThePage({
       configBot.tags.translationId ||
       configBot.tags.translation ||
       tab.data.translation;
+    console.log(translationId, typeof translationId, "translationId");
     let baseUrl = "https://vmfnri.helloao.org";
     let bookId = tab.data.bookId || "GEN";
     let bookTranslationId = tab.data.translation;
@@ -220,17 +221,21 @@ function ThePage({
         pass: false,
         value: null,
       };
+      const translationIdStr =
+        typeof translationId === "string"
+          ? translationId
+          : translationId?.id || translationId?.shortName || "";
       if (available_translations_req.status === 200) {
         allTranslations.forEach((translationData) => {
           if (
-            translationData.id.toLowerCase() === translationId.toLowerCase()
+            translationData.id.toLowerCase() === translationIdStr.toLowerCase()
           ) {
             trValue.pass = true;
             trValue.value = translationData;
           }
         });
 
-        const urlId = translationId.includes("https://");
+        const urlId = translationIdStr.includes("https://");
 
         if (trValue.pass && !urlId) {
           const bookData = await web.get(

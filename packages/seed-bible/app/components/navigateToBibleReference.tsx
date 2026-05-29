@@ -22,8 +22,9 @@ export async function navigateToBibleReference({
     console.log("Book not found");
     return;
   }
-
-  globalThis.ChangeTranslation(translationId);
+  if (translationId) {
+    globalThis.ChangeTranslation(translationId);
+  }
 
   const chapterUrl = bookData.firstChapterApiLink.replace(
     "1.json",
