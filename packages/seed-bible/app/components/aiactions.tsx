@@ -40,6 +40,7 @@ export function useAIBibleAction({ query, booksData, tabs }) {
         bookName: ref.book,
         chapter: ref.chapter,
         verseNumber: ref.verse,
+        endVerseNumber: ref.endVerse || ref.verse,
 
         translationId: translation?.shortName || "NASB95",
 
