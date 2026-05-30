@@ -121,6 +121,7 @@ export function Toolbar() {
   useEffect(() => {
     G.ActiveMoreApp = activeMoreApp;
     G.SetActiveMoreApp = setActiveMoreApp;
+
     return () => {
       G.ActiveMoreApp = null;
       G.SetActiveMoreApp = null;
@@ -269,6 +270,7 @@ export function Toolbar() {
                     if (activeMoreApp) {
                       G.RemoveApplicationByLabel(activeMoreApp);
                       setActiveMoreApp(null);
+                      globalThis.RefreshAskKen?.();
                     }
                     G.makingApp = null;
                   }
@@ -297,6 +299,7 @@ export function Toolbar() {
                     if (G.openSidebar) {
                       G.RemoveApplicationByLabel(activeMoreApp);
                       setActiveMoreApp(null);
+                      globalThis.RefreshAskKen?.();
                     }
                     G.setOpenSidebar(!G.openSidebar);
                   }
@@ -334,6 +337,7 @@ export function Toolbar() {
                           tool?.onClick?.();
                           setShowMoreMenu(false);
                           setActiveMoreApp(tool.label);
+                          globalThis.RefreshAskKen?.();
                         }}
                       >
                         {tool?.isImg ? (
@@ -367,8 +371,10 @@ export function Toolbar() {
                       );
                       (globalThis as any).makingApp = null;
                       setActiveMoreApp(null);
+                      globalThis.RefreshAskKen?.();
                     } else {
                       setShowMoreMenu((prev) => !prev);
+                      globalThis.RefreshAskKen?.();
                     }
                   }}
                 >
@@ -475,7 +481,13 @@ export function Toolbar() {
                       }}
                       onMouseUp={(e) => {
                         e.stopPropagation();
-                        G.SetActiveMoreApp(tool.label);
+                        if (!activeMoreApp) {
+                          G.SetActiveMoreApp(tool.label);
+                          globalThis.RefreshAskKen?.();
+                        } else {
+                          G.SetActiveMoreApp(null);
+                          globalThis.RefreshAskKen?.();
+                        }
                         clearTimeout(holdTimeoutRef.current);
                         if (!hasHeldRef.current && tool?.onClick) {
                           tool.onClick();
