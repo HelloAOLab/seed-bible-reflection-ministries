@@ -1,5 +1,6 @@
 import { useBibleContext } from "app.hooks.bibleVariables";
 import useBibleData from "app.hooks.bibleData";
+
 let prevVerse = null;
 
 const G = globalThis;
@@ -14,36 +15,33 @@ export async function navigateToBibleReference({
   scrollToVerse,
   tabs,
 }) {
-  if (G.IsMobileNow?.()) {
-    if (G.BibleNavigationInProgress) {
-      return;
-    }
-
-    G.BibleNavigationInProgress = true;
+  if (G.IsMobileNow?.() && G.BibleNavigationInProgress) {
+    return;
   }
 
-  try {
-    const bookData = booksData.find((book) =>
-      book.commonName?.toLowerCase().includes(bookName.toLowerCase())
-    );
+  G.BibleNavigationInProgress = true;
 
-    console.log(bookData, "bookdata");
+  const bookData = booksData.find((book) =>
+    book.commonName?.toLowerCase().includes(bookName.toLowerCase())
+  );
 
-    if (!bookData) {
-      console.log("Book not found");
-      return;
-    }
+  if (!bookData) {
+    console.log("Book not found");
+    G.BibleNavigationInProgress = false;
+    return;
+  }
 
-    if (translationId) {
-      G.ChangeTranslation(translationId);
-    }
+  if (translationId) {
+    G.ChangeTranslation(translationId);
+  }
 
-    const chapterUrl = bookData.firstChapterApiLink.replace(
-      "1.json",
-      `${chapter}.json`
-    );
+  const chapterUrl = bookData.firstChapterApiLink.replace(
+    "1.json",
+    `${chapter}.json`
+  );
 
-    const executeNavigation = () => {
+  const executeNavigation = () => {
+    try {
       const currentBook = G.CurrentBookData?.book?.slice(0, 4)?.toLowerCase();
 
       const targetBook = bookName?.slice(0, 4)?.toLowerCase();
@@ -68,8 +66,6 @@ export async function navigateToBibleReference({
           };
 
           G.UpdateTab(updatedTab);
-
-          G.Open(bookData.id, chapter, translationId, chapterUrl);
         } else {
           const tab = {
             id: uuid(),
@@ -87,9 +83,9 @@ export async function navigateToBibleReference({
 
           G.AddTab(tab);
           G.UpdateTab(tab);
-
-          G.Open(bookData.id, chapter, translationId, chapterUrl);
         }
+
+        G.Open(bookData.id, chapter, translationId, chapterUrl);
       }
 
       if (verseNumber) {
@@ -105,7 +101,7 @@ export async function navigateToBibleReference({
 
           scrollToVerse(startVerse);
 
-          if (prevVerse !== null) {
+          if (prevVerse) {
             G.SetHighlighted((prev) => {
               const updated = { ...prev };
 
@@ -127,24 +123,33 @@ export async function navigateToBibleReference({
           };
         }, 1200);
       }
-    };
+
+      // Close Ask Ken app
+      setTimeout(() => {
+        const activeApp = G.ActiveMoreApp;
+
+        console.log("ActiveMoreApp before remove:", activeApp);
+      }, 100);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setTimeout(() => {
+        G.BibleNavigationInProgress = false;
+      }, 500);
+    }
+  };
+
+  if (G.IsMobileNow?.()) {
     if (G.ActiveMoreApp) {
       G.RemoveApplicationByLabel(G.ActiveMoreApp);
       G.makingApp = null;
-      G.SetActiveMoreApp(null);
+      G.SetActiveMoreApp?.(null);
       G.ActiveMoreApp = null;
-    }
-
-    if (G.IsMobileNow?.()) {
-      setTimeout(executeNavigation, 500);
     } else {
-      executeNavigation();
+      G.RemoveApplicationByLabel("ask Ken!");
     }
-  } finally {
-    if (G.IsMobileNow?.()) {
-      setTimeout(() => {
-        G.BibleNavigationInProgress = false;
-      }, 1500);
-    }
+    setTimeout(executeNavigation, 500);
+  } else {
+    executeNavigation();
   }
 }
