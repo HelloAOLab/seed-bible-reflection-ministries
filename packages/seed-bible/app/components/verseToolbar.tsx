@@ -872,7 +872,7 @@ function getMenuActions(
             console.log(promptForAskKen, "jjj");
             setVersePrompt(promptForAskKen);
           } else {
-            globalThis.setActiveMoreApp("askKen");
+            globalThis.SetActiveMoreApp("ask Ken!");
             globalThis.AskKenPrompt = promptForAskKen;
             const exploreTool = tools?.find((t) => t?.label === "ask Ken!");
             exploreTool.onClick();
