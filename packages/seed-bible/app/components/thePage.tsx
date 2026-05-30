@@ -105,6 +105,7 @@ function ThePage({
     setCollapsed,
     setSideBarMode,
   } = useSideBarContext();
+
   useEffect(() => {
     if (deleteTab) {
       if (deleteTab.tabId === tab?.id) {
@@ -179,6 +180,21 @@ function ThePage({
   });
   const [showFootnoteModal, setShowFootnoteModal] = useState(false);
   const [activeFootnote, setActiveFootnote] = useState(null);
+  const [activeMoreAppLocal, setActiveMoreAppLocal] = useState(null);
+
+  useEffect(() => {
+    const originalSetter = globalThis.setActiveMoreApp;
+
+    globalThis.setActiveMoreApp = (value) => {
+      setActiveMoreAppLocal(value);
+      originalSetter?.(value);
+    };
+
+    return () => {
+      globalThis.setActiveMoreApp = originalSetter;
+    };
+  }, []);
+
   if (tab) globalThis[`SetEnableEditorOf${tab?.id}`] = setEnableEditor;
 
   const loadTranslationFromUrl = async () => {
@@ -815,7 +831,6 @@ function ThePage({
         verses: unifiedVerses,
       });
 
-      // 🔥 NEW — Convert selection into clicked verses
       setClickedVerses((prev) => {
         const newOnes = unifiedVerses.filter((v) => !prev.includes(v));
         return [...prev, ...newOnes];
@@ -1256,6 +1271,17 @@ function ThePage({
   }, [tab?.id]);
 
   const [highlightOnce, setHighlightOnce] = useState(false);
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    globalThis.RefreshAskKen = () => {
+      forceUpdate((v) => v + 1);
+    };
+
+    return () => {
+      delete globalThis.RefreshAskKen;
+    };
+  }, []);
 
   useEffect(() => {
     if (tab?.id) {
@@ -1937,8 +1963,10 @@ function ThePage({
                   );
                   (globalThis as any).makingApp = null;
                   globalThis.setActiveMoreApp(null);
-                  globalThis.setActiveMoreApp("askKen");
-                  const exploreTool = tools?.find((t) => t?.label === "askKen");
+                  globalThis.setActiveMoreApp("ask Ken!");
+                  const exploreTool = tools?.find(
+                    (t) => t?.label === "ask Ken!"
+                  );
                   exploreTool.onClick();
                 }
               }
@@ -1964,7 +1992,7 @@ function ThePage({
                   minHeight: "95px",
 
                   borderRadius: "24px",
-                  background: "rgba(17, 24, 39, 1.0)",
+                  background: "#2E4879",
 
                   boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
                   gap: "8px",
@@ -1978,6 +2006,7 @@ function ThePage({
                     textAlign: "center",
                     whiteSpace: "nowrap",
                     fontWeight: 500,
+                    background: "#2E4879",
                   }}
                 >
                   Ask Ken!
