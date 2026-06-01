@@ -63,6 +63,7 @@ export function Toolbar() {
       setShowMoreMenu(false);
     });
   }, []);
+  const filteredTools = tools.filter((t) => t.label !== "ask Ken!");
 
   useEffect(() => {
     if (!showMoreMenu) return;
@@ -120,6 +121,7 @@ export function Toolbar() {
   useEffect(() => {
     G.ActiveMoreApp = activeMoreApp;
     G.SetActiveMoreApp = setActiveMoreApp;
+
     return () => {
       G.ActiveMoreApp = null;
       G.SetActiveMoreApp = null;
@@ -268,6 +270,7 @@ export function Toolbar() {
                     if (activeMoreApp) {
                       G.RemoveApplicationByLabel(activeMoreApp);
                       setActiveMoreApp(null);
+                      globalThis.RefreshAskKen?.();
                     }
                     G.makingApp = null;
                   }
@@ -296,6 +299,7 @@ export function Toolbar() {
                     if (G.openSidebar) {
                       G.RemoveApplicationByLabel(activeMoreApp);
                       setActiveMoreApp(null);
+                      globalThis.RefreshAskKen?.();
                     }
                     G.setOpenSidebar(!G.openSidebar);
                   }
@@ -320,11 +324,12 @@ export function Toolbar() {
               </div>
             </div>
 
-            {!mobileBookLogo ? (
-              <div className="more-btn-wrapper" ref={moreMenuRef}>
-                {showMoreMenu && (
-                  <div className="more-menu-popup">
-                    {moreTools.map((tool: any, i: any) => (
+            <div className="more-btn-wrapper" ref={moreMenuRef}>
+              {showMoreMenu && (
+                <div className="more-menu-popup">
+                  {moreTools
+                    .filter((tool) => tool.label?.toLowerCase() !== "books")
+                    .map((tool: any, i: any) => (
                       <button
                         key={i}
                         className="more-menu-item"
@@ -332,6 +337,7 @@ export function Toolbar() {
                           tool?.onClick?.();
                           setShowMoreMenu(false);
                           setActiveMoreApp(tool.label);
+                          globalThis.RefreshAskKen?.();
                         }}
                       >
                         {tool?.isImg ? (
@@ -346,13 +352,15 @@ export function Toolbar() {
                           </span>
                         )}
                         <span className="more-menu-item-label">
-                          {tool?.label}
+                          {tool?.label?.charAt(0).toUpperCase() +
+                            tool?.label?.slice(1)}
                         </span>
                       </button>
                     ))}
-                  </div>
-                )}
-                {/* <button
+                </div>
+              )}
+              {
+                <button
                   className="mobile-navbar-btn more-btn"
                   title={activeMoreApp ? "Close" : "More"}
                   aria-label={activeMoreApp ? "Close" : "More"}
@@ -363,8 +371,10 @@ export function Toolbar() {
                       );
                       (globalThis as any).makingApp = null;
                       setActiveMoreApp(null);
+                      globalThis.RefreshAskKen?.();
                     } else {
                       setShowMoreMenu((prev) => !prev);
+                      globalThis.RefreshAskKen?.();
                     }
                   }}
                 >
@@ -383,88 +393,9 @@ export function Toolbar() {
                       {activeMoreApp ? "Close" : "More"}
                     </span>
                   </div>
-                </button> */}
-              </div>
-            ) : (
-              <button
-                className="mobile-navbar-btn"
-                title={
-                  activeMoreApp &&
-                  !globalThis.IsVerseClicked &&
-                  globalThis.isDiscoveryOpen
-                    ? "Close"
-                    : presetToolBarTitle
-                }
-                aria-label={
-                  activeMoreApp &&
-                  !globalThis.IsVerseClicked &&
-                  globalThis.isDiscoveryOpen
-                    ? "Close"
-                    : presetToolName
-                }
-                onClick={() => {
-                  globalThis.IsVerseClickedOnDesktop = false;
-                  globalThis.IsVerseClicked = false;
-                  if (activeMoreApp) {
-                    (globalThis as any).RemoveApplicationByLabel(activeMoreApp);
-
-                    (globalThis as any).makingApp = null;
-                    setActiveMoreApp(null);
-                  } else {
-                    globalThis.isDiscoveryOpen = true;
-                    globalThis.IsVerseClicked = false;
-
-                    const exploreTool = tools?.find(
-                      (t) => t?.label === presetToolName
-                    );
-                    if (!hasOpenedOnce) {
-                      setIsDummyLoading(true);
-                      setTimeout(() => {
-                        exploreTool.onClick();
-                      }, 5000);
-                      setHasOpenedOnce(true);
-                    } else {
-                      exploreTool.onClick();
-                    }
-
-                    setActiveMoreApp(presetToolName);
-                    setTimeout(() => {
-                      setIsDummyLoading(false);
-                    }, 5000);
-                  }
-                }}
-              >
-                <div className="mobile-btn-content">
-                  {isDummyLoading ? (
-                    <span className="material-symbols-outlined">
-                      hourglass_top
-                    </span>
-                  ) : activeMoreApp &&
-                    !globalThis.IsVerseClicked &&
-                    globalThis.isDiscoveryOpen ? (
-                    <span className="material-symbols-outlined">close</span>
-                  ) : (
-                    <span className="material-symbols-outlined">
-                      {presetToolBarIcon}
-                    </span>
-                  )}
-                  <span
-                    className="mobile-btn-label"
-                    style={{
-                      zoom: (globalThis as any).changes?.uiTextSize || 1,
-                    }}
-                  >
-                    {isDummyLoading
-                      ? "Loading..."
-                      : activeMoreApp &&
-                          !globalThis.IsVerseClicked &&
-                          globalThis.isDiscoveryOpen
-                        ? "Close"
-                        : presetToolBarTitle}
-                  </span>
-                </div>
-              </button>
-            )}
+                </button>
+              }
+            </div>
 
             <button
               style={{
@@ -525,7 +456,7 @@ export function Toolbar() {
                 <BurgerMenuIcon size={24} color="var(--text1)" />
               </button>
             </div>
-            {tools?.map((tool: any, index: any) =>
+            {filteredTools?.map((tool: any, index: any) =>
               tool?.active === false ? null : (
                 <div
                   key={`${tool.icon || "tool"}-${index}`}
@@ -550,7 +481,13 @@ export function Toolbar() {
                       }}
                       onMouseUp={(e) => {
                         e.stopPropagation();
-                        G.SetActiveMoreApp(tool.label);
+                        if (!activeMoreApp) {
+                          G.SetActiveMoreApp(tool.label);
+                          globalThis.RefreshAskKen?.();
+                        } else {
+                          G.SetActiveMoreApp(null);
+                          globalThis.RefreshAskKen?.();
+                        }
                         clearTimeout(holdTimeoutRef.current);
                         if (!hasHeldRef.current && tool?.onClick) {
                           tool.onClick();

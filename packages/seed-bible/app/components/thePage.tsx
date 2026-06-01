@@ -25,6 +25,7 @@ import { MiniTextEditor } from "app.components.smallEditor";
 import { ConfigurableFunctionCommands } from "app.components.commands";
 import { VerseToolbar } from "app.components.verseToolbar";
 import { useHoldAction } from "app.hooks.useHold";
+import { AskKen, AskKenModal } from "app.components.askKen";
 import {
   MobileSettingsIcon,
   MenuIcon,
@@ -86,6 +87,7 @@ function ThePage({
   deleteTab,
   setDeleteTab,
 }) {
+  const { tools } = useBibleContext();
   const [tab, setTab] = useState(T);
   const [commandHighlight, setCommandHighlight] = useState([]);
   const [direction, setDirection] = useState(null);
@@ -93,6 +95,8 @@ function ThePage({
   const lastScrollTopRef = useRef(0);
   const swipeNavOccurredRef = useRef(false);
   const [userMovedToolbar, setUserMovedToolbar] = useState();
+
+  const [versePrompt, setVersePrompt] = useState("");
   const {
     openOnMobile,
     setOpenOnMobile,
@@ -101,6 +105,7 @@ function ThePage({
     setCollapsed,
     setSideBarMode,
   } = useSideBarContext();
+
   useEffect(() => {
     if (deleteTab) {
       if (deleteTab.tabId === tab?.id) {
@@ -126,6 +131,7 @@ function ThePage({
   } = useTabsContext();
   const { isDragging, setIsDragging, Element, position } = useMouseMove();
   const { navFunctions, setNavFunctions, scrollToVerse } = useBibleContext();
+  const [isHovered, setIsHovered] = useState(false);
   const [inHold, setInHold] = useState();
   const [contextData, setContextData] = useState({
     verse:
@@ -150,6 +156,7 @@ function ThePage({
   }, [showMobileSettings]);
 
   const [highlighted, setHighlighted] = useState({});
+  const [askKenOpen, setAskKenOpen] = useState(false);
 
   // NEW: State for clicked verses
   const [clickedVerses, setClickedVerses] = useState([]);
@@ -173,6 +180,21 @@ function ThePage({
   });
   const [showFootnoteModal, setShowFootnoteModal] = useState(false);
   const [activeFootnote, setActiveFootnote] = useState(null);
+  const [activeMoreAppLocal, setActiveMoreAppLocal] = useState(null);
+
+  useEffect(() => {
+    const originalSetter = globalThis.setActiveMoreApp;
+
+    globalThis.setActiveMoreApp = (value) => {
+      setActiveMoreAppLocal(value);
+      originalSetter?.(value);
+    };
+
+    return () => {
+      globalThis.setActiveMoreApp = originalSetter;
+    };
+  }, []);
+
   if (tab) globalThis[`SetEnableEditorOf${tab?.id}`] = setEnableEditor;
 
   const loadTranslationFromUrl = async () => {
@@ -180,6 +202,7 @@ function ThePage({
       configBot.tags.translationId ||
       configBot.tags.translation ||
       tab.data.translation;
+    console.log(translationId, typeof translationId, "translationId");
     let baseUrl = "https://vmfnri.helloao.org";
     let bookId = tab.data.bookId || "GEN";
     let bookTranslationId = tab.data.translation;
@@ -214,17 +237,21 @@ function ThePage({
         pass: false,
         value: null,
       };
+      const translationIdStr =
+        typeof translationId === "string"
+          ? translationId
+          : translationId?.id || translationId?.shortName || "";
       if (available_translations_req.status === 200) {
         allTranslations.forEach((translationData) => {
           if (
-            translationData.id.toLowerCase() === translationId.toLowerCase()
+            translationData.id.toLowerCase() === translationIdStr.toLowerCase()
           ) {
             trValue.pass = true;
             trValue.value = translationData;
           }
         });
 
-        const urlId = translationId.includes("https://");
+        const urlId = translationIdStr.includes("https://");
 
         if (trValue.pass && !urlId) {
           const bookData = await web.get(
@@ -804,7 +831,6 @@ function ThePage({
         verses: unifiedVerses,
       });
 
-      // 🔥 NEW — Convert selection into clicked verses
       setClickedVerses((prev) => {
         const newOnes = unifiedVerses.filter((v) => !prev.includes(v));
         return [...prev, ...newOnes];
@@ -816,6 +842,14 @@ function ThePage({
         chapter: data?.chapter,
         translation: data?.translation,
       });
+      globalThis.ClickedVerseContext = {
+        verseNumber: unifiedVerses,
+        text: selectedTextFinal,
+        book: data?.book,
+        chapter: data?.chapter,
+        translation: data?.translation,
+      };
+
       const sel = window.getSelection();
       if (sel && sel.removeAllRanges) sel.removeAllRanges();
       setShowVerseToolbar(true);
@@ -1095,6 +1129,7 @@ function ThePage({
 
   useEffect(() => {
     globalThis.HighlightWords = highlightWords;
+
     globalThis.RemoveWordHighlight = removeWordHighlight;
     globalThis.ClearAllWordHighlights = clearAllWordHighlights;
     shout("onBookChanged", { ...data, tabId: tab?.id });
@@ -1236,6 +1271,17 @@ function ThePage({
   }, [tab?.id]);
 
   const [highlightOnce, setHighlightOnce] = useState(false);
+  const [, forceUpdate] = useState(0);
+
+  useEffect(() => {
+    globalThis.RefreshAskKen = () => {
+      forceUpdate((v) => v + 1);
+    };
+
+    return () => {
+      delete globalThis.RefreshAskKen;
+    };
+  }, []);
 
   useEffect(() => {
     if (tab?.id) {
@@ -1842,6 +1888,35 @@ function ThePage({
   const mobileBookLogo =
     tags?.settingsConfigs?.presets?.[getSettingsPreset()]?.mobileBookLogo;
 
+  const promptForAskKen = useMemo(() => {
+    const ctx = clickedVersesContext;
+
+    if (!ctx?.verseNumber || ctx.verseNumber.length === 0) return "";
+
+    const sorted = [...ctx.verseNumber].sort((a, b) => a - b);
+
+    const ranges = [];
+    let start = sorted[0];
+    let end = sorted[0];
+
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i] === end + 1) {
+        end = sorted[i];
+      } else {
+        ranges.push(start === end ? `${start}` : `${start}–${end}`);
+        start = sorted[i];
+        end = sorted[i];
+      }
+    }
+
+    // push last range
+    ranges.push(start === end ? `${start}` : `${start}–${end}`);
+
+    const verseText = ranges.join(", ");
+
+    return `Explain ${ctx.book} ${ctx.chapter}:${verseText}`;
+  }, [clickedVersesContext]);
+
   return (
     <>
       {showMobileSettings && (
@@ -1864,6 +1939,153 @@ function ThePage({
           position: "relative",
         }}
       >
+        {askKenOpen && !globalThis.IsMobileNow() ? (
+          <AskKenModal
+            versePrompt={versePrompt}
+            setVersePrompt={setVersePrompt}
+            setAskKenOpen={setAskKenOpen}
+            askKenOpen={askKenOpen}
+          />
+        ) : (
+          ""
+        )}
+        {(!globalThis.IsMobileNow() ||
+          globalThis.ActiveMoreApp === "Discovery") && (
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              if (!globalThis.IsMobileNow()) {
+                setAskKenOpen((prev) => !prev);
+              } else {
+                if (globalThis.ActiveMoreApp === "Discovery") {
+                  (globalThis as any).RemoveApplicationByLabel(
+                    globalThis.ActiveMoreApp
+                  );
+                  (globalThis as any).makingApp = null;
+                  globalThis.setActiveMoreApp(null);
+                  globalThis.setActiveMoreApp("ask Ken!");
+                  const exploreTool = tools?.find(
+                    (t) => t?.label === "ask Ken!"
+                  );
+                  exploreTool.onClick();
+                }
+              }
+            }}
+          >
+            {globalThis.ActiveMoreApp === "Discovery" ? (
+              <div
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                style={{
+                  position: "fixed",
+                  bottom: !globalThis.IsMobileNow() ? "46px" : "60px",
+                  right: !globalThis.IsMobileNow() ? "8px" : "4px",
+                  zIndex: 999,
+
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+
+                  padding: "12px",
+                  minWidth: "100px",
+                  minHeight: "95px",
+
+                  borderRadius: "24px",
+                  background: "#2E4879",
+
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+                  gap: "8px",
+                }}
+              >
+                <div
+                  className="askKen-text"
+                  style={{
+                    color: "white",
+                    fontSize: "15px",
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
+                    fontWeight: 500,
+                    background: "#2E4879",
+                  }}
+                >
+                  Ask Ken!
+                </div>
+
+                <div
+                  style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    display: "flex",
+                    width: "52px",
+                    height: "52px",
+                    borderRadius: "60px",
+                    border: "1px solid black",
+                    backgroundColor: "white",
+                    color: "black",
+                  }}
+                >
+                  <AskKen />
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  className="askKen-text"
+                  style={{
+                    position: "fixed",
+                    bottom: !globalThis.IsMobileNow() ? "106px" : "128px",
+                    right: !globalThis.IsMobileNow() ? "13px" : "6px",
+                    color: "white",
+                    zIndex: "999",
+                    padding: "6px 16px 6px 16px",
+                    fontSize: "15px",
+                    borderRadius: "25px",
+                    textAlign: "center",
+                    backgroundColor: isHovered
+                      ? "rgba(17, 24, 39, 0.9)"
+                      : "rgba(17, 24, 39, 0.6)",
+                  }}
+                >
+                  Ask Ken!
+                </div>
+                <div
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  style={{
+                    position: "fixed",
+                    bottom: !globalThis.IsMobileNow() ? "49px" : "72px",
+                    right: !globalThis.IsMobileNow() ? "12px" : "7px",
+                    color: "black",
+                    zIndex: "999",
+                    backgroundColor: isHovered
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(255, 255, 255, 0.3)",
+                  }}
+                >
+                  <div
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      display: "flex",
+                      width: "52px",
+                      height: "52px",
+                      borderRadius: "60px",
+                      border: "1px solid black",
+                      backgroundColor: "white",
+                      color: "black",
+                      gap: "3px",
+                    }}
+                  >
+                    <AskKen />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         <div
           ref={swipeTrackRef}
           style={{
@@ -1878,6 +2100,7 @@ function ThePage({
           <div
             className="pageContainer"
             style={{
+              position: "relative",
               flex: "0 0 33.333%",
               overflowX: "hidden",
               direction,
@@ -1951,7 +2174,7 @@ function ThePage({
         }
 
         .verse-clicked {
-          border-bottom: 2px dashed var(--tertiaryColor) !important;
+          border-bottom: 2px dashed var(--activeTabBorder) !important;
 
         }
 
@@ -2236,6 +2459,13 @@ function ThePage({
           box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12);
           animation: slideUpSheet 0.25s ease-out;
         }
+          .askKen-text{
+           background-color:rgba(17, 24, 39, 0.6)
+          }
+          .askKen-text:hover {
+  background-color: rgba(17, 24, 39, 0.9);
+
+}
 
         @keyframes slideUpSheet {
           from { transform: translateY(100%); }
@@ -2591,6 +2821,10 @@ function ThePage({
             className="verse-toolbar"
           >
             <VerseToolbar
+              setVersePrompt={setVersePrompt}
+              promptForAskKen={promptForAskKen}
+              askKenOpen={askKenOpen}
+              setAskKenOpen={setAskKenOpen}
               clickedVerses={clickedVerses}
               showVerseToolbar={showVerseToolbar}
               toggleVerseHighlight={toggleVerseHighlight}
@@ -3710,7 +3944,11 @@ export const ThePageWithEditor = ({ tab, setPanalApp, panelId }) => {
       );
     }
   });
+
   const [deleteTab, setDeleteTab] = useState(false);
+  useEffect(() => {
+    globalThis.CurrentBookData = data;
+  }, [data]);
   if (tab) globalThis[`SetEnableEditorOf${tab?.id}`] = setEnableEditor;
   useEffect(() => {
     os.addBotListener(thisBot, "onTabDelete", (data) => {
