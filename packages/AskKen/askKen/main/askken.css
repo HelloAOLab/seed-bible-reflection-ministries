@@ -320,6 +320,25 @@
 .askken-topbar-icon-btn:active {
   background: rgba(128, 128, 128, 0.2);
 }
+.askken-history-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 19;
+  animation: askken-fadeBackdrop 0.25s ease;
+}
+
+@keyframes askken-fadeBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 .askken-history-panel {
   position: absolute;
