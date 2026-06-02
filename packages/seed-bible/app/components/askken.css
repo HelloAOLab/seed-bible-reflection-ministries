@@ -381,8 +381,8 @@ select {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 85%;
-  max-width: 320px;
+  width: 100%;
+
   background: var(--panelBackground, #fafafa);
   z-index: 20;
   display: flex;
