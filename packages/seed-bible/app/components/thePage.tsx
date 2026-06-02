@@ -1978,8 +1978,8 @@ function ThePage({
                 onMouseLeave={() => setIsHovered(false)}
                 style={{
                   position: "fixed",
-                  bottom: !globalThis.IsMobileNow() ? "46px" : "60px",
-                  right: !globalThis.IsMobileNow() ? "8px" : "4px",
+                  bottom: !globalThis.IsMobileNow() ? "46px" : "70.5px",
+                  right: !globalThis.IsMobileNow() ? "14px" : "6px",
                   zIndex: 999,
 
                   display: "flex",
@@ -1988,30 +1988,16 @@ function ThePage({
                   justifyContent: "center",
 
                   padding: "12px",
-                  minWidth: "100px",
-                  minHeight: "95px",
+                  minWidth: "90px",
+                  minHeight: "85px",
+                  borderRadius: "4px",
 
-                  borderRadius: "24px",
                   background: "#2E4879",
 
                   boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
-                  gap: "8px",
+                  gap: "4px",
                 }}
               >
-                <div
-                  className="askKen-text"
-                  style={{
-                    color: "white",
-                    fontSize: "15px",
-                    textAlign: "center",
-                    whiteSpace: "nowrap",
-                    fontWeight: 500,
-                    background: "#2E4879",
-                  }}
-                >
-                  Ask Ken!
-                </div>
-
                 <div
                   style={{
                     alignItems: "center",
@@ -2026,6 +2012,19 @@ function ThePage({
                   }}
                 >
                   <AskKen />
+                </div>
+                <div
+                  className="askKen-text"
+                  style={{
+                    color: "white",
+                    fontSize: "15px",
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
+                    fontWeight: 500,
+                    background: "#2E4879",
+                  }}
+                >
+                  Ask Ken!
                 </div>
               </div>
             ) : (
