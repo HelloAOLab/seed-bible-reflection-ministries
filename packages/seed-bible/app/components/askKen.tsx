@@ -9,6 +9,63 @@ import { bibleRefrenceParser } from "app.components.bibleRefrenceParser";
 import { parseTranslation } from "app.components.bibleRefrenceParser";
 import { median } from "es-toolkit";
 const getStyleOf = await thisBot.GetStyle();
+const DEFAULT_URL =
+  "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
+const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
+
+const apologistQuerySearch = async ({ userQuestion }) => {
+  const authHeader = null;
+  const cacheTtl = null;
+  try {
+    const payload = {
+      query: userQuestion,
+      limit: 5,
+      filters: {
+        team_ids: [160],
+      },
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...(authHeader
+        ? { Authorization: authHeader }
+        : { Authorization: `Bearer ${APOLOGIST_API_KEY}` }),
+      ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
+    };
+
+    const res = await web.post(DEFAULT_URL, payload, { headers });
+
+    return res?.data?.results || [];
+  } catch (err) {
+    console.error("Apologist search failed:", err);
+    return [];
+  }
+};
+const getResourceIcon = (type) => {
+  switch (type?.toLowerCase()) {
+    case "youtube":
+      return "smart_display";
+
+    case "book":
+      return "menu_book";
+
+    case "url":
+      return "link";
+
+    case "article":
+      return "article";
+
+    case "episode":
+      return "podcasts";
+
+    case "media":
+      return "video_library";
+
+    default:
+      return "description";
+  }
+};
 
 const AskKen = () => {
   return (
@@ -111,7 +168,6 @@ const APOLOGIST_LOGO_URL =
 const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 
-const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
 const G = globalThis as any;
 const MAX_CHATS = 50;
 const chatCache = new Map(); // in-memory cache: chatId → full chat object
@@ -340,6 +396,7 @@ function AskKenModal({
   const [position, setPosition] = useState({ x: 13, y: 106 });
   const [dragging, setDragging] = useState(false);
   const [openActionModal, setOpenActionModal] = useState(false);
+  const [apologistResources, setApologistResources] = useState([]);
 
   const [resizing, setResizing] = useState(false);
 
@@ -659,6 +716,12 @@ function AskKenModal({
 
   // ── Submit message ──
   const handleSubmit = async (overrideMessages = null) => {
+    const currentQuery = query.trim();
+
+    const reflectionPromise = apologistQuerySearch({
+      userQuestion: currentQuery,
+    });
+
     if (!query.trim() || isLoading) return;
     const baseMessages = overrideMessages ?? messages;
 
@@ -744,16 +807,25 @@ FINAL RULE:
       }
     };
 
-    xhr.onload = () => {
+    xhr.onload = async () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         if (!assistantContent) {
           setError("No response received. Please try again.");
         } else {
           // Always attempt save — storage functions check auth internally
+          const reflectionResources = await reflectionPromise;
+          console.log(reflectionResources, "reflectionres");
+
           const finalMessages = [
             ...newMessages,
-            { role: "assistant", content: assistantContent },
+            {
+              role: "assistant",
+              content: assistantContent,
+              resources: reflectionResources || [],
+            },
           ];
+          setMessages(finalMessages);
+
           console.log(
             "[AskKen] Response complete, scheduling save for chat",
             currentChatId
@@ -1060,6 +1132,91 @@ FINAL RULE:
                             />
                           </p>
                         ))}
+
+                      {msg.resources?.length > 0 && (
+                        <div
+                          style={{
+                            marginTop: "12px",
+                            paddingTop: "12px",
+                            borderTop: "1px solid #e5e7eb",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "13px",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            Ken Boa Resources
+                          </div>
+
+                          {msg.resources.map((resource, index) => (
+                            <a
+                              key={resource.id || index}
+                              href={resource.url || resource.referral_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: "flex",
+                                alignItems: "flex-start",
+                                gap: "10px",
+                                padding: "10px",
+                                marginBottom: "8px",
+                                borderRadius: "10px",
+                                background: "#f8fafc",
+                                textDecoration: "none",
+                                color: "inherit",
+                                border: "1px solid #e5e7eb",
+                                transition: "all 0.15s ease",
+                                cursor: "pointer",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "#eef2ff";
+                                e.currentTarget.style.borderColor = "#c7d2fe";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "#f8fafc";
+                                e.currentTarget.style.borderColor = "#e5e7eb";
+                              }}
+                            >
+                              <span
+                                className="material-symbols-outlined"
+                                style={{
+                                  fontSize: "20px",
+                                  color: "#4f46e5",
+                                  marginTop: "2px",
+                                }}
+                              >
+                                {getResourceIcon(resource.type)}
+                              </span>
+
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div
+                                  style={{
+                                    fontWeight: 600,
+                                    fontSize: "13px",
+                                    color: "#111827",
+                                    marginBottom: "2px",
+                                  }}
+                                >
+                                  {resource.title}
+                                </div>
+                              </div>
+
+                              <span
+                                className="material-symbols-outlined"
+                                style={{
+                                  fontSize: "16px",
+                                  color: "#9ca3af",
+                                }}
+                              >
+                                open_in_new
+                              </span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
@@ -1101,9 +1258,16 @@ FINAL RULE:
 
                       const currentQuery = query.trim();
 
+                      apologistQuerySearch({
+                        userQuestion: currentQuery,
+                      })
+                        .then(setApologistResources)
+                        .catch(console.error);
+
+                      // start xhr immediately
+
                       const handled = await handleAIAction();
 
-                      // Bible navigation handled
                       if (handled) {
                         const refs = bibleRefrenceParser(currentQuery);
 
@@ -1155,6 +1319,12 @@ FINAL RULE:
                     }
 
                     const currentQuery = query.trim();
+                    apologistQuerySearch({
+                      userQuestion: currentQuery,
+                    })
+                      .then(setApologistResources)
+                      .catch(console.error);
+                    console.log(apologistResources, "apologiit");
 
                     const handled = await handleAIAction();
                     console.log(handled, "handled");
