@@ -2,12 +2,14 @@ const { useSideBarContext } = await import("app.hooks.sideBar");
 const { useTabsContext } = await import("app.hooks.tabs");
 import { VerseRenderer } from "app.components.VerseRenderer";
 import { useAIBibleAction } from "app.components.aiactions";
+import { useBibleContext } from "app.hooks.bibleVariables";
 
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
 const ChatHistoryPanel = await thisBot.AskKenChatHistory();
 import { bibleRefrenceParser } from "app.components.bibleRefrenceParser";
 import { parseTranslation } from "app.components.bibleRefrenceParser";
 import { median } from "es-toolkit";
+import { globalAPI } from "../controller/controllerBuilder";
 const getStyleOf = await thisBot.GetStyle();
 const DEFAULT_URL =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
@@ -366,6 +368,7 @@ function AskKenModal({
   askKenOpen,
 }) {
   const [messages, setMessages] = useState([]);
+  const { tools } = useBibleContext();
 
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -896,6 +899,44 @@ FINAL RULE:
   };
   const currentFonts = FONT_SIZE_MAP[askKenSize];
 
+  const handleOpenLink = (resource) => {
+    setAskKenOpen(false);
+    if (resource.type === "url") {
+      if (!globalThis.ActiveMoreApp) {
+        globalThis.ActiveTab = "ministries";
+        globalThis.SetActiveMoreApp("Discovery");
+        globalThis.RefreshAskKen?.();
+        tools.map((tool) => {
+          if (tool.label === "Discovery") {
+            tool.onClick();
+          }
+        });
+        setTimeout(() => {
+          globalThis.ApologistOpenInMinistriesTab(
+            resource.url,
+            resource.title || "Preview"
+          );
+        }, 200);
+      } else {
+        setTimeout(() => {
+          globalThis.ApologistOpenInMinistriesTab(
+            resource.url,
+            resource.title || "Preview"
+          );
+        }, 200);
+      }
+    } else {
+      if (resource.type === "book") {
+        window.open(
+          resource.url || resource.referral_url,
+          "_blank",
+          "noopener"
+        );
+      } else {
+      }
+    }
+  };
+
   const hasMessages = messages.length > 0;
   return (
     <div>
@@ -1151,70 +1192,120 @@ FINAL RULE:
                             Ken Boa Resources
                           </div>
 
-                          {msg.resources.map((resource, index) => (
-                            <a
-                              key={resource.id || index}
-                              href={resource.url || resource.referral_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                display: "flex",
-                                alignItems: "flex-start",
-                                gap: "10px",
-                                padding: "10px",
-                                marginBottom: "8px",
-                                borderRadius: "10px",
-                                background: "#f8fafc",
-                                textDecoration: "none",
-                                color: "inherit",
-                                border: "1px solid #e5e7eb",
-                                transition: "all 0.15s ease",
-                                cursor: "pointer",
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "#eef2ff";
-                                e.currentTarget.style.borderColor = "#c7d2fe";
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "#f8fafc";
-                                e.currentTarget.style.borderColor = "#e5e7eb";
-                              }}
-                            >
-                              <span
-                                className="material-symbols-outlined"
-                                style={{
-                                  fontSize: "20px",
-                                  color: "#4f46e5",
-                                  marginTop: "2px",
-                                }}
-                              >
-                                {getResourceIcon(resource.type)}
-                              </span>
+                          {msg.resources
+                            .filter(
+                              (resource) =>
+                                resource.url || resource.referral_url
+                            )
+                            .map((resource, index) => {
+                              const url = resource.url || resource.referral_url;
 
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div
-                                  style={{
-                                    fontWeight: 600,
-                                    fontSize: "13px",
-                                    color: "#111827",
-                                    marginBottom: "2px",
-                                  }}
-                                >
-                                  {resource.title}
+                              if (resource.type === "youtube") {
+                                let videoId = "";
+
+                                try {
+                                  const parsedUrl = new URL(url);
+
+                                  if (parsedUrl.hostname.includes("youtu.be")) {
+                                    videoId = parsedUrl.pathname.slice(1);
+                                  } else {
+                                    videoId = parsedUrl.searchParams.get("v");
+                                  }
+                                } catch (e) {
+                                  console.error("Invalid YouTube URL", e);
+                                }
+
+                                return (
+                                  <div
+                                    key={resource.id || index}
+                                    style={{ marginBottom: "12px" }}
+                                  >
+                                    <iframe
+                                      width="100%"
+                                      height="220"
+                                      src={`https://www.youtube.com/embed/${videoId}`}
+                                      title={resource.title}
+                                      frameBorder="0"
+                                      referrerpolicy="strict-origin-when-cross-origin"
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                      allowFullScreen
+                                      style={{
+                                        borderRadius: "12px",
+                                        border: "1px solid #e5e7eb",
+                                      }}
+                                    />
+
+                                    <div
+                                      style={{
+                                        marginTop: "8px",
+                                        fontSize: "13px",
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {resource.title}
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <div key={resource.id || index}>
+                                  <a
+                                    onClick={() => handleOpenLink(resource)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "flex-start",
+                                      gap: "10px",
+                                      padding: "10px",
+                                      marginBottom: "8px",
+                                      borderRadius: "10px",
+                                      background: "#f8fafc",
+                                      textDecoration: "none",
+                                      color: "inherit",
+                                      border: "1px solid #e5e7eb",
+                                      transition: "all 0.15s ease",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    <span
+                                      className="material-symbols-outlined"
+                                      style={{
+                                        fontSize: "20px",
+                                        color: "#2E4879",
+                                        marginTop: "2px",
+                                      }}
+                                    >
+                                      {getResourceIcon(resource.type)}
+                                    </span>
+
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div
+                                        style={{
+                                          fontWeight: 600,
+                                          fontSize: "13px",
+                                          color: "#111827",
+                                          marginBottom: "2px",
+                                        }}
+                                      >
+                                        {resource.title}
+                                      </div>
+                                    </div>
+
+                                    <span
+                                      className="material-symbols-outlined"
+                                      style={{
+                                        fontSize: "16px",
+                                        color: "#9ca3af",
+                                      }}
+                                    >
+                                      open_in_new
+                                    </span>
+                                  </a>
                                 </div>
-                              </div>
-
-                              <span
-                                className="material-symbols-outlined"
-                                style={{
-                                  fontSize: "16px",
-                                  color: "#9ca3af",
-                                }}
-                              >
-                                open_in_new
-                              </span>
-                            </a>
-                          ))}
+                              );
+                            })}
                         </div>
                       )}
                     </div>
