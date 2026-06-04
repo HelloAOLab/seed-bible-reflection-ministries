@@ -23,7 +23,9 @@ const G = globalThis as any;
 function ApologistPanelWrapper({ id }) {
   const { t, openOnMobile, isMobile } = useSideBarContext();
   // ── Tab state ──
-  const [activeTab, setActiveTab] = useState("discovery");
+  const [activeTab, setActiveTab] = useState(
+    globalThis.ActiveTab || "discovery"
+  );
 
   const [cameFromDiscovery, setCameFromDiscovery] = useState(false);
   const [ministriesUrl, setMinistriesUrl] = useState(
@@ -51,10 +53,17 @@ function ApologistPanelWrapper({ id }) {
 
   // ── Expose open-in-ministries-tab function ──
   const openInMinistriesTab = useCallback((url, title) => {
+    console.log("isRunning");
     setMinistriesUrl(url || "");
     setMinistriesTitle(title || "Preview");
     setActiveTab("ministries");
   }, []);
+  useEffect(() => {
+    globalThis.ActiveTab = activeTab;
+    return () => {
+      globalThis.ActiveTab = null;
+    };
+  }, [activeTab]);
 
   useEffect(() => {
     globalThis.ApologistOpenInMinistriesTab = openInMinistriesTab;
