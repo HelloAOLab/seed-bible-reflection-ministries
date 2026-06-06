@@ -714,7 +714,7 @@ FINAL RULE:
         G.RemoveApplicationByLabel(globalThis.ActiveMoreApp);
         G.SetActiveMoreApp(null);
 
-        globalThis.ActiveTab = "ministries";
+        globalThis.ActiveTabReflection = "ministries";
         globalThis.SetActiveMoreApp("Discovery");
         globalThis.RefreshAskKen?.();
         tools.map((tool) => {

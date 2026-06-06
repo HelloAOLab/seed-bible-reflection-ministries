@@ -24,8 +24,9 @@ function ApologistPanelWrapper({ id }) {
   const { t, openOnMobile, isMobile } = useSideBarContext();
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState(
-    globalThis.ActiveTab || "discovery"
+    globalThis.ActiveTabReflection || "discovery"
   );
+  console.log(globalThis.ActiveTab, " globalThis.ActiveTab");
 
   const [cameFromDiscovery, setCameFromDiscovery] = useState(false);
   const [ministriesUrl, setMinistriesUrl] = useState(
@@ -59,9 +60,9 @@ function ApologistPanelWrapper({ id }) {
     setActiveTab("ministries");
   }, []);
   useEffect(() => {
-    globalThis.ActiveTab = activeTab;
+    globalThis.ActiveReflection = activeTab;
     return () => {
-      globalThis.ActiveTab = null;
+      globalThis.ActiveTabReflection = null;
     };
   }, [activeTab]);
 
