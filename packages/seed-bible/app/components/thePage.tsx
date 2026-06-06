@@ -1986,6 +1986,7 @@ function ThePage({
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
+                  width: "135px",
 
                   padding: "12px",
                   minWidth: "90px",
