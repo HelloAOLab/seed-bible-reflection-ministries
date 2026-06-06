@@ -2,13 +2,72 @@ const { useSideBarContext } = await import("app.hooks.sideBar");
 const { useTabsContext } = await import("app.hooks.tabs");
 import { VerseRenderer } from "app.components.VerseRenderer";
 import { useAIBibleAction } from "app.components.aiactions";
+import { useBibleContext } from "app.hooks.bibleVariables";
 
 const { useState, useEffect, useCallback, useRef } = os.appHooks;
 const ChatHistoryPanel = await thisBot.AskKenChatHistory();
 import { bibleRefrenceParser } from "app.components.bibleRefrenceParser";
 import { parseTranslation } from "app.components.bibleRefrenceParser";
 import { median } from "es-toolkit";
+import { globalAPI } from "../controller/controllerBuilder";
 const getStyleOf = await thisBot.GetStyle();
+const DEFAULT_URL =
+  "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
+const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
+
+const apologistQuerySearch = async ({ userQuestion }) => {
+  const authHeader = null;
+  const cacheTtl = null;
+  try {
+    const payload = {
+      query: userQuestion,
+      limit: 5,
+      filters: {
+        team_ids: [160],
+      },
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...(authHeader
+        ? { Authorization: authHeader }
+        : { Authorization: `Bearer ${APOLOGIST_API_KEY}` }),
+      ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
+    };
+
+    const res = await web.post(DEFAULT_URL, payload, { headers });
+
+    return res?.data?.results || [];
+  } catch (err) {
+    console.error("Apologist search failed:", err);
+    return [];
+  }
+};
+const getResourceIcon = (type) => {
+  switch (type?.toLowerCase()) {
+    case "youtube":
+      return "smart_display";
+
+    case "book":
+      return "menu_book";
+
+    case "url":
+      return "link";
+
+    case "article":
+      return "article";
+
+    case "episode":
+      return "podcasts";
+
+    case "media":
+      return "video_library";
+
+    default:
+      return "description";
+  }
+};
 
 const AskKen = () => {
   return (
@@ -111,7 +170,6 @@ const APOLOGIST_LOGO_URL =
 const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 
-const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
 const G = globalThis as any;
 const MAX_CHATS = 50;
 const chatCache = new Map(); // in-memory cache: chatId → full chat object
@@ -310,6 +368,7 @@ function AskKenModal({
   askKenOpen,
 }) {
   const [messages, setMessages] = useState([]);
+  const { tools } = useBibleContext();
 
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -340,6 +399,7 @@ function AskKenModal({
   const [position, setPosition] = useState({ x: 13, y: 106 });
   const [dragging, setDragging] = useState(false);
   const [openActionModal, setOpenActionModal] = useState(false);
+  const [apologistResources, setApologistResources] = useState([]);
 
   const [resizing, setResizing] = useState(false);
 
@@ -659,6 +719,12 @@ function AskKenModal({
 
   // ── Submit message ──
   const handleSubmit = async (overrideMessages = null) => {
+    const currentQuery = query.trim();
+
+    const reflectionPromise = apologistQuerySearch({
+      userQuestion: currentQuery,
+    });
+
     if (!query.trim() || isLoading) return;
     const baseMessages = overrideMessages ?? messages;
 
@@ -744,16 +810,25 @@ FINAL RULE:
       }
     };
 
-    xhr.onload = () => {
+    xhr.onload = async () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         if (!assistantContent) {
           setError("No response received. Please try again.");
         } else {
           // Always attempt save — storage functions check auth internally
+          const reflectionResources = await reflectionPromise;
+          console.log(reflectionResources, "reflectionres");
+
           const finalMessages = [
             ...newMessages,
-            { role: "assistant", content: assistantContent },
+            {
+              role: "assistant",
+              content: assistantContent,
+              resources: reflectionResources || [],
+            },
           ];
+          setMessages(finalMessages);
+
           console.log(
             "[AskKen] Response complete, scheduling save for chat",
             currentChatId
@@ -823,6 +898,44 @@ FINAL RULE:
     },
   };
   const currentFonts = FONT_SIZE_MAP[askKenSize];
+
+  const handleOpenLink = (resource) => {
+    setAskKenOpen(false);
+    if (resource.type === "url") {
+      if (!globalThis.ActiveMoreApp) {
+        globalThis.ActiveTab = "ministries";
+        globalThis.SetActiveMoreApp("Discovery");
+        globalThis.RefreshAskKen?.();
+        tools.map((tool) => {
+          if (tool.label === "Discovery") {
+            tool.onClick();
+          }
+        });
+        setTimeout(() => {
+          globalThis.ApologistOpenInMinistriesTab(
+            resource.url,
+            resource.title || "Preview"
+          );
+        }, 200);
+      } else {
+        setTimeout(() => {
+          globalThis.ApologistOpenInMinistriesTab(
+            resource.url,
+            resource.title || "Preview"
+          );
+        }, 200);
+      }
+    } else {
+      if (resource.type === "book") {
+        window.open(
+          resource.url || resource.referral_url,
+          "_blank",
+          "noopener"
+        );
+      } else {
+      }
+    }
+  };
 
   const hasMessages = messages.length > 0;
   return (
@@ -1060,6 +1173,141 @@ FINAL RULE:
                             />
                           </p>
                         ))}
+
+                      {msg.resources?.length > 0 && (
+                        <div
+                          style={{
+                            marginTop: "12px",
+                            paddingTop: "12px",
+                            borderTop: "1px solid #e5e7eb",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontWeight: 600,
+                              fontSize: "13px",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            Resources
+                          </div>
+
+                          {msg.resources
+                            .filter(
+                              (resource) =>
+                                resource.url || resource.referral_url
+                            )
+                            .map((resource, index) => {
+                              const url = resource.url || resource.referral_url;
+
+                              if (resource.type === "youtube") {
+                                let videoId = "";
+
+                                try {
+                                  const parsedUrl = new URL(url);
+
+                                  if (parsedUrl.hostname.includes("youtu.be")) {
+                                    videoId = parsedUrl.pathname.slice(1);
+                                  } else {
+                                    videoId = parsedUrl.searchParams.get("v");
+                                  }
+                                } catch (e) {
+                                  console.error("Invalid YouTube URL", e);
+                                }
+
+                                return (
+                                  <div
+                                    key={resource.id || index}
+                                    style={{ marginBottom: "12px" }}
+                                  >
+                                    <iframe
+                                      width="100%"
+                                      height="220"
+                                      src={`https://www.youtube.com/embed/${videoId}`}
+                                      title={resource.title}
+                                      frameBorder="0"
+                                      referrerpolicy="strict-origin-when-cross-origin"
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                      allowFullScreen
+                                      style={{
+                                        borderRadius: "12px",
+                                        border: "1px solid #e5e7eb",
+                                      }}
+                                    />
+
+                                    <div
+                                      style={{
+                                        marginTop: "8px",
+                                        fontSize: "13px",
+                                        fontWeight: 600,
+                                      }}
+                                    >
+                                      {resource.title}
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <div key={resource.id || index}>
+                                  <a
+                                    onClick={() => handleOpenLink(resource)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "flex-start",
+                                      gap: "10px",
+                                      padding: "10px",
+                                      marginBottom: "8px",
+                                      borderRadius: "10px",
+                                      background: "#f8fafc",
+                                      textDecoration: "none",
+                                      color: "inherit",
+                                      border: "1px solid #e5e7eb",
+                                      transition: "all 0.15s ease",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    <span
+                                      className="material-symbols-outlined"
+                                      style={{
+                                        fontSize: "20px",
+                                        color: "#2E4879",
+                                        marginTop: "2px",
+                                      }}
+                                    >
+                                      {getResourceIcon(resource.type)}
+                                    </span>
+
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                      <div
+                                        style={{
+                                          fontWeight: 600,
+                                          fontSize: "13px",
+                                          color: "#111827",
+                                          marginBottom: "2px",
+                                        }}
+                                      >
+                                        {resource.title}
+                                      </div>
+                                    </div>
+
+                                    <span
+                                      className="material-symbols-outlined"
+                                      style={{
+                                        fontSize: "16px",
+                                        color: "#9ca3af",
+                                      }}
+                                    >
+                                      open_in_new
+                                    </span>
+                                  </a>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
@@ -1101,9 +1349,16 @@ FINAL RULE:
 
                       const currentQuery = query.trim();
 
+                      apologistQuerySearch({
+                        userQuestion: currentQuery,
+                      })
+                        .then(setApologistResources)
+                        .catch(console.error);
+
+                      // start xhr immediately
+
                       const handled = await handleAIAction();
 
-                      // Bible navigation handled
                       if (handled) {
                         const refs = bibleRefrenceParser(currentQuery);
 
@@ -1155,6 +1410,12 @@ FINAL RULE:
                     }
 
                     const currentQuery = query.trim();
+                    apologistQuerySearch({
+                      userQuestion: currentQuery,
+                    })
+                      .then(setApologistResources)
+                      .catch(console.error);
+                    console.log(apologistResources, "apologiit");
 
                     const handled = await handleAIAction();
                     console.log(handled, "handled");
