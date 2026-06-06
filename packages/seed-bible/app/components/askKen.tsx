@@ -1189,7 +1189,7 @@ FINAL RULE:
                               marginBottom: "8px",
                             }}
                           >
-                            Ken Boa Resources
+                            Resources
                           </div>
 
                           {msg.resources
