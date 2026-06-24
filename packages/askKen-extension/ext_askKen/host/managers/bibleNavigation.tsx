@@ -11,24 +11,20 @@ export async function navigateToBibleReference({
   bookName,
   chapter,
   translationId,
-  booksData,
-
   seedBibleContext,
 }: NavigationProps) {
-  if (!seedBibleContext?.app?.currentReadingState) {
+  if (!seedBibleContext?.app?.currentReadingState.value) {
     return;
   }
   const currentReadingState = seedBibleContext.app.currentReadingState.value;
-  if (!currentReadingState) {
-    return;
-  }
 
   const readingState = currentReadingState.tab.readingState;
   if (!readingState.translationBooks.value) {
     return;
   }
-  const { selectTranslation, selectTranslationAndChapter } = readingState;
-  const { selectTab, addTab, tabs } = seedBibleContext.tabs;
+  const { selectTranslationAndChapter } = readingState;
+  const { addTab, tabs } = seedBibleContext.tabs;
+  const { selectTab } = seedBibleContext.app;
 
   const bookId =
     readingState.translationBooks.value.books.find((book) => {
@@ -40,55 +36,32 @@ export async function navigateToBibleReference({
     return;
   }
 
-  if (translationId) {
-    selectTranslation(translationId);
-  }
-  const executeNavigation = () => {
-    try {
-      const currentBook =
-        readingState.chapterData.value?.book.name?.toLowerCase();
-      const targetBook = bookName?.toLowerCase();
-      if (currentBook === targetBook) {
-        selectTranslationAndChapter("AAB", bookId, chapter);
+  try {
+    const currentBook = readingState.bookId.value;
+    const targetBook = bookId;
+    if (currentBook === targetBook) {
+      await selectTranslationAndChapter(translationId, bookId, chapter);
+    } else {
+      let existingTab = tabs.value?.find(
+        (tab) => tab.readingState.bookId.value === bookId
+      );
+      if (!existingTab) {
+        existingTab = addTab(undefined, {
+          initialTranslationId: translationId,
+          initialBookId: bookId,
+          initialChapterNumber: chapter,
+        });
       } else {
-        const existingTab = tabs.value?.find(
-          (tab) =>
-            tab.readingState.chapterData.value?.book.name?.toLowerCase() ===
-            bookName.toLowerCase()
+        await existingTab.readingState.selectTranslationAndChapter(
+          translationId,
+          bookId,
+          chapter
         );
-        if (existingTab) {
-          const tabId = existingTab?.id;
-          selectTab(tabId);
-          existingTab.readingState.selectTranslationAndChapter(
-            "AAB",
-            bookId,
-            chapter
-          );
-        } else {
-          addTab(undefined, {
-            initialTranslationId: translationId,
-            initialBookId: bookId,
-            initialChapterNumber: chapter,
-          });
-          const addedTab = tabs.value.find(
-            (tab) => tab.readingState.bookId.value === bookId
-          );
-          if (addedTab) {
-            console.log(addedTab.readingState);
-            console.log(bookId);
-
-            addedTab.readingState.selectTranslationAndChapter(
-              "AAB",
-              bookId,
-              chapter
-            );
-            selectTab(addedTab.id);
-          }
-        }
       }
-    } catch (err) {
-      console.error("Navigation error:", err);
+
+      selectTab(existingTab.id);
     }
-  };
-  executeNavigation();
+  } catch (err) {
+    console.error("Navigation error:", err);
+  }
 }
