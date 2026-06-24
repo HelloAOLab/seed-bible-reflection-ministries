@@ -325,6 +325,7 @@ export const DEFAULT_EXTENSIONS = [
   "locations-extension",
   "twitchSub-extension",
   "twitchPub-extension",
+  "audio-reader-extension",
   "discovery-extension",
   "askKen-extension",
   // "BookSelector",
