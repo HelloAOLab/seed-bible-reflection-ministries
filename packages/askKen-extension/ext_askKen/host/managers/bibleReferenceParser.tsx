@@ -13,82 +13,102 @@ export function bibleRefrenceParser(text: string) {
 export function parseTranslation(text: string) {
   const translations = [
     {
+      id: "AAB",
       shortName: "AAB",
       fullName: "Accessible Ancients Bible",
     },
     {
+      id: "eng_asv",
       shortName: "ASV",
       fullName: "American Standard Version (1901)",
     },
     {
+      id: "AMP",
       shortName: "AMP",
       fullName: "Amplified Bible",
     },
     {
+      id: "BSB",
       shortName: "BSB",
       fullName: "Berean Standard Bible",
     },
     {
+      id: "eng_bbe",
       shortName: "BBE",
       fullName: "Bible in Basic English",
     },
     {
+      id: "eng_dby",
       shortName: "DBY",
       fullName: "Darby Translation",
     },
     {
+      id: "eng_dra",
       shortName: "DRA",
       fullName: "Douay-Rheims 1899",
     },
     {
+      id: "eng_fbv",
       shortName: "FBV",
       fullName: "Free Bible Version",
     },
     {
+      id: "eng_gnv",
       shortName: "GNV",
       fullName: "Geneva Bible 1599",
     },
     {
+      id: "eng_kjv",
       shortName: "KJAV",
       fullName: "King James (Authorized) Version",
     },
     {
+      id: "eng_kja",
       shortName: "KJVA",
       fullName: "King James Version + Apocrypha",
     },
     {
+      id: "eng_cpb",
       shortName: "KJVCP",
       fullName: "KJV Cambridge Paragraph Bible",
     },
     {
+      id: "eng_lsv",
       shortName: "LSV",
       fullName: "Literal Standard Version",
     },
     {
+      id: "eng_msb",
       shortName: "MSB",
       fullName: "Majority Standard Bible",
     },
     {
+      id: "eng_net",
       shortName: "NETB",
       fullName: "NET Bible",
     },
     {
+      id: "NASB1995",
       shortName: "NASB95",
       fullName: "New American Standard Bible (1995)",
     },
     {
+      id: "NASB2020",
       shortName: "NASB2020",
       fullName: "New American Standard Bible (2020)",
     },
     {
+      id: "eng_wbs",
       shortName: "NWB",
       fullName: "Noah Webster Bible",
     },
     {
+      id: "eng_rv5",
       shortName: "RVA",
       fullName: "Revised Version with Apocrypha (1895)",
     },
     {
+      id: "eng_ojb",
       shortName: "TOJB",
       fullName: "The Orthodox Jewish Bible",
     },

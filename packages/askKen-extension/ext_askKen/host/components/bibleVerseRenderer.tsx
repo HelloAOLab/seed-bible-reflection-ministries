@@ -22,7 +22,7 @@ export function VerseRenderer({
   seedBibleContext,
 }: VerseRendererProps) {
   const refs = bibleRefrenceParser(text);
-  const translationId = parseTranslation(text);
+  const translation = parseTranslation(text);
 
   if (!refs.length) {
     return <span>{text}</span>;
@@ -46,14 +46,13 @@ export function VerseRenderer({
         key={`ref-${i}`}
         onClick={() =>
           navigateToBibleReference({
-            bookName: ref.book,
+            bookName: ref.book!,
             chapter: ref.chapter,
-            translationId,
-            booksData,
-            verseNumber: ref.verse,
-            endVerseNumber: ref.endVerse || ref.verse, // range support
-            scrollToVerse,
-            tabs,
+            translationId: translation?.id || "AAB",
+            // verseNumber: ref.verse,
+            // endVerseNumber: ref.endVerse || ref.verse!, // range support
+            // scrollToVerse,
+            // tabs,
             seedBibleContext,
           })
         }
