@@ -538,6 +538,7 @@ const SideBarChapters = (props: { bibleSelectorState: BibleSelectorState }) => {
           }
           class={`chapter-btn flex-center ${isLast ? "lastOne" : ""}`}
           onClick={() => {
+            console.log("buttoncliked");
             selectChapter(bd.id, chapterNumber);
             isOpen.value = false;
           }}

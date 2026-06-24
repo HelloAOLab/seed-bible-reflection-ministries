@@ -460,6 +460,14 @@ export function createBibleSelectorState(
 
     // Ensure selected-tab synchronization targets this pane, not a stale selection.
     panesManager.selectPane(pane.value.id);
+    console.log(
+      {
+        paneId: pane.value?.id,
+        hasTab: !!pane.value?.tab,
+        forceNewTab: forceNewTab.value,
+      },
+      "amtt"
+    );
 
     if (pane.value.tab && !forceNewTab.value) {
       await pane.value.tab.readingState.selectTranslationAndChapter(

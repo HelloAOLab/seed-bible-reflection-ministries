@@ -325,6 +325,8 @@ export const DEFAULT_EXTENSIONS = [
   "locations-extension",
   "twitchSub-extension",
   "twitchPub-extension",
+  "discovery-extension",
+  "askKen-extension",
   // "BookSelector",
   // "Object Pooler",
   // "GeoImporter",

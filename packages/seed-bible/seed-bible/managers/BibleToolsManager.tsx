@@ -444,6 +444,7 @@ function getDefaultToolbarTools(): ManagedBibleToolbarTool[] {
           context.panesManager.panes.value.find(
             (pane) => pane.id === context.panesManager.selectedPaneId.value
           ) ?? null;
+        console.log(currentPane, "currentpane");
         if (!currentPane) {
           return;
         }
