@@ -26,6 +26,78 @@
       "https://esm.helloao.org/painter-vendor-IGDNTFOW.js": [
         "./lib/painter-vendor.ts"
       ],
+      "ext_askKen.host.components.askKen": [
+        "./packages/askKen-extension/ext_askKen/host/components/askKen.tsx"
+      ],
+      "ext_askKen.host.components.bibleVerseRenderer": [
+        "./packages/askKen-extension/ext_askKen/host/components/bibleVerseRenderer.tsx"
+      ],
+      "ext_askKen.host.components.ChatHistory": [
+        "./packages/askKen-extension/ext_askKen/host/components/ChatHistory.tsx"
+      ],
+      "ext_askKen.host.init": [
+        "./packages/askKen-extension/ext_askKen/host/init.tsx"
+      ],
+      "ext_askKen.host.managers.askKenManager": [
+        "./packages/askKen-extension/ext_askKen/host/managers/askKenManager.tsx"
+      ],
+      "ext_askKen.host.managers.bibleNavigation": [
+        "./packages/askKen-extension/ext_askKen/host/managers/bibleNavigation.tsx"
+      ],
+      "ext_askKen.host.managers.bibleReferenceParser": [
+        "./packages/askKen-extension/ext_askKen/host/managers/bibleReferenceParser.tsx"
+      ],
+      "ext_askKen.host.onEggHatch": [
+        "./packages/askKen-extension/ext_askKen/host/onEggHatch.tsx"
+      ],
+      "ext_askKen.host.onExtensionInstalled": [
+        "./packages/askKen-extension/ext_askKen/host/onExtensionInstalled.tsx"
+      ],
+      "ext_askKen.host.onExtensionUninstalled": [
+        "./packages/askKen-extension/ext_askKen/host/onExtensionUninstalled.tsx"
+      ],
+      "ext_discovery.host.botAdapter": [
+        "./packages/discovery-extension/ext_discovery/host/botAdapter.tsx"
+      ],
+      "ext_discovery.host.components.Apologist": [
+        "./packages/discovery-extension/ext_discovery/host/components/Apologist.tsx"
+      ],
+      "ext_discovery.host.components.ApologistCards": [
+        "./packages/discovery-extension/ext_discovery/host/components/ApologistCards.tsx"
+      ],
+      "ext_discovery.host.components.ApologistPanel": [
+        "./packages/discovery-extension/ext_discovery/host/components/ApologistPanel.tsx"
+      ],
+      "ext_discovery.host.components.botAdapter": [
+        "./packages/discovery-extension/ext_discovery/host/components/botAdapter.tsx"
+      ],
+      "ext_discovery.host.components.Ministries": [
+        "./packages/discovery-extension/ext_discovery/host/components/Ministries.tsx"
+      ],
+      "ext_discovery.host.init": [
+        "./packages/discovery-extension/ext_discovery/host/init.tsx"
+      ],
+      "ext_discovery.host.managers.ApologistCardManager": [
+        "./packages/discovery-extension/ext_discovery/host/managers/ApologistCardManager.tsx"
+      ],
+      "ext_discovery.host.managers.ApologistManager": [
+        "./packages/discovery-extension/ext_discovery/host/managers/ApologistManager.tsx"
+      ],
+      "ext_discovery.host.managers.ApologistPanelManager": [
+        "./packages/discovery-extension/ext_discovery/host/managers/ApologistPanelManager.tsx"
+      ],
+      "ext_discovery.host.managers.botAdapter": [
+        "./packages/discovery-extension/ext_discovery/host/managers/botAdapter.tsx"
+      ],
+      "ext_discovery.host.onEggHatch": [
+        "./packages/discovery-extension/ext_discovery/host/onEggHatch.tsx"
+      ],
+      "ext_discovery.host.onExtensionInstalled": [
+        "./packages/discovery-extension/ext_discovery/host/onExtensionInstalled.tsx"
+      ],
+      "ext_discovery.host.onExtensionUninstalled": [
+        "./packages/discovery-extension/ext_discovery/host/onExtensionUninstalled.tsx"
+      ],
       "ext_geoImporter.importer.geometryHandlers": [
         "./packages/geo-importer-extension/ext_geoImporter/importer/geometryHandlers.tsx"
       ],
@@ -89,11 +161,11 @@
       "seed-bible.components.KeyboardNav": [
         "./packages/seed-bible/seed-bible/components/KeyboardNav.tsx"
       ],
-      "seed-bible.components.ModalHost": [
-        "./packages/seed-bible/seed-bible/components/ModalHost.tsx"
-      ],
       "seed-bible.components.MobileSettingsSheet": [
         "./packages/seed-bible/seed-bible/components/MobileSettingsSheet.tsx"
+      ],
+      "seed-bible.components.ModalHost": [
+        "./packages/seed-bible/seed-bible/components/ModalHost.tsx"
       ],
       "seed-bible.components.PaneLayout": [
         "./packages/seed-bible/seed-bible/components/PaneLayout.tsx"
@@ -206,6 +278,9 @@
       "ext_twitchPub.host.Authenticate": [
         "./packages/twitchPub-extension/ext_twitchPub/host/Authenticate.tsx"
       ],
+      "ext_twitchPub.host.closeInterface": [
+        "./packages/twitchPub-extension/ext_twitchPub/host/closeInterface.tsx"
+      ],
       "ext_twitchPub.host.DraggableContainer": [
         "./packages/twitchPub-extension/ext_twitchPub/host/DraggableContainer.tsx"
       ],
@@ -224,6 +299,18 @@
       "ext_twitchPub.host.Login": [
         "./packages/twitchPub-extension/ext_twitchPub/host/Login.tsx"
       ],
+      "ext_twitchPub.host.onEggHatch": [
+        "./packages/twitchPub-extension/ext_twitchPub/host/onEggHatch.tsx"
+      ],
+      "ext_twitchPub.host.onExtensionInstalled": [
+        "./packages/twitchPub-extension/ext_twitchPub/host/onExtensionInstalled.tsx"
+      ],
+      "ext_twitchPub.host.onExtensionUninstalled": [
+        "./packages/twitchPub-extension/ext_twitchPub/host/onExtensionUninstalled.tsx"
+      ],
+      "ext_twitchPub.host.onInstJoined": [
+        "./packages/twitchPub-extension/ext_twitchPub/host/onInstJoined.tsx"
+      ],
       "ext_twitchPub.host.openInterface": [
         "./packages/twitchPub-extension/ext_twitchPub/host/openInterface.tsx"
       ],
@@ -233,17 +320,14 @@
       "ext_twitchPub.host.sendMessage": [
         "./packages/twitchPub-extension/ext_twitchPub/host/sendMessage.tsx"
       ],
-      "ext_twitchPub.host.sendWhispers": [
-        "./packages/twitchPub-extension/ext_twitchPub/host/sendWhispers.tsx"
-      ],
       "ext_twitchPub.host.TwitchInterface": [
         "./packages/twitchPub-extension/ext_twitchPub/host/TwitchInterface.tsx"
       ],
-      "ext_twitchPub.host.TwitchSettings": [
-        "./packages/twitchPub-extension/ext_twitchPub/host/TwitchSettings.tsx"
-      ],
       "ext_twitchPub.host.twitchPubManager": [
         "./packages/twitchPub-extension/ext_twitchPub/host/twitchPubManager.tsx"
+      ],
+      "ext_twitchPub.host.TwitchSettings": [
+        "./packages/twitchPub-extension/ext_twitchPub/host/TwitchSettings.tsx"
       ],
       "ext_twitchPub.host.utils": [
         "./packages/twitchPub-extension/ext_twitchPub/host/utils.tsx"
@@ -277,9 +361,6 @@
       ],
       "ext_twitchSub.client.onInstJoined": [
         "./packages/twitchSub-extension/ext_twitchSub/client/onInstJoined.tsx"
-      ],
-      "ext_twitchSub.client.toggleInterface": [
-        "./packages/twitchSub-extension/ext_twitchSub/client/toggleInterface.tsx"
       ],
       "ext_twitchSub.client.TwitchSettings": [
         "./packages/twitchSub-extension/ext_twitchSub/client/TwitchSettings.tsx"
