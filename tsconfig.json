@@ -26,21 +26,6 @@
       "https://esm.helloao.org/painter-vendor-IGDNTFOW.js": [
         "./lib/painter-vendor.ts"
       ],
-      "ext_audioReader.host.init": [
-        "./packages/audio-reader-extension/ext_audioReader/host/init.tsx"
-      ],
-      "ext_audioReader.host.onEggHatch": [
-        "./packages/audio-reader-extension/ext_audioReader/host/onEggHatch.tsx"
-      ],
-      "ext_audioReader.host.onExtensionInstalled": [
-        "./packages/audio-reader-extension/ext_audioReader/host/onExtensionInstalled.tsx"
-      ],
-      "ext_audioReader.host.onExtensionUninstalled": [
-        "./packages/audio-reader-extension/ext_audioReader/host/onExtensionUninstalled.tsx"
-      ],
-      "ext_audioReader.host.onInstJoined": [
-        "./packages/audio-reader-extension/ext_audioReader/host/onInstJoined.tsx"
-      ],
       "ext_askKen.host.components.askKen": [
         "./packages/askKen-extension/ext_askKen/host/components/askKen.tsx"
       ],
@@ -70,6 +55,21 @@
       ],
       "ext_askKen.host.onExtensionUninstalled": [
         "./packages/askKen-extension/ext_askKen/host/onExtensionUninstalled.tsx"
+      ],
+      "ext_audioReader.host.init": [
+        "./packages/audio-reader-extension/ext_audioReader/host/init.tsx"
+      ],
+      "ext_audioReader.host.onEggHatch": [
+        "./packages/audio-reader-extension/ext_audioReader/host/onEggHatch.tsx"
+      ],
+      "ext_audioReader.host.onExtensionInstalled": [
+        "./packages/audio-reader-extension/ext_audioReader/host/onExtensionInstalled.tsx"
+      ],
+      "ext_audioReader.host.onExtensionUninstalled": [
+        "./packages/audio-reader-extension/ext_audioReader/host/onExtensionUninstalled.tsx"
+      ],
+      "ext_audioReader.host.onInstJoined": [
+        "./packages/audio-reader-extension/ext_audioReader/host/onInstJoined.tsx"
       ],
       "ext_discovery.host.botAdapter": [
         "./packages/discovery-extension/ext_discovery/host/botAdapter.tsx"
@@ -179,11 +179,11 @@
       "seed-bible.components.MobileSettingsSheet": [
         "./packages/seed-bible/seed-bible/components/MobileSettingsSheet.tsx"
       ],
-      "seed-bible.components.Onboarding": [
-        "./packages/seed-bible/seed-bible/components/Onboarding.tsx"
-      ],
       "seed-bible.components.ModalHost": [
         "./packages/seed-bible/seed-bible/components/ModalHost.tsx"
+      ],
+      "seed-bible.components.Onboarding": [
+        "./packages/seed-bible/seed-bible/components/Onboarding.tsx"
       ],
       "seed-bible.components.PaneLayout": [
         "./packages/seed-bible/seed-bible/components/PaneLayout.tsx"
