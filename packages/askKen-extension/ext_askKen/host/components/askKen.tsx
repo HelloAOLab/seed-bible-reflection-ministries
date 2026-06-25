@@ -21,7 +21,7 @@ const itemStyle = {
 
 interface ActionModalProps {
   open: boolean;
-  onCloseActionModal: () => void;
+  onClose: () => void;
   handleNewChat: () => void;
   handleChatHistory: () => void;
   handleClearChat: () => void;
@@ -29,17 +29,17 @@ interface ActionModalProps {
 
 const ActionModal = ({
   open,
-  onCloseActionModal,
   handleNewChat,
   handleChatHistory,
   handleClearChat,
+  onClose,
 }: ActionModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        onCloseActionModal();
+        onClose();
       }
     };
 
@@ -50,7 +50,7 @@ const ActionModal = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [open, onCloseActionModal]);
+  }, [open, onClose]);
   return (
     <div
       ref={modalRef}
