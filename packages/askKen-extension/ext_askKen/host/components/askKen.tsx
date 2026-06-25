@@ -1,6 +1,4 @@
-import { createAskKenState } from "ext_askKen.host.managers.askKenManager";
 import { useI18n } from "seed-bible.i18n.I18nManager";
-import type { SeedBibleState } from "seed-bible.app.api";
 import type { AskKenState } from "ext_askKen.host.managers.askKenManager";
 import { ChatHistoryPanel } from "ext_askKen.host.components.ChatHistory";
 import { VerseRenderer } from "ext_askKen.host.components.bibleVerseRenderer";
@@ -23,7 +21,7 @@ const itemStyle = {
 
 interface ActionModalProps {
   open: boolean;
-  onClose: () => void;
+  onCloseActionModal: () => void;
   handleNewChat: () => void;
   handleChatHistory: () => void;
   handleClearChat: () => void;
@@ -31,17 +29,17 @@ interface ActionModalProps {
 
 const ActionModal = ({
   open,
-  onClose,
+  onCloseActionModal,
   handleNewChat,
   handleChatHistory,
   handleClearChat,
 }: ActionModalProps) => {
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (modalRef.current && !modalRef.current.contains(e.target)) {
-        onClose();
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onCloseActionModal();
       }
     };
 
@@ -52,7 +50,7 @@ const ActionModal = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [open, onClose]);
+  }, [open, onCloseActionModal]);
   return (
     <div
       ref={modalRef}
@@ -205,16 +203,14 @@ export function AskKen({ state }: AskKenProps) {
                             style={{ margin: idx === 0 ? 0 : "0.4em 0 0" }}
                           >
                             <VerseRenderer
-                              tabs={state.tabs}
                               text={para}
-                              booksData={state.books}
                               scrollToVerse={state.scrollToVerse}
                               seedBibleContext={state.seedBibleContext}
                             />
                           </p>
                         ))}
 
-                      {msg.resources?.length > 0 && (
+                      {msg.resources?.length && msg.resources?.length > 0 && (
                         <div
                           style={{
                             marginTop: "12px",
@@ -232,120 +228,127 @@ export function AskKen({ state }: AskKenProps) {
                             Resources
                           </div>
 
-                          {msg.resources
-                            .filter(
-                              (resource) =>
-                                resource.url || resource.referral_url
-                            )
-                            .map((resource, index) => {
-                              const url = resource.url || resource.referral_url;
+                          {msg.resources &&
+                            msg.resources
+                              .filter(
+                                (resource) =>
+                                  resource.url || resource.referral_url
+                              )
+                              .map((resource, index) => {
+                                const url =
+                                  resource.url || resource.referral_url;
 
-                              if (resource.type === "youtube") {
-                                let videoId = "";
+                                if (resource.type === "youtube") {
+                                  let videoId = null;
 
-                                try {
-                                  const parsedUrl = new URL(url);
-
-                                  if (parsedUrl.hostname.includes("youtu.be")) {
-                                    videoId = parsedUrl.pathname.slice(1);
-                                  } else {
-                                    videoId = parsedUrl.searchParams.get("v");
-                                  }
-                                } catch (e) {
-                                  console.error("Invalid YouTube URL", e);
-                                }
-
-                                return (
-                                  <div
-                                    key={resource.id || index}
-                                    style={{ marginBottom: "12px" }}
-                                  >
-                                    <iframe
-                                      width="100%"
-                                      height="220"
-                                      src={`https://www.youtube.com/embed/${videoId}`}
-                                      title={resource.title}
-                                      frameBorder="0"
-                                      referrerpolicy="strict-origin-when-cross-origin"
-                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                      allowFullScreen
-                                      style={{
-                                        borderRadius: "12px",
-                                        border: "1px solid #e5e7eb",
-                                      }}
-                                    />
-
-                                    <div
-                                      style={{
-                                        marginTop: "8px",
-                                        fontSize: "13px",
-                                        fontWeight: 600,
-                                      }}
-                                    >
-                                      {resource.title}
-                                    </div>
-                                  </div>
-                                );
-                              }
-
-                              return (
-                                <div key={resource.id || index}>
-                                  <a
-                                    onClick={() =>
-                                      state.handleOpenLink(resource)
+                                  try {
+                                    if (!url) {
+                                      return;
                                     }
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "flex-start",
-                                      gap: "10px",
-                                      padding: "10px",
-                                      marginBottom: "8px",
-                                      borderRadius: "10px",
-                                      background: "#f8fafc",
-                                      textDecoration: "none",
-                                      color: "inherit",
-                                      border: "1px solid #e5e7eb",
-                                      transition: "all 0.15s ease",
-                                      cursor: "pointer",
-                                    }}
-                                  >
-                                    <span
-                                      className="material-symbols-outlined"
-                                      style={{
-                                        fontSize: "20px",
-                                        color: "#2E4879",
-                                        marginTop: "2px",
-                                      }}
-                                    ></span>
+                                    const parsedUrl = new URL(url);
 
-                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                    if (
+                                      parsedUrl.hostname.includes("youtu.be")
+                                    ) {
+                                      videoId = parsedUrl.pathname.slice(1);
+                                    } else {
+                                      videoId = parsedUrl.searchParams.get("v");
+                                    }
+                                  } catch (e) {
+                                    console.error("Invalid YouTube URL", e);
+                                  }
+
+                                  return (
+                                    <div
+                                      key={resource.id || index}
+                                      style={{ marginBottom: "12px" }}
+                                    >
+                                      <iframe
+                                        width="100%"
+                                        height="220"
+                                        src={`https://www.youtube.com/embed/${videoId}`}
+                                        title={resource.title}
+                                        frameBorder="0"
+                                        referrerpolicy="strict-origin-when-cross-origin"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        style={{
+                                          borderRadius: "12px",
+                                          border: "1px solid #e5e7eb",
+                                        }}
+                                      />
+
                                       <div
                                         style={{
-                                          fontWeight: 600,
+                                          marginTop: "8px",
                                           fontSize: "13px",
-                                          color: "#111827",
-                                          marginBottom: "2px",
+                                          fontWeight: 600,
                                         }}
                                       >
                                         {resource.title}
                                       </div>
                                     </div>
+                                  );
+                                }
 
-                                    <span
-                                      className="material-symbols-outlined"
+                                return (
+                                  <div key={resource.id || index}>
+                                    <a
+                                      onClick={() =>
+                                        state.handleOpenLink(resource)
+                                      }
+                                      target="_blank"
+                                      rel="noopener noreferrer"
                                       style={{
-                                        fontSize: "16px",
-                                        color: "#9ca3af",
+                                        display: "flex",
+                                        alignItems: "flex-start",
+                                        gap: "10px",
+                                        padding: "10px",
+                                        marginBottom: "8px",
+                                        borderRadius: "10px",
+                                        background: "#f8fafc",
+                                        textDecoration: "none",
+                                        color: "inherit",
+                                        border: "1px solid #e5e7eb",
+                                        transition: "all 0.15s ease",
+                                        cursor: "pointer",
                                       }}
                                     >
-                                      open_in_new
-                                    </span>
-                                  </a>
-                                </div>
-                              );
-                            })}
+                                      <span
+                                        className="material-symbols-outlined"
+                                        style={{
+                                          fontSize: "20px",
+                                          color: "#2E4879",
+                                          marginTop: "2px",
+                                        }}
+                                      ></span>
+
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div
+                                          style={{
+                                            fontWeight: 600,
+                                            fontSize: "13px",
+                                            color: "#111827",
+                                            marginBottom: "2px",
+                                          }}
+                                        >
+                                          {resource.title}
+                                        </div>
+                                      </div>
+
+                                      <span
+                                        className="material-symbols-outlined"
+                                        style={{
+                                          fontSize: "16px",
+                                          color: "#9ca3af",
+                                        }}
+                                      >
+                                        open_in_new
+                                      </span>
+                                    </a>
+                                  </div>
+                                );
+                              })}
                         </div>
                       )}
                     </div>
@@ -431,7 +434,7 @@ export function AskKen({ state }: AskKenProps) {
                   {state.openActionModal.value && (
                     <ActionModal
                       open={state.openActionModal.value}
-                      onClose={state.onClose}
+                      onClose={state.onCloseActionModal}
                       handleNewChat={state.handleNewChat}
                       handleChatHistory={state.handleChatHistory}
                       handleClearChat={state.handleClearChat}

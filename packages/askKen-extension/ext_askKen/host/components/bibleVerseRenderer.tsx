@@ -8,19 +8,11 @@ import type { SeedBibleState } from "seed-bible.app.api";
 
 interface VerseRendererProps {
   text: string;
-  booksData: (key: string, options?: Record<string, unknown>) => string;
-  tabs: (key: string, options?: Record<string, unknown>) => string;
   scrollToVerse: Signal<number | null>;
   seedBibleContext: SeedBibleState;
 }
 
-export function VerseRenderer({
-  text,
-  booksData,
-  tabs,
-  scrollToVerse,
-  seedBibleContext,
-}: VerseRendererProps) {
+export function VerseRenderer({ text, seedBibleContext }: VerseRendererProps) {
   const refs = bibleRefrenceParser(text);
   const translation = parseTranslation(text);
 
@@ -49,10 +41,6 @@ export function VerseRenderer({
             bookName: ref.book!,
             chapter: ref.chapter,
             translationId: translation?.id || "AAB",
-            // verseNumber: ref.verse,
-            // endVerseNumber: ref.endVerse || ref.verse!, // range support
-            // scrollToVerse,
-            // tabs,
             seedBibleContext,
           })
         }

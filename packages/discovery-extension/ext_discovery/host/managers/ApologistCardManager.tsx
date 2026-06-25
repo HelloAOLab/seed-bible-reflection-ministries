@@ -82,13 +82,27 @@ export function getYouTubeId(url: string) {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
   return match ? match[1] : null;
 }
-
+export interface ResourceItem {
+  published_on?: string;
+  created_at?: string;
+  image_url?: string;
+  type: "book" | "url" | "youtube" | "episode";
+  url: string;
+  id: string;
+  referral_url: string;
+  listing_url: string;
+  title: string;
+  description?: string;
+  summary?: string;
+  snippet?: string;
+  excerpt?: string;
+}
 export interface SgCardProps {
-  item: any;
+  item: ResourceItem;
 
   isOpen: boolean;
   isNowPlaying: boolean;
-  isPinned: boolean;
+
   isActive: boolean;
   isLinkOpen: boolean;
 
@@ -113,7 +127,7 @@ export interface CardState {
   domain: string;
   formattedDomain: string;
   icon: string;
-  videoError: string;
+  videoError: Signal<boolean>;
 
   embUrl: string;
   isBook: boolean;

@@ -1,12 +1,13 @@
 import { signal, type Signal, computed, effect } from "@preact/signals";
 import type { SeedBibleState } from "seed-bible.app.api";
 import { useI18n } from "seed-bible.i18n.I18nManager";
+import type { ChapterData } from "ext_discovery.host.managers.ApologistManager";
 
 export interface UpdateSearchOptions {
   level?: string;
   label?: string;
   baseline?: string;
-  chapterData?: any;
+  chapterData?: ChapterData;
   forceRefresh?: boolean;
 }
 interface ApologistTab {
@@ -44,6 +45,9 @@ export function CreateApologistState(
 ): ApologistPanelState {
   const activeTab = signal("discovery");
   const { t } = useI18n("ext_discovery");
+  if (!context.app.currentReadingState.value) {
+    throw new Error("Current reading state is not initialized.");
+  }
 
   const readingState = context.app.currentReadingState.value.tab.readingState;
   console.log(
@@ -82,13 +86,6 @@ export function CreateApologistState(
   });
 
   console.log(chapterText.value, "chaptertact");
-  console.log(
-    bookId.value,
-    chapterNumber.value,
-    translationBooks.value,
-    currentBook.value.name,
-    "currt"
-  );
 
   const cameFromDiscovery = signal(false);
 
@@ -101,12 +98,12 @@ export function CreateApologistState(
   const searchLevel = signal("chapter");
 
   const searchLabel = signal(
-    `${currentBook.value.name} ${chapterNumber.value}`
+    `${currentBook.value?.name ?? ""} ${chapterNumber.value}`
   );
 
   const baselineQuery = signal("");
 
-  const chapterDataa = signal(null);
+  const chapterDataa = signal<ChapterData | null>(null);
 
   const searchTrigger = signal(0);
   const tabs: ApologistTab[] = [
@@ -123,7 +120,7 @@ export function CreateApologistState(
   ];
   effect(() => {
     const text = chapterText.value;
-    const label = `${currentBook.value.name} ${chapterNumber.value}`;
+    const label = `${currentBook.value?.name ?? ""} ${chapterNumber.value}`;
 
     if (text !== searchQuery.value || label !== searchLabel.value) {
       searchQuery.value = text;
@@ -153,7 +150,7 @@ export function CreateApologistState(
     }
 
     if ("chapterData" in options) {
-      chapterDataa.value = options.chapterData || null;
+      chapterDataa.value = options.chapterData ?? null;
     }
 
     if (options.forceRefresh) {

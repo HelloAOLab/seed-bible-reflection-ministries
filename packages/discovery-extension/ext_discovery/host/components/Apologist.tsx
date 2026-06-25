@@ -1,13 +1,14 @@
-import {
-  createApologistState,
-  type ApologistState,
-} from "ext_discovery.host.managers.ApologistManager";
+import { createApologistState } from "ext_discovery.host.managers.ApologistManager";
 import { SgCard } from "ext_discovery.host.components.ApologistCards";
 import { useI18n } from "seed-bible.i18n.I18nManager";
+import type { ComponentChildren } from "preact";
 const { useRef, useEffect, useState } = os.appHooks;
+interface Props {
+  children: ComponentChildren;
+}
 
-import { signal, type Signal, computed, effect } from "@preact/signals";
-function LazyCard({ children }) {
+import { Signal } from "@preact/signals";
+function LazyCard({ children }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   const placeholderRef = useRef(null);
 
@@ -16,6 +17,9 @@ function LazyCard({ children }) {
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
+        if (!entry) {
+          return;
+        }
         if (entry.isIntersecting) {
           setIsVisible(true);
           observer.disconnect();
@@ -51,7 +55,7 @@ interface ApologistProps {
   searchLevel: Signal<string>;
   searchLabel: Signal<string>;
   baselineQuery: Signal<string>;
-  chapterData: Signal<any>;
+  chapterData: Signal<string>;
   cameFromDiscovery: Signal<boolean>;
   openInMinistriesTab: (url: string, title?: string) => void;
 }
@@ -210,7 +214,6 @@ export function Apologist(props: ApologistProps) {
                         ? () => (nowPlayingId.value = null)
                         : undefined
                     }
-                    isPinned={nowPlayingId.value === item.id}
                     isActive={activeCardId.value === item.id}
                     isLinkOpen={linkOpenId.value === item.id}
                     linkOpenId={linkOpenId}

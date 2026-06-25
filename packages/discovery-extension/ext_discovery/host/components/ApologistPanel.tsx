@@ -1,4 +1,4 @@
-import { ApologistPanelState } from "ext_discovery.host.managers.ApologistPanelManager";
+import type { ApologistPanelState } from "ext_discovery.host.managers.ApologistPanelManager";
 import { Apologist } from "ext_discovery.host.components.Apologist";
 import { MinistriesTab } from "ext_discovery.host.components.Ministries";
 import type { SeedBibleState } from "seed-bible.app.api";
@@ -7,10 +7,7 @@ interface ApologistPanelWrapperProps {
   state: ApologistPanelState;
   seedBibleState: SeedBibleState;
 }
-export function ApologistPanelWrapper({
-  state,
-  seedBibleState,
-}: ApologistPanelWrapperProps) {
+export function ApologistPanelWrapper({ state }: ApologistPanelWrapperProps) {
   return (
     <>
       <style>{style}</style>

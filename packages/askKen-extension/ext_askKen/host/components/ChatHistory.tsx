@@ -1,19 +1,35 @@
 import { useI18n } from "seed-bible.i18n.I18nManager";
+interface ChatMeta {
+  id: string;
+  title: string;
+  updatedAt: number | string | Date;
+}
 
 function formatRelativeTime(
   timestamp: string | number | Date,
   t: (key: string) => string
 ): string {
-  const diff = Math.floor((Date.now() - timestamp) / 1000);
+  const time =
+    timestamp instanceof Date
+      ? timestamp.getTime()
+      : typeof timestamp === "string"
+        ? new Date(timestamp).getTime()
+        : timestamp;
+
+  const diff = Math.floor((Date.now() - time) / 1000);
+
   if (diff < 60) return t("justNow");
-  if (diff < 3600)
-    return t("minutesAgo").replace("{{count}}", Math.floor(diff / 60));
-  if (diff < 86400)
-    return t("hoursAgo").replace("{{count}}", Math.floor(diff / 3600));
-  return t("daysAgo").replace("{{count}}", Math.floor(diff / 86400));
+  if (diff < 3600) {
+    return t("minutesAgo").replace("{{count}}", String(Math.floor(diff / 60)));
+  }
+  if (diff < 86400) {
+    return t("hoursAgo").replace("{{count}}", String(Math.floor(diff / 3600)));
+  }
+
+  return t("daysAgo").replace("{{count}}", String(Math.floor(diff / 86400)));
 }
 interface ChatHistoryPanelProps {
-  chatIndex: Record<string, any>; // or your actual ChatIndex type
+  chatIndex: ChatMeta[]; // or your actual ChatIndex type
   activeChatId: string | null;
 
   onSelect: (chatId: string) => void;

@@ -1,16 +1,21 @@
 // AskKen.types.ts
 const { useEffect, useRef, useCallback } = os.appHooks;
 import type { SeedBibleState } from "seed-bible.app.api";
-import type { TabsManager } from "seed-bible.managers.TabsManager";
 import type { ReaderTab } from "seed-bible.managers.TabsManager";
 import type { TranslationBook } from "seed-bible.managers.FreeUseBibleAPI";
+interface ChatMeta {
+  id: string;
+  title: string;
+  createdAt: number | string | Date;
+  updatedAt: number | string | Date;
+}
 
 const DEFAULT_URL =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
 const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const MAX_CHATS = 50;
-const APOLOGIST_API_KEY='';
+const APOLOGIST_API_KEY = "apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN";
 const chatCache = new Map<string, ChatData>();
 
 function lsSet<T>(key: string, value: T): void {
@@ -41,7 +46,7 @@ async function loadChatIndex() {
     );
     return { chats: stored.chats, activeId: stored.activeId || null };
   }
-  const cached = [];
+  const cached: ChatMeta[] = [];
   chatCache.forEach((chat) => {
     cached.push({
       id: chat.id,
@@ -166,13 +171,6 @@ interface ChatMessage {
   resources?: Resource[];
 }
 
-interface ChatMeta {
-  id: string;
-  title: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
 interface ChatData extends ChatMeta {
   messages: ChatMessage[];
 }
@@ -211,6 +209,7 @@ export interface AskKenState {
   handleOpenLink: (resource: Resource) => void;
   handleSubmit: () => void;
   handleSelectChat: (chatId: string) => void;
+  onCloseActionModal: () => void;
   tabs: ReaderTab[];
   books: TranslationBook[];
   seedBibleContext: SeedBibleState;
@@ -218,10 +217,10 @@ export interface AskKenState {
 
 import { signal, type Signal, computed } from "@preact/signals";
 
-export function createAskKenState(
-  context: SeedBibleState,
-  tabsManager: TabsManager
-): AskKenState {
+export function createAskKenState(context: SeedBibleState): AskKenState {
+  if (!context.app.currentReadingState.value) {
+    throw new Error("Current reading state is not initialized.");
+  }
   const readingState =
     context?.app?.currentReadingState?.value.tab.readingState;
   const seedBibleContext = context;
@@ -284,13 +283,17 @@ export function createAskKenState(
     y: 106,
   });
   const tabs = context.tabs.tabs.value;
+  if (!translationBooks.value) {
+    throw new Error("Current reading state is not initialized.");
+  }
+
   const books = translationBooks.value.books;
   const offsetRef = useRef({ x: 0, y: 0 });
-  const chatIndexRef = useRef([]);
-  const saveTimerRef = useRef(null);
+
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const dragging = signal(false);
-  const handleMouseDown = (e) => {
+  const handleMouseDown = (e: MouseEvent) => {
     dragging.value = true;
     offsetRef.current = {
       x: e.clientX + position.value.x,
@@ -298,13 +301,16 @@ export function createAskKenState(
     };
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (!dragging.value) return;
 
     position.value = {
       x: e.clientX + position.value.x,
       y: e.clientY + position.value.y,
     };
+  };
+  const onCloseActionModal = () => {
+    openActionModal.value = true;
   };
 
   useEffect(() => {
@@ -423,7 +429,7 @@ export function createAskKenState(
     },
     [activeChatId.value, messages.value, persistCurrentChat]
   );
-  const scheduleSave = (msgs, chatId) => {
+  const scheduleSave = (msgs: ChatMessage[], chatId: string) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       persistCurrentChat(msgs, chatId);
@@ -434,8 +440,17 @@ export function createAskKenState(
     const currentQuery = query.value.trim();
     const reflectionPromise = apologistQuerySearch(currentQuery);
 
-    const userMessage = { role: "user", content: query.value.trim() };
-    const newMessages = autoSend.value
+    const userMessage: ChatMessage = {
+      role: "user",
+      content: currentQuery,
+    };
+    let newMessages: ChatMessage[] = [
+      {
+        role: "user",
+        content: currentQuery,
+      },
+    ];
+    newMessages = autoSend.value
       ? [userMessage]
       : [...messages.value, userMessage];
     messages.value = newMessages;
@@ -460,7 +475,7 @@ export function createAskKenState(
     const recentMessages = newMessages.slice(-15);
     const chatHistory =
       recentMessages.length === 1
-        ? recentMessages[0].content
+        ? recentMessages[0]!.content
         : recentMessages
             .map((m) => {
               if (m.role === "user") return `User: ${m.content}`;
@@ -515,7 +530,9 @@ FINAL RULE:
               { role: "assistant", content: assistantContent },
             ];
           }
-        } catch {}
+        } catch (err) {
+          console.error(err);
+        }
       }
     };
 
@@ -527,15 +544,17 @@ FINAL RULE:
           // Always attempt save — storage functions check auth internally
           const reflectionResources = await reflectionPromise;
           console.log(reflectionResources, "reflectionres");
+          const assistantMessage: ChatMessage = {
+            role: "assistant", // or MessageRole.Assistant if MessageRole is an enum
+            content: assistantContent,
+            resources: reflectionResources ?? [],
+          };
 
-          const finalMessages = [
+          const finalMessages: ChatMessage[] = [
             ...newMessages,
-            {
-              role: "assistant",
-              content: assistantContent,
-              resources: reflectionResources || [],
-            },
+            assistantMessage,
           ];
+
           messages.value = finalMessages;
           console.log(
             "[AskKen] Response complete, scheduling save for chat",
@@ -599,6 +618,7 @@ FINAL RULE:
     handleOpenLink,
     handleSubmit,
     handleSelectChat,
+    onCloseActionModal,
     tabs,
     books,
     scrollToVerse,

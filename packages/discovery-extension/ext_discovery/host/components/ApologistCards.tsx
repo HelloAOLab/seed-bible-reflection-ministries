@@ -147,7 +147,7 @@ export function SgCard(props: SgCardProps) {
  
    ${props.isActive && !state.isYoutube ? "sg-open-bordered" : ""} 
   ${props.isOpen ? "is-open" : ""} 
-  ${props.isNowPlaying && props.isPinned ? "sg-now-playing-card" : ""}
+  ${props.isNowPlaying ? "sg-now-playing-card" : ""}
 `}
     >
       <header className="sg2-head">
@@ -186,7 +186,7 @@ export function SgCard(props: SgCardProps) {
           )}
         </div>
         <div className="sg2-headRight">
-          {state.url && !state.isYoutube && !state.isPinned && (
+          {state.url && !state.isYoutube && (
             <a
               className="sg2-open"
               href={state.url}
@@ -215,7 +215,7 @@ export function SgCard(props: SgCardProps) {
               </svg>
             </a>
           )}
-          {state.isPinned && props.onClose && (
+          {props.onClose && (
             <button
               className="sg-now-playing-close"
               onClick={props.onClose}
@@ -315,4 +315,3 @@ export function SgCard(props: SgCardProps) {
     </article>
   );
 }
-return SgCard;

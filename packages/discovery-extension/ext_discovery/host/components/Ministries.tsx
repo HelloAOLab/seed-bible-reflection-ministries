@@ -1,7 +1,9 @@
-import { ApologistPanelState } from "ext_discovery.host.managers.ApologistPanelManager";
+import type { ApologistPanelState } from "ext_discovery.host.managers.ApologistPanelManager";
+import { Signal } from "@preact/signals";
 
 interface MinistriesTabProps {
   state: ApologistPanelState;
+  cameFromDiscovery: Signal<boolean>;
 }
 
 export function MinistriesTab({ state }: MinistriesTabProps) {

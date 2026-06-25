@@ -3,7 +3,6 @@ interface NavigationProps {
   bookName: string;
   chapter: number;
   translationId: string;
-  booksData: [];
   seedBibleContext: SeedBibleState;
 }
 

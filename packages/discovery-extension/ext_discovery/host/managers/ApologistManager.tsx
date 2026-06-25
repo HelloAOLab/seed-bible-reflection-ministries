@@ -1,8 +1,25 @@
-const { useEffect, useRef, useState, useCallback } = os.appHooks;
+const { useEffect, useRef } = os.appHooks;
 import { signal, type Signal } from "@preact/signals";
-import { ApologistPanelState } from "ext_discovery.host.managers.ApologistPanelManager";
 
-function getDomain(u) {
+const APOLOGIST_API_KEY = "apg_fw8aEJxwdpVkd7ctLLhWK3CbRlpN";
+interface ResourceItem {
+  published_on?: string;
+  created_at?: string;
+  image_url?: string;
+  type: "book" | "url" | "youtube" | "episode";
+  url: string;
+  id: string;
+  referral_url: string;
+  listing_url: string;
+  title: string;
+  Name: string;
+  description?: string;
+  summary?: string;
+  snippet?: string;
+  excerpt?: string;
+}
+
+function getDomain(u: string) {
   if (!u) return "";
 
   try {
@@ -37,21 +54,22 @@ const SOURCE_PRIORITY = {
 
 const TITLE_WHITESPACE_REGEX = /\s+/g;
 
-function normalizeTitleValue(value) {
+function normalizeTitleValue(value: string) {
   if (!value) return "";
   return value.trim().replace(TITLE_WHITESPACE_REGEX, " ").toLowerCase();
 }
 
-function getPrimaryUrl(item) {
+function getPrimaryUrl(item: ResourceItem) {
   return item?.url || item?.referral_url || item?.listing_url || "";
 }
 
-function getResultDomain(item) {
+function getResultDomain(item: ResourceItem) {
   const domain = getDomain(getPrimaryUrl(item));
   return domain ? domain.toLowerCase() : "";
 }
+type ResourceType = keyof typeof TYPE_ORDER;
 
-function computeResultRank(item) {
+function computeResultRank(item: ResourceItem) {
   const type = (item?.type || "").toLowerCase();
   if (type === "youtube") {
     return SOURCE_PRIORITY.youtube;
@@ -65,31 +83,40 @@ function computeResultRank(item) {
     return SOURCE_PRIORITY.ligonier;
   }
 
-  return SOURCE_PRIORITY.default + (TYPE_ORDER[type] ?? 50);
+  return (
+    SOURCE_PRIORITY.default +
+    (TYPE_ORDER[type as keyof typeof TYPE_ORDER] ?? 50)
+  );
 }
 
-function compareResults(a, b) {
+function compareResults(a: ResourceItem, b: ResourceItem): number {
   const rankDiff = computeResultRank(a) - computeResultRank(b);
   if (rankDiff !== 0) return rankDiff;
 
+  const typeA = (a.type ?? "").toLowerCase();
+  const typeB = (b.type ?? "").toLowerCase();
+
   const typeDiff =
-    (TYPE_ORDER[(a?.type || "").toLowerCase()] ?? 100) -
-    (TYPE_ORDER[(b?.type || "").toLowerCase()] ?? 100);
+    (typeA in TYPE_ORDER ? TYPE_ORDER[typeA as ResourceType] : 100) -
+    (typeB in TYPE_ORDER ? TYPE_ORDER[typeB as ResourceType] : 100);
+
   if (typeDiff !== 0) return typeDiff;
 
-  const titleA = normalizeTitleValue(a?.title || a?.Name || "");
-  const titleB = normalizeTitleValue(b?.title || b?.Name || "");
+  const titleA = normalizeTitleValue(a.title || a.Name || "");
+  const titleB = normalizeTitleValue(b.title || b.Name || "");
+
   if (titleA < titleB) return -1;
   if (titleA > titleB) return 1;
+
   return 0;
 }
 
-function dedupeResults(results) {
+function dedupeResults(results: ResourceItem[]): ResourceItem[] {
   const seenIds = new Set();
   const seenTitles = new Map();
-  const deduped = [];
+  const deduped: ResourceItem[] = [];
 
-  results.forEach((item) => {
+  results.forEach((item: ResourceItem) => {
     if (item?.id) {
       if (seenIds.has(item.id)) return;
       seenIds.add(item.id);
@@ -126,7 +153,7 @@ function dedupeResults(results) {
   return deduped;
 }
 
-function buildResultKey(item) {
+function buildResultKey(item: ResourceItem) {
   if (!item) return null;
   if (item.id) {
     return `id:${item.id}`;
@@ -138,15 +165,12 @@ function buildResultKey(item) {
 }
 // ── Lazy-loading wrapper for cards (IntersectionObserver) ──
 
-const DEFAULT_URL =
-  "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
-
 // ── In-memory result cache (5 min TTL) ──
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const resultCache = new Map(); // key → { data: [], timestamp: number }
 const queryPlanCache = new Map(); // key → { data: string[], timestamp: number }
 
-function getCachedResults(key) {
+function getCachedResults(key: string) {
   const entry = resultCache.get(key);
   if (!entry) return null;
   if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
@@ -156,7 +180,7 @@ function getCachedResults(key) {
   return entry.data;
 }
 
-function setCachedResults(key, data) {
+function setCachedResults(key: string, data: ResourceItem[]) {
   // Store only the fields the UI actually uses to keep memory light
   const trimmed = data.map((item) => ({
     id: item.id,
@@ -182,7 +206,7 @@ function setCachedResults(key, data) {
   }
 }
 
-function getCachedQueryPlan(key) {
+function getCachedQueryPlan(key: string) {
   const entry = queryPlanCache.get(key);
   if (!entry) return null;
   if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
@@ -192,42 +216,43 @@ function getCachedQueryPlan(key) {
   return entry.data;
 }
 
-function setCachedQueryPlan(key, data) {
+function setCachedQueryPlan(key: string, data: string[]) {
   queryPlanCache.set(key, { data, timestamp: Date.now() });
   if (queryPlanCache.size > 200) {
     const oldest = queryPlanCache.keys().next().value;
     queryPlanCache.delete(oldest);
   }
 }
-
-function normalizeQueryValue(value) {
-  return String(value || "")
-    .trim()
-    .replace(/\s+/g, " ");
+function normalizeQueryValue(value: string): string {
+  return String(value).trim().replace(/\s+/g, " ");
 }
 
-function uniqueQueries(queries) {
-  const seen = new Set();
-  const normalized = [];
-  queries.forEach((query) => {
+function uniqueQueries(queries: string[]): string[] {
+  const seen = new Set<string>();
+  const normalized: string[] = [];
+
+  queries.forEach((query: string) => {
     const value = normalizeQueryValue(query);
     if (!value) return;
+
     const key = value.toLowerCase();
     if (seen.has(key)) return;
+
     seen.add(key);
     normalized.push(value);
   });
+
   return normalized;
 }
 
-function truncateText(value, maxLength = 220) {
+function truncateText(value: string, maxLength = 220) {
   const text = normalizeQueryValue(value);
   if (!text) return "";
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength).trim()}...`;
 }
 
-function truncateQueryPhrase(value, maxLength = 30) {
+function truncateQueryPhrase(value: string, maxLength = 30) {
   const text = normalizeQueryValue(value);
   if (!text) return "";
   if (text.length <= maxLength) return text;
@@ -243,11 +268,11 @@ function truncateQueryPhrase(value, maxLength = 30) {
   return phrase || text.slice(0, maxLength).trim();
 }
 
-function escapeRegExp(value) {
+function escapeRegExp(value: string) {
   return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function getResultSearchableText(item) {
+function getResultSearchableText(item: ResourceItem) {
   return normalizeQueryValue(
     [
       item?.title,
@@ -256,7 +281,6 @@ function getResultSearchableText(item) {
       item?.summary,
       item?.snippet,
       item?.excerpt,
-      item?.content,
     ]
       .filter(Boolean)
       .join(" ")
@@ -467,15 +491,15 @@ const SIGNAL_STOPWORDS = new Set([
   "whosever",
 ]);
 
-function parseChapterLabel(label) {
+function parseChapterLabel(label: string) {
   const normalizedLabel = normalizeQueryValue(label);
   if (!normalizedLabel) return null;
 
   const chapterMatch = normalizedLabel.match(/^(.*?)(\d+)\s*$/);
   if (!chapterMatch) return null;
 
-  const bookName = normalizeQueryValue(chapterMatch[1]);
-  const chapterNumber = parseInt(chapterMatch[2], 10);
+  const bookName = normalizeQueryValue(chapterMatch[1]!);
+  const chapterNumber = parseInt(chapterMatch[2]!, 10);
   if (!bookName || Number.isNaN(chapterNumber)) return null;
 
   return {
@@ -486,8 +510,17 @@ function parseChapterLabel(label) {
     bookTokens: bookName.toLowerCase().split(/\s+/).filter(Boolean),
   };
 }
-
-function getExplicitChapterMatch(searchableText, chapterInfo) {
+interface ChapterInfo {
+  label: string;
+  bookName: string;
+  chapterNumber: number;
+  escapedBookName: string;
+  bookTokens: string[];
+}
+function getExplicitChapterMatch(
+  searchableText: string,
+  chapterInfo: ChapterInfo
+) {
   if (!searchableText || !chapterInfo) {
     return { isExplicit: false, chapterScore: 0, matchType: null };
   }
@@ -509,8 +542,8 @@ function getExplicitChapterMatch(searchableText, chapterInfo) {
     return { isExplicit: false, chapterScore: 0, matchType: null };
   }
 
-  const start = parseInt(rangeMatch[1], 10);
-  const end = parseInt(rangeMatch[2], 10);
+  const start = parseInt(rangeMatch[1] ?? "", 10);
+  const end = parseInt(rangeMatch[2] ?? "", 10);
   if (Number.isNaN(start) || Number.isNaN(end)) {
     return { isExplicit: false, chapterScore: 0, matchType: null };
   }
@@ -525,7 +558,10 @@ function getExplicitChapterMatch(searchableText, chapterInfo) {
   };
 }
 
-function getOtherBookReferenceCount(searchableText, chapterInfo) {
+function getOtherBookReferenceCount(
+  searchableText: string,
+  chapterInfo: ChapterInfo
+) {
   if (!searchableText) return 0;
 
   let count = 0;
@@ -545,7 +581,7 @@ function getOtherBookReferenceCount(searchableText, chapterInfo) {
   return count;
 }
 
-function tokenizeSignalText(text, chapterInfo) {
+function tokenizeSignalText(text: string, chapterInfo: ChapterInfo) {
   const normalizedText = normalizeQueryValue(text).toLowerCase();
   if (!normalizedText) return [];
 
@@ -560,11 +596,32 @@ function tokenizeSignalText(text, chapterInfo) {
       return true;
     });
 }
+interface Verse {
+  text?: string;
+  number?: number | string;
+  verseNumber?: number | string;
+}
 
-function extractSectionSignals(chapterData) {
+interface Section {
+  heading?: string;
+  title?: string;
+  name?: string;
+  verses?: Verse[];
+}
+
+export interface ChapterData {
+  content?: Section[];
+  combinedText: string;
+  book: string;
+  chapter: number;
+  number: number;
+  translation: string;
+}
+
+function extractSectionSignals(chapterData: ChapterData) {
   if (!chapterData || !Array.isArray(chapterData.content)) return [];
 
-  const signals = [];
+  const signals: string[] = [];
   chapterData.content.forEach((section) => {
     const heading = normalizeQueryValue(
       section?.heading || section?.title || section?.name || ""
@@ -584,8 +641,10 @@ function extractSectionSignals(chapterData) {
   return signals;
 }
 
-function extractSectionHeadings(chapterData) {
-  if (!chapterData || !Array.isArray(chapterData.content)) return [];
+function extractSectionHeadings(chapterData: ChapterData | null): string[] {
+  if (!chapterData || !Array.isArray(chapterData.content)) {
+    return [];
+  }
 
   return uniqueQueries(
     chapterData.content.map((section) =>
@@ -596,7 +655,7 @@ function extractSectionHeadings(chapterData) {
   );
 }
 
-function extractKeywordsFromText(text, bookName) {
+function extractKeywordsFromText(text: string, bookName: string) {
   const bookTokens = normalizeQueryValue(bookName)
     .toLowerCase()
     .split(/\s+/)
@@ -623,9 +682,17 @@ function extractKeywordsFromText(text, bookName) {
   if (!topTerms.length) return "";
   return normalizeQueryValue([bookName, ...topTerms].filter(Boolean).join(" "));
 }
+interface QueryResultPair {
+  query: string;
+  results: ResourceItem[];
+}
 
-function buildChapterSignalSet(chapterData, chapterInfo, queryResultPairs) {
-  const signalTokens = new Set();
+function buildChapterSignalSet(
+  chapterData: ChapterData,
+  chapterInfo: ChapterInfo,
+  queryResultPairs: QueryResultPair[]
+) {
+  const signalTokens = new Set<string>();
   const sources = [
     chapterData?.combinedText,
     ...extractSectionSignals(chapterData),
@@ -641,11 +708,14 @@ function buildChapterSignalSet(chapterData, chapterInfo, queryResultPairs) {
   return signalTokens;
 }
 
-function getResultTitle(item) {
+function getResultTitle(item: ResourceItem) {
   return normalizeQueryValue(item?.title || item?.Name || "");
 }
 
-function hasConflictingChapterInTitle(item, chapterInfo) {
+function hasConflictingChapterInTitle(
+  item: ResourceItem,
+  chapterInfo: ChapterInfo
+) {
   if (!chapterInfo) return false;
   const title = getResultTitle(item);
   if (!title) return false;
@@ -657,7 +727,7 @@ function hasConflictingChapterInTitle(item, chapterInfo) {
   );
   let match;
   while ((match = anyChapterRegex.exec(title)) !== null) {
-    const mentionedChapter = parseInt(match[1], 10);
+    const mentionedChapter = parseInt(match[1] ?? "", 10);
     if (
       !Number.isNaN(mentionedChapter) &&
       mentionedChapter !== chapterInfo.chapterNumber
@@ -667,29 +737,70 @@ function hasConflictingChapterInTitle(item, chapterInfo) {
   }
   return false;
 }
+interface ChapterContext {
+  hitCountByKey: Map<string, number>;
+  chapterInfo: ChapterInfo | null;
+  signalTokens: Set<string>;
+}
 
-function classifyChapterResult(item, context) {
+interface ClassificationResult {
+  bucket: "explicitMatch" | "implicitMatch" | "unrelated";
+  score: number;
+  explicit: {
+    isExplicit: boolean;
+    chapterScore: number;
+    matchType: string | null;
+  };
+  sharedSignalCount: number;
+  hitCount: number;
+  otherBookReferenceCount: number;
+}
+
+function classifyChapterResult(
+  item: ResourceItem,
+  context: ChapterContext
+): ClassificationResult {
   const searchableText = getResultSearchableText(item);
   const resultKey = buildResultKey(item);
-  const hitCount = resultKey ? context.hitCountByKey.get(resultKey) || 1 : 1;
+
+  const hitCount = resultKey ? (context.hitCountByKey.get(resultKey) ?? 1) : 1;
+
+  if (!context.chapterInfo) {
+    return {
+      bucket: "unrelated",
+      score: 0,
+      explicit: {
+        isExplicit: false,
+        chapterScore: 0,
+        matchType: null,
+      },
+      sharedSignalCount: 0,
+      hitCount,
+      otherBookReferenceCount: 0,
+    };
+  }
+
   const explicit = getExplicitChapterMatch(searchableText, context.chapterInfo);
+
   const otherBookReferenceCount = getOtherBookReferenceCount(
     searchableText,
     context.chapterInfo
   );
-  const resultTokens = new Set(
+
+  const resultTokens = new Set<string>(
     tokenizeSignalText(searchableText, context.chapterInfo)
   );
+
   const sharedSignalCount = Array.from(context.signalTokens).filter((token) =>
     resultTokens.has(token)
   ).length;
 
-  const sameBookMentionRegex = context.chapterInfo
-    ? new RegExp(`\\b${context.chapterInfo.escapedBookName}\\b`, "i")
-    : null;
-  const hasSameBookMention = sameBookMentionRegex
-    ? sameBookMentionRegex.test(searchableText)
-    : false;
+  const sameBookMentionRegex = new RegExp(
+    `\\b${context.chapterInfo.escapedBookName}\\b`,
+    "i"
+  );
+
+  const hasSameBookMention = sameBookMentionRegex.test(searchableText);
 
   if (explicit.isExplicit) {
     return {
@@ -739,89 +850,10 @@ function classifyChapterResult(item, context) {
   };
 }
 
-function prioritizeDiverseTopResults(results, topLimit = 10) {
-  const selected = [];
-  const deferred = [];
-  const domainCount = new Map();
-
-  results.forEach((item) => {
-    const domain = getResultDomain(item) || "unknown";
-    const count = domainCount.get(domain) || 0;
-    if (selected.length < topLimit && count < 3) {
-      selected.push(item);
-      domainCount.set(domain, count + 1);
-      return;
-    }
-    deferred.push(item);
-  });
-
-  if (!selected.some((item) => item?.type === "youtube")) {
-    const youtubeCandidate = deferred.find((item) => item?.type === "youtube");
-    if (youtubeCandidate) {
-      const replacementIndex = selected.length ? selected.length - 1 : -1;
-      if (replacementIndex >= 0) {
-        deferred.push(selected[replacementIndex]);
-        selected[replacementIndex] = youtubeCandidate;
-      } else {
-        selected.push(youtubeCandidate);
-      }
-    }
-  }
-
-  const hasArticleLike = selected.some((item) =>
-    ["url", "episode", "book"].includes((item?.type || "").toLowerCase())
-  );
-  if (!hasArticleLike) {
-    const articleCandidate = deferred.find((item) =>
-      ["url", "episode", "book"].includes((item?.type || "").toLowerCase())
-    );
-    if (articleCandidate) {
-      const replacementIndex = selected.length > 1 ? selected.length - 1 : 0;
-      if (selected[replacementIndex]) {
-        deferred.push(selected[replacementIndex]);
-        selected[replacementIndex] = articleCandidate;
-      } else {
-        selected.push(articleCandidate);
-      }
-    }
-  }
-
-  const rebuiltSelectedKeys = new Set(
-    selected
-      .map((item) => buildResultKey(item))
-      .filter(Boolean)
-      .map((value) => String(value))
-  );
-  const orderedRemainder = [
-    ...deferred.filter((item) => {
-      const key = buildResultKey(item);
-      if (!key) return true;
-      return !rebuiltSelectedKeys.has(String(key));
-    }),
-    ...results.filter((item) => {
-      const key = buildResultKey(item);
-      if (!key) return false;
-      return !rebuiltSelectedKeys.has(String(key));
-    }),
-  ];
-
-  const seen = new Set();
-  const final = [];
-
-  [...selected, ...deferred].forEach((item) => {
-    const key = buildResultKey(item);
-    if (!key) return;
-
-    if (seen.has(key)) return;
-
-    seen.add(key);
-    final.push(item);
-  });
-
-  return final;
-}
-
-function extractAnchorQueries(chapterData, fallbackLabel) {
+function extractAnchorQueries(
+  chapterData: ChapterData | null,
+  fallbackLabel: string
+) {
   if (!chapterData || !Array.isArray(chapterData.content)) return [];
   const firstSection = chapterData.content.find(
     (section) => Array.isArray(section?.verses) && section.verses.length
@@ -847,17 +879,24 @@ function extractAnchorQueries(chapterData, fallbackLabel) {
 
   return [];
 }
+interface GenerateChapterSearchQueriesParams {
+  chapterData: ChapterData | null;
+  chapterLabel: string;
+  chapterText: string;
+}
 
 async function generateChapterSearchQueries({
   chapterData,
   chapterLabel,
   chapterText,
-}) {
+}: GenerateChapterSearchQueriesParams) {
   const normalizedLabel = normalizeQueryValue(chapterLabel);
   const normalizedText = normalizeQueryValue(
     chapterData?.combinedText || chapterText
   );
-  const normalizedTranslation = normalizeQueryValue(chapterData?.translation);
+  const normalizedTranslation = normalizeQueryValue(
+    chapterData?.translation || ""
+  );
   const cacheKey = `chapter-plan:${normalizedLabel.toLowerCase()}:${normalizedTranslation.toLowerCase()}`;
   const cachedPlan = getCachedQueryPlan(cacheKey);
   if (cachedPlan?.length) {
@@ -866,8 +905,9 @@ async function generateChapterSearchQueries({
 
   const queries = [normalizedLabel];
   const headings = extractSectionHeadings(chapterData);
-  if (headings.length > 0) {
-    queries.push(headings[0]);
+  const firstHeading = headings[0];
+  if (firstHeading !== undefined) {
+    queries.push(firstHeading);
   }
   if (headings.length > 1) {
     const middleHeading = headings[Math.floor(headings.length / 2)];
@@ -895,12 +935,29 @@ async function generateChapterSearchQueries({
   setCachedQueryPlan(cacheKey, finalQueries);
   return finalQueries;
 }
+interface RankedResult {
+  item: ResourceItem;
+  bucket: string;
+  score: number;
+  explicit: {
+    isExplicit: boolean;
+    chapterScore: number;
+    matchType: string | null;
+  };
+  sharedSignalCount: number;
+  hitCount: number;
+  otherBookReferenceCount: number;
+}
 
-function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
+function buildHybridRankedResults(
+  queryResultPairs: QueryResultPair[],
+  chapterLabel: string,
+  chapterData: ChapterData
+) {
   const chapterInfo = parseChapterLabel(chapterLabel);
   const hitCountByKey = new Map();
 
-  const allResults = [];
+  const allResults: ResourceItem[] = [];
   const seenGlobal = new Set();
 
   queryResultPairs.forEach(({ results }) => {
@@ -937,13 +994,13 @@ function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
 
   const signalTokens = buildChapterSignalSet(
     chapterData,
-    chapterInfo,
+    chapterInfo!,
     queryResultPairs
   );
 
   // Only remove obvious chapter conflicts
   const deduped = dedupeResults(typed).filter((item) => {
-    const hasConflict = hasConflictingChapterInTitle(item, chapterInfo);
+    const hasConflict = hasConflictingChapterInTitle(item, chapterInfo!);
 
     return !hasConflict;
   });
@@ -969,7 +1026,7 @@ function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
     (entry) => entry.bucket === "unrelated"
   );
 
-  const sortEntries = (entries) =>
+  const sortEntries = (entries: Array<RankedResult>): ResourceItem[] =>
     entries
       .slice()
       .sort((a, b) => b.score - a.score || compareResults(a.item, b.item))
@@ -982,12 +1039,8 @@ function buildHybridRankedResults(queryResultPairs, chapterLabel, chapterData) {
   ]);
 }
 
-interface ApologistProps {
-  state: ApologistPanelState;
-}
-
 export interface ApologistState {
-  data: Signal<any[]>;
+  data: Signal<ResourceItem[]>;
   loading: Signal<boolean>;
   err: Signal<string>;
 
@@ -1000,7 +1053,7 @@ export interface ApologistState {
   loadingMore: Signal<boolean>;
 
   displayedCount: Signal<number>;
-  allData: Signal<any[]>;
+  allData: Signal<ResourceItem[]>;
 
   activeCardId: Signal<string | null>;
   headerLabel: Signal<string>;
@@ -1023,12 +1076,12 @@ export interface ApologistState {
   isVerseLevel: boolean;
   currentBaselineQuery: string;
   showResetControl: boolean;
-  loadMoreRef: { current: any };
+  loadMoreRef: { current: HTMLDivElement | null };
 
   fetchResults: () => Promise<void>;
   loadMore: () => void;
   handleResetToBaseline: () => void;
-  buildResultKey: (item: any) => string | null;
+  buildResultKey: (item: ResourceItem) => string | null;
 
   retry: () => void;
 }
@@ -1053,7 +1106,7 @@ export function createApologistState(props: {
     "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
   const enabled = true;
 
-  const data = signal<any[]>([]);
+  const data = signal<ResourceItem[]>([]);
   const loading = signal(true);
   const err = signal("");
 
@@ -1066,7 +1119,7 @@ export function createApologistState(props: {
   const loadingMore = signal(false);
 
   const displayedCount = signal(10);
-  const allData = signal<any[]>([]);
+  const allData = signal<ResourceItem[]>([]);
 
   const activeCardId = signal<string | null>(null);
   const headerLabel = signal("");
@@ -1091,7 +1144,13 @@ export function createApologistState(props: {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        const entry = entries[0];
+
+        if (!entry) {
+          return;
+        }
+
+        if (entry.isIntersecting) {
           loadMore();
         }
       },
@@ -1176,7 +1235,7 @@ export function createApologistState(props: {
           ...(cacheTtl != null ? { "x-cache-ttl": String(cacheTtl) } : {}),
         };
 
-        const fetchQueryResults = async (query) => {
+        const fetchQueryResults = async (query: string) => {
           const key = normalizeQueryValue(query).toLowerCase();
           if (!key) return [];
 
@@ -1193,10 +1252,6 @@ export function createApologistState(props: {
           };
 
           const res = await web.post(url, payload, { headers });
-
-          if (!res || res.status !== 200) {
-            throw new Error(res?.error || `HTTP ${res?.status}`);
-          }
 
           const results = res?.data?.results || [];
           setCachedResults(key, results);
@@ -1238,7 +1293,7 @@ export function createApologistState(props: {
           results = buildHybridRankedResults(
             queryResultPairs,
             currentLabel || trimmedQuery,
-            chapterContextData
+            chapterContextData!
           );
         } else {
           const singleResults = await fetchQueryResults(apiQuery);
@@ -1246,7 +1301,9 @@ export function createApologistState(props: {
           const allowedTypes = new Set(["youtube", "episode", "url", "book"]);
 
           results = dedupeResults(
-            singleResults.filter((item) => allowedTypes.has(item?.type))
+            singleResults.filter((item: ResourceItem) =>
+              allowedTypes.has(item?.type)
+            )
           );
         }
 
@@ -1322,14 +1379,14 @@ export function createApologistState(props: {
     loading.value = true;
 
     try {
-      const results = [];
+      const results: ResourceItem[] = [];
 
       data.value = results;
       allData.value = results;
 
       hasMore.value = results.length > 10;
-    } catch (e) {
-      err.value = e?.message || "Unknown Error";
+    } catch {
+      err.value = "Unknown Error";
     } finally {
       loading.value = false;
     }
@@ -1355,28 +1412,10 @@ export function createApologistState(props: {
 
   const handleResetToBaseline = () => {
     if (!currentBaselineQuery) return;
-    globalThis.IsVerseClicked = false;
-    globalThis.IsVerseClickedOnDesktop = false;
 
     // Use the stored chapter-level label (not the current which may be verse-level)
-    const chapterLabel =
-      globalThis.GlobalSearchChapterLabel || globalThis.GlobalSearchLabel || "";
 
     // Always sync globals so polling stays consistent
-    globalThis.GlobalSearch = currentBaselineQuery;
-    globalThis.GlobalSearchLevel = "chapter";
-    globalThis.GlobalSearchLabel = chapterLabel;
-
-    const helper = globalThis.UpdateStudyNoteSearch;
-    if (typeof helper === "function") {
-      helper(currentBaselineQuery, {
-        level: "chapter",
-        label: chapterLabel,
-        baseline: currentBaselineQuery,
-        chapterData: globalThis.GlobalSearchChapterData || chapterData || null,
-        forceRefresh: true,
-      });
-    }
   };
 
   const retry = () => {
