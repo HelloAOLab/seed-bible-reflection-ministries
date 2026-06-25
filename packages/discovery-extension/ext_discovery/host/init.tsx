@@ -2,9 +2,6 @@ import { registerExtension, type SeedBibleState } from "seed-bible.app.api";
 
 import { ApologistPanelWrapper } from "ext_discovery.host.components.ApologistPanel";
 import { CreateApologistState } from "ext_discovery.host.managers.ApologistPanelManager";
-import { thisTypedBot as componentsBot } from "ext_discovery.host.components.botAdapter";
-import { thisTypedBot as managersBot } from "ext_discovery.host.managers.botAdapter";
-import { thisTypedBot as disCoveryBot } from "ext_discovery.host.botAdapter";
 
 registerExtension({
   id: "ext_discovery",
@@ -12,7 +9,7 @@ registerExtension({
     yield context.tools.registerToolbarTool({
       id: "ext_discovery",
       title: {
-        key: "Discovery",
+        key: "discovery",
         defaultValue: "Discovery",
         ns: "ext_discovery",
       },
@@ -31,8 +28,5 @@ registerExtension({
       },
       priority: 100,
     });
-    yield () => {
-      destroy([componentsBot, managersBot, disCoveryBot]);
-    };
   },
 });
