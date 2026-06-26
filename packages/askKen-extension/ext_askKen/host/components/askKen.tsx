@@ -169,9 +169,9 @@ export function AskKen({ state }: AskKenProps) {
 
             {/* ── Messages area ── */}
             <div className="askken-messages">
-              {state.messages.value.length !== 0 &&
-                state.showHistory.value &&
-                state.isCleared.value && (
+              {state.messages.value.length === 0 &&
+                !state.showHistory.value &&
+                !state.isCleared.value && (
                   <div className="askken-hero">
                     <p className="askken-subtitle">{t("kenSubtitle")}</p>
                     <h1 className="askken-heading">{t("kenHeading")}</h1>
@@ -204,7 +204,6 @@ export function AskKen({ state }: AskKenProps) {
                           >
                             <VerseRenderer
                               text={para}
-                              scrollToVerse={state.scrollToVerse}
                               seedBibleContext={state.seedBibleContext}
                             />
                           </p>

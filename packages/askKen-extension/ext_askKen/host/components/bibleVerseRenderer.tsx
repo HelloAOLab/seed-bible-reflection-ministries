@@ -1,4 +1,3 @@
-import type { Signal } from "@preact/signals";
 import {
   bibleRefrenceParser,
   parseTranslation,
@@ -8,7 +7,6 @@ import type { SeedBibleState } from "seed-bible.app.api";
 
 interface VerseRendererProps {
   text: string;
-  scrollToVerse: Signal<number | null>;
   seedBibleContext: SeedBibleState;
 }
 
@@ -42,6 +40,8 @@ export function VerseRenderer({ text, seedBibleContext }: VerseRendererProps) {
             chapter: ref.chapter,
             translationId: translation?.id || "AAB",
             seedBibleContext,
+            verseNumber: ref.verse,
+            endVerseNumber: ref.endVerse || ref.verse,
           })
         }
         style={{

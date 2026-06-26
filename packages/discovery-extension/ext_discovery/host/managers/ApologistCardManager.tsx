@@ -181,11 +181,14 @@ export function createCardState(props: SgCardProps): CardState {
     const previewUrl =
       props.item.url || props.item.referral_url || props.item.listing_url;
 
-    if (previewUrl && props.openInMinistriesTab) {
+    if (previewUrl && props.openInMinistriesTab && !isBook) {
       props.cameFromDiscovery.value = true;
 
       props.openInMinistriesTab(previewUrl, props.item.title);
 
+      props.linkOpenId.value = props.item.id;
+    } else {
+      window.open(previewUrl, "_blank", "noopener,noreferrer");
       props.linkOpenId.value = props.item.id;
     }
   };

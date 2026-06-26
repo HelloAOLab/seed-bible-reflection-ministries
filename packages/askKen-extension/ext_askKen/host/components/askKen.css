@@ -6,7 +6,7 @@
 .askken-content {
   display: flex;
   flex-direction: column;
-  height: 92.8%;
+  height: 97.8%;
   padding: 4px 0px;
 }
 
@@ -15,7 +15,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  background: var(--panelBackground, #fff);
+  background: var(--sb-background, #fff);
   border-bottom: 4px solid black;
 }
 
@@ -45,14 +45,14 @@
 .askken-logo-name {
   font-size: 14px;
   font-weight: 700;
-  color: var(--text1, #222);
+  color: var(--sb-secondary-font-color, #222);
   letter-spacing: 2px;
 }
 
 .askken-logo-sub {
   font-size: 9px;
   font-weight: 500;
-  color: var(--text2, #666);
+  color: var(--sb-tertiary-font-color, #666);
   letter-spacing: 3px;
   text-transform: uppercase;
 }
@@ -77,7 +77,7 @@
 .askken-heading {
   font-size: 38px;
   font-weight: 700;
-  color: var(--text1, #1a1a1a);
+  color: var(--sb-secondary-font-color, #1a1a1a);
   margin: 0 0 10px;
   font-family: Georgia, "Times New Roman", serif;
   line-height: 1.2;
@@ -85,7 +85,7 @@
 
 .askken-description {
   font-size: 16px;
-  color: var(--text2, #777777);
+  color: var(--sb-tertiary-font-color, #777777);
   line-height: 1.7;
   max-width: 460px;
   margin-top: 40px;
@@ -93,7 +93,7 @@
 .askken-chat-area {
   padding: 6px 12px;
   background: #fff;
-  border-top: 1px solid var(--inputBorder, #e5e5e5);
+  border-top: 1px solid var(--sb-selected-tab-border, #e5e5e5);
 }
 
 .askken-input-row {
@@ -106,17 +106,16 @@
 .askken-input {
   flex: 1;
   padding: 12px 16px;
-  border: 1px solid var(--inputBorder, #ddd);
+  border: 1px solid var(--sb-primary-color, #ddd);
   border-radius: 24px;
   font-size: 14px;
-  color: var(--text1, #333);
+  color: var(--sb-secondary-font-color, #333);
   background: #fff;
-  outline: none;
   font-family: inherit;
 }
 
 .askken-input::placeholder {
-  color: var(--text2, #aaa);
+  color: var(--sb-tertiary-font-color, #aaa);
 }
 
 .askken-input:disabled {
@@ -129,8 +128,8 @@
   height: 42px;
   border-radius: 50%;
   border: none;
-  background: var(--accentColor, #222);
-  color: var(--panelBackground, #fff);
+  background: var(--sb-primary-color, #222);
+  color: var(--sb-background, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,8 +143,8 @@
   height: 42px;
   border-radius: 50%;
   border: none;
-  background: var(--text2, #888);
-  color: var(--panelBackground, #fff);
+  background: var(--sb-tertiary-font-color, #888);
+  color: var(--sb-background, #fff);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,7 +165,7 @@
 .askken-footer {
   text-align: center;
   font-size: 11px;
-  color: var(--text2, #aaa);
+  color: var(--sb-tertiary-font-color, #aaa);
   margin-bottom: -30px;
 }
 
@@ -223,14 +222,14 @@
 }
 
 .askken-bubble-user {
-  background: var(--accentColor, #222);
-  color: var(--panelBackground, #fff);
+  background: var(--sb-primary-color, #222);
+  color: var(--sb-background, #fff);
   border-bottom-right-radius: 4px;
 }
 
 .askken-bubble-assistant {
-  background: var(--inputBackground, #f0f0f0);
-  color: var(--text1, #222);
+  background: var(--sb-background, #f0f0f0);
+  color: var(--sb-secondary-font-color, #222);
   border-bottom-left-radius: 4px;
 }
 .material-symbols-outlined {
@@ -248,7 +247,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--text2, #888);
+  background: var(--sb-tertiary-font-color, #888);
   animation: askken-bounce 1.4s ease-in-out infinite;
 }
 
@@ -298,9 +297,9 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 1.5px solid var(--inputBorder, #3a3a3a);
+  border: 1.5px solid var(--sb-selected-tab-border, #3a3a3a);
   background: transparent;
-  color: var(--text2, #888);
+  color: var(--sb-tertiary-font-color, #888);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -313,8 +312,8 @@
 
 .askken-topbar-icon-btn:hover {
   background: rgba(128, 128, 128, 0.12);
-  color: var(--text1, #ddd);
-  border-color: var(--text2, #666);
+  color: var(--sb-secondary-font-color, #ddd);
+  border-color: var(--sb-tertiary-font-color, #666);
 }
 
 .askken-topbar-icon-btn:active {
@@ -347,7 +346,7 @@
   bottom: 0;
   width: 100%;
 
-  background: var(--panelBackground, #fafafa);
+  background: var(--sb-background, #fafafa);
   z-index: 20;
   display: flex;
   flex-direction: column;
@@ -369,21 +368,21 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--inputBorder, #e5e5e5);
+  border-bottom: 1px solid var(--sb-selected-tab-border, #e5e5e5);
   flex-shrink: 0;
 }
 
 .askken-history-title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text1, #222);
+  color: var(--sb-secondary-font-color, #222);
 }
 
 .askken-history-close {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text2, #888);
+  color: var(--sb-tertiary-font-color, #888);
   padding: 4px;
   border-radius: 50%;
   display: flex;
@@ -393,8 +392,8 @@
 }
 
 .askken-history-close:hover {
-  background: var(--inputBackground, #f0f0f0);
-  color: var(--text1, #222);
+  background: var(--sb-tertiary-background, #f0f0f0);
+  color: var(--sb-secondary-font-color, #222);
 }
 
 .askken-history-list {
@@ -413,12 +412,12 @@
 }
 
 .askken-history-item:hover {
-  background: var(--inputBackground, #f0f0f0);
+  background: var(--sb-tertiary-background, #f0f0f0);
 }
 
 .askken-history-item--active {
   background: rgba(107, 58, 42, 0.08);
-  border-left: 3px solid var(--accentColor, #6b3a2a);
+  border-left: 3px solid var(--sb-primary-color, #6b3a2a);
 }
 
 .askken-history-item-content {
@@ -432,7 +431,7 @@
 .askken-history-item-title {
   font-size: 13px;
   font-weight: 500;
-  color: var(--text1, #222);
+  color: var(--sb-secondary-font-color, #222);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -440,14 +439,14 @@
 
 .askken-history-item-time {
   font-size: 11px;
-  color: var(--text2, #999);
+  color: var(--sb-tertiary-font-color, #999);
 }
 
 .askken-history-delete {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text2, #bbb);
+  color: var(--sb-tertiary-font-color, #bbb);
   padding: 4px;
   border-radius: 4px;
   display: flex;
@@ -474,7 +473,7 @@
   align-items: center;
   justify-content: center;
   padding: 48px 16px;
-  color: var(--text2, #999);
+  color: var(--sb-tertiary-font-color, #999);
   gap: 8px;
 }
 
@@ -487,7 +486,7 @@
 .askken-signin-hint {
   margin-top: 16px;
   font-size: 12px;
-  color: var(--text2, #aaa);
+  color: var(--sb-tertiary-font-color, #aaa);
   font-style: italic;
 }
 
