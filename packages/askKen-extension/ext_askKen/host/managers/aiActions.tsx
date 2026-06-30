@@ -61,8 +61,7 @@ export function useAIBibleAction({
         verseNumber: ref!.verse ?? null,
         endVerseNumber: ref!.endVerse ?? ref!.verse ?? null,
         translationId: translation?.shortName ?? "NASB95",
-        translationString:
-          translation?.fullName ?? "New American Standard Bible (1995)",
+
         seedBibleContext: seedBibleContext,
       });
 

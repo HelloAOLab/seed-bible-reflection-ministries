@@ -40,6 +40,7 @@ export function VerseRenderer({ text, seedBibleContext }: VerseRendererProps) {
             chapter: ref.chapter,
             translationId: translation?.id || "NASB95",
             seedBibleContext,
+
             verseNumber: ref.verse,
             endVerseNumber: ref.endVerse || ref.verse,
           })

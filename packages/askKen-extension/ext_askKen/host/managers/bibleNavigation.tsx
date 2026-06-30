@@ -5,7 +5,6 @@ interface NavigationProps {
   bookName: string | null;
   chapter: number | null;
   translationId: string;
-  translationString: string;
   seedBibleContext: SeedBibleState;
   verseNumber: number | null;
   endVerseNumber: number | null;

@@ -16,6 +16,10 @@ const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const MAX_CHATS = 50;
 const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
+console.log(
+  thisBot?.tags?.APOLOGIST_API_KEY,
+  " thisBot?.tags?.APOLOGIST_API_KEY"
+);
 const chatCache = new Map<string, ChatData>();
 
 function lsSet<T>(key: string, value: T): void {
