@@ -58,6 +58,9 @@ importers:
       debounce:
         specifier: ^2.2.0
         version: 2.2.0
+      dotenv:
+        specifier: ^17.4.2
+        version: 17.4.2
       get-tsconfig:
         specifier: ^4.13.0
         version: 4.13.0
@@ -3032,6 +3035,10 @@ packages:
   dot-prop@8.0.2:
     resolution: {integrity: sha512-xaBe6ZT4DHPkg0k4Ytbvn5xoxgpG0jOS1dYxSOwAHPuNLjP3/OzN0gH55SrLqpx8cBfSaVt91lXYkApjb+nYdQ==}
     engines: {node: '>=16'}
+
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
+    engines: {node: '>=12'}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -8324,6 +8331,8 @@ snapshots:
   dot-prop@8.0.2:
     dependencies:
       type-fest: 3.13.1
+
+  dotenv@17.4.2: {}
 
   dunder-proto@1.0.1:
     dependencies:

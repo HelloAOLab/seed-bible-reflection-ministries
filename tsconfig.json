@@ -38,6 +38,9 @@
       "ext_askKen.host.init": [
         "./packages/askKen-extension/ext_askKen/host/init.tsx"
       ],
+      "ext_askKen.host.managers.aiActions": [
+        "./packages/askKen-extension/ext_askKen/host/managers/aiActions.tsx"
+      ],
       "ext_askKen.host.managers.askKenManager": [
         "./packages/askKen-extension/ext_askKen/host/managers/askKenManager.tsx"
       ],

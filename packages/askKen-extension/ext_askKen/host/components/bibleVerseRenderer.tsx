@@ -38,7 +38,7 @@ export function VerseRenderer({ text, seedBibleContext }: VerseRendererProps) {
           navigateToBibleReference({
             bookName: ref.book!,
             chapter: ref.chapter,
-            translationId: translation?.id || "AAB",
+            translationId: translation?.id || "NASB95",
             seedBibleContext,
             verseNumber: ref.verse,
             endVerseNumber: ref.endVerse || ref.verse,

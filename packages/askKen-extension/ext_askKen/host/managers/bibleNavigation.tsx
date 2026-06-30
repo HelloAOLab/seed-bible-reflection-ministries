@@ -1,19 +1,79 @@
 import type { SeedBibleState } from "seed-bible.app.api";
+import type { ChapterVerse } from "seed-bible.managers.FreeUseBibleAPI";
+import type { BibleReadingState } from "seed-bible.managers.BibleReadingManager";
 interface NavigationProps {
-  bookName: string;
-  chapter: number;
+  bookName: string | null;
+  chapter: number | null;
   translationId: string;
+  translationString: string;
   seedBibleContext: SeedBibleState;
   verseNumber: number | null;
   endVerseNumber: number | null;
 }
+const selectVerseRange = (
+  readingState: BibleReadingState,
+  bookId: string,
+  chapter: number,
+  translationId: string,
+
+  startVerse: number,
+  endVerse: number
+) => {
+  const versesToSelect =
+    readingState.chapterData.value?.chapter.content.filter(
+      (item): item is ChapterVerse =>
+        item.type === "verse" &&
+        item.number >= startVerse &&
+        item.number <= endVerse
+    ) ?? [];
+
+  versesToSelect.forEach((verse) => {
+    const selectedVerse = {
+      bookId,
+      chapterNumber: chapter,
+      translationId,
+      verse,
+    };
+
+    const isSelected = readingState.selectedVerses.value.some(
+      (v) =>
+        v.bookId === bookId &&
+        v.chapterNumber === chapter &&
+        v.translationId === translationId &&
+        v.verse.number === verse.number
+    );
+
+    if (!isSelected) {
+      // Select
+      readingState.selectVerse(selectedVerse, 0, 0);
+
+      // Auto-deselect after 10 seconds
+      setTimeout(() => {
+        const stillSelected = readingState.selectedVerses.value.some(
+          (v) =>
+            v.bookId === bookId &&
+            v.chapterNumber === chapter &&
+            v.translationId === translationId &&
+            v.verse.number === verse.number
+        );
+
+        if (stillSelected) {
+          readingState.selectVerse(selectedVerse, 0, 0);
+        }
+      }, 10000);
+    }
+  });
+};
 
 export async function navigateToBibleReference({
   bookName,
   chapter,
   translationId,
+
   seedBibleContext,
   verseNumber,
+
+  endVerseNumber,
 }: NavigationProps) {
   if (!seedBibleContext?.app?.currentReadingState.value) {
     return;
@@ -26,13 +86,13 @@ export async function navigateToBibleReference({
   if (!readingState.translationBooks.value) {
     return;
   }
-  const { selectTranslationAndChapter, scrollToVerse } = readingState;
+  const { selectTranslationAndChapter } = readingState;
   const { addTab, tabs } = seedBibleContext.tabs;
   const { selectTab } = seedBibleContext.app;
 
   const bookId =
     readingState.translationBooks.value.books.find((book) => {
-      return book.name?.toLowerCase() === bookName.toLowerCase();
+      return book.name?.toLowerCase() === bookName!.toLowerCase();
     })?.id ?? null;
 
   if (!bookId) {
@@ -41,10 +101,23 @@ export async function navigateToBibleReference({
   }
 
   try {
+    const startVerse = verseNumber ? Number(verseNumber) : 1;
+    const endVerse = endVerseNumber ? Number(endVerseNumber) : startVerse;
     const currentBook = readingState.bookId.value;
+
     const targetBook = bookId;
     if (currentBook === targetBook) {
-      await selectTranslationAndChapter(translationId, bookId, chapter);
+      await selectTranslationAndChapter(translationId, bookId, chapter!, {
+        scrollToVerse: startVerse,
+      });
+      selectVerseRange(
+        readingState,
+        bookId,
+        chapter!,
+        translationId,
+        startVerse,
+        endVerse
+      );
     } else {
       let existingTab = tabs.value?.find(
         (tab) => tab.readingState.bookId.value === bookId
@@ -55,20 +128,38 @@ export async function navigateToBibleReference({
           initialBookId: bookId,
           initialChapterNumber: chapter,
         });
-      } else {
+        selectTab(existingTab.id);
         await existingTab.readingState.selectTranslationAndChapter(
           translationId,
           bookId,
-          chapter
+          chapter!,
+          { scrollToVerse: startVerse }
+        );
+        selectVerseRange(
+          existingTab.readingState,
+          bookId,
+          chapter!,
+          translationId,
+          startVerse,
+          endVerse
+        );
+      } else {
+        selectTab(existingTab.id);
+        await existingTab.readingState.selectTranslationAndChapter(
+          translationId,
+          bookId,
+          chapter!,
+          { scrollToVerse: startVerse }
+        );
+        selectVerseRange(
+          existingTab.readingState,
+          bookId,
+          chapter!,
+          translationId,
+          startVerse,
+          endVerse
         );
       }
-
-      selectTab(existingTab.id);
-    }
-    if (verseNumber) {
-      console.log(verseNumber);
-      const startVerse = Number(verseNumber);
-      scrollToVerse.value = startVerse;
     }
   } catch (err) {
     console.error("Navigation error:", err);

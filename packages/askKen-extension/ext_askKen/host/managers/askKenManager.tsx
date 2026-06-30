@@ -15,7 +15,7 @@ const DEFAULT_URL =
 const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const MAX_CHATS = 50;
-const APOLOGIST_API_KEY = "";
+const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
 const chatCache = new Map<string, ChatData>();
 
 function lsSet<T>(key: string, value: T): void {
@@ -230,13 +230,15 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
     chapterNumber,
     chapterData,
     scrollToVerse,
+    translation,
   } = readingState;
+
   const currentBook = computed(
     () =>
       translationBooks.value?.books.find((book) => book.id === bookId.value) ??
       null
   );
-  console.log(currentBook, "currentbook", context, readingState);
+
   const chapterText = computed(() => {
     const content = chapterData.value?.chapter?.content || [];
 
@@ -486,7 +488,8 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
               return `Assistant: ${short}`;
             })
             .join("\n");
-    const currentTranslation = "NASB1995";
+    const currentTranslation = translation?.value?.name ?? "NASB95";
+    console.log(currentTranslation, "currenttransl");
 
     const systemPromptTemplate = `
 ## SCRIPTURE (STRICT REQUIREMENT):

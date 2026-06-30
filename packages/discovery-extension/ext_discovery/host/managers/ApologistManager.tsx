@@ -1,7 +1,7 @@
 const { useEffect, useRef } = os.appHooks;
 import { signal, type Signal } from "@preact/signals";
 
-const APOLOGIST_API_KEY = "";
+const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
 interface ResourceItem {
   published_on?: string;
   created_at?: string;

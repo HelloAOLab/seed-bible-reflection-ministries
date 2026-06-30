@@ -2,6 +2,11 @@ import { useI18n } from "seed-bible.i18n.I18nManager";
 import type { AskKenState } from "ext_askKen.host.managers.askKenManager";
 import { ChatHistoryPanel } from "ext_askKen.host.components.ChatHistory";
 import { VerseRenderer } from "ext_askKen.host.components.bibleVerseRenderer";
+import { useAIBibleAction } from "ext_askKen.host.managers.aiActions";
+import {
+  bibleRefrenceParser,
+  parseTranslation,
+} from "ext_askKen.host.managers.bibleReferenceParser";
 const APOLOGIST_LOGO_URL =
   "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png";
 
@@ -91,6 +96,10 @@ const ActionModal = ({
 
 export function AskKen({ state }: AskKenProps) {
   const { t } = useI18n("ext_askKen");
+  const { handleAIAction } = useAIBibleAction({
+    query: state.query.value,
+    seedBibleContext: state.seedBibleContext,
+  });
 
   return (
     <>
@@ -390,10 +399,63 @@ export function AskKen({ state }: AskKenProps) {
                   }
                   value={state.query.value}
                   onKeyDown={async (e) => {
-                    if (e.key === "Enter") {
-                      // Otherwise continue AI
-                      state.handleSubmit();
+                    if (e.key !== "Enter") {
+                      return;
                     }
+
+                    if (state.isLoading.value || !state.query.value.trim()) {
+                      return;
+                    }
+
+                    const currentQuery = state.query.value.trim();
+
+                    const handled = await handleAIAction();
+
+                    if (handled) {
+                      const refs = bibleRefrenceParser(currentQuery);
+                      const translation = parseTranslation(currentQuery);
+
+                      let ref;
+                      if (refs.length > 0) {
+                        ref = refs[0];
+                      }
+
+                      if ((!ref || !ref.book) && !translation) {
+                        return;
+                      }
+                      if (!ref || !ref.book) {
+                        state.messages.value = [
+                          ...state.messages.value,
+                          {
+                            role: "assistant",
+                            content: `Opened ${translation ? ` in ${translation.shortName}` : ""}.`,
+                          },
+                        ];
+                        state.query.value = "";
+                        return;
+                      } else {
+                        state.messages.value = [
+                          ...state.messages.value,
+                          {
+                            role: "assistant",
+                            content: `Opened ${
+                              ref.book.charAt(0).toUpperCase() +
+                              ref.book.slice(1).toLowerCase()
+                            } ${ref.chapter}${
+                              ref.verse
+                                ? `:${ref.verse}${
+                                    ref.endVerse ? `-${ref.endVerse}` : ""
+                                  }`
+                                : ""
+                            }${translation ? ` in ${translation.shortName}` : ""}.`,
+                          },
+                        ];
+
+                        state.query.value = "";
+                        return;
+                      }
+                    }
+                    state.handleSubmit();
                   }}
                   onChange={(e) => {
                     state.query.value = e.currentTarget.value;
