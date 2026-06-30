@@ -466,6 +466,58 @@ export function AskKen({ state }: AskKenProps) {
                   className="askken-send-btn"
                   onClick={async () => {
                     // Otherwise continue AI
+                    if (state.isLoading.value || !state.query.value.trim()) {
+                      return;
+                    }
+
+                    const currentQuery = state.query.value.trim();
+
+                    const handled = await handleAIAction();
+
+                    if (handled) {
+                      const refs = bibleRefrenceParser(currentQuery);
+                      const translation = parseTranslation(currentQuery);
+
+                      let ref;
+                      if (refs.length > 0) {
+                        ref = refs[0];
+                      }
+
+                      if ((!ref || !ref.book) && !translation) {
+                        return;
+                      }
+                      if (!ref || !ref.book) {
+                        state.messages.value = [
+                          ...state.messages.value,
+                          {
+                            role: "assistant",
+                            content: `Opened ${translation ? ` in ${translation.shortName}` : ""}.`,
+                          },
+                        ];
+                        state.query.value = "";
+                        return;
+                      } else {
+                        state.messages.value = [
+                          ...state.messages.value,
+                          {
+                            role: "assistant",
+                            content: `Opened ${
+                              ref.book.charAt(0).toUpperCase() +
+                              ref.book.slice(1).toLowerCase()
+                            } ${ref.chapter}${
+                              ref.verse
+                                ? `:${ref.verse}${
+                                    ref.endVerse ? `-${ref.endVerse}` : ""
+                                  }`
+                                : ""
+                            }${translation ? ` in ${translation.shortName}` : ""}.`,
+                          },
+                        ];
+
+                        state.query.value = "";
+                        return;
+                      }
+                    }
                     state.handleSubmit();
                   }}
                   disabled={state.isLoading.value || !state.query.value.trim()}
