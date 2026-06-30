@@ -61,7 +61,6 @@ interface ApologistProps {
 }
 
 export function Apologist(props: ApologistProps) {
-  console.log(LazyCard, "lazycard");
   const { t } = useI18n("ext_discovery");
   const state = useMemo(
     () => createApologistState(props),

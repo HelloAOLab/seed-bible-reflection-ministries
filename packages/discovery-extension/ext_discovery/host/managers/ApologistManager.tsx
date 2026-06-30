@@ -1224,7 +1224,6 @@ export function createApologistState(props: {
             : currentLabel
               ? `${currentLabel} ${trimmedQuery}`
               : trimmedQuery;
-        console.log(apiQuery, "apiQuery");
 
         const headers = {
           "Content-Type": "application/json",
@@ -1286,7 +1285,6 @@ export function createApologistState(props: {
               }
             })
           );
-          console.log(queryResultPairs, "queryresultpairs");
 
           if (cancelled) return;
 

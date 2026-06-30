@@ -79,7 +79,6 @@ export async function navigateToBibleReference({
   }
 
   const currentReadingState = seedBibleContext.app.currentReadingState.value;
-  console.log(seedBibleContext, currentReadingState, "sas");
 
   const readingState = currentReadingState.tab.readingState;
   if (!readingState.translationBooks.value) {

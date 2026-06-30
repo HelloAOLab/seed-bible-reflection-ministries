@@ -50,10 +50,6 @@ export function CreateApologistState(
   }
 
   const readingState = context.app.currentReadingState.value.tab.readingState;
-  console.log(
-    context.app.currentReadingState.value,
-    " context.app.currentReadingState.value"
-  );
 
   // eslint-disable-next-line no-unsafe-optional-chaining
   const { bookId, translationBooks, chapterNumber, chapterData } = readingState;
@@ -84,8 +80,6 @@ export function CreateApologistState(
       )
       .join(" ");
   });
-
-  console.log(chapterText.value, "chaptertact");
 
   const cameFromDiscovery = signal(false);
 
@@ -157,7 +151,6 @@ export function CreateApologistState(
       searchTrigger.value++;
     }
   };
-  console.log("rerendering");
 
   return {
     activeTab,

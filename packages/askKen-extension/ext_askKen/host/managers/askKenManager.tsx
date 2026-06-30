@@ -16,10 +16,7 @@ const KENBOA_DOMAIN =
   "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
 const MAX_CHATS = 50;
 const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
-console.log(
-  thisBot?.tags?.APOLOGIST_API_KEY,
-  " thisBot?.tags?.APOLOGIST_API_KEY"
-);
+
 const chatCache = new Map<string, ChatData>();
 
 function lsSet<T>(key: string, value: T): void {
@@ -32,7 +29,7 @@ function lsSet<T>(key: string, value: T): void {
 function lsGet(key: string) {
   try {
     const raw = localStorage.getItem(key);
-    console.log(raw, "raw");
+
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
@@ -477,7 +474,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
     const contextPrefix = currentContext
       ? `[The user is currently reading: ${currentLabel || currentContext}]\n\n`
       : "";
-    console.log(contextPrefix, "contextprefix");
+
     const recentMessages = newMessages.slice(-15);
     const chatHistory =
       recentMessages.length === 1
@@ -493,7 +490,6 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
             })
             .join("\n");
     const currentTranslation = translation?.value?.name ?? "NASB95";
-    console.log(currentTranslation, "currenttransl");
 
     const systemPromptTemplate = `
 ## SCRIPTURE (STRICT REQUIREMENT):
@@ -550,7 +546,7 @@ FINAL RULE:
         } else {
           // Always attempt save — storage functions check auth internally
           const reflectionResources = await reflectionPromise;
-          console.log(reflectionResources, "reflectionres");
+
           const assistantMessage: ChatMessage = {
             role: "assistant", // or MessageRole.Assistant if MessageRole is an enum
             content: assistantContent,

@@ -50,7 +50,6 @@ export function useAIBibleAction({
     if (refs.length < 0) {
       return;
     }
-    console.log(translation, "jjj");
 
     if (refs.length > 0) {
       const ref = refs[0];
