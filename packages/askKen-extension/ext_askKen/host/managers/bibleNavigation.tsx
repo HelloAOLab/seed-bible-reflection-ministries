@@ -44,7 +44,11 @@ const selectVerseRange = (
 
     if (!isSelected) {
       // Select
-      readingState.selectVerse(selectedVerse, 0, 0);
+      readingState.selectVerse(
+        selectedVerse,
+        window.innerWidth / 2,
+        window.innerHeight / 2
+      );
 
       // Auto-deselect after 10 seconds
       setTimeout(() => {
