@@ -3,6 +3,8 @@ const { useEffect, useRef, useCallback } = os.appHooks;
 import type { SeedBibleState } from "seed-bible.app.api";
 import type { ReaderTab } from "seed-bible.managers.TabsManager";
 import type { TranslationBook } from "seed-bible.managers.FreeUseBibleAPI";
+import { ApologistPanelWrapper } from "ext_discovery.host.components.ApologistPanel";
+import { CreateApologistState } from "ext_discovery.host.managers.ApologistPanelManager";
 interface ChatMeta {
   id: string;
   title: string;
@@ -162,7 +164,7 @@ interface Resource {
   id?: string;
   type: "url" | "book" | "youtube" | string;
   title: string;
-  url?: string;
+  url: string;
   referral_url?: string;
 }
 
@@ -584,8 +586,23 @@ FINAL RULE:
     xhr.timeout = 120000;
     xhr.send(JSON.stringify({ prompt, stream: true }));
   };
-  const handleOpenLink = () => {
-    console.log("openlink");
+  const handleOpenLink = (resource: Resource) => {
+    if (resource.type === "url") {
+      context.panes.openPane({
+        type: "detached",
+        detachedAnchor: "side",
+        component: () => {
+          const state = CreateApologistState(context);
+          state.activeTab.value = "ministries";
+          state.openInMinistriesTab(resource.url, resource.title);
+          return (
+            <ApologistPanelWrapper state={state} seedBibleState={context} />
+          );
+        },
+      });
+    } else if (resource.type === "book") {
+      window.open(resource.url || resource.referral_url, "_blank", "noopener");
+    }
   };
 
   return {

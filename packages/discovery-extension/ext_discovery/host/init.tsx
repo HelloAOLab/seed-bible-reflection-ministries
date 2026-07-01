@@ -6,6 +6,7 @@ import { CreateApologistState } from "ext_discovery.host.managers.ApologistPanel
 registerExtension({
   id: "ext_discovery",
   init: function* (context: SeedBibleState) {
+    console.log(context, "context");
     yield context.tools.registerToolbarTool({
       id: "ext_discovery",
       title: {
