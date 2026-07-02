@@ -159,7 +159,6 @@ export function AskKen({ state }: AskKenProps) {
               </div>
             </div>
 
-            {/* ── History drawer (slides from right) ── */}
             {state.showHistory.value && (
               <>
                 <div

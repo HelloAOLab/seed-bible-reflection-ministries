@@ -234,9 +234,7 @@
   color: var(--sb-secondary-font-color, #222);
   border-bottom-left-radius: 4px;
 }
-.material-symbols-outlined {
-  font-size: 10px;
-}
+
 /* ── Thinking dots ── */
 .askken-thinking {
   display: flex;

@@ -5,6 +5,7 @@ import type { ReaderTab } from "seed-bible.managers.TabsManager";
 import type { TranslationBook } from "seed-bible.managers.FreeUseBibleAPI";
 import { ApologistPanelWrapper } from "ext_discovery.host.components.ApologistPanel";
 import { CreateApologistState } from "ext_discovery.host.managers.ApologistPanelManager";
+import type { BibleSelectedVerse } from "@packages/seed-bible/seed-bible/managers/BibleReadingManager";
 interface ChatMeta {
   id: string;
   title: string;
@@ -152,6 +153,35 @@ const apologistQuerySearch = async (userQuestion: string) => {
     return [];
   }
 };
+export function buildExplainQuery(
+  book: string,
+  chapter: number,
+  selectedVerses: BibleSelectedVerse[]
+) {
+  if (!selectedVerses.length) return "";
+
+  const verses = [...new Set(selectedVerses.map((v) => v.verse.number))].sort(
+    (a, b) => a - b
+  );
+
+  const ranges: string[] = [];
+
+  let start = verses[0];
+  let end = verses[0];
+
+  for (let i = 1; i < verses.length; i++) {
+    if (verses[i] === end! + 1) {
+      end = verses[i];
+    } else {
+      ranges.push(start === end ? `${start}` : `${start}-${end}`);
+      start = end = verses[i];
+    }
+  }
+
+  ranges.push(start === end ? `${start}` : `${start}-${end}`);
+
+  return `Explain ${book} ${chapter}:${ranges.join(", ")}`;
+}
 
 interface Position {
   x: number;
@@ -604,6 +634,12 @@ FINAL RULE:
       window.open(resource.url || resource.referral_url, "_blank", "noopener");
     }
   };
+  useEffect(() => {
+    if (autoSend.value && query.value) {
+      handleClearChat();
+      handleSubmit();
+    }
+  }, []);
 
   return {
     messages,
