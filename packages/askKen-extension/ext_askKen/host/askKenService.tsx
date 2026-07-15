@@ -1,6 +1,5 @@
 import { signal } from "@preact/signals";
 import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
-import type { AskKenState } from "./managers";
 
 export const askKenContext = signal<SeedBibleState | null>(null);
 export const askKenShouldSubmit = signal(false);

@@ -613,7 +613,7 @@ const ReflectionMinistries_Theme = {
   },
 };
 
-const LIGHT_THEME: BibleTheme = {
+/*const LIGHT_THEME: BibleTheme = {
   id: "light",
   name: "Light",
   variables: {
@@ -893,7 +893,7 @@ const DARK_THEME: BibleTheme = {
       wordsOfJesusFontColor: "#5c5c5c",
     },
   },
-};
+};*/
 
 /**
  * Keys of `BibleThemeVariables` that represent a plain color value and are

@@ -29,7 +29,7 @@ export interface ApologistPanelState {
   searchLabel: Signal<string>;
 
   baselineQuery: Signal<string>;
-  chapterDataa: Signal<any>;
+  chapterDataa: Signal<ChapterData | undefined>;
 
   searchTrigger: Signal<number>;
 
@@ -97,7 +97,7 @@ export function CreateApologistState(
 
   const baselineQuery = signal("");
 
-  const chapterDataa = signal<ChapterData | null>(null);
+  const chapterDataa = signal<ChapterData | undefined>(undefined);
 
   const searchTrigger = signal(0);
   const tabs: ApologistTab[] = [
@@ -144,7 +144,7 @@ export function CreateApologistState(
     }
 
     if ("chapterData" in options) {
-      chapterDataa.value = options.chapterData ?? null;
+      chapterDataa.value = options.chapterData ?? undefined;
     }
 
     if (options.forceRefresh) {

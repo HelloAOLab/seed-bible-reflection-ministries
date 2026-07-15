@@ -5,10 +5,7 @@ interface ChatMeta {
   updatedAt: number | string | Date;
 }
 
-function formatRelativeTime(
-  timestamp: string | number | Date,
-  t: (key: string) => string
-): string {
+function formatRelativeTime(timestamp: string | number | Date): string {
   const time =
     timestamp instanceof Date
       ? timestamp.getTime()
@@ -18,15 +15,19 @@ function formatRelativeTime(
 
   const diff = Math.floor((Date.now() - time) / 1000);
 
-  if (diff < 60) return t("justNow");
-  if (diff < 3600) {
-    return t("minutesAgo").replace("{{count}}", String(Math.floor(diff / 60)));
-  }
-  if (diff < 86400) {
-    return t("hoursAgo").replace("{{count}}", String(Math.floor(diff / 3600)));
+  if (diff < 60) {
+    return "Just now";
   }
 
-  return t("daysAgo").replace("{{count}}", String(Math.floor(diff / 86400)));
+  if (diff < 3600) {
+    return `${Math.floor(diff / 60)} min ago`;
+  }
+
+  if (diff < 86400) {
+    return `${Math.floor(diff / 3600)}h ago`;
+  }
+
+  return `${Math.floor(diff / 86400)}d ago`;
 }
 interface ChatHistoryPanelProps {
   chatIndex: ChatMeta[]; // or your actual ChatIndex type
@@ -85,7 +86,7 @@ export function ChatHistoryPanel({
                   {chat.title || "New Chat"}
                 </span>
                 <span className="askken-history-item-time">
-                  {formatRelativeTime(chat.updatedAt, t)}
+                  {formatRelativeTime(chat.updatedAt)}
                 </span>
               </div>
               <button

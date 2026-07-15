@@ -1,10 +1,5 @@
 import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
-import {
-  createAskKenState,
-  SIZE_MAP,
-  type AskKenState,
-  type ModalSize,
-} from "../managers";
+import { createAskKenState, SIZE_MAP, type ModalSize } from "../managers";
 import { ChatHistoryPanel } from "./ChatHistory";
 import { VerseRenderer } from "./bibleVerseRenderer";
 import { useAIBibleAction } from "../managers/aiActions";
@@ -17,15 +12,8 @@ const APOLOGIST_LOGO_URL =
 
 // AskKen.types.ts
 import { useEffect, useRef } from "preact/hooks";
-import {
-  askKenContext,
-  askKenInitialQuery,
-  askKenOpen,
-  askKenShouldSubmit,
-} from "../askKenService";
-interface AskKenProps {
-  state: AskKenState;
-}
+import { askKenContext, askKenOpen } from "../askKenService";
+
 const itemStyle = {
   display: "flex",
   alignItems: "center",

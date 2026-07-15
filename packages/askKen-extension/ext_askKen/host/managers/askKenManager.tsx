@@ -294,12 +294,6 @@ export interface AskKenState {
       y: number;
     };
   };
-  resizeStartRef: {
-    startX: number;
-    startY: number;
-    startWidth: number;
-    startHeight: number;
-  };
   currentFonts: Signal<FontSizeConfig>;
 
   openActionModal: Signal<boolean>;

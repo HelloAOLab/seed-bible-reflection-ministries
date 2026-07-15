@@ -3,7 +3,6 @@ import {
   type SeedBibleState,
 } from "@packages/seed-bible/seed-bible/managers";
 
-import { buildExplainQuery } from "./managers";
 import { askKenContext, openAskKen } from "./askKenService";
 export default function initAskKenExtension() {
   registerExtension({
