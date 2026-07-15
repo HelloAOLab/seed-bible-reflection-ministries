@@ -507,7 +507,7 @@ export function TabSlotReader(props: TabSlotReaderProps) {
         mobileChrome={mobileChrome}
         sharedSession={tab.sharedSession}
       />
-      {!isMobile && <AskKenChat theme={state.theme.currentTheme.value.name} />}
+      {!isMobile && <AskKenChat />}
       {(isMobile ? askKenOpen.value : askKenOpen.value) && <AskKen />}
       {!isMobile && (
         <BelowReaderToolbar

@@ -1,12 +1,8 @@
 import { toggleAskKen } from "../askKenService";
-interface AskKenChatProps {
-  theme: string;
-}
-const AskKenLogo = ({ theme }: AskKenChatProps) => {
+
+const AskKenLogo = () => {
   const imageSrc =
-    theme === "dark"
-      ? "https://res.cloudinary.com/dpudrufae/image/upload/v1784021130/ChatGPT_Image_Jul_14_2026_02_54_47_PM_japkbz.png"
-      : "https://res.cloudinary.com/dpudrufae/image/upload/v1769591647/kenboa_clean_circle_b9zmpr.png";
+    "https://res.cloudinary.com/dpudrufae/image/upload/v1769591647/kenboa_clean_circle_b9zmpr.png";
   return (
     <div
       style={{
@@ -36,7 +32,7 @@ const AskKenLogo = ({ theme }: AskKenChatProps) => {
   );
 };
 
-export const AskKenChat = ({ theme }: AskKenChatProps) => {
+export const AskKenChat = () => {
   return (
     <div>
       <div onClick={toggleAskKen}>
@@ -81,7 +77,7 @@ export const AskKenChat = ({ theme }: AskKenChatProps) => {
               gap: "3px",
             }}
           >
-            <AskKenLogo theme={theme} />
+            <AskKenLogo />
           </div>
         </div>
       </div>
