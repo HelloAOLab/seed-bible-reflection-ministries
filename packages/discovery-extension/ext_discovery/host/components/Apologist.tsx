@@ -1,4 +1,4 @@
-import { createApologistState } from "../managers";
+import { createApologistState, type ChapterData } from "../managers";
 import { SgCard } from "./ApologistCards";
 import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
 import type { ComponentChildren } from "preact";
@@ -53,7 +53,7 @@ interface ApologistProps {
   searchLevel: Signal<string>;
   searchLabel: Signal<string>;
   baselineQuery: Signal<string>;
-  chapterData: Signal<string>;
+  chapterData: Signal<ChapterData | undefined>;
   cameFromDiscovery: Signal<boolean>;
   openInMinistriesTab: (url: string, title?: string) => void;
 }

@@ -753,7 +753,7 @@ const ReflectionMinistries_Theme = {
       wordsOfJesusFontColor: "#e07b4c",
     },
   },
-};
+};*/
 
 const DARK_THEME: BibleTheme = {
   id: "dark",
@@ -893,7 +893,7 @@ const DARK_THEME: BibleTheme = {
       wordsOfJesusFontColor: "#5c5c5c",
     },
   },
-};*/
+};
 
 /**
  * Keys of `BibleThemeVariables` that represent a plain color value and are
