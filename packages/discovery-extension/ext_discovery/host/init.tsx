@@ -5,7 +5,7 @@ import {
 
 import { ApologistPanelWrapper } from "./components/ApologistPanel";
 import { CreateApologistState } from "./managers";
-import { isDiscoveryOpen } from "./extraServices";
+
 export default function initDiscoveryExtension() {
   registerExtension({
     id: "ext_discovery",
