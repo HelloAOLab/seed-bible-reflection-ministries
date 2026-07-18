@@ -1,0 +1,38 @@
+{
+  "id": "ext_askKen",
+  "autoinstall": true,
+  "translations": {
+    "en": {
+      "title": "Apologist",
+      "description": "Apologist toolbar extension",
+
+      "discovery": "Discovery",
+      "reflectionMinistries": "Reflections Ministries",
+      "askKen": "Ask Ken",
+      "results": "Results",
+      "openResourceFromDiscovery": "Open a resource from the Discovery tab to view it here",
+      "kenBoa": "KEN BOA",
+      "reflections": "REFLECTIONS",
+      "reflectionCopyRight": "© 2026 Reflections Ministries. All Rights Reserved.",
+      "askQuestion": "Ask a question here",
+      "kenSubtitle": "Exploring God's Word to Inspire",
+      "kenHeading": "Deepen Your Faith",
+      "kenDescription": "Reflections Ministries equips disciples & empowers churches through powerful biblical resources to help you Love, Learn, & Live Well.",
+      "newChat": "New Chat",
+      "learnMore": "Learn More",
+      "loadMore": "Load More",
+      "chatHistory": "Chat History",
+      "noChatsYet": "No previous conversations",
+      "deleteChat": "Delete chat",
+      "deleteChatConfirm": "Delete this conversation?",
+      "signInToSaveChats": "Sign in to save chat history",
+      "justNow": "Just now",
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago",
+      "buyBook": "Buy Book",
+      "noResources": "No related resources found for this chapter",
+      "noContent": "No content"
+    }
+  }
+}

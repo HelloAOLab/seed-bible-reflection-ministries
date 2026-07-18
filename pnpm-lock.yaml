@@ -6,6 +6,15 @@ settings:
 
 catalogs:
   default:
+    '@casual-simulation/aux-common':
+      specifier: 4.2.3
+      version: 4.2.3
+    '@casual-simulation/aux-websocket':
+      specifier: 4.2.3
+      version: 4.2.3
+    '@casual-simulation/websocket':
+      specifier: 4.0.0
+      version: 4.0.0
     '@tiptap/core':
       specifier: 3.27.1
       version: 3.27.1
@@ -54,6 +63,9 @@ catalogs:
     axios:
       specifier: 1.13.5
       version: 1.13.5
+    base64-js:
+      specifier: 1.5.1
+      version: 1.5.1
     dompurify:
       specifier: ^3.4.11
       version: 3.4.11
@@ -63,6 +75,9 @@ catalogs:
     i18next-resources-to-backend:
       specifier: ^1.2.1
       version: 1.2.1
+    luxon:
+      specifier: ^3.7.2
+      version: 3.7.2
     preact:
       specifier: 10.29.2
       version: 10.29.2
@@ -360,6 +375,12 @@ importers:
         specifier: 'catalog:'
         version: 13.0.0
 
+  packages/askKen-extension:
+    dependencies:
+      seed-bible:
+        specifier: workspace:*
+        version: link:../seed-bible
+
   packages/audio-reader-extension:
     dependencies:
       seed-bible:
@@ -371,6 +392,48 @@ importers:
       seed-bible:
         specifier: workspace:*
         version: link:../seed-bible
+
+  packages/discovery-extension:
+    dependencies:
+      '@casual-simulation/aux-common':
+        specifier: 'catalog:'
+        version: 4.2.3
+      '@casual-simulation/aux-websocket':
+        specifier: 'catalog:'
+        version: 4.2.3
+      '@casual-simulation/websocket':
+        specifier: 'catalog:'
+        version: 4.0.0
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+      i18next:
+        specifier: 'catalog:'
+        version: 26.2.0(typescript@6.0.3)
+      preact:
+        specifier: 'catalog:'
+        version: 10.29.2
+      preact-iso:
+        specifier: 'catalog:'
+        version: 2.12.0(preact-render-to-string@6.7.0(preact@10.29.2))(preact@10.29.2)
+      react:
+        specifier: 'catalog:'
+        version: '@preact/compat@18.3.2(preact@10.29.2)'
+      react-avatar-editor:
+        specifier: 15.1.0
+        version: 15.1.0(@preact/compat@18.3.2(preact@10.29.2))(@preact/compat@18.3.2(preact@10.29.2))
+      react-dom:
+        specifier: 'catalog:'
+        version: '@preact/compat@18.3.2(preact@10.29.2)'
+      rxjs:
+        specifier: 'catalog:'
+        version: 8.0.0-alpha.14
+      typesense:
+        specifier: 'catalog:'
+        version: 3.0.5(@babel/runtime@7.29.2)
+      zod:
+        specifier: 'catalog:'
+        version: 4.4.3
 
   packages/locations-extension:
     dependencies:
