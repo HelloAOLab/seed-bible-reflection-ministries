@@ -1,6 +1,10 @@
 // AskKen.types.ts
 import { useEffect, useRef, useCallback } from "preact/hooks";
-import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
+import {
+  getProfileConfigValue,
+  saveProfileConfigValue,
+  type SeedBibleState,
+} from "@packages/seed-bible/seed-bible/managers";
 import type { ReaderTab } from "@packages/seed-bible/seed-bible/managers";
 import type { TranslationBook } from "@packages/seed-bible/seed-bible/managers";
 import { ApologistPanelWrapper } from "@packages/discovery-extension/ext_discovery/host/components/ApologistPanel";
@@ -16,11 +20,71 @@ interface modalHeightAndWidth {
   width: number;
   height: number;
 }
+function extractUserMessage(prompt: string): string {
+  const match = prompt.match(/User:\s*([\s\S]*?)\n\s*## SCRIPTURE/);
+
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+
+  return prompt;
+}
+const PROFILE_ASKKEN_CONVERSATION_ID = "conversation_id";
+const PROFILE_ASKKEN_SESSIONS = "sessions";
 
 const DEFAULT_URL =
   "https://reflections-ministries.apologist.seedbible.io/api/v1/search?cache_ttl=300";
 const KENBOA_DOMAIN =
   "https://reflections-ministries.apologist.seedbible.io/api/v1/chat/completions";
+const loadConversationHistory = async (
+  askKenConversationId: string | null,
+  context: SeedBibleState,
+  session: string
+): Promise<ChatMessage[]> => {
+  if (!context.login.profile.value || !askKenConversationId) {
+    return [];
+  }
+
+  const response = await fetch(
+    `${KENBOA_DOMAIN}?conversation_id=${encodeURIComponent(
+      askKenConversationId
+    )}&session_id=${session}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const data = await response.json();
+  console.log(data, "data");
+  return data.data.flatMap((item: any) => [
+    {
+      role: "user",
+      content: extractUserMessage(item.prompt),
+    },
+    {
+      role: "assistant",
+      content: item.response,
+    },
+  ]);
+};
+function createNewChat(
+  activeChatId: string,
+  chatIndex: ChatMeta[],
+  context: SeedBibleState
+) {
+  const newChat: ChatMeta = {
+    id: activeChatId,
+    title: "New Chat",
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+
+  chatIndex = [newChat, ...chatIndex];
+
+  saveProfileConfigValue(context.login, PROFILE_ASKKEN_SESSIONS, chatIndex);
+}
 const MAX_CHATS = 50;
 export const SIZE_MAP = {
   small: { width: 20, height: 35 },
@@ -49,29 +113,6 @@ function lsGet(key: string) {
   } catch {
     return null;
   }
-}
-async function loadChatIndex() {
-  // Try server first
-  // Fallback: localStorage
-  const stored = lsGet("askken_chats");
-  if (stored?.chats) {
-    console.log(
-      "[AskKen] loadChatIndex from localStorage:",
-      stored.chats.length,
-      "chats"
-    );
-    return { chats: stored.chats, activeId: stored.activeId || null };
-  }
-  const cached: ChatMeta[] = [];
-  chatCache.forEach((chat) => {
-    cached.push({
-      id: chat.id,
-      title: chat.title,
-      createdAt: chat.createdAt,
-      updatedAt: chat.updatedAt,
-    });
-  });
-  return { chats: cached, activeId: null };
 }
 
 async function saveChatIndex(
@@ -373,6 +414,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
       )
       .join(" ");
   });
+  const askKenConversationId = signal<string | null>(null);
 
   const messages = signal<ChatMessage[]>([]);
 
@@ -402,6 +444,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
   const promptForAskKen = signal<string | undefined>(undefined);
   const autoSend = signal(false);
+  const askKenChatHistory = signal<ChatMessage[]>([]);
 
   const position = signal<Position>({
     x: 13,
@@ -532,32 +575,48 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
-  useEffect(() => {
-    (async () => {
-      if (isOpenedFromVerse.value) {
-        return;
-      }
-      const { chats: index, activeId } = await loadChatIndex();
+  effect(() => {
+    const profile = context.login.profile.value;
 
-      const sorted = [...index].sort(
-        (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)
-      );
-      chatIndex.value = sorted;
-      // Restore the last active chat
-      if (activeId) {
-        const fullChat = await loadFullChat(activeId);
-        if (fullChat?.messages) {
-          messages.value = fullChat.messages;
-          activeChatId.value = activeId;
-          console.log("[AskKen] Mount: restored active chat", activeId);
-        }
-      }
-      historyLoaded.value = true;
-    })();
-    return () => {
-      isOpenedFromVerse.value = false;
-    };
-  }, []);
+    if (!profile) {
+      askKenConversationId.value = null;
+      askKenChatHistory.value = [];
+      return;
+    }
+
+    const conversationId = getProfileConfigValue(
+      profile,
+      PROFILE_ASKKEN_CONVERSATION_ID
+    ) as string | null;
+
+    askKenConversationId.value = conversationId ?? null;
+
+    if (!conversationId) {
+      askKenChatHistory.value = [];
+      return;
+    }
+    const sessions =
+      (getProfileConfigValue(profile, PROFILE_ASKKEN_SESSIONS) as ChatMeta[]) ??
+      [];
+
+    chatIndex.value = sessions;
+    if (sessions.length > 0) {
+      const latestSession = sessions.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )[0];
+
+      activeChatId.value = latestSession?.id || null;
+      (async () => {
+        const history = await loadConversationHistory(
+          askKenConversationId.value!,
+          context,
+          latestSession!.id
+        );
+        messages.value = history;
+      })();
+    }
+  });
 
   const handleChatHistory = () => {
     showHistory.value = !showHistory.value;
@@ -591,73 +650,70 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
     resizeDirection.value = null;
   };
 
-  const persistCurrentChat = async (
-    msgs: ChatMessage[],
-    chatId: string | null
-  ) => {
-    if (!chatId || msgs.length === 0) return;
-    const index = chatIndex.value;
-    const chat: ChatData = {
-      id: chatId,
-      title: generateChatTitle(msgs.find((m) => m.role === "user")?.content),
-      messages: msgs,
-      createdAt: index.find((c) => c.id === chatId)?.createdAt ?? Date.now(),
-      updatedAt: Date.now(),
-    };
-    await saveFullChat(chat);
-    const meta: ChatMeta = {
-      id: chat.id,
-      title: chat.title,
-      createdAt: chat.createdAt,
-      updatedAt: chat.updatedAt,
-    };
-
-    const newIndex = [meta, ...index.filter((c) => c.id !== chatId)].slice(
-      0,
-      MAX_CHATS
-    );
-
-    chatIndex.value = newIndex;
-
-    await saveChatIndex(newIndex, chatId);
-  };
   const handleNewChat = useCallback(() => {
-    if (activeChatId.value && messages.value.length > 0) {
-      persistCurrentChat(messages.value, activeChatId.value);
-    }
+    activeChatId.value = crypto.randomUUID();
+
     isCleared.value = false;
-    activeChatId.value = null;
     messages.value = [];
     query.value = "";
     error.value = null;
     showHistory.value = false;
     openActionModal.value = false;
-  }, [activeChatId.value, messages.value, persistCurrentChat]);
+  }, []);
+  function addChatToHistory(currentQuery: string, context: SeedBibleState) {
+    const exists = chatIndex.value.some(
+      (chat) => chat.id === activeChatId.value
+    );
+
+    if (!exists) {
+      chatIndex.value = [
+        {
+          id: activeChatId.value!,
+          title: generateChatTitle(currentQuery),
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        },
+        ...chatIndex.value,
+      ];
+    } else {
+      chatIndex.value = chatIndex.value.map((chat) =>
+        chat.id === activeChatId.value
+          ? {
+              ...chat,
+              updatedAt: Date.now(),
+            }
+          : chat
+      );
+    }
+
+    saveProfileConfigValue(
+      context.login,
+      PROFILE_ASKKEN_SESSIONS,
+      chatIndex.value
+    );
+  }
+
   const handleSelectChat = useCallback(
-    async (chatId: string) => {
-      if (activeChatId.value && messages.value.length > 0) {
-        persistCurrentChat(messages.value, activeChatId.value);
-      }
+    async (sessionId: string) => {
       showHistory.value = false;
       messages.value = [];
       error.value = null;
       isLoading.value = true;
-      const fullChat = await loadFullChat(chatId);
-      console.log("[AskKen] Loaded chat", chatId, fullChat);
-      if (fullChat?.messages) {
-        messages.value = fullChat.messages;
-        activeChatId.value = chatId;
+
+      activeChatId.value = sessionId;
+
+      if (askKenConversationId.value) {
+        messages.value = await loadConversationHistory(
+          askKenConversationId.value,
+          context,
+          sessionId
+        );
       }
+
       isLoading.value = false;
     },
-    [activeChatId.value, messages.value, persistCurrentChat]
+    [askKenConversationId.value]
   );
-  const scheduleSave = (msgs: ChatMessage[], chatId: string) => {
-    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(() => {
-      persistCurrentChat(msgs, chatId);
-    }, 1500);
-  };
   const handleSubmit = async () => {
     if (!query.value.trim() || isLoading.value) return;
     const currentQuery = query.value.trim();
@@ -695,20 +751,6 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
       ? `[The user is currently reading: ${currentLabel || currentContext}]\n\n`
       : "";
 
-    const recentMessages = newMessages.slice(-15);
-    const chatHistory =
-      recentMessages.length === 1
-        ? recentMessages[0]!.content
-        : recentMessages
-            .map((m) => {
-              if (m.role === "user") return `User: ${m.content}`;
-              const short =
-                m.content.length > 200
-                  ? m.content.substring(0, 200) + "..."
-                  : m.content;
-              return `Assistant: ${short}`;
-            })
-            .join("\n");
     const currentTranslation = translation?.value?.name ?? "NASB95";
 
     const systemPromptTemplate = `
@@ -725,11 +767,24 @@ FINAL RULE:
       /{{translation}}/g,
       currentTranslation
     );
-    const prompt = contextPrefix + chatHistory + "\n\n" + systemPrompt;
+    const prompt = `${contextPrefix} User: ${currentQuery}
+
+${systemPrompt}`;
+    if (context.login.profile.value && !askKenConversationId.value) {
+      const newConversationId = crypto.randomUUID();
+
+      askKenConversationId.value = newConversationId;
+
+      saveProfileConfigValue(
+        context.login,
+        PROFILE_ASKKEN_CONVERSATION_ID,
+        newConversationId
+      );
+    }
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", KENBOA_DOMAIN);
-    xhr.setRequestHeader("Content-Type", "text/plain");
+    xhr.setRequestHeader("Content-Type", "application/json");
 
     let assistantContent = "";
     let lastParsedLength = 0;
@@ -744,7 +799,21 @@ FINAL RULE:
         if (data === "[DONE]") continue;
         try {
           const parsed = JSON.parse(data);
+          console.log(parsed, "parsed");
+          if (parsed.metadata) {
+            console.log("Metadata:", parsed.metadata);
+            console.log("Conversation ID:", parsed.conversation_id);
+          }
+
+          if (parsed.conversation_id) {
+            console.log("Conversation ID:", parsed.conversation_id);
+          }
+
+          if (parsed.id) {
+            console.log("Completion ID:", parsed.id);
+          }
           const delta = parsed.choices?.[0]?.delta?.content;
+
           if (delta) {
             assistantContent += delta;
             messages.value = [
@@ -767,7 +836,7 @@ FINAL RULE:
           const reflectionResources = await reflectionPromise;
 
           const assistantMessage: ChatMessage = {
-            role: "assistant", // or MessageRole.Assistant if MessageRole is an enum
+            role: "assistant",
             content: assistantContent,
             resources: reflectionResources ?? [],
           };
@@ -778,14 +847,15 @@ FINAL RULE:
           ];
 
           messages.value = finalMessages;
+          addChatToHistory(currentQuery, context);
           console.log(
             "[AskKen] Response complete, scheduling save for chat",
             currentChatId
           );
-          scheduleSave(finalMessages, currentChatId);
         }
       } else {
-        error.value = `Error: ${xhr.status}. Please try again.`;
+        console.log("Status:", xhr.status);
+        console.log("Response:", xhr.responseText);
       }
       isLoading.value = false;
     };
@@ -801,7 +871,23 @@ FINAL RULE:
     };
 
     xhr.timeout = 120000;
-    xhr.send(JSON.stringify({ prompt, stream: true }));
+    const body: any = {
+      prompt,
+      stream: true,
+    };
+
+    if (context.login.profile.value) {
+      body.metadata = {
+        session: activeChatId.value,
+        device: "web-1",
+      };
+
+      if (askKenConversationId.value) {
+        body.metadata.conversation = askKenConversationId.value;
+      }
+    }
+    xhr.send(JSON.stringify(body));
+
     askKenInitialQuery.value = "";
   };
   const handleOpenLink = (resource: Resource) => {
