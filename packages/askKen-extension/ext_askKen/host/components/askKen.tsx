@@ -282,6 +282,7 @@ export function AskKen() {
                 onSelect={state.handleSelectChat}
                 onDelete={state.handleDeleteChat}
                 onClose={() => (state.showHistory.value = false)}
+                openActionModal={state.openActionModal}
               />
             </>
           )}

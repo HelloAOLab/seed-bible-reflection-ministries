@@ -1,4 +1,5 @@
 import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
+import type { Signal } from "@preact/signals";
 interface ChatMeta {
   id: string;
   title: string;
@@ -36,6 +37,7 @@ interface ChatHistoryPanelProps {
   onSelect: (chatId: string) => void;
   onDelete: (chatId: string) => void;
   onClose: () => void;
+  openActionModal: Signal<boolean>;
 }
 
 export function ChatHistoryPanel({
@@ -44,6 +46,7 @@ export function ChatHistoryPanel({
   onSelect,
   onDelete,
   onClose,
+  openActionModal,
 }: ChatHistoryPanelProps) {
   const { t } = useI18n("ext_askKen");
   return (
@@ -79,7 +82,10 @@ export function ChatHistoryPanel({
             <div
               key={chat.id}
               className={`askken-history-item ${chat.id === activeChatId ? "askken-history-item--active" : ""}`}
-              onClick={() => onSelect(chat.id)}
+              onClick={() => {
+                openActionModal.value = false;
+                onSelect(chat.id);
+              }}
             >
               <div className="askken-history-item-content">
                 <span className="askken-history-item-title">
