@@ -16,9 +16,22 @@ interface ChatMeta {
   createdAt: number | string | Date;
   updatedAt: number | string | Date;
 }
+interface ChatItem {
+  prompt: string;
+  response: string;
+}
 interface modalHeightAndWidth {
   width: number;
   height: number;
+}
+interface ChatRequestBody {
+  prompt: string;
+  stream: boolean;
+  metadata?: {
+    session: string | null;
+    device: string;
+    conversation?: string;
+  };
 }
 function extractUserMessage(prompt: string): string {
   const match = prompt.match(/User:\s*([\s\S]*?)\n\s*## SCRIPTURE/);
@@ -58,7 +71,7 @@ const loadConversationHistory = async (
 
   const data = await response.json();
   console.log(data, "data");
-  return data.data.flatMap((item: any) => [
+  return data.data.flatMap((item: ChatItem) => [
     {
       role: "user",
       content: extractUserMessage(item.prompt),
@@ -69,23 +82,7 @@ const loadConversationHistory = async (
     },
   ]);
 };
-function createNewChat(
-  activeChatId: string,
-  chatIndex: ChatMeta[],
-  context: SeedBibleState
-) {
-  const newChat: ChatMeta = {
-    id: activeChatId,
-    title: "New Chat",
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
-  };
 
-  chatIndex = [newChat, ...chatIndex];
-
-  saveProfileConfigValue(context.login, PROFILE_ASKKEN_SESSIONS, chatIndex);
-}
-const MAX_CHATS = 50;
 export const SIZE_MAP = {
   small: { width: 20, height: 35 },
   medium: { width: 32, height: 65 },
@@ -98,53 +95,8 @@ export type ModalDimensions = (typeof SIZE_MAP)[ModalSize];
 
 const chatCache = new Map<string, ChatData>();
 
-function lsSet<T>(key: string, value: T): void {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-    console.warn("[AskKen] localStorage write error:", e);
-  }
-}
-function lsGet(key: string) {
-  try {
-    const raw = localStorage.getItem(key);
-
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-async function saveChatIndex(
-  chats: ChatMeta[],
-  activeId: string | null
-): Promise<void> {
-  const trimmed = chats.slice(0, MAX_CHATS);
-
-  const payload = {
-    chats: trimmed,
-    activeId,
-  };
-
-  lsSet("askken_chats", payload);
-
-  console.log(
-    "[AskKen] saveChatIndex saved to localStorage",
-    trimmed.length,
-    "chats"
-  );
-}
-function lsRemove(key: string) {
-  try {
-    localStorage.removeItem(key);
-  } catch {
-    console.error("error");
-  }
-}
 async function deleteFullChat(chatId: string): Promise<void> {
   chatCache.delete(chatId);
-
-  lsRemove(`askken_chat_${chatId}`);
 
   console.log("[AskKen] deleted chat:", chatId);
 }
@@ -160,23 +112,7 @@ function generateChatTitle(content?: string) {
 
   return (lastSpace > 20 ? truncated.substring(0, lastSpace) : truncated) + "…";
 }
-async function saveFullChat(chat: ChatData): Promise<void> {
-  chatCache.set(chat.id, chat);
-  lsSet(`askken_chat_${chat.id}`, chat);
-}
-async function loadFullChat(chatId: string) {
-  if (chatCache.has(chatId)) {
-    console.log("[AskKen] loadFullChat from cache:", chatId);
-    return chatCache.get(chatId);
-  }
-  const stored = lsGet("askken_chat_" + chatId);
-  if (stored) {
-    chatCache.set(chatId, stored);
-    console.log("[AskKen] loadFullChat from localStorage:", chatId);
-    return stored;
-  }
-  return null;
-}
+
 const apologistQuerySearch = async (userQuestion: string) => {
   const authHeader = null;
   const cacheTtl = null;
@@ -358,7 +294,7 @@ export interface AskKenState {
 
 import { signal, type Signal, computed, effect } from "@preact/signals";
 import axios from "axios";
-import { askKenOpen, isOpenedFromVerse } from "../askKenService";
+import { askKenOpen } from "../askKenService";
 
 export function createAskKenState(context: SeedBibleState): AskKenState {
   if (!context.app.currentReadingState.value) {
@@ -457,8 +393,6 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
   const books = translationBooks.value.books;
   const offsetRef = useRef({ x: 0, y: 0 });
-
-  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const dragging = signal(false);
   const currentFonts = computed<FontSizeConfig>(() => {
@@ -629,11 +563,6 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
     const newIndex = chatIndex.value.filter((c) => c.id !== chatId);
 
     chatIndex.value = newIndex;
-
-    await saveChatIndex(
-      newIndex,
-      activeChatId.value === chatId ? null : activeChatId.value
-    );
 
     await deleteFullChat(chatId);
 
@@ -871,7 +800,7 @@ ${systemPrompt}`;
     };
 
     xhr.timeout = 120000;
-    const body: any = {
+    const body: ChatRequestBody = {
       prompt,
       stream: true,
     };
