@@ -243,7 +243,7 @@ export function createLoginManager({
     const result = await client.requestLogin({
       address: email,
       addressType: "email",
-      comId: "seed-bible",
+      comId: "reflection-ministries",
     });
 
     if (result.success) {
