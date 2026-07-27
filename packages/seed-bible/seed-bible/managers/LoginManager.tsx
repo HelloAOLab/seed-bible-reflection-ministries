@@ -7,6 +7,8 @@ import type {
   LoginRequestSuccess,
 } from "@casual-simulation/aux-records/AuthController";
 
+export const COM_ID = "reflection-ministries";
+
 export interface LoginManager {
   /**
    * The ID of the user. Null if the user is not authenticated.
@@ -243,7 +245,7 @@ export function createLoginManager({
     const result = await client.requestLogin({
       address: email,
       addressType: "email",
-      comId: "reflection-ministries",
+      comId: COM_ID,
     });
 
     if (result.success) {
