@@ -21,9 +21,6 @@ export interface BibleThemeVariables {
 
   tertiaryColor: string;
 
-  linkColor: string;
-  linkVisitedColor: string;
-
   /**
    * The background color for the entire app. This is used as the background for the body element, so it will be visible in areas that don't have a specific background set (e.g. when a pane is detached or when there are gaps between panes). It should generally match the readerBackground color to create a seamless look, but can be set to a different color if desired.
    */
@@ -474,22 +471,21 @@ export function generateThemeCssClasses(theme: BibleTheme): string {
     .join("\n");
 }
 
-const DEFAULT_THEME_ID = "light";
-
-const LIGHT_THEME: BibleTheme = {
-  id: "light",
+const DEFAULT_THEME_ID = "reflectionministries";
+const ReflectionMinistries_Theme = {
+  id: "reflectionministries",
   name: "Light",
   variables: {
-    primaryColor: "#e07b4c",
+    primaryColor: "#2E4879",
     primaryFontColor: "#fff",
 
-    secondaryColor: "#faddd1",
+    secondaryColor: "#2E48791A",
     secondaryFontColor: "#333",
 
     tertiaryColor: "#f0f0f0",
-
-    linkColor: "#e07b4c",
-    linkVisitedColor: "#8d5a6b",
+    tertiaryFontColor: "#666666",
+    tertiaryBorder: "#E1E3EA",
+    tertiaryBackground: "#E8E8E8",
 
     background: "#f8fafc",
 
@@ -513,60 +509,59 @@ const LIGHT_THEME: BibleTheme = {
 
     chapterHeadingFontFamily: "Plus Jakarta Sans, sans-serif",
     chapterHeadingFontColor: "#333",
-    chapterHeadingFontStyle: "normal",
+    chapterHeadingFontStyle: "italic",
 
-    verseFontFamily: "Plus Jakarta Sans, sans-serif",
+    verseFontFamily: "Newsreader, serif",
     verseFontColor: "#333",
     verseCursor: "pointer",
 
-    selectedVerseBorderBottom: "none",
-    selectedVerseTextDecoration: "underline dotted",
+    selectedVerseBorderBottom: "2px dashed currentColor",
+    selectedVerseTextDecoration: "none",
     selectedVerseTextDecorationColor: "currentColor",
 
     hebrewSubtitleFontFamily: "Newsreader, serif",
     hebrewSubtitleFontColor: "#333",
     hebrewSubtitleFontStyle: "italic",
 
-    readerToolbarBottom: "1.125rem",
-    readerToolbarGap: "0.25rem",
-    readerToolbarPadding: "1px 0.3125rem",
-    readerToolbarBorderRadius: "1.25rem",
+    readerToolbarBottom: "18px",
+    readerToolbarGap: "10px",
+    readerToolbarPadding: "8px 20px",
+    readerToolbarBorderRadius: "22px",
     readerToolbarBackground: "#ffffff",
     readerToolbarBorder: "1px solid #00000024",
-    readerToolbarBoxShadow:
-      "0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)",
+    readerToolbarBoxShadow: "0 26px 10px #0000001a",
     readerToolbarZIndex: "99",
-    readerToolbarHeight: "auto",
+    readerToolbarHeight: "50px",
 
-    readerToolbarFloatingButtonTop: "-4.25rem",
-    readerToolbarFloatingButtonWidth: "3rem",
-    readerToolbarFloatingButtonHeight: "3rem",
+    readerToolbarFloatingButtonTop: "-68px",
+    readerToolbarFloatingButtonWidth: "48px",
+    readerToolbarFloatingButtonHeight: "48px",
     readerToolbarFloatingButtonBorder: "1px solid #00000024",
-    readerToolbarFloatingButtonBorderRadius: "62.4375rem",
+    readerToolbarFloatingButtonBorderRadius: "999px",
     readerToolbarFloatingButtonBackground: "#ffffff",
     readerToolbarFloatingButtonFontColor: "#333",
     readerToolbarFloatingButtonBoxShadow: "0 10px 24px #0000001a",
 
-    verseToolbarGap: "0.125rem",
-    verseToolbarPadding: "0.25rem 0.5rem",
-    verseToolbarBorderRadius: "0.625rem",
-    verseToolbarBorder: "1px solid var(--sb-divider-color)",
-    verseToolbarBoxShadow: "0 26px 10px var(--sb-shadow-color)",
+    verseToolbarGap: "10px",
+    verseToolbarPadding: "8px 16px",
+    verseToolbarBorderRadius: "10px",
+    verseToolbarBorder: "1px solid #00000024",
+    verseToolbarBoxShadow: "0 26px 10px #0000001a",
     verseToolbarZIndex: "100",
-    verseToolbarMinHeight: "0",
+    verseToolbarMinHeight: "50px",
 
-    readerToolbarMobileLayoutHeight: "auto",
-    readerToolbarMobileLayoutPadding: "0.625rem 2.1875rem",
-    readerToolbarMobileLayoutGap: "1rem",
-    readerToolbarMobileLayoutItemSize: "2.75rem",
-    readerToolbarMobileLayoutCenterButtonWidth: "5.4375rem",
-    readerToolbarMobileLayoutCenterButtonHeight: "2.625rem",
-    readerToolbarMobileLayoutButtonBorderRadius: "2.5rem",
+    readerToolbarMobileLayoutHeight: "70px",
+    readerToolbarMobileLayoutPadding: "10px 14px",
+    readerToolbarMobileLayoutGap: "8px",
+    readerToolbarMobileLayoutItemSize: "44px",
+    readerToolbarMobileLayoutCenterButtonSize: "52px",
+    readerToolbarMobileLayoutButtonBorderRadius: "999px",
+    emptyPaneToolbarButtonBackground: "#2E48791A",
 
-    readerToolbarFloatingButtonSideOffset: "1rem",
+    readerToolbarFloatingButtonSideOffset: "16px",
 
-    verseToolbarToolsGap: "0.125rem",
-    verseToolbarMobileBottom: "1.125rem",
+    verseToolbarToolsGap: "10px",
+    verseToolbarMobileBottom: "18px",
 
     menuBackground: "#ffffff",
     menuFontColor: "#333",
@@ -591,32 +586,32 @@ const LIGHT_THEME: BibleTheme = {
     yellow: {
       color: "#fff59d",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#e07b4c",
+      wordsOfJesusFontColor: "#2E4879",
     },
     green: {
       color: "#a5d6a7",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#e07b4c",
+      wordsOfJesusFontColor: "#2E4879",
     },
     blue: {
       color: "#90caf9",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#e07b4c",
+      wordsOfJesusFontColor: "",
     },
     pink: {
       color: "#f48fb1",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#e07b4c",
+      wordsOfJesusFontColor: "#2E4879",
     },
     purple: {
       color: "#ce93d8",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#e07b4c",
+      wordsOfJesusFontColor: "#2E4879",
     },
     orange: {
-      color: "#ffcc80",
+      color: "#2E48791A",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#e07b4c",
+      wordsOfJesusFontColor: "#2E4879",
     },
   },
 };
@@ -632,9 +627,6 @@ const DARK_THEME: BibleTheme = {
     secondaryFontColor: "#f5f5f5",
 
     tertiaryColor: "#1c1c1c",
-
-    linkColor: "#e07b4c",
-    linkVisitedColor: "#d99bb0",
 
     background: "#0a0a0a",
 
@@ -784,8 +776,6 @@ export type ThemeColorKey =
   | "secondaryColor"
   | "secondaryFontColor"
   | "tertiaryColor"
-  | "linkColor"
-  | "linkVisitedColor"
   | "background"
   | "fontColor"
   | "sidebarBackground"
@@ -826,8 +816,6 @@ export const THEME_COLOR_GROUPS: ThemeColorGroup[] = [
       { key: "secondaryColor", label: "Secondary" },
       { key: "secondaryFontColor", label: "Secondary text" },
       { key: "tertiaryColor", label: "Tertiary" },
-      { key: "linkColor", label: "Link" },
-      { key: "linkVisitedColor", label: "Visited link" },
     ],
   },
   {
@@ -1135,7 +1123,7 @@ export function createTheme(
   login: LoginManager,
   navigation: NavigationManager
 ): ThemeManager {
-  const themes = signal<BibleTheme[]>([LIGHT_THEME, DARK_THEME]);
+  const themes = signal<BibleTheme[]>([ReflectionMinistries_Theme, DARK_THEME]);
 
   const url = navigation.currentUrl.value;
 
@@ -1177,7 +1165,7 @@ export function createTheme(
     () =>
       themes.value.find((theme) => theme.id === selectedThemeId.value) ??
       themes.value[0] ??
-      LIGHT_THEME
+      ReflectionMinistries_Theme
   );
 
   const currentTheme = computed<BibleTheme>(() =>
