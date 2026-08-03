@@ -8,6 +8,8 @@ import type {
   LoginRequestSuccess,
 } from "@casual-simulation/aux-records/AuthController";
 
+export const COM_ID="reflection-ministries"
+
 /**
  * Why a session ended without the user asking it to.
  *
