@@ -1,6 +1,5 @@
 import { createContext } from "preact";
 import { useContext } from "preact/hooks";
-
 /**
  * Runtime deployment configuration injected by the host server into the page
  * (as `window.__APP_CONFIG__`) and passed directly to the app during SSR.
@@ -10,6 +9,13 @@ import { useContext } from "preact/hooks";
  * single build is served under many branch paths and from one shared asset
  * host.
  */
+export interface BrandingConfig {
+  appName: string;
+  shortName: string;
+  logo: string;
+  icon: string;
+  websiteUrl: string;
+}
 export interface AppConfig {
   /**
    * Path prefix this deployment is mounted under, e.g. "/d/branch-develop".
@@ -27,6 +33,8 @@ export interface AppConfig {
 
   /** The list of languages included in the `Accept-Language` header */
   acceptedLanguages: string[];
+  /** Client branding configuration. */
+  branding?: BrandingConfig;
 }
 
 export const DEFAULT_APP_CONFIG: AppConfig = {
@@ -34,6 +42,13 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
   assetHost: "",
   renderedAsMobile: false,
   acceptedLanguages: [],
+  branding: {
+    appName: "Boa Study Bible",
+    shortName: "Boa",
+    logo: "https://res.cloudinary.com/dpudrufae/image/upload/v1773147618/KB_BibleIcon_1_klh9gg.png",
+    icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
+    websiteUrl: "https://www.kenboa.org",
+  },
 };
 
 declare global {
