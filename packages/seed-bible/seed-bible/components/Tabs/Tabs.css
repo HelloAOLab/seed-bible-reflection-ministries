@@ -86,6 +86,9 @@
   align-items: center;
   gap: 1rem;
 }
+.sb-tabs-sidebar-collapsed .sb-sidebar-top-row-controls {
+  flex-direction: column;
+}
 .sb-sidebar-top-row-icon {
   width: 3.0625rem;
   height: 2.25rem;
