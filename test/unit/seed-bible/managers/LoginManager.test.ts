@@ -1,4 +1,5 @@
 import {
+  COM_ID,
   createLoginManager,
   userProfileSchema,
   type LoginManager,
@@ -199,7 +200,7 @@ describe("createLoginManager", () => {
       expect(requestLoginMock).toHaveBeenCalledWith({
         address: EMAIL,
         addressType: "email",
-        comId: "seed-bible",
+        comId: COM_ID,
       });
       if (!request.success)
         throw new Error("expected login request to succeed");

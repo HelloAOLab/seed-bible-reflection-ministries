@@ -410,7 +410,7 @@ export function createLoginManager({
     const result = await client.requestLogin({
       address: email,
       addressType: "email",
-      comId: "seed-bible",
+      comId: COM_ID,
     });
 
     if (result.success) {

@@ -9,6 +9,7 @@ import { type ToolsManager } from "../managers/BibleToolsManager";
 import { batch, effect } from "@preact/signals";
 import { useI18n } from "../i18n/I18nManager";
 import { translateTitle } from "../app/utils";
+
 import { useEffect, useRef, useState } from "preact/hooks";
 import { isDiscoveryOpen } from "@packages/discovery-extension/ext_discovery/host/extraServices";
 import { AskKenChat } from "@packages/askKen-extension/ext_askKen/host/components/AskKenChat";
