@@ -3,7 +3,7 @@ import { batch, useSignal, useSignalEffect } from "@preact/signals";
 import { useRef } from "preact/hooks";
 import type { LoginRequestSuccess } from "@casual-simulation/aux-records";
 import { useI18n } from "../../i18n/I18nManager";
-import SeedBibleTitleIcon from "../../img/SeedBibleLogoWithTitleBlack.png";
+import SeedBibleTitleIcon from "../../img/ReflectionLogoWithTitleBlack.png";
 import { MaterialIcon } from "../icons";
 import type { NavigationManager } from "../../managers/NavigationManager";
 import type { LoginManager } from "../../managers/LoginManager";
