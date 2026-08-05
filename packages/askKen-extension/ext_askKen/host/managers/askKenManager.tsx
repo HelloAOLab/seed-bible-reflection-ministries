@@ -554,6 +554,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
   const handleChatHistory = () => {
     showHistory.value = !showHistory.value;
+    openActionModal.value = false;
   };
   const handleClearChat = () => {
     messages.value = [];

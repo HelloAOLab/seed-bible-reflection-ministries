@@ -69,6 +69,7 @@ const ActionModal = ({
         height: "138px",
         display: "flex",
         color: "var(--sb-secondary-font-color, #fff)",
+        boxShadow: "0.0625rem 0.125rem 0.0625rem var(--sb-tertiary-color)",
 
         flexDirection: "column",
         gap: "4px",
