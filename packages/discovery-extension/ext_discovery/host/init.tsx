@@ -5,6 +5,7 @@ import {
 
 import { ApologistPanelWrapper } from "./components/ApologistPanel";
 import { CreateApologistState } from "./managers";
+import { useMemo } from "preact/hooks";
 
 export default function initDiscoveryExtension() {
   registerExtension({
@@ -23,7 +24,7 @@ export default function initDiscoveryExtension() {
             placement: "side",
             title: "Disvovery",
             component: () => {
-              const state = CreateApologistState(context);
+              const state = useMemo(() => CreateApologistState(context), []);
 
               return (
                 <ApologistPanelWrapper state={state} seedBibleState={context} />

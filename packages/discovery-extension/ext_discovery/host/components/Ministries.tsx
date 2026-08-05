@@ -47,7 +47,7 @@ export function MinistriesTab({ state }: MinistriesTabProps) {
       </div>
 
       <iframe
-        style={{ paddingBottom: state.isMobile.value ? "80px" : "40px" }}
+        style={{ paddingBottom: state.isMobile.value ? "8px" : "40px" }}
         className="ministries-iframe"
         src={state.ministriesUrl.value}
         title={state.ministriesTitle.value}
