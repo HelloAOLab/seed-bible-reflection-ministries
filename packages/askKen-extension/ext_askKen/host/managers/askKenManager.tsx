@@ -565,12 +565,20 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
     chatIndex.value = newIndex;
 
+    if (context.login.profile.value) {
+      saveProfileConfigValue(context.login, PROFILE_ASKKEN_SESSIONS, newIndex);
+    }
+
     await deleteFullChat(chatId);
 
     if (chatId === activeChatId.value) {
       activeChatId.value = null;
       messages.value = [];
       error.value = null;
+
+      if (newIndex.length > 0) {
+        handleSelectChat(newIndex[0]!.id);
+      }
     }
   };
   const handleMouseUp = () => {
