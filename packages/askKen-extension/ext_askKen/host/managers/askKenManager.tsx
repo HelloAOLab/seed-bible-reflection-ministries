@@ -591,6 +591,10 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
     openActionModal.value = false;
   }, []);
   function addChatToHistory(currentQuery: string, context: SeedBibleState) {
+    if (!context.login.profile.value) {
+      return;
+    }
+
     const exists = chatIndex.value.some(
       (chat) => chat.id === activeChatId.value
     );
