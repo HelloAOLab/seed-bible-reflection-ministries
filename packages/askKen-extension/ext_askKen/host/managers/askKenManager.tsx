@@ -300,7 +300,6 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
   if (!context.app.currentReadingState.value) {
     throw new Error("Current reading state is not initialized.");
   }
-  console.log(context, "context");
   const readingState =
     context?.app?.currentReadingState?.value.tab.readingState;
   const seedBibleContext = context;

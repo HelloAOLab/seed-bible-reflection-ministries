@@ -14,7 +14,7 @@ export interface UpdateSearchOptions {
 }
 interface ApologistTab {
   key: "discovery" | "ministries";
-  label: string;
+  labelKey: string;
   icon: string;
 }
 
@@ -95,7 +95,7 @@ export function CreateApologistState(
 
   const ministriesUrl = signal("https://www.kenboa.org/blog/");
 
-  const ministriesTitle = signal("Ken Boa Blog");
+  const ministriesTitle = signal(t("kenBoaBlog"));
 
   const searchQuery = signal(`${chapterText.value} ${chapterNumber.value}`);
 
@@ -114,12 +114,12 @@ export function CreateApologistState(
   const tabs: ApologistTab[] = [
     {
       key: "discovery",
-      label: t("discovery"),
+      labelKey: "discovery",
       icon: "explore",
     },
     {
       key: "ministries",
-      label: t("reflectionMinistries"),
+      labelKey: "reflectionMinistries",
       icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1769365905/1e5a02da12f8dcd18f8c91d66970dced3990bf11_j3ejbt.png",
     },
   ];
