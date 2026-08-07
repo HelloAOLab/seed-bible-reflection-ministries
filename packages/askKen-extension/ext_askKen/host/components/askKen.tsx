@@ -38,6 +38,7 @@ const ActionModal = ({
   onClose,
 }: ActionModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const { t } = useI18n("ext_askKen");
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -79,17 +80,17 @@ const ActionModal = ({
         <span style={itemStyle} className="material-symbols-outlined">
           edit_square
         </span>
-        <span>New Chat</span>
+        <span>{t("newChat")}</span>
       </div>
 
       <div style={itemStyle} onClick={handleClearChat}>
         <span className="material-symbols-outlined">clear_all</span>
-        <span>Clear Chat</span>
+        <span>{t("clearChat")}</span>
       </div>
 
       <div style={itemStyle} onClick={handleChatHistory}>
         <span className="material-symbols-outlined">history</span>
-        <span>Chat History</span>
+        <span>{t("chatHistory")}</span>
       </div>
     </div>
   );
@@ -162,7 +163,7 @@ export function AskKen() {
                 }}
               >
                 <span style={{ fontWeight: 600, fontSize: "14px" }}>
-                  Ask Ken
+                  {t("askKen")}
                 </span>
 
                 <div
@@ -182,7 +183,7 @@ export function AskKen() {
                   />
 
                   <span style={{ fontSize: "10px", color: "#777" }}>
-                    AI Bible Assistant
+                    {t("aiBibleAssistant")}
                   </span>
                 </div>
               </div>
@@ -201,7 +202,7 @@ export function AskKen() {
 
                     <span className="label" style={{ fontSize: "12px" }}>
                       {state.askKenSize.value === "mediumSlim"
-                        ? "Medium, slim"
+                        ? t("mediumSlim")
                         : state.askKenSize.value.charAt(0).toUpperCase() +
                           state.askKenSize.value.slice(1)}
                     </span>
@@ -225,11 +226,11 @@ export function AskKen() {
                           select.options[select.selectedIndex]?.text ?? "";
                       }}
                     >
-                      <option value="small">Small</option>
-                      <option value="medium">Medium</option>
-                      <option value="mediumSlim">Medium, slim</option>
-                      <option value="large">Large</option>
-                      <option value="largeSlim">Large, slim</option>
+                      <option value="small">{t("small")}</option>
+                      <option value="medium">{t("medium")}</option>
+                      <option value="mediumSlim">{t("mediumSlim")}</option>
+                      <option value="large">{t("large")}</option>
+                      <option value="largeSlim">{t("largeSlim")}</option>
                     </select>
                   </div>
                   <div

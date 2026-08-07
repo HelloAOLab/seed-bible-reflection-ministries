@@ -1,6 +1,7 @@
 import type { ApologistPanelState } from "../managers";
 import { Apologist } from "./Apologist";
 import { MinistriesTab } from "./Ministries";
+import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
 import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
 import "./App.css";
 interface ApologistPanelWrapperProps {
@@ -8,6 +9,7 @@ interface ApologistPanelWrapperProps {
   seedBibleState: SeedBibleState;
 }
 export function ApologistPanelWrapper({ state }: ApologistPanelWrapperProps) {
+  const { t } = useI18n("ext_discovery");
   return (
     <>
       <div
@@ -29,12 +31,12 @@ export function ApologistPanelWrapper({ state }: ApologistPanelWrapperProps) {
               onClick={() => {
                 state.activeTab.value = tab.key;
               }}
-              title={tab.label}
+              title={t(tab.labelKey)}
             >
               {tab.icon.startsWith("http") ? (
                 <img
                   src={tab.icon}
-                  alt={tab.label}
+                  alt={t(tab.labelKey)}
                   className="apologist-tab-image-icon"
                 />
               ) : (
@@ -42,7 +44,7 @@ export function ApologistPanelWrapper({ state }: ApologistPanelWrapperProps) {
                   {tab.icon}
                 </span>
               )}
-              <span className="apologist-tab-label">{tab.label}</span>
+              <span className="apologist-tab-label">{t(tab.labelKey)}</span>
             </button>
           ))}
         </div>
