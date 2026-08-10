@@ -15,9 +15,6 @@ export interface BibleThemeVariables {
 
   tertiaryColor: string;
 
-  linkColor: string;
-  linkVisitedColor: string;
-
   /**
    * The background color for the entire app. This is used as the background for the body element, so it will be visible in areas that don't have a specific background set (e.g. when a pane is detached or when there are gaps between panes). It should generally match the readerBackground color to create a seamless look, but can be set to a different color if desired.
    */
@@ -664,9 +661,6 @@ const DARK_THEME: BibleTheme = {
 
     tertiaryColor: "#1c1c1c",
 
-    linkColor: "#e07b4c",
-    linkVisitedColor: "#d99bb0",
-
     background: "#0a0a0a",
 
     sidebarBackground: "#0f0f0f",
@@ -845,8 +839,6 @@ export type ThemeColorKey =
   | "secondaryColor"
   | "secondaryFontColor"
   | "tertiaryColor"
-  | "linkColor"
-  | "linkVisitedColor"
   | "background"
   | "fontColor"
   | "sidebarBackground"
@@ -887,8 +879,6 @@ export const THEME_COLOR_GROUPS: ThemeColorGroup[] = [
       { key: "secondaryColor", label: "Secondary" },
       { key: "secondaryFontColor", label: "Secondary text" },
       { key: "tertiaryColor", label: "Tertiary" },
-      { key: "linkColor", label: "Link" },
-      { key: "linkVisitedColor", label: "Visited link" },
     ],
   },
   {
