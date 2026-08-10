@@ -471,8 +471,8 @@ export function generateThemeCssClasses(theme: BibleTheme): string {
     .join("\n");
 }
 
-const ReflectionMinistries_Theme = {
-  id: "reflectionministries",
+const LIGHT_THEME = {
+  id: "light",
   name: "Light",
   variables: {
     primaryColor: "#2E4879",
@@ -1030,7 +1030,7 @@ export interface ThemeManager {
 }
 
 export function createTheme(settings: SettingsManager): ThemeManager {
-  const themes = signal<BibleTheme[]>([ReflectionMinistries_Theme, DARK_THEME]);
+  const themes = signal<BibleTheme[]>([LIGHT_THEME, DARK_THEME]);
 
   const selectedThemeId = computed(() => settings.settings.value.themeId);
   const customOverrides = computed(() =>
@@ -1044,7 +1044,7 @@ export function createTheme(settings: SettingsManager): ThemeManager {
     () =>
       themes.value.find((theme) => theme.id === selectedThemeId.value) ??
       themes.value[0] ??
-      ReflectionMinistries_Theme
+      LIGHT_THEME
   );
 
   const currentTheme = computed<BibleTheme>(() =>
