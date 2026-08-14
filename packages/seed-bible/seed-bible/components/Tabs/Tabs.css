@@ -31,7 +31,18 @@
     justify-content: center;
   }
 }
-
+.sb-sidebar-top-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.sb-tabs-sidebar-collapsed .sb-sidebar-top-row-controls {
+  flex-direction: column;
+}
+.sb-sidebar-top-row-icon {
+  width: 3.0625rem;
+  height: 2.25rem;
+}
 /* Compact desktop (just above the mobile breakpoint): the row is too narrow
    to dock a 320px sidebar beside the reader without squashing it. So the
    *expanded* sidebar floats over the reader (fixed, full-height, anchored to
@@ -80,6 +91,18 @@
   justify-content: space-between;
   min-height: 1.75rem;
   padding-bottom: 0.375rem;
+}
+.sb-sidebar-top-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.sb-tabs-sidebar-collapsed .sb-sidebar-top-row-controls {
+  flex-direction: column;
+}
+.sb-sidebar-top-row-icon {
+  width: 3.0625rem;
+  height: 2.25rem;
 }
 
 .sb-sidebar-top-actions {
