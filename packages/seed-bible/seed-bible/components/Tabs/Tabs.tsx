@@ -728,7 +728,6 @@ export function TabsHeader(props: TabsHeaderProps) {
   const { sidebar, settings } = state;
   const isAwake = settings.settings.value.keepScreenAwake;
   const { t } = useI18n();
-  const { branding } = useAppConfig();
   const layoutAnchorRef = useRef<HTMLDivElement | null>(null);
   const { branding } = useAppConfig();
 
