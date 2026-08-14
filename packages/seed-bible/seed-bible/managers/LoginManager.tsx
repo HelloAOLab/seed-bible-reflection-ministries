@@ -8,6 +8,8 @@ import type {
   LoginRequestSuccess,
 } from "@casual-simulation/aux-records/AuthController";
 
+export const COM_ID="reflection-ministries"
+
 /**
  * Why a session ended without the user asking it to.
  *
@@ -614,7 +616,7 @@ export function createLoginManager({
     const result = await client.requestLogin({
       address: email,
       addressType: "email",
-      comId: "seed-bible",
+      comId: COM_ID,
     });
 
     if (result.success) {

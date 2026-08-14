@@ -730,6 +730,7 @@ export function TabsHeader(props: TabsHeaderProps) {
   const { t } = useI18n();
   const { branding } = useAppConfig();
   const layoutAnchorRef = useRef<HTMLDivElement | null>(null);
+  const { branding } = useAppConfig();
 
   // Close the pane-layout menu when clicking anywhere outside its anchor.
   useEffect(() => {
