@@ -16,6 +16,7 @@ export interface BrandingConfig {
   logo: string;
   icon: string;
   websiteUrl: string;
+  disabledToolbarTools?: string[];
 }
 export interface AppConfig {
   /**
@@ -49,6 +50,7 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
     logo: "https://res.cloudinary.com/dpudrufae/image/upload/v1773147618/KB_BibleIcon_1_klh9gg.png",
     icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
     websiteUrl: "https://www.kenboa.org",
+    disabledToolbarTools: ["open-discover"],
   },
 };
 

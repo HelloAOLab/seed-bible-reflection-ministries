@@ -648,7 +648,6 @@ const LIGHT_THEME = {
     },
   },
 };
-
 const DARK_THEME: BibleTheme = {
   id: "dark",
   name: "Dark",
