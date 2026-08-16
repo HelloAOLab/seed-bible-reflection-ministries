@@ -117,7 +117,7 @@ export async function navigateToBibleReference({
     const targetBook = bookId;
     if (currentBook === targetBook) {
       await selectTranslationAndChapter(translationId, bookId, chapter!, {
-        scrollToVerse: startVerse,
+        scrollToVerse: Number(startVerse),
       });
       selectVerseRange(
         readingState,

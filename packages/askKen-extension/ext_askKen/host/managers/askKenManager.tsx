@@ -311,6 +311,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
   const askKenInitialQuery = signal(InitialQuery);
   const inMobile = context.app.isMobile.value;
   const isMobile = signal(inMobile);
+  const historyInitialized = signal(false);
 
   const {
     bookId,
@@ -517,6 +518,10 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
       return;
     }
 
+    if (historyInitialized.value) {
+      return;
+    }
+
     const conversationId = getProfileConfigValue(
       profile,
       PROFILE_ASKKEN_CONVERSATION_ID
@@ -526,20 +531,24 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
     if (!conversationId) {
       askKenChatHistory.value = [];
+      historyInitialized.value = true;
       return;
     }
+
     const sessions =
       (getProfileConfigValue(profile, PROFILE_ASKKEN_SESSIONS) as ChatMeta[]) ??
       [];
 
     chatIndex.value = sessions;
+
     if (sessions.length > 0) {
-      const latestSession = sessions.sort(
+      const latestSession = [...sessions].sort(
         (a, b) =>
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       )[0];
 
       activeChatId.value = latestSession?.id || null;
+
       (async () => {
         const history = await loadConversationHistory(
           askKenConversationId.value!,
@@ -549,6 +558,8 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
         messages.value = history;
       })();
     }
+
+    historyInitialized.value = true;
   });
 
   const handleChatHistory = () => {
