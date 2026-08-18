@@ -177,7 +177,7 @@ function LazyCard({ children }) {
 }
 
 const DEFAULT_URL =
-  "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
+  "https://reflections-ministries.apologist.seedbible.io/api/v1/search?cache_ttl=300";
 
 // ── In-memory result cache (5 min TTL) ──
 const CACHE_TTL_MS = 5 * 60 * 1000;
