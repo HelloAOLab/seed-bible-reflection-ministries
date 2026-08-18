@@ -12,7 +12,7 @@ import { median } from "es-toolkit";
 import { globalAPI } from "../controller/controllerBuilder";
 const getStyleOf = await thisBot.GetStyle();
 const DEFAULT_URL =
-  "https://ken-boa-reflections-public.ministries.bot/api/v1/search?cache_ttl=300";
+  "https://reflections-ministries.apologist.seedbible.io/api/v1/search?cache_ttl=300";
 const APOLOGIST_API_KEY = thisBot?.tags?.APOLOGIST_API_KEY;
 
 const apologistQuerySearch = async ({ userQuestion }) => {
@@ -168,7 +168,7 @@ const APOLOGIST_LOGO_URL =
 // Constants per official Apologist Fusion docs:
 // https://apologistproject.org/documentation/apologist-fusion/chat-completion
 const KENBOA_DOMAIN =
-  "https://ken-boa-reflections-public.ministries.bot/api/v1/chat/completions";
+  "https://reflections-ministries.apologist.seedbible.io/api/v1/chat/completions";
 
 const G = globalThis as any;
 const MAX_CHATS = 50;
