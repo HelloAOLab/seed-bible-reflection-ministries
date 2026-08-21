@@ -510,7 +510,6 @@ export function createPlaylistManager(
   const actualView = computed(() =>
     discover.resolveActualView(!!playing.value)
   );
-
   const availablePlaylists = computed(() => {
     return userPlaylists;
   });

@@ -32,7 +32,7 @@ const getConfig = async () => {
   if (res.data.user_id) {
     const bookId = state.book || "GEN";
     const chapter = state.chapter || 1;
-    const translation = state.translation || "AAB";
+    const translation = state.translation || "NASB95";
     globalThis?.Open(bookId, chapter, translation);
     setTagMask(thisBot, "BOT_USER_ID", res.data.user_id, "local");
     setTagMask(thisBot, "OAUTH_TOKEN", accessToken, "local");

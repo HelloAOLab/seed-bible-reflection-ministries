@@ -505,7 +505,7 @@ export const DEFAULT_TRANSLATIONS_BY_LANGUAGE = new Map<
   ["am", { id: "amh_amh", language: "amh" }], // Amharic NT | መጽሐፍ ቅዱስ
   ["ar", { id: "ARBNAV", language: "arb" }], // New Arabic Version (Book of Life) | كتاب الحياة
   ["bn", { id: "ben_ocv", language: "ben" }], // Open Bengali Contemporary Version Bible | Biblica® মুক্তভাবে বাংলা সমকালীন সংস্করণের
-  ["en", { id: "AAB", language: "eng" }], // AAB | Ancients Accessible Bible
+  ["en", { id: "NASB95", language: "eng" }], // AAB | Ancients Accessible Bible
   ["es", { id: "spa_onbv", language: "spa" }], // Spanish ONBV | Biblica® Open Nueva Biblia Viva 2008
   ["fa", { id: "pes_opcb", language: "pes" }], // Open Persian Contemporary Bible | Biblica® Open Persian Contemporary Bible 2022
   ["fr", { id: "fra_ncl", language: "fra" }], // French néo-Crampon Libre | Sainte Bible néo-Crampon Libre
@@ -529,7 +529,7 @@ export const DEFAULT_TRANSLATIONS_BY_LANGUAGE = new Map<
 ]);
 
 const FALLBACK_TRANSLATION: TranslationWithLanguage = {
-  id: "AAB",
+  id: "NASB95",
   language: "eng",
 };
 

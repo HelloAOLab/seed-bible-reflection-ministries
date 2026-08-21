@@ -420,6 +420,8 @@ import {
 import { z } from "zod";
 import { getDefaultTranslationForLanguage } from "./BibleReadingManager";
 import { captureEvent } from "./Utils";
+import { DiscoverContent } from "@packages/discover-extension/ext_discover/host/components/App";
+import { createDiscoverState } from "@packages/discover-extension/ext_discover/host/managers";
 
 /**
  * Creates and wires the full Seed Bible application state graph.
@@ -1958,6 +1960,7 @@ export function createSeedBibleState(
   // which sub-view shows inside it; DiscoverPane routes discover/create/play
   // internally off the same signal.
   const DISCOVER_PANE_ID = "discover-pane";
+  const discoverState = createDiscoverState(state);
 
   // view -> pane: open (or refresh, by reusing the id) while a view is set,
   // close when it clears. The pane commands read pane state via peek()
@@ -1991,16 +1994,22 @@ export function createSeedBibleState(
             playlists.stopPlaying();
           }
         },
-        component: () => (
-          <DiscoverPane
-            state={state}
-            tabs={tabs}
-            playlists={playlists}
-            annotations={annotations}
-            modals={modals}
-            toast={state.app.toast}
-          />
-        ),
+        component: () => {
+          if (playlists.view.value === "discover") {
+            return <DiscoverContent state={discoverState} context={state} />;
+          }
+
+          return (
+            <DiscoverPane
+              state={state}
+              tabs={tabs}
+              playlists={playlists}
+              annotations={annotations}
+              modals={modals}
+              toast={state.app.toast}
+            />
+          );
+        },
       });
     } else {
       panes.closePane(DISCOVER_PANE_ID); // no-op when already closed

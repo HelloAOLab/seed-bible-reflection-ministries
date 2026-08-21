@@ -69,7 +69,10 @@ export function DiscoverPaneHeader(props: {
   const { playlists, annotations } = props;
   const { t } = useI18n();
 
-  if (playlists.actualView.value !== "discover") {
+  if (
+    playlists.actualView.value !== null &&
+    playlists.actualView.value !== "discover"
+  ) {
     return null;
   }
 
@@ -126,7 +129,7 @@ export function DiscoverPaneTitle(props: {
           aria-label={t("back", { defaultValue: "Back" })}
           onClick={() => annotations.cancelEditingAnnotation()}
         >
-          <MaterialIcon>arrow_back</MaterialIcon>
+          <MaterialIcon></MaterialIcon>
         </button>
         <span className="sb-discover-title" dir="auto">
           {t("annotate-title", {
@@ -343,7 +346,7 @@ export function DiscoverPane(props: DiscoverPaneProps) {
   );
 }
 
-function PlaylistSection({
+export function PlaylistSection({
   userPlaylists,
   playlists,
   modals,
@@ -894,7 +897,7 @@ function AnnotationGroupSection(props: {
   );
 }
 
-function AnnotationsSection(props: {
+export function AnnotationsSection(props: {
   tab: ReaderTab | null;
   annotations: AnnotationsManager;
   modals: ModalManager;

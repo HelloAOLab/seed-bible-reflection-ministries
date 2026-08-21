@@ -11,7 +11,7 @@ interface SharePopupProps {
 const SharePopup = ({
   shareTitle,
   shareReference,
-  translation = "AAB",
+  translation = "NASB95",
   popupTitle = "Share",
   closePopupSettings,
 }) => {
@@ -23,7 +23,7 @@ const SharePopup = ({
     shareReference || `${configBot.tags.book} ${configBot.tags.chapter}`;
 
   // Always include the verse reference when sharing
-  const shareText = `"${shareTitle}" - ${reference} (${translation || "AAB"})`;
+  const shareText = `"${shareTitle}" - ${reference} (${translation || "NASB95"})`;
 
   const platforms = [
     // {

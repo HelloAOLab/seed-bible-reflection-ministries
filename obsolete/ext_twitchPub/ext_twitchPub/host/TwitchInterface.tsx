@@ -81,7 +81,7 @@ const TwitchInterface = (props: {
           channelId: channelId || "",
           book: "GEN",
           chapter: 1,
-          translation: "AAB",
+          translation: "NASB95",
         })
       );
     }
