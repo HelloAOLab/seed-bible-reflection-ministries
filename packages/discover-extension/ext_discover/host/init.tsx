@@ -4,7 +4,6 @@ import {
 } from "@packages/seed-bible/seed-bible/managers";
 import { DiscoverContent } from "./components/App";
 import { createDiscoverState } from "./managers/discoverManager";
-import { useMemo } from "preact/hooks";
 import { DiscoverPaneHeader } from "@packages/seed-bible/seed-bible/components/DiscoverPane/DiscoverPane";
 
 export default function initDiscoveryExtension() {

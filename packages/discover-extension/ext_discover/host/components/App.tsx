@@ -1,7 +1,6 @@
 import "./app.css";
 import {
   AnnotationsSection,
-  DiscoverPane,
   PlaylistSection,
 } from "@packages/seed-bible/seed-bible/components/DiscoverPane/DiscoverPane";
 import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
@@ -10,7 +9,6 @@ import { Apologist } from "./Apologist";
 import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
 import { MinistriesTab } from "./Ministries";
 import { type VNode } from "preact";
-import { useMemo } from "preact/hooks";
 
 interface DiscoverProps {
   state: DiscoverState;
