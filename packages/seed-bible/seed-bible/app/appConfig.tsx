@@ -61,7 +61,6 @@ export const DEFAULT_APP_CONFIG: AppConfig = {
    icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
   websiteUrl: "https://www.kenboa.org",
    disabledToolbarTools: ["open-discover"],
-   defaultTranslationId: "NASB95"
                 },
  
 };
