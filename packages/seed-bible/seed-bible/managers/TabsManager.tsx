@@ -27,6 +27,7 @@ import {
 } from "../managers/BibleReadingManager";
 import type { HighlightsManager } from "../managers/HighlightsManager";
 import type { LoginManager } from "../managers/LoginManager";
+import type { AnnotationsManager } from "../managers/AnnotationsManager";
 import { getProfileConfigValue } from "../managers/ProfileConfigSync";
 
 export function formatVerseSelection(verseNumbers: number[]): string | null {
@@ -85,6 +86,7 @@ import {
   type PersistedTab,
   type QueryReadingParams,
 } from "./TabsPersistence";
+import type { BrandingConfig } from "../app/appConfig";
 
 export interface ReaderTab {
   /** Unique tab identifier (for example: tab-1, tab-2). */
@@ -127,13 +129,15 @@ export const PROFILE_TRANSLATION_ID = "translationId";
 function getInitialTranslationId(
   url: URL,
   basePath: string,
-  language: string
+  language: string,
+  brandingDefaultTranslationId?: string
 ): string {
   const parsed = parseReadingPath(url.pathname, basePath);
   return (
     parsed?.translationId ??
     url.searchParams.get("translationId") ??
     url.searchParams.get("translation") ??
+    brandingDefaultTranslationId ??
     getDefaultTranslationForLanguage(language).id
   );
 }
@@ -249,7 +253,8 @@ export function createInitialTabs(
   i18nManager: I18nManager,
   options: InitialTabsOptions,
   discoverManager?: DiscoverManager,
-  readingExtensionManager?: BibleReadingExtensionManager
+  readingExtensionManager?: BibleReadingExtensionManager,
+  getAnnotationsManager?: () => AnnotationsManager | undefined
 ): ReaderTab[] {
   const { translationId, bookId, chapter, highlightedVerses = [] } = options;
 
@@ -267,7 +272,8 @@ export function createInitialTabs(
         scrollToVerse: highlightedVerses[0] ?? undefined,
       },
       discoverManager,
-      readingExtensionManager
+      readingExtensionManager,
+      getAnnotationsManager
     ),
     sharedSession: null,
     sharedChat: null,
@@ -376,7 +382,15 @@ export function createTabs(
   i18nManager: I18nManager,
   login: LoginManager,
   discoverManager?: DiscoverManager,
-  readingExtensionManager?: BibleReadingExtensionManager
+  readingExtensionManager?: BibleReadingExtensionManager,
+  /**
+   * Lazily resolved — see `createBibleReadingState`'s parameter of the same
+   * name. `AnnotationsManager` depends on this very `TabsManager`, so it
+   * can't exist yet when the first tab below is created; the caller passes a
+   * getter that resolves once its own `AnnotationsManager` does.
+   */
+  getAnnotationsManager?: () => AnnotationsManager | undefined,
+  branding?: BrandingConfig
 ): TabsManager {
   const defaultTranslation = getDefaultTranslationForLanguage(
     i18nManager.defaultLanguage
@@ -428,7 +442,8 @@ export function createTabs(
             : undefined,
       },
       discoverManager,
-      readingExtensionManager
+      readingExtensionManager,
+      getAnnotationsManager
     );
 
     if (isSelected && highlightedVerses.length > 0 && descriptor.bookId) {
@@ -465,7 +480,8 @@ export function createTabs(
     const initialTranslationId = getInitialTranslationId(
       navigation.initialUrl,
       navigation.basePath,
-      i18nManager.defaultLanguage
+      i18nManager.defaultLanguage,
+      branding?.defaultTranslationId
     );
     const initialBookId = getInitialFirstTabBookId(
       navigation.initialUrl,
@@ -487,7 +503,8 @@ export function createTabs(
         highlightedVerses,
       },
       discoverManager,
-      readingExtensionManager
+      readingExtensionManager,
+      getAnnotationsManager
     );
     initialSelectedTabId = initialTabs[0]?.id ?? "";
   } else {
@@ -925,7 +942,8 @@ export function createTabs(
           i18nManager,
           initialReadingOptions,
           discoverManager,
-          readingExtensionManager
+          readingExtensionManager,
+          getAnnotationsManager
         ),
       sharedSession,
       sharedChat,

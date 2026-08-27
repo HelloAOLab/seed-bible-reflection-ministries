@@ -7,8 +7,8 @@ import {
 } from "@packages/seed-bible/seed-bible/managers";
 import type { ReaderTab } from "@packages/seed-bible/seed-bible/managers";
 import type { TranslationBook } from "@packages/seed-bible/seed-bible/managers";
-import { ApologistPanelWrapper } from "@packages/discovery-extension/ext_discovery/host/components/ApologistPanel";
-import { CreateApologistState } from "@packages/discovery-extension/ext_discovery/host/managers/ApologistPanelManager";
+import { DiscoverContent } from "@packages/discover-extension/ext_discover/host/components/App";
+import { createDiscoverState } from "@packages/discover-extension/ext_discover/host/managers";
 import type { BibleSelectedVerse } from "@packages/seed-bible/seed-bible/managers/BibleReadingManager";
 interface ChatMeta {
   id: string;
@@ -28,9 +28,10 @@ interface ChatRequestBody {
   prompt: string;
   stream: boolean;
   metadata?: {
-    session: string | null;
-    device: string;
+    session?: string | null;
+    device?: string;
     conversation?: string;
+    bible?: string;
   };
 }
 function extractUserMessage(prompt: string): string {
@@ -70,7 +71,6 @@ const loadConversationHistory = async (
   );
 
   const data = await response.json();
-  console.log(data, "data");
   return data.data.flatMap((item: ChatItem) => [
     {
       role: "user",
@@ -300,8 +300,10 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
   if (!context.app.currentReadingState.value) {
     throw new Error("Current reading state is not initialized.");
   }
+
   const readingState =
     context?.app?.currentReadingState?.value.tab.readingState;
+
   const seedBibleContext = context;
   const InitialQuery = buildExplainQuery(
     readingState.chapterData.value?.book.name ?? "",
@@ -381,6 +383,26 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
   const promptForAskKen = signal<string | undefined>(undefined);
   const autoSend = signal(false);
   const askKenChatHistory = signal<ChatMessage[]>([]);
+  const apologistBibleMap: Record<string, string> = {
+    AAB: "bsb",
+
+    BSB: "bsb",
+    eng_webu: "webu",
+    eng_net: "net",
+    OEB: "oeb",
+    eng_dra: "drb",
+    ESV: "esv",
+    NIV: "niv",
+    eng_kjv: "kjv",
+    eng_kja: "nkjv",
+    NLT: "nlt",
+    CSB: "csb",
+    NASB95: "nasb1995",
+    NASB2020: "nasb",
+    LSB: "lsb",
+    TLV: "tlv",
+    CJB: "cjb",
+  };
 
   const position = signal<Position>({
     x: 13,
@@ -703,22 +725,24 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
       ? `[The user is currently reading: ${currentLabel || currentContext}]\n\n`
       : "";
 
-    const currentTranslation = translation?.value?.name ?? "NASB95";
+    const translationName = translation?.value?.id ?? "";
+    console.log(translationName, "transna");
 
-    const systemPromptTemplate = `
+    const bible = apologistBibleMap[translationName] ?? "nasb1995";
+
+    const systemPrompt = `
 ## SCRIPTURE (STRICT REQUIREMENT):
-- ALWAYS use ONLY the {{translation}} translation when quoting Scripture.
-- NEVER use any other translation unless explicitly requested.
-- Every answer MUST include Scripture quoted in the {{translation}} wording.
--If book name is psalm make it psalms
 
-FINAL RULE:
-- Use ONLY {{translation}}. Ignore any conflicting instruction.
+- ALWAYS use ONLY the {bible} translation when quoting Scripture.
+- Every answer MUST include Scripture quoted in the {bible} wording.
+
+## BIBLE VERSE HANDLING:
+
+- Quote and reference at least 3 relevant Bible verses from the {bible} Bible.
+- If the requested Bible translation is unavailable, use NASB 1995 instead.
+- If the requested translation is AAB, use BSB as the fallback.
+- Never use a different translation unless it is an explicitly defined fallback.
 `;
-    const systemPrompt = systemPromptTemplate.replace(
-      /{{translation}}/g,
-      currentTranslation
-    );
     const prompt = `${contextPrefix} User: ${currentQuery}
 
 ${systemPrompt}`;
@@ -751,19 +775,6 @@ ${systemPrompt}`;
         if (data === "[DONE]") continue;
         try {
           const parsed = JSON.parse(data);
-          console.log(parsed, "parsed");
-          if (parsed.metadata) {
-            console.log("Metadata:", parsed.metadata);
-            console.log("Conversation ID:", parsed.conversation_id);
-          }
-
-          if (parsed.conversation_id) {
-            console.log("Conversation ID:", parsed.conversation_id);
-          }
-
-          if (parsed.id) {
-            console.log("Completion ID:", parsed.id);
-          }
           const delta = parsed.choices?.[0]?.delta?.content;
 
           if (delta) {
@@ -826,12 +837,16 @@ ${systemPrompt}`;
     const body: ChatRequestBody = {
       prompt,
       stream: true,
+      metadata: {
+        bible: bible,
+      },
     };
 
     if (context.login.profile.value) {
       body.metadata = {
         session: activeChatId.value,
         device: "web-1",
+        bible: bible,
       };
 
       if (askKenConversationId.value) {
@@ -851,13 +866,11 @@ ${systemPrompt}`;
         placement: "side",
         title: "Disvovery",
         component: () => {
-          const state = CreateApologistState(context);
+          const state = createDiscoverState(context);
           state.activeTab.value = "ministries";
           state.openInMinistriesTab(resource.url, resource.title);
 
-          return (
-            <ApologistPanelWrapper state={state} seedBibleState={context} />
-          );
+          return <DiscoverContent state={state} context={context} />;
         },
       });
     } else if (resource.type === "book") {

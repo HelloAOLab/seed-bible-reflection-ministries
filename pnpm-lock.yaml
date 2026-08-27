@@ -60,6 +60,9 @@ catalogs:
     '@tiptap/starter-kit':
       specifier: 3.27.1
       version: 3.27.1
+    '@types/json-schema':
+      specifier: 7.0.15
+      version: 7.0.15
     axios:
       specifier: 1.13.5
       version: 1.13.5
@@ -246,6 +249,12 @@ importers:
       '@testing-library/preact':
         specifier: ^3.2.4
         version: 3.2.4(preact@10.29.2)
+      '@tiptap/core':
+        specifier: 'catalog:'
+        version: 3.27.1(@tiptap/pm@3.27.1)
+      '@tiptap/starter-kit':
+        specifier: 'catalog:'
+        version: 3.27.1
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
@@ -258,6 +267,9 @@ importers:
       '@types/jsdom':
         specifier: ^28.0.3
         version: 28.0.3
+      '@types/json-schema':
+        specifier: 'catalog:'
+        version: 7.0.15
       '@types/luxon':
         specifier: ^3.7.2
         version: 3.7.2
@@ -430,6 +442,12 @@ importers:
         specifier: workspace:*
         version: link:../seed-bible
 
+  packages/bible-stack:
+    dependencies:
+      seed-bible:
+        specifier: workspace:*
+        version: link:../seed-bible
+
   packages/bonfire-extension:
     dependencies:
       seed-bible:
@@ -441,6 +459,48 @@ importers:
       seed-bible:
         specifier: workspace:*
         version: link:../seed-bible
+
+  packages/discover-extension:
+    dependencies:
+      '@casual-simulation/aux-common':
+        specifier: 'catalog:'
+        version: 4.2.3
+      '@casual-simulation/aux-websocket':
+        specifier: 'catalog:'
+        version: 4.2.3
+      '@casual-simulation/websocket':
+        specifier: 'catalog:'
+        version: 4.0.0
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+      i18next:
+        specifier: 'catalog:'
+        version: 26.2.0(typescript@6.0.3)
+      preact:
+        specifier: 'catalog:'
+        version: 10.29.2
+      preact-iso:
+        specifier: 'catalog:'
+        version: 2.12.0(preact-render-to-string@6.7.0(preact@10.29.2))(preact@10.29.2)
+      react:
+        specifier: 'catalog:'
+        version: '@preact/compat@18.3.2(preact@10.29.2)'
+      react-avatar-editor:
+        specifier: 15.1.0
+        version: 15.1.0(@preact/compat@18.3.2(preact@10.29.2))(@preact/compat@18.3.2(preact@10.29.2))
+      react-dom:
+        specifier: 'catalog:'
+        version: '@preact/compat@18.3.2(preact@10.29.2)'
+      rxjs:
+        specifier: 'catalog:'
+        version: 8.0.0-alpha.14
+      typesense:
+        specifier: 'catalog:'
+        version: 3.0.5(@babel/runtime@7.29.2)
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
 
   packages/discovery-extension:
     dependencies:
@@ -483,6 +543,12 @@ importers:
       zod:
         specifier: 4.4.3
         version: 4.4.3
+
+  packages/house-of-the-lord:
+    dependencies:
+      seed-bible:
+        specifier: workspace:*
+        version: link:../seed-bible
 
   packages/locations-extension:
     dependencies:
@@ -593,12 +659,6 @@ importers:
         version: link:../seed-bible
 
   packages/seed-bible-utils:
-    dependencies:
-      seed-bible:
-        specifier: workspace:*
-        version: link:../seed-bible
-
-  packages/today-screen:
     dependencies:
       seed-bible:
         specifier: workspace:*
@@ -4574,6 +4634,7 @@ packages:
   eslint@9.39.2:
     resolution: {integrity: sha512-LEyamqS7W5HB3ujJyvi0HQK/dtVINZvd5mAAp9eT5S/ujByGjiZLCzPcHVzuXbpJDJF/cxwHlfceVUDZ2lnSTw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
