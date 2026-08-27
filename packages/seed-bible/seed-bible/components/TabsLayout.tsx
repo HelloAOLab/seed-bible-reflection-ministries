@@ -17,6 +17,10 @@ import { batch, effect } from "@preact/signals";
 import { useI18n } from "../i18n/I18nManager";
 import { translateTitle } from "../app/utils";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { AskKenChat } from "@packages/askKen-extension/ext_askKen/host/components/AskKenChat";
+import { isDiscoveryOpen } from "@packages/discover-extension/ext_discover/host/extraServices";
+import { askKenOpen } from "@packages/askKen-extension/ext_askKen/host/askKenService";
+import { AskKen } from "@packages/askKen-extension/ext_askKen/host/components/askKen";
 
 interface TabSlotReaderProps {
   slot: TabSlot;
@@ -701,6 +705,10 @@ export function TabSlotReader(props: TabSlotReaderProps) {
         mobileChrome={mobileChrome}
         sharedSession={tab.sharedSession}
       />
+      {(!isMobile || isDiscoveryOpen.value) && (
+        <AskKenChat isMobile={isMobile} />
+      )}
+      {(isMobile ? askKenOpen.value : askKenOpen.value) && <AskKen />}
       {!isMobile && belongsCard}
       {!isMobile && (
         <BelowReaderToolbar

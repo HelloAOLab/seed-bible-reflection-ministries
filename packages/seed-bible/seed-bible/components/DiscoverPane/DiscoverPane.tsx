@@ -90,7 +90,10 @@ export function DiscoverPaneHeader(props: {
   const { playlists, annotations } = props;
   const { t } = useI18n();
 
-  if (playlists.actualView.value !== "discover") {
+  if (
+    playlists.actualView.value !== null &&
+    playlists.actualView.value !== "discover"
+  ) {
     return null;
   }
 
@@ -369,7 +372,7 @@ export function DiscoverPane(props: DiscoverPaneProps) {
   );
 }
 
-function PlaylistSection({
+export function PlaylistSection({
   userPlaylists,
   playlists,
   modals,
@@ -1139,7 +1142,7 @@ function AnnotationGroupSection(props: {
   );
 }
 
-function AnnotationsSection(props: {
+export function AnnotationsSection(props: {
   tab: ReaderTab | null;
   annotations: AnnotationsManager;
   modals: ModalManager;
@@ -1242,12 +1245,12 @@ function AnnotationsSection(props: {
     chapterNumber
   ).value;
   const groups = groupAnnotationsByVerseRange(chapterAnnotations);
-  
+
   const otherPeoplePresent = annotationListHasOtherAuthors(
     chapterAnnotations,
     login.userId.value
   );
-  
+
   const pending = annotations.sync.pendingCountForChapter(
     bookId,
     chapterNumber

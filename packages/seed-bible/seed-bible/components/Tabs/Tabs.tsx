@@ -48,6 +48,7 @@ import {
 import { useEffect, useRef } from "preact/hooks";
 import { chatHasOtherPeople } from "../../managers/ChatsManager";
 import { trimmedOrNull } from "../../managers/Utils";
+import { useAppConfig } from "../../app/appConfig";
 
 interface SidebarProps {
   state: SeedBibleState;
@@ -755,6 +756,7 @@ export function TabsHeader(props: TabsHeaderProps) {
   const isAwake = settings.settings.value.keepScreenAwake;
   const { t } = useI18n();
   const layoutAnchorRef = useRef<HTMLDivElement | null>(null);
+  const { branding } = useAppConfig();
 
   // Close the pane-layout menu when clicking anywhere outside its anchor.
   useEffect(() => {
@@ -773,18 +775,31 @@ export function TabsHeader(props: TabsHeaderProps) {
 
   return (
     <div className="sb-sidebar-top-row">
-      <button
-        onClick={sidebar.toggleSidebarCollapsed}
-        className="sb-sidebar-collapse-button"
-        aria-label={
-          effectivelyCollapsed ? "Expand sidebar" : "Collapse sidebar"
-        }
-        title={effectivelyCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        <span className="material-symbols-outlined">
-          {effectivelyCollapsed ? "menu" : "menu_open"}
-        </span>
-      </button>
+      <div className="sb-sidebar-top-row-controls">
+        <button
+          onClick={sidebar.toggleSidebarCollapsed}
+          className="sb-sidebar-collapse-button"
+          aria-label={
+            effectivelyCollapsed ? "Expand sidebar" : "Collapse sidebar"
+          }
+          title={effectivelyCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <span className="material-symbols-outlined">
+            {effectivelyCollapsed ? "menu" : "menu_open"}
+          </span>
+        </button>
+        <a
+          href={branding?.websiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src={branding?.logo}
+            alt={branding?.appName}
+            className="sb-sidebar-top-row-icon"
+          />
+        </a>
+      </div>
 
       <div className="sb-sidebar-top-actions">
         {panelsEnabled && !effectivelyCollapsed && (
