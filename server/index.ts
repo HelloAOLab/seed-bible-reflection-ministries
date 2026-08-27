@@ -964,7 +964,7 @@ async function startDevServer(): Promise<void> {
                   icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
                   websiteUrl: "https://www.kenboa.org",
                   disabledToolbarTools: ["open-discover"],
-                  defaultTranslationId: "NASB95",
+                  defaultTranslationId: "NASB95"
                 },
               },
               html: transformed,
