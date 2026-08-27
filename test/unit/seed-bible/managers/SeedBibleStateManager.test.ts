@@ -1666,7 +1666,7 @@ describe("createSeedBibleState", () => {
       });
 
       expect(state.app.description.value).toBe(
-        "Read Genesis 1 in the {{appName}}"
+        "Read Genesis 1 in the Seed Bible"
       );
     });
 
@@ -1676,7 +1676,7 @@ describe("createSeedBibleState", () => {
       setSelectedTabChapter(state, "genesis", "Genesis", 1, "BSB");
 
       expect(state.app.description.value).toBe(
-        "Read Genesis 1 in the {{appName}}"
+        "Read Genesis 1 in the Seed Bible"
       );
     });
 
