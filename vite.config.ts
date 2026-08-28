@@ -61,14 +61,6 @@ function withTrailingSlash(url: string): string {
 
 const clientOutDir = "standalone/dist/client";
 
-const brandingConfig = existsSync(
-  path.resolve(__dirname, "seed-bible.branding.json")
-)
-  ? JSON.parse(
-      readFileSync(path.resolve(__dirname, "seed-bible.branding.json"), "utf-8")
-    )
-  : undefined;
-
 /**
  * Reads this build's Vite client manifest, which is written before the service
  * worker is compiled, and works out which emitted files the app needs to boot.
