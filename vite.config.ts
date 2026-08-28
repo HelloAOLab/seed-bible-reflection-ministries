@@ -43,6 +43,18 @@ const assetBaseUrl =
 // where the versioned chunks live.
 const isRootBuild = !deployBranch || deployBranch === "main";
 
+const brandingConfig = existsSync(
+  path.resolve(__dirname, "seed-bible.branding.json")
+)
+  ? JSON.parse(
+      readFileSync(path.resolve(__dirname, "seed-bible.branding.json"), "utf-8")
+    )
+  : undefined;
+
+if (brandingConfig) {
+  console.log("[vite.config.ts] Using branding config:", brandingConfig);
+}
+
 function withTrailingSlash(url: string): string {
   return url.endsWith("/") ? url : `${url}/`;
 }
