@@ -52,9 +52,6 @@ export interface AppConfig {
   branding?: BrandingConfig;
 }
 
-// Injected from Vite
-declare const __BRANDING_CONFIG__: BrandingConfig | undefined;
-
 export const DEFAULT_APP_CONFIG: AppConfig = {
   basePath: "",
   assetHost: "",
