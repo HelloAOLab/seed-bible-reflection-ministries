@@ -48,23 +48,16 @@ export interface AppConfig {
   branding?: BrandingConfig;
 }
 
+// Injected from Vite
+declare const __BRANDING_CONFIG__: BrandingConfig | undefined;
+
 export const DEFAULT_APP_CONFIG: AppConfig = {
   basePath: "",
   assetHost: "",
   renderedAsMobile: false,
   renderedAsWebKit: false,
   acceptedLanguages: [],
-  branding: import.meta.env.VITEST
-    ? undefined
-    : {
-        appName: "Boa Study Bible",
-        shortName: "Boa",
-        logo: "https://res.cloudinary.com/dpudrufae/image/upload/v1773147618/KB_BibleIcon_1_klh9gg.png",
-        icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
-        websiteUrl: "https://www.kenboa.org",
-        disabledToolbarTools: ["open-discover"],
-        defaultTranslationId: "NASB95",
-      },
+  branding: import.meta.env.VITEST ? undefined : __BRANDING_CONFIG__,
 };
 
 /**

@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import preact from "@preact/preset-vite";
 import path from "path";
 import { execSync } from "child_process";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { analyzer } from "vite-bundle-analyzer";
 import { VitePWA } from "vite-plugin-pwa";
 import { patternPlugin } from "./script/lib/vite-plugin-patterns";
@@ -48,6 +48,14 @@ function withTrailingSlash(url: string): string {
 }
 
 const clientOutDir = "standalone/dist/client";
+
+const brandingConfig = existsSync(
+  path.resolve(__dirname, "seed-bible.branding.json")
+)
+  ? JSON.parse(
+      readFileSync(path.resolve(__dirname, "seed-bible.branding.json"), "utf-8")
+    )
+  : undefined;
 
 /**
  * Reads this build's Vite client manifest, which is written before the service
@@ -123,6 +131,9 @@ export default defineConfig(({ isSsrBuild }) => ({
     // assets apart from another branch deployment's. vite-plugin-pwa reuses
     // this `define` block when it compiles the worker.
     __ASSET_BASE_URL__: JSON.stringify(assetBaseUrl),
+
+    // The branding config that is injected into the page during build
+    __BRANDING_CONFIG__: JSON.stringify(brandingConfig),
   },
 
   plugins: [
@@ -171,10 +182,11 @@ export default defineConfig(({ isSsrBuild }) => ({
               maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
             },
             manifest: {
-              id: "seed-bible",
-              name: "Seed Bible",
-              short_name: "Seed Bible",
-              description: "A free, open-source Bible reader and study tool.",
+              id: "seed-bible-reflections-ministries",
+              name: "Dr. Ken Boa Bible",
+              short_name: "Boa Bible",
+              description:
+                "Read. Reflect. Ask. Explore Scripture with Dr. Ken Boa's reflections woven in and his full body of teaching at your fingertips.",
               lang: "en",
               categories: [
                 "bible",
@@ -190,70 +202,28 @@ export default defineConfig(({ isSsrBuild }) => ({
               theme_color: "#FFFFFF",
               icons: [
                 {
-                  src: "https://favicon.ao.bot/pwa/pwa-192x192.png",
+                  src: "https://custom.ao.bot/reflection-ministries/pwa-192x192.png",
                   type: "image/png",
                   sizes: "192x192",
                   purpose: "any",
                 },
                 {
-                  src: "https://favicon.ao.bot/pwa/pwa-512x512.png",
+                  src: "https://custom.ao.bot/reflection-ministries/pwa-512x512.png",
                   type: "image/png",
                   sizes: "512x512",
                   purpose: "any",
                 },
                 {
-                  src: "https://favicon.ao.bot/pwa/pwa-maskable-192x192.png",
+                  src: "https://custom.ao.bot/reflection-ministries/pwa-maskable-192x192.png",
                   type: "image/png",
                   sizes: "192x192",
                   purpose: "maskable",
                 },
                 {
-                  src: "https://favicon.ao.bot/pwa/pwa-maskable-512x512.png",
+                  src: "https://custom.ao.bot/reflection-ministries/pwa-maskable-512x512.png",
                   type: "image/png",
                   sizes: "512x512",
                   purpose: "maskable",
-                },
-              ],
-              screenshots: [
-                {
-                  src: "https://favicon.ao.bot/pwa/screenshots/laptop/laptop-home.png",
-                  sizes: "1020x775",
-                  form_factor: "wide",
-                  label: "Home screen of the Seed Bible showing Genesis 1",
-                },
-                {
-                  src: "https://favicon.ao.bot/pwa/screenshots/mobile/mobile-home.png",
-                  sizes: "369x766",
-                  form_factor: "narrow",
-                  label: "Home screen of the Seed Bible showing Proverbs 3",
-                },
-                {
-                  src: "https://favicon.ao.bot/pwa/screenshots/laptop/laptop-translations.png",
-                  sizes: "1020x775",
-                  form_factor: "wide",
-                  label:
-                    "Translation selection screen showing several English Bible translations",
-                },
-                {
-                  src: "https://favicon.ao.bot/pwa/screenshots/mobile/mobile-translations.png",
-                  sizes: "372x776",
-                  form_factor: "narrow",
-                  label:
-                    "Translation selection screen showing several English Bible translations",
-                },
-                {
-                  src: "https://favicon.ao.bot/pwa/screenshots/laptop/laptop-verse-search.png",
-                  sizes: "1021x773",
-                  form_factor: "wide",
-                  label:
-                    "Search results for 'for God so loved' showing a result for John 3:16",
-                },
-                {
-                  src: "https://favicon.ao.bot/pwa/screenshots/mobile/mobile-search.png",
-                  sizes: "373x776",
-                  form_factor: "narrow",
-                  label:
-                    "Search results for 'for God so loved' showing a result for John 3:16",
                 },
               ],
             },

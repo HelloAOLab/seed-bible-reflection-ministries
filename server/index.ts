@@ -389,6 +389,9 @@ function resolveRoute(rawUrl: string): Route {
   };
 }
 
+// Injected from Vite
+declare const __BRANDING_CONFIG__: BrandingConfig | undefined;
+
 /**
  * Runs an SSR render() over the given pre-rendered HTML and writes the
  * result. If render() throws, the error is logged and the unrendered
@@ -426,6 +429,7 @@ export async function renderAndRespond(
             renderedAsMobile,
             renderedAsWebKit,
             acceptedLanguages,
+            branding: __BRANDING_CONFIG__,
           },
           html: preRenderedHtml,
         })
@@ -957,15 +961,7 @@ async function startDevServer(): Promise<void> {
                 renderedAsMobile,
                 renderedAsWebKit,
                 acceptedLanguages,
-                branding: {
-                  appName: "Boa Study Bible",
-                  shortName: "Boa",
-                  logo: "https://res.cloudinary.com/dpudrufae/image/upload/v1773147618/KB_BibleIcon_1_klh9gg.png",
-                  icon: "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
-                  websiteUrl: "https://www.kenboa.org",
-                  disabledToolbarTools: ["open-discover"],
-                  defaultTranslationId: "NASB95"
-                },
+                branding: __BRANDING_CONFIG__,
               },
               html: transformed,
             })

@@ -1,0 +1,9 @@
+{
+  "appName": "Boa Study Bible",
+  "shortName": "Boa",
+  "logo": "https://custom.ao.bot/reflection-ministries/logo.png",
+  "icon": "https://res.cloudinary.com/dpudrufae/image/upload/v1771785855/book-open_mnbvoe.svg",
+  "websiteUrl": "https://www.kenboa.org",
+  "disabledToolbarTools": ["open-discover"],
+  "defaultTranslationId": "NASB95"
+}
