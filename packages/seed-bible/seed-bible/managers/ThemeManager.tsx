@@ -15,7 +15,9 @@ export interface BibleThemeVariables {
 
   tertiaryColor: string;
 
-  /**
+  linkColor: string;
+  linkVisitedColor: string;
+  /***
    * The background color for the entire app. This is used as the background for the body element, so it will be visible in areas that don't have a specific background set (e.g. when a pane is detached or when there are gaps between panes). It should generally match the readerBackground color to create a seamless look, but can be set to a different color if desired.
    */
   background: string;
@@ -651,13 +653,16 @@ const DARK_THEME: BibleTheme = {
   id: "dark",
   name: "Dark",
   variables: {
-    primaryColor: "#e07b4c",
+    primaryColor: "#2E4879",
     primaryFontColor: "#111111",
 
-    secondaryColor: "#433228",
+    secondaryColor: "#2E48791A",
     secondaryFontColor: "#f5f5f5",
 
     tertiaryColor: "#1c1c1c",
+
+    linkColor: "#2E4879",
+    linkVisitedColor: "#d99bb0",
 
     background: "#0a0a0a",
 
