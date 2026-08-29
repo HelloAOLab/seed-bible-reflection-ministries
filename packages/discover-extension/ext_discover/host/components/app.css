@@ -162,6 +162,12 @@
   flex-direction: column;
   min-height: 94%;
 }
+/* Disable iframe pointer events while resizing the detached pane
+   to prevent the iframe from interfering with the resize interaction. */
+.sb-pane-detached-body:has(+ .sb-pane-detached-resize-handle-side:active)
+  .ministries-iframe {
+  pointer-events: none;
+}
 
 .ministries-iframe {
   flex: 1;
