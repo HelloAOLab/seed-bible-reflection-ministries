@@ -51,7 +51,6 @@ export function createDiscoverState(context: SeedBibleState): DiscoverState {
   if (!context.app.currentReadingState.value) {
     throw new Error("Current reading state is not initialized.");
   }
-  const allTabs = context.tabs.tabs;
 
   const selectedTab = computed(() =>
     context.tabs.tabs.value.find(
