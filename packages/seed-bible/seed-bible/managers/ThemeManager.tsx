@@ -16,6 +16,10 @@ export interface BibleThemeVariables {
 
   tertiaryColor: string;
 
+  tertiaryFontColor?: string | null;
+  tertiaryBorder?: string | null;
+  tertiaryBackground?: string | null;
+
   linkColor: string;
   linkVisitedColor: string;
   /***
@@ -280,6 +284,8 @@ export interface BibleThemeVariables {
    */
   readerToolbarMobileLayoutItemSize?: string | null;
 
+  readerToolbarMobileLayoutCenterButtonSize?: string | null;
+
   /**
    * The mobile layout center button width of the reader toolbar.
    */
@@ -294,6 +300,8 @@ export interface BibleThemeVariables {
    * The mobile layout button border radius of the reader toolbar.
    */
   readerToolbarMobileLayoutButtonBorderRadius?: string | null;
+
+  emptyPaneToolbarButtonBackground?: string | null;
 
   /**
    * The side offset of reader toolbar floating buttons.
