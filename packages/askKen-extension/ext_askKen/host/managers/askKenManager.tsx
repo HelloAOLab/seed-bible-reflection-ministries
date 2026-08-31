@@ -726,7 +726,6 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
       : "";
 
     const translationName = translation?.value?.id ?? "";
-    console.log(translationName, "transna");
 
     const bible = apologistBibleMap[translationName] ?? "nasb1995";
 
@@ -816,9 +815,6 @@ ${systemPrompt}`;
             currentChatId
           );
         }
-      } else {
-        console.log("Status:", xhr.status);
-        console.log("Response:", xhr.responseText);
       }
       isLoading.value = false;
     };

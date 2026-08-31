@@ -17,11 +17,8 @@ interface DiscoverProps {
 type DiscoverFilter = "all" | "annotations" | "playlists";
 
 export function DiscoverContent({ state, context }: DiscoverProps) {
-  console.log(context, "context");
   const { t } = useI18n("ext_discovery");
-  console.log(context, "context");
   const playlists = context.playlists;
-  console.log(playlists, "pla");
   const userPlaylists = playlists.userPlaylists.value;
   const toast = context.app.toast;
   const modals = context.modals;
