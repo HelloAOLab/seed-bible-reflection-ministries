@@ -108,7 +108,6 @@ export function AskKen() {
     query: state.query.value,
     seedBibleContext: state.seedBibleContext,
   });
-  console.log(handleAIAction, "action");
 
   return (
     <div

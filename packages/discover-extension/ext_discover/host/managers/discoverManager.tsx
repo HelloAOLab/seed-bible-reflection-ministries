@@ -52,17 +52,38 @@ export function createDiscoverState(context: SeedBibleState): DiscoverState {
     throw new Error("Current reading state is not initialized.");
   }
 
+  const selectedTab = computed(() =>
+    context.tabs.tabs.value.find(
+      (tab) => tab.id === context.tabs.selectedTabId.value
+    )
+  );
+
   const inMobile = context.app.isMobile.value;
 
-  const readingState = context.app.currentReadingState.value.tab.readingState;
+  if (!selectedTab) {
+    throw new Error("Selected tab not found.");
+  }
 
-  const { bookId, translationBooks, chapterNumber, chapterData } = readingState;
+  const readingState = computed(() => selectedTab.value?.readingState ?? null);
+  const currentBook = computed(() => {
+    const state = readingState.value;
 
-  const currentBook = computed(
-    () =>
-      translationBooks.value?.books.find((book) => book.id === bookId.value) ??
-      null
-  );
+    if (!state) return null;
+
+    return (
+      state.translationBooks.value?.books.find(
+        (book) => book.id === state.bookId.value
+      ) ?? null
+    );
+  });
+
+  const chapterNumber = computed(() => {
+    return readingState.value?.chapterNumber.value ?? null;
+  });
+
+  const chapterData = computed(() => {
+    return readingState.value?.chapterData.value ?? null;
+  });
 
   const chapterText = computed(() => {
     const content = chapterData.value?.chapter?.content || [];
