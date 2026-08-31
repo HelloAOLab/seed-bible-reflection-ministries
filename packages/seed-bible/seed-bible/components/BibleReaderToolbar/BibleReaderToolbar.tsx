@@ -2123,9 +2123,15 @@ export function BibleReaderToolbar(props: BibleReaderToolbarProps) {
                               : tool.id;
                           return;
                         }
-
+                        const existingPane = panes.panes.value.find(
+                          (pane) => pane.id === tool.id
+                        );
+                        if (existingPane) {
+                          panes.closePane(existingPane.id);
+                        } else {
+                          tool.onSelect();
+                        }
                         selectedToolbarToolId.value = null;
-                        tool.onSelect();
                       }}
                       data-tool-id={tool.id}
                       className="sb-reader-toolbar-button"
