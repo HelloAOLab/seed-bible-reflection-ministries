@@ -22,6 +22,7 @@ export default function initDiscoveryExtension() {
           const state = createDiscoverState(context);
 
           context.panes.openPane({
+            id: "ext_discovery",
             placement: "side",
             title: "Discover",
 
