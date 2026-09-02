@@ -43,7 +43,7 @@ export const AskKenChat = ({ isMobile }: AskKenChatProps) => {
           className="askKen-text"
           style={{
             position: "fixed",
-            bottom: isMobile ? "120px" : "102px",
+            bottom: isMobile ? "130px" : "102px",
             right: "14px",
             color: "var(--sb-background, #fff)",
             zIndex: "999",
