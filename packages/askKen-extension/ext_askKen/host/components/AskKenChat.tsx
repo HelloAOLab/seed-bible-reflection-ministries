@@ -1,3 +1,4 @@
+import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
 import { toggleAskKen } from "../askKenService";
 interface AskKenChatProps {
   isMobile: boolean;
@@ -36,6 +37,7 @@ const AskKenLogo = () => {
 };
 
 export const AskKenChat = ({ isMobile }: AskKenChatProps) => {
+  const { t } = useI18n("ext_askKen");
   return (
     <div>
       <div onClick={toggleAskKen}>
@@ -43,7 +45,7 @@ export const AskKenChat = ({ isMobile }: AskKenChatProps) => {
           className="askKen-text"
           style={{
             position: "fixed",
-            bottom: isMobile ? "136px" : "102px",
+            bottom: isMobile ? "136px" : "106px",
             right: "14px",
             color: "var(--sb-background, #fff)",
             zIndex: "999",
@@ -54,7 +56,7 @@ export const AskKenChat = ({ isMobile }: AskKenChatProps) => {
             background: "var(--sb-primary-color, #fff)",
           }}
         >
-          Ask Ken!
+          {t("askKen")}!
         </div>
         <div
           style={{

@@ -5,7 +5,9 @@
     "en": {
       "title": "Apologist",
       "description": "Apologist toolbar extension",
+
       "discover": "Discover",
+      "discovery": "Discvery",
       "all": "All",
       "playlists": "Playlists",
       "annotations": "Annotations",
