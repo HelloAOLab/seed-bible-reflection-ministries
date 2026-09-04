@@ -68,9 +68,13 @@
       "daysAgo": "Hace {{count}} d",
       "buyBook": "Comprar libro",
       "noResources": "No se encontraron recursos relacionados para este capítulo",
-      "noContent": "Sin contenido"
+      "noContent": "Sin contenido",
+      "discover": "Descubrir",
+      "all": "Todo",
+      "playlists": "Listas de reproducción",
+      "annotations": "Anotaciones",
+      "media": "Medios de comunicación"
     },
-
     "af": {
       "title": "Apologeet",
       "description": "Apologeet-nutsbalkuitbreiding",
@@ -101,9 +105,13 @@
       "daysAgo": "{{count}} d gelede",
       "buyBook": "Koop boek",
       "noResources": "Geen verwante hulpbronne vir hierdie hoofstuk gevind nie",
-      "noContent": "Geen inhoud"
+      "noContent": "Geen inhoud",
+      "discover": "Ontdek",
+      "all": "Alles",
+      "playlists": "Speellyste",
+      "annotations": "Aantekeninge",
+      "media": "Media"
     },
-
     "am": {
       "title": "አፖሎጂስት",
       "description": "የአፖሎጂስት የመሳሪያ አሞሌ ቅጥያ",
@@ -134,9 +142,13 @@
       "daysAgo": "{{count}} ቀን በፊት",
       "buyBook": "መጽሐፍ ይግዙ",
       "noResources": "ለዚህ ምዕራፍ ተዛማጅ ምንጮች አልተገኙም",
-      "noContent": "ምንም ይዘት የለም"
+      "noContent": "ምንም ይዘት የለም",
+      "discover": "ዲስከቨር",
+      "all": "ሁሉም",
+      "playlists": "የአጫዋች ዝርዝሮች",
+      "annotations": "ማብራሪያዎች",
+      "media": "ሚዲያ"
     },
-
     "ar": {
       "title": "المدافع",
       "description": "إضافة شريط أدوات المدافع",
@@ -167,7 +179,12 @@
       "daysAgo": "منذ {{count}} يوم",
       "buyBook": "شراء الكتاب",
       "noResources": "لم يتم العثور على موارد ذات صلة لهذا الفصل",
-      "noContent": "لا يوجد محتوى"
+      "noContent": "لا يوجد محتوى",
+      "discover": "يكتشف",
+      "all": "الجميع",
+      "playlists": "قوائم التشغيل",
+      "annotations": "التعليقات التوضيحية",
+      "media": "وسائط"
     },
     "az": {
       "title": "Apoloqet",
@@ -199,9 +216,13 @@
       "daysAgo": "{{count}} gün əvvəl",
       "buyBook": "Kitabı al",
       "noResources": "Bu fəsil üçün uyğun resurs tapılmadı",
-      "noContent": "Məzmun yoxdur"
+      "noContent": "Məzmun yoxdur",
+      "discover": "Kəşf edin",
+      "all": "Hamısı",
+      "playlists": "Pleylistlər",
+      "annotations": "Annotasiyalar",
+      "media": "Media"
     },
-
     "be": {
       "title": "Апалагет",
       "description": "Пашырэнне панэлі інструментаў Апалагет",
@@ -232,9 +253,13 @@
       "daysAgo": "{{count}} дзён таму",
       "buyBook": "Купіць кнігу",
       "noResources": "Не знойдзена звязаных рэсурсаў для гэтага раздзела",
-      "noContent": "Няма змесціва"
+      "noContent": "Няма змесціва",
+      "discover": "Адкрыйце для сябе",
+      "all": "Усе",
+      "playlists": "Плэйлісты",
+      "annotations": "Анатацыі",
+      "media": "СМІ"
     },
-
     "bg": {
       "title": "Апологет",
       "description": "Разширение на лентата с инструменти „Апологет“",
@@ -265,9 +290,13 @@
       "daysAgo": "Преди {{count}} дни",
       "buyBook": "Купи книга",
       "noResources": "Не бяха намерени свързани ресурси за тази глава",
-      "noContent": "Няма съдържание"
+      "noContent": "Няма съдържание",
+      "discover": "Открийте",
+      "all": "Всички",
+      "playlists": "Плейлисти",
+      "annotations": "Анотации",
+      "media": "Медии"
     },
-
     "bn": {
       "title": "অ্যাপোলজিস্ট",
       "description": "অ্যাপোলজিস্ট টুলবার এক্সটেনশন",
@@ -298,9 +327,13 @@
       "daysAgo": "{{count}} দিন আগে",
       "buyBook": "বই কিনুন",
       "noResources": "এই অধ্যায়ের জন্য কোনও সম্পর্কিত রিসোর্স পাওয়া যায়নি",
-      "noContent": "কোনও বিষয়বস্তু নেই"
+      "noContent": "কোনও বিষয়বস্তু নেই",
+      "discover": "আবিষ্কার করুন",
+      "all": "সব",
+      "playlists": "প্লেলিস্ট",
+      "annotations": "টীকা",
+      "media": "মিডিয়া"
     },
-
     "bs": {
       "title": "Apologeta",
       "description": "Proširenje alatne trake Apologeta",
@@ -331,7 +364,12 @@
       "daysAgo": "Prije {{count}} dana",
       "buyBook": "Kupi knjigu",
       "noResources": "Nisu pronađeni povezani resursi za ovo poglavlje",
-      "noContent": "Nema sadržaja"
+      "noContent": "Nema sadržaja",
+      "discover": "Otkrijte",
+      "all": "Svi",
+      "playlists": "Plejliste",
+      "annotations": "Anotacije",
+      "media": "Mediji"
     },
     "ca": {
       "title": "Apologista",
@@ -363,9 +401,13 @@
       "daysAgo": "Fa {{count}} dies",
       "buyBook": "Compra el llibre",
       "noResources": "No s'han trobat recursos relacionats per a aquest capítol",
-      "noContent": "Sense contingut"
+      "noContent": "Sense contingut",
+      "discover": "Descobreix",
+      "all": "Tot",
+      "playlists": "Llistes de reproducció",
+      "annotations": "Anotacions",
+      "media": "Mitjans de comunicació"
     },
-
     "cs": {
       "title": "Apologeta",
       "description": "Rozšíření panelu nástrojů Apologeta",
@@ -396,9 +438,13 @@
       "daysAgo": "Před {{count}} dny",
       "buyBook": "Koupit knihu",
       "noResources": "Pro tuto kapitolu nebyly nalezeny žádné související zdroje",
-      "noContent": "Žádný obsah"
+      "noContent": "Žádný obsah",
+      "discover": "Objevit",
+      "all": "Vše",
+      "playlists": "Seznamy skladeb",
+      "annotations": "Anotace",
+      "media": "Média"
     },
-
     "cy": {
       "title": "Apolegydd",
       "description": "Estyniad bar offer Apolegydd",
@@ -429,9 +475,13 @@
       "daysAgo": "{{count}} diwrnod yn ôl",
       "buyBook": "Prynu Llyfr",
       "noResources": "Ni chanfuwyd adnoddau cysylltiedig ar gyfer y bennod hon",
-      "noContent": "Dim cynnwys"
+      "noContent": "Dim cynnwys",
+      "discover": "Darganfod",
+      "all": "Pawb",
+      "playlists": "Rhestrau chwarae",
+      "annotations": "Anodiadau",
+      "media": "Cyfryngau"
     },
-
     "da": {
       "title": "Apologet",
       "description": "Apologet-værktøjslinjeudvidelse",
@@ -462,9 +512,13 @@
       "daysAgo": "{{count}} dage siden",
       "buyBook": "Køb bog",
       "noResources": "Ingen relaterede ressourcer fundet til dette kapitel",
-      "noContent": "Intet indhold"
+      "noContent": "Intet indhold",
+      "discover": "Opdage",
+      "all": "Alle",
+      "playlists": "Afspilningslister",
+      "annotations": "Annotationer",
+      "media": "Medier"
     },
-
     "de": {
       "title": "Apologet",
       "description": "Apologet-Symbolleisten-Erweiterung",
@@ -495,7 +549,12 @@
       "daysAgo": "Vor {{count}} Tagen",
       "buyBook": "Buch kaufen",
       "noResources": "Für dieses Kapitel wurden keine verwandten Ressourcen gefunden",
-      "noContent": "Kein Inhalt"
+      "noContent": "Kein Inhalt",
+      "discover": "Entdecken",
+      "all": "Alle",
+      "playlists": "Wiedergabelisten",
+      "annotations": "Anmerkungen",
+      "media": "Medien"
     },
     "el": {
       "title": "Απολογητής",
@@ -527,9 +586,13 @@
       "daysAgo": "Πριν από {{count}} ημέρες",
       "buyBook": "Αγορά βιβλίου",
       "noResources": "Δεν βρέθηκαν σχετικοί πόροι για αυτό το κεφάλαιο",
-      "noContent": "Δεν υπάρχει περιεχόμενο"
+      "noContent": "Δεν υπάρχει περιεχόμενο",
+      "discover": "Ανακαλύπτω",
+      "all": "Ολοι",
+      "playlists": "Λίστες αναπαραγωγής",
+      "annotations": "Σχολιασμοί",
+      "media": "Μέσα ενημέρωσης"
     },
-
     "et": {
       "title": "Apoloog",
       "description": "Apoloogi tööriistariba laiendus",
@@ -560,9 +623,13 @@
       "daysAgo": "{{count}} päeva tagasi",
       "buyBook": "Osta raamat",
       "noResources": "Selle peatüki kohta ei leitud seotud ressursse",
-      "noContent": "Sisu puudub"
+      "noContent": "Sisu puudub",
+      "discover": "Avasta",
+      "all": "Kõik",
+      "playlists": "Esitusloendid",
+      "annotations": "Märkused",
+      "media": "Meedia"
     },
-
     "fa": {
       "title": "دفاعیه‌نویس",
       "description": "افزونه نوار ابزار دفاعیه‌نویس",
@@ -593,9 +660,13 @@
       "daysAgo": "{{count}} روز پیش",
       "buyBook": "خرید کتاب",
       "noResources": "منبع مرتبطی برای این فصل یافت نشد",
-      "noContent": "محتوایی وجود ندارد"
+      "noContent": "محتوایی وجود ندارد",
+      "discover": "کشف کنید",
+      "all": "همه",
+      "playlists": "لیست‌های پخش",
+      "annotations": "حاشیه‌نویسی‌ها",
+      "media": "رسانه"
     },
-
     "fi": {
       "title": "Apologeetta",
       "description": "Apologeetta-työkalupalkin laajennus",
@@ -626,9 +697,13 @@
       "daysAgo": "{{count}} pv sitten",
       "buyBook": "Osta kirja",
       "noResources": "Tähän lukuun ei löytynyt liittyviä resursseja",
-      "noContent": "Ei sisältöä"
+      "noContent": "Ei sisältöä",
+      "discover": "Tutustu",
+      "all": "Kaikki",
+      "playlists": "Soittolistat",
+      "annotations": "Merkinnät",
+      "media": "Media"
     },
-
     "fil": {
       "title": "Apologist",
       "description": "Ekstensyon ng toolbar ng Apologist",
@@ -659,7 +734,12 @@
       "daysAgo": "{{count}} araw ang nakalipas",
       "buyBook": "Bumili ng Aklat",
       "noResources": "Walang kaugnay na mapagkukunan para sa kabanatang ito",
-      "noContent": "Walang nilalaman"
+      "noContent": "Walang nilalaman",
+      "discover": "Tuklasin",
+      "all": "Lahat",
+      "playlists": "Mga Playlist",
+      "annotations": "Mga Anotasyon",
+      "media": "Media"
     },
     "fr": {
       "title": "Apologiste",
@@ -691,9 +771,13 @@
       "daysAgo": "Il y a {{count}} j",
       "buyBook": "Acheter le livre",
       "noResources": "Aucune ressource associée trouvée pour ce chapitre",
-      "noContent": "Aucun contenu"
+      "noContent": "Aucun contenu",
+      "discover": "Découvrir",
+      "all": "Tous",
+      "playlists": "Listes de lecture",
+      "annotations": "Annotations",
+      "media": "Médias"
     },
-
     "fy": {
       "title": "Apolooch",
       "description": "Apolooch arkbalke-útwreiding",
@@ -724,9 +808,13 @@
       "daysAgo": "{{count}} d lyn",
       "buyBook": "Boek keapje",
       "noResources": "Gjin relatearre boarnen fûn foar dit haadstik",
-      "noContent": "Gjin ynhâld"
+      "noContent": "Gjin ynhâld",
+      "discover": "Ûntdekke",
+      "all": "Alle",
+      "playlists": "Ofspiellisten",
+      "annotations": "Annotaasjes",
+      "media": "Media"
     },
-
     "gl": {
       "title": "Apoloxista",
       "description": "Extensión da barra de ferramentas Apoloxista",
@@ -757,9 +845,13 @@
       "daysAgo": "Hai {{count}} días",
       "buyBook": "Mercar libro",
       "noResources": "Non se atoparon recursos relacionados para este capítulo",
-      "noContent": "Sen contido"
+      "noContent": "Sen contido",
+      "discover": "Descubrir",
+      "all": "Todo",
+      "playlists": "Listas de reprodución",
+      "annotations": "Anotacións",
+      "media": "Medios de comunicación"
     },
-
     "gn": {
       "title": "Apologéta",
       "description": "Apologéta rembiporu renda jepysokue",
@@ -790,9 +882,13 @@
       "daysAgo": "{{count}} ára mboyve",
       "buyBook": "Ejogua aranduka",
       "noResources": "Ndojejuhúi mba'e ojojáva ko kapítulope",
-      "noContent": "Ndaipóri tetepy"
+      "noContent": "Ndaipóri tetepy",
+      "discover": "Juhu",
+      "all": "Opavave",
+      "playlists": "Ñembopu lista-kuéra",
+      "annotations": "Anotaciones rehegua",
+      "media": "Medios de comunicación rehegua"
     },
-
     "gu": {
       "title": "એપોલોજિસ્ટ",
       "description": "એપોલોજિસ્ટ ટૂલબાર એક્સ્ટેન્શન",
@@ -823,7 +919,12 @@
       "daysAgo": "{{count}} દિવસ પહેલાં",
       "buyBook": "પુસ્તક ખરીદો",
       "noResources": "આ અધ્યાય માટે સંબંધિત સંસાધનો મળ્યા નથી",
-      "noContent": "કોઈ સામગ્રી નથી"
+      "noContent": "કોઈ સામગ્રી નથી",
+      "discover": "શોધો",
+      "all": "બધા",
+      "playlists": "પ્લેલિસ્ટ્સ",
+      "annotations": "ટીકાઓ",
+      "media": "મીડિયા"
     },
     "he": {
       "title": "אפולוגט",
@@ -855,9 +956,13 @@
       "daysAgo": "לפני {{count}} ימים",
       "buyBook": "קנה ספר",
       "noResources": "לא נמצאו משאבים קשורים לפרק זה",
-      "noContent": "אין תוכן"
+      "noContent": "אין תוכן",
+      "discover": "לְגַלוֹת",
+      "all": "כֹּל",
+      "playlists": "פלייליסטים",
+      "annotations": "הערות",
+      "media": "כְּלֵי תִקְשׁוֹרֶת"
     },
-
     "hi": {
       "title": "अपोलोजिस्ट",
       "description": "अपोलोजिस्ट टूलबार एक्सटेंशन",
@@ -888,9 +993,13 @@
       "daysAgo": "{{count}} दिन पहले",
       "buyBook": "पुस्तक खरीदें",
       "noResources": "इस अध्याय के लिए कोई संबंधित संसाधन नहीं मिला",
-      "noContent": "कोई सामग्री नहीं"
+      "noContent": "कोई सामग्री नहीं",
+      "discover": "खोज करना",
+      "all": "सभी",
+      "playlists": "प्लेलिस्ट",
+      "annotations": "एनोटेशन",
+      "media": "मिडिया"
     },
-
     "hr": {
       "title": "Apologet",
       "description": "Proširenje alatne trake Apologet",
@@ -921,9 +1030,13 @@
       "daysAgo": "Prije {{count}} dana",
       "buyBook": "Kupi knjigu",
       "noResources": "Nisu pronađeni povezani resursi za ovo poglavlje",
-      "noContent": "Nema sadržaja"
+      "noContent": "Nema sadržaja",
+      "discover": "Otkriti",
+      "all": "Sve",
+      "playlists": "Popisi za reprodukciju",
+      "annotations": "Anotacije",
+      "media": "Mediji"
     },
-
     "hu": {
       "title": "Apologéta",
       "description": "Apologéta eszköztár-bővítmény",
@@ -954,9 +1067,13 @@
       "daysAgo": "{{count}} napja",
       "buyBook": "Könyv vásárlása",
       "noResources": "Ehhez a fejezethez nem találhatók kapcsolódó források",
-      "noContent": "Nincs tartalom"
+      "noContent": "Nincs tartalom",
+      "discover": "Felfedezés",
+      "all": "Minden",
+      "playlists": "Lejátszási listák",
+      "annotations": "Jegyzetek",
+      "media": "Média"
     },
-
     "ind": {
       "title": "Apologis",
       "description": "Ekstensi bilah alat Apologis",
@@ -987,7 +1104,12 @@
       "daysAgo": "{{count}} hari yang lalu",
       "buyBook": "Beli Buku",
       "noResources": "Tidak ditemukan sumber terkait untuk pasal ini",
-      "noContent": "Tidak ada konten"
+      "noContent": "Tidak ada konten",
+      "discover": "Menemukan",
+      "all": "Semua",
+      "playlists": "Daftar Putar",
+      "annotations": "Catatan",
+      "media": "Media"
     },
     "is": {
       "title": "Trúvörn",
@@ -1019,9 +1141,13 @@
       "daysAgo": "Fyrir {{count}} dögum",
       "buyBook": "Kaupa bók",
       "noResources": "Engar tengdar auðlindir fundust fyrir þennan kafla",
-      "noContent": "Ekkert efni"
+      "noContent": "Ekkert efni",
+      "discover": "Uppgötva",
+      "all": "Allt",
+      "playlists": "Spilunarlistar",
+      "annotations": "Skýringar",
+      "media": "Fjölmiðlar"
     },
-
     "it": {
       "title": "Apologista",
       "description": "Estensione della barra degli strumenti Apologista",
@@ -1052,9 +1178,13 @@
       "daysAgo": "{{count}} g fa",
       "buyBook": "Acquista il libro",
       "noResources": "Nessuna risorsa correlata trovata per questo capitolo",
-      "noContent": "Nessun contenuto"
+      "noContent": "Nessun contenuto",
+      "discover": "Scoprire",
+      "all": "Tutto",
+      "playlists": "Playlist",
+      "annotations": "Annotazioni",
+      "media": "Media"
     },
-
     "iw": {
       "title": "אפולוגט",
       "description": "הרחבת סרגל הכלים של אפולוגט",
@@ -1085,9 +1215,13 @@
       "daysAgo": "לפני {{count}} ימים",
       "buyBook": "קנה ספר",
       "noResources": "לא נמצאו משאבים קשורים לפרק זה",
-      "noContent": "אין תוכן"
+      "noContent": "אין תוכן",
+      "discover": "לְגַלוֹת",
+      "all": "כֹּל",
+      "playlists": "פלייליסטים",
+      "annotations": "הערות",
+      "media": "כְּלֵי תִקְשׁוֹרֶת"
     },
-
     "ja": {
       "title": "弁証者",
       "description": "弁証者ツールバー拡張機能",
@@ -1118,9 +1252,13 @@
       "daysAgo": "{{count}}日前",
       "buyBook": "書籍を購入",
       "noResources": "この章に関連するリソースは見つかりませんでした",
-      "noContent": "コンテンツがありません"
+      "noContent": "コンテンツがありません",
+      "discover": "発見する",
+      "all": "全て",
+      "playlists": "プレイリスト",
+      "annotations": "注釈",
+      "media": "メディア"
     },
-
     "ka": {
       "title": "აპოლოგეტი",
       "description": "აპოლოგეტის ხელსაწყოთა ზოლის გაფართოება",
@@ -1151,7 +1289,12 @@
       "daysAgo": "{{count}} დღის წინ",
       "buyBook": "წიგნის ყიდვა",
       "noResources": "ამ თავისთვის შესაბამისი რესურსები ვერ მოიძებნა",
-      "noContent": "შინაარსი არ არის"
+      "noContent": "შინაარსი არ არის",
+      "discover": "აღმოაჩინეთ",
+      "all": "ყველა",
+      "playlists": "დასაკრავი სიები",
+      "annotations": "ანოტაციები",
+      "media": "მედია"
     },
     "km": {
       "title": "អ្នកការពារជំនឿ",
@@ -1183,9 +1326,13 @@
       "daysAgo": "{{count}} ថ្ងៃមុន",
       "buyBook": "ទិញសៀវភៅ",
       "noResources": "រកមិនឃើញធនធានដែលពាក់ព័ន្ធសម្រាប់ជំពូកនេះ",
-      "noContent": "គ្មានមាតិកា"
+      "noContent": "គ្មានមាតិកា",
+      "discover": "ស្វែងយល់",
+      "all": "ទាំងអស់",
+      "playlists": "បញ្ជីចាក់",
+      "annotations": "ចំណារពន្យល់",
+      "media": "មេឌៀ"
     },
-
     "kn": {
       "title": "ಅಪಾಲಜಿಸ್ಟ್",
       "description": "ಅಪಾಲಜಿಸ್ಟ್ ಟೂಲ್‌ಬಾರ್ ವಿಸ್ತರಣೆ",
@@ -1216,9 +1363,13 @@
       "daysAgo": "{{count}} ದಿನಗಳ ಹಿಂದೆ",
       "buyBook": "ಪುಸ್ತಕವನ್ನು ಖರೀದಿಸಿ",
       "noResources": "ಈ ಅಧ್ಯಾಯಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಸಂಪನ್ಮೂಲಗಳು ಕಂಡುಬಂದಿಲ್ಲ",
-      "noContent": "ಯಾವುದೇ ವಿಷಯವಿಲ್ಲ"
+      "noContent": "ಯಾವುದೇ ವಿಷಯವಿಲ್ಲ",
+      "discover": "ಅನ್ವೇಷಿಸಿ",
+      "all": "ಎಲ್ಲವೂ",
+      "playlists": "ಪ್ಲೇಪಟ್ಟಿಗಳು",
+      "annotations": "ಟಿಪ್ಪಣಿಗಳು",
+      "media": "ಮಾಧ್ಯಮ"
     },
-
     "ko": {
       "title": "변증가",
       "description": "변증가 도구 모음 확장",
@@ -1249,9 +1400,13 @@
       "daysAgo": "{{count}}일 전",
       "buyBook": "책 구매",
       "noResources": "이 장에 대한 관련 자료를 찾을 수 없습니다",
-      "noContent": "내용 없음"
+      "noContent": "내용 없음",
+      "discover": "발견하다",
+      "all": "모두",
+      "playlists": "플레이리스트",
+      "annotations": "주석",
+      "media": "메디아"
     },
-
     "ky": {
       "title": "Апологет",
       "description": "Апологет куралдар тилкесинин кеңейтүүсү",
@@ -1282,9 +1437,13 @@
       "daysAgo": "{{count}} күн мурун",
       "buyBook": "Китеп сатып алуу",
       "noResources": "Бул бөлүм үчүн тиешелүү ресурстар табылган жок",
-      "noContent": "Мазмун жок"
+      "noContent": "Мазмун жок",
+      "discover": "Ачылыш",
+      "all": "Баары",
+      "playlists": "Ойнотмо тизмелер",
+      "annotations": "Аннотациялар",
+      "media": "Медиа"
     },
-
     "ln": {
       "title": "Mobateli ya Kondima",
       "description": "Bobakisi ya barre d'outils ya Mobateli ya Kondima",
@@ -1315,7 +1474,12 @@
       "daysAgo": "{{count}} mikolo eleki",
       "buyBook": "Somba buku",
       "noResources": "Biloko oyo etali mokapo oyo ezwami te",
-      "noContent": "Ezali na makambo te"
+      "noContent": "Ezali na makambo te",
+      "discover": "Komona",
+      "all": "Nyonso",
+      "playlists": "Ba liste ya ba nzembo",
+      "annotations": "Ba annotations oyo esalemi",
+      "media": "Bapanzi-nsango"
     },
     "lo": {
       "title": "ນັກປົກປ້ອງຄວາມເຊື່ອ",
@@ -1347,9 +1511,13 @@
       "daysAgo": "{{count}} ມື້ກ່ອນ",
       "buyBook": "ຊື້ປຶ້ມ",
       "noResources": "ບໍ່ພົບແຫຼ່ງຂໍ້ມູນທີ່ກ່ຽວຂ້ອງ",
-      "noContent": "ບໍ່ມີເນື້ອຫາ"
+      "noContent": "ບໍ່ມີເນື້ອຫາ",
+      "discover": "ຄົ້ນພົບ",
+      "all": "ທັງໝົດ",
+      "playlists": "ລາຍການເພງ",
+      "annotations": "ຄຳອະທິບາຍປະກອບ",
+      "media": "ສື່"
     },
-
     "lt": {
       "title": "Apologetas",
       "description": "Apologeto įrankių juostos plėtinys",
@@ -1380,9 +1548,13 @@
       "daysAgo": "Prieš {{count}} d.",
       "buyBook": "Pirkti knygą",
       "noResources": "Šiam skyriui susijusių išteklių nerasta",
-      "noContent": "Nėra turinio"
+      "noContent": "Nėra turinio",
+      "discover": "Atraskite",
+      "all": "Visi",
+      "playlists": "Grojaraščiai",
+      "annotations": "Anotacijos",
+      "media": "Žiniasklaida"
     },
-
     "lv": {
       "title": "Apologēts",
       "description": "Apologēta rīkjoslas paplašinājums",
@@ -1413,9 +1585,13 @@
       "daysAgo": "Pirms {{count}} dienām",
       "buyBook": "Pirkt grāmatu",
       "noResources": "Šai nodaļai netika atrasti saistīti resursi",
-      "noContent": "Nav satura"
+      "noContent": "Nav satura",
+      "discover": "Atklājiet",
+      "all": "Visi",
+      "playlists": "Atskaņošanas saraksti",
+      "annotations": "Anotācijas",
+      "media": "Mediji"
     },
-
     "mk": {
       "title": "Апологет",
       "description": "Проширување на алатникот Апологет",
@@ -1446,9 +1622,13 @@
       "daysAgo": "Пред {{count}} дена",
       "buyBook": "Купи книга",
       "noResources": "Не се пронајдени поврзани ресурси за ова поглавје",
-      "noContent": "Нема содржина"
+      "noContent": "Нема содржина",
+      "discover": "Откријте",
+      "all": "Сите",
+      "playlists": "Плејлисти",
+      "annotations": "Анотации",
+      "media": "Медиуми"
     },
-
     "ml": {
       "title": "അപ്പോളജിസ്റ്റ്",
       "description": "അപ്പോളജിസ്റ്റ് ടൂൾബാർ എക്സ്റ്റൻഷൻ",
@@ -1479,7 +1659,12 @@
       "daysAgo": "{{count}} ദിവസം മുമ്പ്",
       "buyBook": "പുസ്തകം വാങ്ങുക",
       "noResources": "ഈ അധ്യായത്തിനായി ബന്ധപ്പെട്ട വിഭവങ്ങളൊന്നും കണ്ടെത്തിയില്ല",
-      "noContent": "ഉള്ളടക്കമില്ല"
+      "noContent": "ഉള്ളടക്കമില്ല",
+      "discover": "കണ്ടെത്തുക",
+      "all": "എല്ലാം",
+      "playlists": "പ്ലേലിസ്റ്റുകൾ",
+      "annotations": "വ്യാഖ്യാനങ്ങൾ",
+      "media": "മീഡിയ"
     },
     "mn": {
       "title": "Апологет",
@@ -1511,9 +1696,13 @@
       "daysAgo": "{{count}} хоногийн өмнө",
       "buyBook": "Ном худалдаж авах",
       "noResources": "Энэ бүлэгт холбогдох эх сурвалж олдсонгүй",
-      "noContent": "Агуулга байхгүй"
+      "noContent": "Агуулга байхгүй",
+      "discover": "Нээх",
+      "all": "Бүгд",
+      "playlists": "Тоглуулах жагсаалтууд",
+      "annotations": "Тэмдэглэгээ",
+      "media": "Хэвлэл мэдээлэл"
     },
-
     "mr": {
       "title": "अपोलॉजिस्ट",
       "description": "अपोलॉजिस्ट टूलबार विस्तार",
@@ -1544,9 +1733,13 @@
       "daysAgo": "{{count}} दिवसांपूर्वी",
       "buyBook": "पुस्तक खरेदी करा",
       "noResources": "या अध्यायासाठी संबंधित संसाधने सापडली नाहीत",
-      "noContent": "सामग्री नाही"
+      "noContent": "सामग्री नाही",
+      "discover": "शोधा",
+      "all": "सर्व",
+      "playlists": "प्लेलिस्ट",
+      "annotations": "भाष्ये",
+      "media": "माध्यमे"
     },
-
     "ms": {
       "title": "Apologis",
       "description": "Sambungan bar alat Apologis",
@@ -1577,9 +1770,13 @@
       "daysAgo": "{{count}} hari lalu",
       "buyBook": "Beli Buku",
       "noResources": "Tiada sumber berkaitan ditemui untuk bab ini",
-      "noContent": "Tiada kandungan"
+      "noContent": "Tiada kandungan",
+      "discover": "Temui",
+      "all": "Semua",
+      "playlists": "Senarai main",
+      "annotations": "Anotasi",
+      "media": "Media"
     },
-
     "my": {
       "title": "အယူဝါဒကာကွယ်သူ",
       "description": "အယူဝါဒကာကွယ်သူ ကိရိယာဘား တိုးချဲ့မှု",
@@ -1610,9 +1807,13 @@
       "daysAgo": "{{count}} ရက်အကြာ",
       "buyBook": "စာအုပ်ဝယ်ရန်",
       "noResources": "ဤအခန်းအတွက် သက်ဆိုင်ရာအရင်းအမြစ်များ မတွေ့ပါ",
-      "noContent": "အကြောင်းအရာမရှိပါ"
+      "noContent": "အကြောင်းအရာမရှိပါ",
+      "discover": "ရှာဖွေတွေ့ရှိပါ",
+      "all": "အားလုံး",
+      "playlists": "သီချင်းစာရင်းများ",
+      "annotations": "မှတ်ချက်များ",
+      "media": "မီဒီယာ"
     },
-
     "nb": {
       "title": "Apologet",
       "description": "Apologet-verktøylinjeutvidelse",
@@ -1643,7 +1844,12 @@
       "daysAgo": "{{count}} dager siden",
       "buyBook": "Kjøp bok",
       "noResources": "Ingen relaterte ressurser funnet for dette kapittelet",
-      "noContent": "Ingen innhold"
+      "noContent": "Ingen innhold",
+      "discover": "Oppdage",
+      "all": "Alle",
+      "playlists": "Spillelister",
+      "annotations": "Annoteringer",
+      "media": "Media"
     },
     "ne": {
       "title": "अपोलोजिस्ट",
@@ -1675,9 +1881,13 @@
       "daysAgo": "{{count}} दिन अघि",
       "buyBook": "पुस्तक किन्नुहोस्",
       "noResources": "यस अध्यायका लागि सम्बन्धित स्रोतहरू फेला परेनन्",
-      "noContent": "कुनै सामग्री छैन"
+      "noContent": "कुनै सामग्री छैन",
+      "discover": "पत्ता लगाउनुहोस्",
+      "all": "सबै",
+      "playlists": "प्लेलिस्टहरू",
+      "annotations": "एनोटेसनहरू",
+      "media": "मिडिया"
     },
-
     "nl": {
       "title": "Apologeet",
       "description": "Apologeet-werkbalkextensie",
@@ -1708,9 +1918,13 @@
       "daysAgo": "{{count}} d geleden",
       "buyBook": "Boek kopen",
       "noResources": "Geen gerelateerde bronnen gevonden voor dit hoofdstuk",
-      "noContent": "Geen inhoud"
+      "noContent": "Geen inhoud",
+      "discover": "Ontdekken",
+      "all": "Alle",
+      "playlists": "Afspeellijsten",
+      "annotations": "Annotaties",
+      "media": "Media"
     },
-
     "no": {
       "title": "Apologet",
       "description": "Apologet-verktøylinjeutvidelse",
@@ -1741,9 +1955,13 @@
       "daysAgo": "{{count}} dager siden",
       "buyBook": "Kjøp bok",
       "noResources": "Ingen relaterte ressurser funnet for dette kapittelet",
-      "noContent": "Ingen innhold"
+      "noContent": "Ingen innhold",
+      "discover": "Oppdage",
+      "all": "Alle",
+      "playlists": "Spillelister",
+      "annotations": "Annoteringer",
+      "media": "Media"
     },
-
     "pa": {
       "title": "ਅਪੋਲੋਜਿਸਟ",
       "description": "ਅਪੋਲੋਜਿਸਟ ਟੂਲਬਾਰ ਐਕਸਟੈਂਸ਼ਨ",
@@ -1774,9 +1992,13 @@
       "daysAgo": "{{count}} ਦਿਨ ਪਹਿਲਾਂ",
       "buyBook": "ਕਿਤਾਬ ਖਰੀਦੋ",
       "noResources": "ਇਸ ਅਧਿਆਇ ਲਈ ਕੋਈ ਸੰਬੰਧਿਤ ਸਰੋਤ ਨਹੀਂ ਮਿਲੇ",
-      "noContent": "ਕੋਈ ਸਮੱਗਰੀ ਨਹੀਂ"
+      "noContent": "ਕੋਈ ਸਮੱਗਰੀ ਨਹੀਂ",
+      "discover": "ਖੋਜ ਕਰੋ",
+      "all": "ਸਾਰੇ",
+      "playlists": "ਪਲੇਲਿਸਟਸ",
+      "annotations": "ਐਨੋਟੇਸ਼ਨ",
+      "media": "ਮੀਡੀਆ"
     },
-
     "pl": {
       "title": "Apologeta",
       "description": "Rozszerzenie paska narzędzi Apologeta",
@@ -1807,7 +2029,12 @@
       "daysAgo": "{{count}} dni temu",
       "buyBook": "Kup książkę",
       "noResources": "Nie znaleziono powiązanych materiałów dla tego rozdziału",
-      "noContent": "Brak treści"
+      "noContent": "Brak treści",
+      "discover": "Odkryć",
+      "all": "Wszystko",
+      "playlists": "Listy odtwarzania",
+      "annotations": "Adnotacje",
+      "media": "Głoska bezdźwięczna"
     },
     "ps": {
       "title": "مدافع",
@@ -1839,9 +2066,13 @@
       "daysAgo": "{{count}} ورځې مخکې",
       "buyBook": "کتاب واخلئ",
       "noResources": "د دې فصل لپاره اړوند سرچینې ونه موندل شوې",
-      "noContent": "منځپانګه نشته"
+      "noContent": "منځپانګه نشته",
+      "discover": "کشف کړئ",
+      "all": "ټول",
+      "playlists": "پلې لیستونه",
+      "annotations": "یادښتونه",
+      "media": "رسنۍ"
     },
-
     "pt": {
       "title": "Apologista",
       "description": "Extensão da barra de ferramentas Apologista",
@@ -1872,9 +2103,13 @@
       "daysAgo": "{{count}} dias atrás",
       "buyBook": "Comprar livro",
       "noResources": "Nenhum recurso relacionado encontrado para este capítulo",
-      "noContent": "Sem conteúdo"
+      "noContent": "Sem conteúdo",
+      "discover": "Descobrir",
+      "all": "Todos",
+      "playlists": "Listas de reprodução",
+      "annotations": "Anotações",
+      "media": "Mídia"
     },
-
     "ro": {
       "title": "Apologet",
       "description": "Extensie pentru bara de instrumente Apologet",
@@ -1905,9 +2140,13 @@
       "daysAgo": "{{count}} zile în urmă",
       "buyBook": "Cumpără cartea",
       "noResources": "Nu au fost găsite resurse pentru acest capitol",
-      "noContent": "Fără conținut"
+      "noContent": "Fără conținut",
+      "discover": "Descoperi",
+      "all": "Toate",
+      "playlists": "Liste de redare",
+      "annotations": "Adnotări",
+      "media": "Media"
     },
-
     "ru": {
       "title": "Апологет",
       "description": "Расширение панели инструментов Апологет",
@@ -1938,9 +2177,13 @@
       "daysAgo": "{{count}} дн. назад",
       "buyBook": "Купить книгу",
       "noResources": "Для этой главы не найдено связанных ресурсов",
-      "noContent": "Нет содержимого"
+      "noContent": "Нет содержимого",
+      "discover": "Обнаружить",
+      "all": "Все",
+      "playlists": "Плейлисты",
+      "annotations": "Аннотации",
+      "media": "СМИ"
     },
-
     "sk": {
       "title": "Apológ",
       "description": "Rozšírenie panela nástrojov Apológ",
@@ -1971,7 +2214,12 @@
       "daysAgo": "Pred {{count}} dňami",
       "buyBook": "Kúpiť knihu",
       "noResources": "Pre túto kapitolu sa nenašli žiadne súvisiace zdroje",
-      "noContent": "Žiadny obsah"
+      "noContent": "Žiadny obsah",
+      "discover": "Objavte",
+      "all": "Všetky",
+      "playlists": "Zoznamy skladieb",
+      "annotations": "Anotácie",
+      "media": "Médiá"
     },
     "sl": {
       "title": "Apologet",
@@ -2003,9 +2251,13 @@
       "daysAgo": "Pred {{count}} dnevi",
       "buyBook": "Kupi knjigo",
       "noResources": "Za to poglavje ni bilo najdenih povezanih virov",
-      "noContent": "Ni vsebine"
+      "noContent": "Ni vsebine",
+      "discover": "Odkrijte",
+      "all": "Vse",
+      "playlists": "Seznami predvajanja",
+      "annotations": "Opombe",
+      "media": "Mediji"
     },
-
     "sq": {
       "title": "Apologjet",
       "description": "Shtesë e shiritit të veglave Apologjet",
@@ -2036,9 +2288,13 @@
       "daysAgo": "{{count}} ditë më parë",
       "buyBook": "Bli librin",
       "noResources": "Nuk u gjetën burime të lidhura për këtë kapitull",
-      "noContent": "Pa përmbajtje"
+      "noContent": "Pa përmbajtje",
+      "discover": "Zbulo",
+      "all": "Të gjitha",
+      "playlists": "Listat e dëgjimit",
+      "annotations": "Shënime",
+      "media": "Media"
     },
-
     "sv": {
       "title": "Apologet",
       "description": "Apologet-verktygsfältstillägg",
@@ -2069,9 +2325,13 @@
       "daysAgo": "{{count}} dagar sedan",
       "buyBook": "Köp bok",
       "noResources": "Inga relaterade resurser hittades för detta kapitel",
-      "noContent": "Inget innehåll"
+      "noContent": "Inget innehåll",
+      "discover": "Upptäcka",
+      "all": "Alla",
+      "playlists": "Spellistor",
+      "annotations": "Annoteringar",
+      "media": "Media"
     },
-
     "sw": {
       "title": "Mtetezi wa Imani",
       "description": "Kiendelezi cha upau wa zana wa Mtetezi wa Imani",
@@ -2102,9 +2362,13 @@
       "daysAgo": "Siku {{count}} zilizopita",
       "buyBook": "Nunua Kitabu",
       "noResources": "Hakuna rasilimali zinazohusiana zilizopatikana kwa sura hii",
-      "noContent": "Hakuna maudhui"
+      "noContent": "Hakuna maudhui",
+      "discover": "Gundua",
+      "all": "Zote",
+      "playlists": "Orodha za kucheza",
+      "annotations": "Maelezo",
+      "media": "Vyombo vya habari"
     },
-
     "ta": {
       "title": "நம்பிக்கைக் காவலர்",
       "description": "நம்பிக்கைக் காவலர் கருவிப்பட்டி நீட்டிப்பு",
@@ -2135,7 +2399,12 @@
       "daysAgo": "{{count}} நாட்களுக்கு முன்",
       "buyBook": "புத்தகத்தை வாங்கவும்",
       "noResources": "இந்த அதிகாரத்திற்கு தொடர்புடைய வளங்கள் எதுவும் கிடைக்கவில்லை",
-      "noContent": "உள்ளடக்கம் இல்லை"
+      "noContent": "உள்ளடக்கம் இல்லை",
+      "discover": "கண்டுபிடிப்பாளர்",
+      "all": "அனைத்தும்",
+      "playlists": "பிளேலிஸ்ட்கள்",
+      "annotations": "குறிப்புகள்",
+      "media": "ஊடகம்"
     },
     "te": {
       "title": "క్షమాపణవాది",
@@ -2167,9 +2436,13 @@
       "daysAgo": "{{count}} రోజుల క్రితం",
       "buyBook": "పుస్తకం కొనండి",
       "noResources": "ఈ అధ్యాయానికి సంబంధించిన వనరులు కనుగొనబడలేదు",
-      "noContent": "కంటెంట్ లేదు"
+      "noContent": "కంటెంట్ లేదు",
+      "discover": "కనుగొనండి",
+      "all": "అన్నీ",
+      "playlists": "ప్లేజాబితాలు",
+      "annotations": "వ్యాఖ్యానాలు",
+      "media": "మీడియా"
     },
-
     "th": {
       "title": "นักปกป้องความเชื่อ",
       "description": "ส่วนขยายแถบเครื่องมือ Apologist",
@@ -2200,9 +2473,13 @@
       "daysAgo": "{{count}} วันที่แล้ว",
       "buyBook": "ซื้อหนังสือ",
       "noResources": "ไม่พบทรัพยากรที่เกี่ยวข้องสำหรับบทนี้",
-      "noContent": "ไม่มีเนื้อหา"
+      "noContent": "ไม่มีเนื้อหา",
+      "discover": "ค้นพบ",
+      "all": "ทั้งหมด",
+      "playlists": "เพลย์ลิสต์",
+      "annotations": "คำอธิบายประกอบ",
+      "media": "สื่อ"
     },
-
     "ti": {
       "title": "ተከላኻሊ እምነት",
       "description": "መሳርሒ መስመር Apologist መስፋሕቲ",
@@ -2233,9 +2510,13 @@
       "daysAgo": "ቅድሚ {{count}} መዓልቲ",
       "buyBook": "መጽሓፍ ግዛእ",
       "noResources": "ነዚ ምዕራፍ ዝምልከት ምንጪ ኣይተረኽበን",
-      "noContent": "ትሕዝቶ የለን"
+      "noContent": "ትሕዝቶ የለን",
+      "discover": "ረኸበ",
+      "all": "ኩሎም",
+      "playlists": "ዝርዝር ደርፍታት",
+      "annotations": "መግለጺታት (annotations)",
+      "media": "ሚድያ"
     },
-
     "tl": {
       "title": "Apologist",
       "description": "Ekstensyon ng toolbar ng Apologist",
@@ -2266,9 +2547,13 @@
       "daysAgo": "{{count}} araw ang nakalipas",
       "buyBook": "Bumili ng Aklat",
       "noResources": "Walang kaugnay na mapagkukunan para sa kabanatang ito",
-      "noContent": "Walang nilalaman"
+      "noContent": "Walang nilalaman",
+      "discover": "Tuklasin",
+      "all": "Lahat",
+      "playlists": "Mga Playlist",
+      "annotations": "Mga Anotasyon",
+      "media": "Media"
     },
-
     "tr": {
       "title": "Apolojist",
       "description": "Apolojist araç çubuğu uzantısı",
@@ -2299,7 +2584,12 @@
       "daysAgo": "{{count}} gün önce",
       "buyBook": "Kitap Satın Al",
       "noResources": "Bu bölüm için ilgili kaynak bulunamadı",
-      "noContent": "İçerik yok"
+      "noContent": "İçerik yok",
+      "discover": "Keşfetmek",
+      "all": "Tüm",
+      "playlists": "Çalma listeleri",
+      "annotations": "Açıklamalar",
+      "media": "Medya"
     },
     "ug": {
       "title": "ئەقىدىنى قوغدىغۇچى",
@@ -2331,9 +2621,13 @@
       "daysAgo": "{{count}} كۈن بۇرۇن",
       "buyBook": "كىتاب سېتىۋېلىش",
       "noResources": "بۇ بابقا مۇناسىۋەتلىك مەنبە تېپىلمىدى",
-      "noContent": "مەزمۇن يوق"
+      "noContent": "مەزمۇن يوق",
+      "discover": "بايقاش",
+      "all": "ھەممىسى",
+      "playlists": "قويۇش تىزىملىكى",
+      "annotations": "ئىزاھاتلار",
+      "media": "مېدىيا"
     },
-
     "uk": {
       "title": "Апологет",
       "description": "Розширення панелі інструментів Апологет",
@@ -2364,9 +2658,13 @@
       "daysAgo": "{{count}} дн. тому",
       "buyBook": "Купити книгу",
       "noResources": "Для цього розділу не знайдено пов’язаних ресурсів",
-      "noContent": "Немає вмісту"
+      "noContent": "Немає вмісту",
+      "discover": "Відкрийте",
+      "all": "Усі",
+      "playlists": "Списки відтворення",
+      "annotations": "Анотації",
+      "media": "Медіа"
     },
-
     "ur": {
       "title": "مدافعِ ایمان",
       "description": "مدافعِ ایمان ٹول بار ایکسٹینشن",
@@ -2397,9 +2695,13 @@
       "daysAgo": "{{count}} دن پہلے",
       "buyBook": "کتاب خریدیں",
       "noResources": "اس باب کے لیے متعلقہ وسائل نہیں ملے",
-      "noContent": "کوئی مواد نہیں"
+      "noContent": "کوئی مواد نہیں",
+      "discover": "دریافت کریں۔",
+      "all": "تمام",
+      "playlists": "پلے لسٹس",
+      "annotations": "تشریحات",
+      "media": "میڈیا"
     },
-
     "uz": {
       "title": "Apologet",
       "description": "Apologet asboblar paneli kengaytmasi",
@@ -2430,9 +2732,13 @@
       "daysAgo": "{{count}} kun oldin",
       "buyBook": "Kitob sotib olish",
       "noResources": "Ushbu bob uchun tegishli manbalar topilmadi",
-      "noContent": "Kontent yo'q"
+      "noContent": "Kontent yo'q",
+      "discover": "Kashf eting",
+      "all": "Hammasi",
+      "playlists": "Pleylistlar",
+      "annotations": "Izohlar",
+      "media": "Media"
     },
-
     "vi": {
       "title": "Nhà Hộ Giáo",
       "description": "Tiện ích mở rộng thanh công cụ Hộ Giáo",
@@ -2463,7 +2769,12 @@
       "daysAgo": "{{count}} ngày trước",
       "buyBook": "Mua sách",
       "noResources": "Không tìm thấy tài nguyên liên quan cho chương này",
-      "noContent": "Không có nội dung"
+      "noContent": "Không có nội dung",
+      "discover": "Phát hiện",
+      "all": "Tất cả",
+      "playlists": "Danh sách phát",
+      "annotations": "Chú thích",
+      "media": "Phương tiện truyền thông"
     },
     "zh": {
       "title": "护教学者",
@@ -2495,9 +2806,13 @@
       "daysAgo": "{{count}} 天前",
       "buyBook": "购买书籍",
       "noResources": "未找到与本章相关的资源",
-      "noContent": "暂无内容"
+      "noContent": "暂无内容",
+      "discover": "发现",
+      "all": "全部",
+      "playlists": "播放列表",
+      "annotations": "注释",
+      "media": "媒体"
     },
-
     "zu": {
       "title": "Umvikeli Wokholo",
       "description": "Isandiso sebha yamathuluzi yoMvikeli Wokholo",
@@ -2528,7 +2843,12 @@
       "daysAgo": "Ezinsukwini ezingu-{{count}} ezedlule",
       "buyBook": "Thenga Incwadi",
       "noResources": "Azikho izinsiza ezihlobene ezitholakele kulesi sahluko",
-      "noContent": "Akukho okuqukethwe"
+      "noContent": "Akukho okuqukethwe",
+      "discover": "Thola",
+      "all": "Konke",
+      "playlists": "Uhlu lwadlalwayo",
+      "annotations": "Izichasiselo",
+      "media": "Imidiya"
     }
   }
 }
