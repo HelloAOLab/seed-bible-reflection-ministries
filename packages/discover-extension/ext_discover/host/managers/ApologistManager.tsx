@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "preact/hooks";
-import { effect, signal, type Signal } from "@preact/signals";
+import { signal, type Signal } from "@preact/signals";
 import axios from "axios";
-import { isDiscoveryOpen } from "../extraServices";
-
 interface ResourceItem {
   published_on?: string;
   created_at?: string;
@@ -1139,13 +1137,6 @@ export function createApologistState(props: {
   const showResetControl = Boolean(isVerseLevel && currentBaselineQuery);
 
   const loadMoreRef = useRef(null);
-  effect(() => {
-    isDiscoveryOpen.value = true;
-
-    return () => {
-      isDiscoveryOpen.value = false;
-    };
-  });
 
   useEffect(() => {
     if (!hasMore || loadingMore) return;
