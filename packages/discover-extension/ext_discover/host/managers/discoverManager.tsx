@@ -1,7 +1,6 @@
 import { signal, type Signal, computed, effect } from "@preact/signals";
 import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
 import type { ChapterData } from "./ApologistManager";
-import { isDiscoveryOpen } from "../extraServices";
 
 export interface UpdateSearchOptions {
   level?: string;
@@ -135,13 +134,6 @@ export function createDiscoverState(context: SeedBibleState): DiscoverState {
       labelKey: "reflectionMinistries",
     },
   ];
-  effect(() => {
-    isDiscoveryOpen.value = true;
-
-    return () => {
-      isDiscoveryOpen.value = false;
-    };
-  });
 
   effect(() => {
     const text = chapterText.value;

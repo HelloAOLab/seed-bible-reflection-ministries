@@ -9,6 +9,9 @@ import { Apologist } from "./Apologist";
 import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
 import { MinistriesTab } from "./Ministries";
 import { type VNode } from "preact";
+import { isDiscoveryOpen, isReflectionTabOpened } from "../extraServices";
+import { useEffect } from "preact/hooks";
+import { effect } from "@preact/signals";
 
 interface DiscoverProps {
   state: DiscoverState;
@@ -25,6 +28,25 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
   const tabs = context.tabs;
   const selectedTab =
     tabs.tabs.value.find((tab) => tab.id === tabs.selectedTabId.value) ?? null;
+  useEffect(() => {
+    const dispose = effect(() => {
+      isReflectionTabOpened.value = state.activeTab.value === "ministries";
+    });
+
+    return () => {
+      dispose();
+      isReflectionTabOpened.value = false;
+    };
+  }, []);
+  useEffect(() => {
+    // Discovery opened
+    isDiscoveryOpen.value = true;
+
+    // Discovery closed/unmounted
+    return () => {
+      isDiscoveryOpen.value = false;
+    };
+  }, []);
 
   const mediaSections: Record<DiscoverFilter, () => VNode> = {
     all: () => (
