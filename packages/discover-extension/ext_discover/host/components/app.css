@@ -12,11 +12,11 @@
 }
 .discover-content {
   min-height: 0;
-  padding: 2px 12px;
+  padding: 8px 12px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 6px;
 }
 .discover-tab {
   display: flex;
@@ -69,24 +69,24 @@
 
 .discover-filter {
   text-align: center;
-
   border: none;
   border-radius: 24px;
   padding: 2px 22px;
-
   background: #f0f1f6;
   color: #52698f;
-
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;
-
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
-.discover-filter:hover {
-  background: #e5e7ee;
+@media (hover: hover) {
+  .discover-filter:hover {
+    background: #e5e7ee;
+  }
 }
 
 .discover-filter--active {
@@ -253,8 +253,8 @@
   color: var(--sb-secondary-font-color, #e0e0e0);
 
   overflow: visible;
+  margin-bottom: 16px;
 
-  padding: 2px 0;
   box-sizing: border-box;
 }
 /* ── Header ── */
