@@ -26,7 +26,6 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
   const toast = context.app.toast;
   const modals = context.modals;
   const tabs = context.tabs;
-  console.log(context, context.annotations, "anno");
   const selectedTab =
     tabs.tabs.value.find((tab) => tab.id === tabs.selectedTabId.value) ?? null;
   useEffect(() => {
@@ -52,17 +51,19 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
   const mediaSections: Record<DiscoverFilter, () => VNode> = {
     all: () => (
       <>
-        <AnnotationsSection
-          tab={selectedTab}
-          annotations={context.annotations}
-          modals={modals}
-          toast={toast}
-          login={context.login}
-          tabs={tabs}
-          discover={context.discover}
-          panes={context.panes}
-          onReferenceClick={context.app.openVerseReference}
-        />
+        {state.annotationsForChapter.value.length >= 1 && (
+          <AnnotationsSection
+            tab={selectedTab}
+            annotations={context.annotations}
+            modals={modals}
+            toast={toast}
+            login={context.login}
+            tabs={tabs}
+            discover={context.discover}
+            panes={context.panes}
+            onReferenceClick={context.app.openVerseReference}
+          />
+        )}
         <Apologist
           searchQuery={state.searchQuery}
           searchTrigger={state.searchTrigger}
