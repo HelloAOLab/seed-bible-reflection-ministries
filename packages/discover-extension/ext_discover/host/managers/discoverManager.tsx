@@ -1,5 +1,14 @@
-import { signal, type Signal, computed, effect } from "@preact/signals";
-import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
+import {
+  signal,
+  type Signal,
+  computed,
+  effect,
+  type ReadonlySignal,
+} from "@preact/signals";
+import type {
+  Annotation,
+  SeedBibleState,
+} from "@packages/seed-bible/seed-bible/managers";
 import type { ChapterData } from "./ApologistManager";
 
 export interface UpdateSearchOptions {
@@ -19,6 +28,7 @@ type DiscoverFilter = "all" | "annotations" | "playlists";
 export interface DiscoverState {
   activeTab: Signal<DiscoverTab["key"]>;
   activeFilter: Signal<DiscoverFilter>;
+  annotationsForChapter: ReadonlySignal<Annotation[]>;
 
   cameFromDiscovery: Signal<boolean>;
 
@@ -77,6 +87,19 @@ export function createDiscoverState(context: SeedBibleState): DiscoverState {
 
   const chapterNumber = computed(() => {
     return readingState.value?.chapterNumber.value ?? null;
+  });
+  const bookId = computed(() => {
+    return readingState.value?.bookId.value ?? null;
+  });
+  const annotationsForChapter = computed(() => {
+    if (bookId.value == null || chapterNumber.value == null) {
+      return [];
+    }
+
+    return context.annotations.getAnnotationsForChapter(
+      bookId.value,
+      chapterNumber.value
+    ).value;
   });
 
   const chapterData = computed(() => {
@@ -188,6 +211,7 @@ export function createDiscoverState(context: SeedBibleState): DiscoverState {
     baselineQuery,
     chapterDataa,
     searchTrigger,
+    annotationsForChapter,
     isMobile,
     tabs,
     openInMinistriesTab,
