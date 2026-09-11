@@ -459,7 +459,7 @@ function CustomizationEditMainView(props: { state: SeedBibleState }) {
               >
                 <span className="sb-customization-swatches" aria-hidden="true">
                   <span
-                    className="sb-customization -swatch"
+                    className="sb-customization-swatch"
                     style={{ background: variant.themes.primaryColor }}
                   />
                   <span
