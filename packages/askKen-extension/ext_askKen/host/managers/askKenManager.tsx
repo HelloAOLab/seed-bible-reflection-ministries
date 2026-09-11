@@ -271,6 +271,11 @@ export interface AskKenState {
       y: number;
     };
   };
+  messagesContainerRef: {
+    current: HTMLDivElement | null;
+  };
+  openedFromVerse: Signal<boolean>;
+
   currentFonts: Signal<FontSizeConfig>;
 
   openActionModal: Signal<boolean>;
@@ -368,6 +373,8 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
   const historyLoaded = signal(false);
   const isCleared = signal(false);
   const openActionModal = signal(false);
+  const shouldScrollToBottom = signal(false);
+  const openedFromVerse = signal(!!InitialQuery);
   const askKenSize: Signal<ModalSize> = signal(
     isMobile.value ? "large" : "mediumSlim"
   );
@@ -415,6 +422,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
   const books = translationBooks.value.books;
   const offsetRef = useRef({ x: 0, y: 0 });
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const dragging = signal(false);
   const currentFonts = computed<FontSizeConfig>(() => {
@@ -537,6 +545,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
     if (!profile) {
       askKenConversationId.value = null;
       askKenChatHistory.value = [];
+      historyLoaded.value = true;
       return;
     }
 
@@ -553,6 +562,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
     if (!conversationId) {
       askKenChatHistory.value = [];
+      historyLoaded.value = true;
       historyInitialized.value = true;
       return;
     }
@@ -563,23 +573,33 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
     chatIndex.value = sessions;
 
-    if (sessions.length > 0) {
-      const latestSession = [...sessions].sort(
-        (a, b) =>
-          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      )[0];
+    if (sessions.length === 0) {
+      historyLoaded.value = true;
+      historyInitialized.value = true;
+      return;
+    }
 
-      activeChatId.value = latestSession?.id || null;
+    const latestSession = [...sessions].sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    )[0];
 
-      (async () => {
+    activeChatId.value = latestSession!.id;
+
+    (async () => {
+      try {
         const history = await loadConversationHistory(
           askKenConversationId.value!,
           context,
           latestSession!.id
         );
+
         messages.value = history;
-      })();
-    }
+      } finally {
+        shouldScrollToBottom.value = true;
+        historyLoaded.value = true;
+      }
+    })();
 
     historyInitialized.value = true;
   });
@@ -875,10 +895,11 @@ ${systemPrompt}`;
   };
 
   effect(() => {
-    const query = askKenInitialQuery.value;
+    const initialQuery = askKenInitialQuery.value;
 
-    if (!query) return;
+    if (!initialQuery || !historyLoaded.value) return;
 
+    query.value = initialQuery;
     handleSubmit();
   });
   return {
@@ -907,6 +928,8 @@ ${systemPrompt}`;
     resizeDirection,
     currentFonts,
     offsetRef,
+    messagesContainerRef,
+    openedFromVerse,
     isMobile,
 
     openActionModal,

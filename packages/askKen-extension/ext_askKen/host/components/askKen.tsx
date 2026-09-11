@@ -108,7 +108,18 @@ export function AskKen() {
     query: state.query.value,
     seedBibleContext: state.seedBibleContext,
   });
+  useEffect(() => {
+    if (!state.openedFromVerse.value) return;
+    if (!state.isLoading.value) return;
 
+    const container = state.messagesContainerRef.current;
+
+    if (!container) return;
+
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
+    });
+  }, [state.openedFromVerse.value]);
   return (
     <div
       style={{
@@ -289,7 +300,7 @@ export function AskKen() {
           )}
 
           {/* ── Messages area ── */}
-          <div className="askken-messages">
+          <div className="askken-messages" ref={state.messagesContainerRef}>
             {state.messages.value.length === 0 &&
               !state.showHistory.value &&
               !state.isCleared.value && (
@@ -596,6 +607,11 @@ export function AskKen() {
                 disabled={state.isLoading.value}
               />
               <button
+                disabled={
+                  !state.historyLoaded.value ||
+                  state.isLoading.value ||
+                  !state.query.value.trim()
+                }
                 className="askken-send-btn"
                 onClick={async () => {
                   // Otherwise continue AI
@@ -653,7 +669,6 @@ export function AskKen() {
                   }
                   state.handleSubmit();
                 }}
-                disabled={state.isLoading.value || !state.query.value.trim()}
                 aria-label="Send"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -663,6 +678,7 @@ export function AskKen() {
                   />
                 </svg>
               </button>
+
               <div
                 style={{
                   backgroundColor: "rgb(107,114,128)",

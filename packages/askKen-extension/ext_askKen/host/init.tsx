@@ -40,6 +40,7 @@ export default function initAskKenExtension() {
         },
         icon: () => <span className="material-symbols-outlined">chat</span>,
         onSelect: () => {
+          isOpenedFromVerse.value = false;
           openAskKen();
         },
         priority: 100,
