@@ -406,7 +406,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
 
   const position = signal<Position>({
     x: 13,
-    y: 106,
+    y: 85,
   });
   const tabs = context.tabs.tabs.value;
   if (!translationBooks.value) {

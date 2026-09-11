@@ -63,6 +63,7 @@ export const AskKenChat = ({ isMobile }: AskKenChatProps) => {
               borderRadius: "4px",
 
               background: "#2E4879",
+              cursor: "pointer",
 
               boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
               gap: "4px",

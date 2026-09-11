@@ -1,8 +1,6 @@
 import "./app.css";
-import {
-  AnnotationsSection,
-  PlaylistSection,
-} from "@packages/seed-bible/seed-bible/components/DiscoverPane/DiscoverPane";
+import { PlaylistSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/DiscoverPane";
+import { AnnotationsSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/AnnotationsSection";
 import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
 import type { DiscoverState } from "../managers/discoverManager";
 import { Apologist } from "./Apologist";
