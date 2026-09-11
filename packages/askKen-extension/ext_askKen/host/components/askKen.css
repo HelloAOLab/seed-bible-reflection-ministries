@@ -137,6 +137,19 @@
   transition: opacity 0.2s;
   flex-shrink: 0;
 }
+.askken-send-btn:disabled {
+  opacity: 0.45;
+
+  border-color: #d1d5db;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.askken-send-btn:disabled:hover {
+  box-shadow: none;
+  transform: none;
+}
 
 .askken-more-btn {
   width: 42px;
