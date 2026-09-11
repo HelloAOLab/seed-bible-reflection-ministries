@@ -23,7 +23,7 @@ import {
   MaterialIcon,
   SettingsIcon,
 } from "../../components/icons";
-import { buildStaticPagePath } from "../../managers/StaticPagePath";
+
 import { SettingsPage } from "../../components/SettingsPage/SettingsPage";
 import { ShareModal } from "../ShareModal/shareModal";
 import { getShareUrl, openShareModal } from "../../managers/BibleToolsManager";
