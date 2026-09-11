@@ -2673,23 +2673,6 @@ export function Sidebar(props: SidebarProps) {
         >
           <div className="sb-sidebar-icon-stack">
             <button
-              onClick={() => {
-                state.navigation.push(
-                  buildStaticPagePath({
-                    language: state.i18n.language.value,
-                    page: "about",
-                  })
-                );
-              }}
-              className="sb-sidebar-icon-button"
-              aria-label={t("about-title", {
-                defaultValue: "About Seed Bible",
-              })}
-              title={t("about-title", { defaultValue: "About Seed Bible" })}
-            >
-              <MaterialIcon>info</MaterialIcon>
-            </button>
-            <button
               onClick={sidebar.toggleSettings}
               data-tutorial="settings"
               className={`sb-sidebar-icon-button${
