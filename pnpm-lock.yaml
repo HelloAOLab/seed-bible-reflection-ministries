@@ -463,14 +463,20 @@ importers:
         specifier: workspace:*
         version: link:../seed-bible
 
+  packages/default-content-extension:
+    dependencies:
+      seed-bible:
+        specifier: workspace:*
+        version: link:../seed-bible
+
   packages/discover-extension:
     dependencies:
       '@casual-simulation/aux-common':
         specifier: 'catalog:'
-        version: 4.2.3
+        version: 4.2.7
       '@casual-simulation/aux-websocket':
         specifier: 'catalog:'
-        version: 4.2.3
+        version: 4.2.7
       '@casual-simulation/websocket':
         specifier: 'catalog:'
         version: 4.0.0
@@ -504,11 +510,6 @@ importers:
       zod:
         specifier: 4.4.3
         version: 4.4.3
-  packages/default-content-extension:
-    dependencies:
-      seed-bible:
-        specifier: workspace:*
-        version: link:../seed-bible
 
   packages/house-of-the-lord:
     dependencies:
