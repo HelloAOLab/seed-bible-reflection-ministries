@@ -206,8 +206,12 @@ export default defineConfig(({ isSsrBuild }) => ({
               ],
               start_url: "/",
               display: "standalone",
-              background_color: "#FFFFFF",
-              theme_color: "#FFFFFF",
+              // Splash/default only. Keep in sync with LIGHT_THEME
+              // `background` in ThemeManager. The installed app's live
+              // status bar is driven by <meta name="theme-color">, which
+              // ThemeManager updates to the active theme.
+              background_color: "#f8fafc",
+              theme_color: "#f8fafc",
               icons: [
                 {
                   src: "https://custom.ao.bot/reflection-ministries/pwa-192x192.png",
