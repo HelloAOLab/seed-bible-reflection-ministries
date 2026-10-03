@@ -4,6 +4,7 @@
  * @example
  * thisBot.DisplayInitialAwaitAnimation();
  */
+import { Bot } from "./AuxLibraryDefinitions";
 
 if (thisBot.masks.isInAwaitAnimation) return;
 
