@@ -23,7 +23,11 @@ import {
 } from "@packages/seed-bible/seed-bible/managers/CustomizationExtensionPreferencesManager";
 import type { LoginManager } from "@packages/seed-bible/seed-bible/managers/LoginManager";
 import { CasualOSManager } from "@packages/seed-bible/seed-bible/managers/OsManager";
-import { createTheme } from "@packages/seed-bible/seed-bible/managers/ThemeManager";
+import {
+  createTheme,
+  DARK_THEME,
+  SYSTEM_THEME_ID,
+} from "@packages/seed-bible/seed-bible/managers/ThemeManager";
 import type { SettingsManager } from "@packages/seed-bible/seed-bible/managers/SettingsManager";
 import {
   createNavigationManager,
@@ -31,6 +35,7 @@ import {
 } from "@packages/seed-bible/seed-bible/managers/NavigationManager";
 import { signal } from "@preact/signals";
 import type { Mock, Mocked } from "vitest";
+import { stubColorScheme } from "../testUtils/stubColorScheme";
 
 function hexToRgbTuple(hex: string): [number, number, number] {
   const num = parseInt(hex.replace("#", ""), 16);
@@ -124,6 +129,7 @@ describe("CustomizationsManager", () => {
           settingsValue.value = { ...settingsValue.value, customHighlights };
         }
       ),
+      resetTextColors: vi.fn(),
     } as unknown as Mocked<SettingsManager>;
   });
 
@@ -136,6 +142,8 @@ describe("CustomizationsManager", () => {
     initialCustomizationSeed?: InitialCustomizationSeed
   ) {
     const theme = createTheme(settings);
+    // Mirrors the real app's post-mount read of the device's color scheme.
+    theme.hydrateSystemColorScheme();
     const variantSelections = createCustomizationVariantSelectionsManager(
       os,
       login
@@ -1016,6 +1024,68 @@ describe("CustomizationsManager", () => {
     expect(manager.editingCustomization.value?.name).toBe("My colors");
     expect(manager.customizations.value[0]?.name).toBe(created.name);
     expect(theme.customOverrides.value).toEqual({});
+  });
+
+  it("updateEditingDefaultTranslationId() sets the draft's default translation without persisting, then persists it on save", async () => {
+    const { manager } = createManager();
+    const created = await manager.create();
+    expect(created.defaultTranslationId).toBeUndefined();
+    manager.startEditing(created.id);
+
+    manager.updateEditingDefaultTranslationId("NIV");
+
+    expect(manager.editingCustomization.value?.defaultTranslationId).toBe(
+      "NIV"
+    );
+    expect(
+      manager.customizations.value[0]?.defaultTranslationId
+    ).toBeUndefined();
+
+    await manager.saveEditingCustomization();
+
+    expect(manager.customizations.value[0]?.defaultTranslationId).toBe("NIV");
+  });
+
+  it("updateEditingDefaultTranslationId(null) clears a previously-set default translation", async () => {
+    const { manager } = createManager();
+    const created = await manager.create();
+    manager.startEditing(created.id);
+    manager.updateEditingDefaultTranslationId("NIV");
+    await manager.saveEditingCustomization();
+    expect(manager.customizations.value[0]?.defaultTranslationId).toBe("NIV");
+
+    manager.updateEditingDefaultTranslationId(null);
+    await manager.saveEditingCustomization();
+
+    expect(
+      manager.customizations.value[0]?.defaultTranslationId
+    ).toBeUndefined();
+  });
+
+  it("updateEditingDefaultTranslationId() no-ops when there is no open draft", async () => {
+    const { manager } = createManager();
+    await manager.create();
+
+    manager.updateEditingDefaultTranslationId("NIV");
+
+    expect(manager.editingCustomization.value).toBeNull();
+  });
+
+  it("load() accepts a persisted record that already carries a defaultTranslationId", async () => {
+    const { manager } = createManager();
+    const created = await manager.create();
+    manager.startEditing(created.id);
+    manager.updateEditingDefaultTranslationId("ESV");
+    await manager.saveEditingCustomization();
+    const persisted = manager.customizations.value[0]!;
+
+    listAllDataByMarkerMock.mockResolvedValue({
+      success: true,
+      items: [{ address: persisted.id, data: persisted }],
+    });
+    await manager.load();
+
+    expect(manager.customizations.value[0]?.defaultTranslationId).toBe("ESV");
   });
 
   it("setEditingExtensionAvailability() sets an id's availability on the draft without persisting", async () => {
@@ -1928,6 +1998,168 @@ describe("CustomizationsManager", () => {
     expect(manager.activeCustomization.value?.extensionSettings).toEqual({});
   });
 
+  describe("PostHog customization tracking", () => {
+    const sharedRecord = {
+      id: "customization_shared",
+      name: "Shared",
+      variants: [
+        {
+          id: "variant_shared",
+          name: "Shared variant",
+          themes: {},
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      ],
+      defaultVariantId: "variant_shared",
+      logoUrl: null,
+      createdAt: 1,
+      updatedAt: 1,
+    };
+    const linkedHref =
+      "http://localhost/?customization=other-user.customization_shared";
+    let posthogMock: {
+      register_for_session: Mock;
+      unregister_for_session: Mock;
+      identify: Mock;
+    };
+
+    beforeEach(() => {
+      posthogMock = {
+        register_for_session: vi.fn(),
+        unregister_for_session: vi.fn(),
+        identify: vi.fn(),
+      };
+      (globalThis as any).posthog = posthogMock;
+    });
+
+    afterEach(() => {
+      delete (globalThis as any).posthog;
+    });
+
+    it("tags every event with the linked customization and identifies the signed-in user with it", async () => {
+      getDataMock.mockResolvedValue({ success: true, data: sharedRecord });
+
+      const { manager } = createManager(
+        createNavigationManager({ initialHref: linkedHref })
+      );
+      await manager.initialCustomizationLoadPromise;
+
+      expect(posthogMock.register_for_session).toHaveBeenLastCalledWith({
+        customization_id: "other-user.customization_shared",
+      });
+      expect(posthogMock.identify).toHaveBeenLastCalledWith("user-1", {
+        customization_id: "other-user.customization_shared",
+      });
+    });
+
+    it("tags events for a signed-out viewer without identifying anyone, then identifies once they sign in", async () => {
+      login.userId.value = null;
+      getDataMock.mockResolvedValue({ success: true, data: sharedRecord });
+
+      const { manager } = createManager(
+        createNavigationManager({ initialHref: linkedHref })
+      );
+      await manager.initialCustomizationLoadPromise;
+
+      expect(posthogMock.register_for_session).toHaveBeenLastCalledWith({
+        customization_id: "other-user.customization_shared",
+      });
+      expect(posthogMock.identify).not.toHaveBeenCalled();
+
+      login.userId.value = "user-2";
+
+      expect(posthogMock.identify).toHaveBeenLastCalledWith("user-2", {
+        customization_id: "other-user.customization_shared",
+      });
+    });
+
+    it("leaves events untagged when there is no ?customization= link", () => {
+      createManager();
+
+      expect(posthogMock.register_for_session).not.toHaveBeenCalled();
+      expect(posthogMock.identify).not.toHaveBeenCalled();
+      expect(posthogMock.unregister_for_session).toHaveBeenCalledWith(
+        "customization_id"
+      );
+    });
+
+    it("leaves events untagged when the linked customization can't be found", async () => {
+      const { manager } = createManager(
+        createNavigationManager({ initialHref: linkedHref })
+      );
+      await manager.initialCustomizationLoadPromise;
+
+      expect(posthogMock.register_for_session).not.toHaveBeenCalled();
+      expect(posthogMock.identify).not.toHaveBeenCalled();
+    });
+
+    it("tags events synchronously from a matching SSR seed, without fetching the record", () => {
+      const { manager } = createManager(
+        createNavigationManager({ initialHref: linkedHref }),
+        {
+          locator: "other-user.customization_shared",
+          customization: {
+            ...sharedRecord,
+            variants: [
+              {
+                id: "variant_shared",
+                name: "Shared variant",
+                baseTheme: "light",
+                themes: {},
+                highlightColors: {},
+                createdAt: 1,
+                updatedAt: 1,
+              },
+            ],
+            extensionSettings: {},
+            extensionSettingDefaults: {},
+          },
+        }
+      );
+
+      expect(manager.linkedCustomization.value?.id).toBe(
+        "customization_shared"
+      );
+      expect(getDataMock).not.toHaveBeenCalledWith(
+        "other-user",
+        "customization_shared"
+      );
+      expect(posthogMock.register_for_session).toHaveBeenLastCalledWith({
+        customization_id: "other-user.customization_shared",
+      });
+      expect(posthogMock.identify).toHaveBeenLastCalledWith("user-1", {
+        customization_id: "other-user.customization_shared",
+      });
+    });
+
+    it("leaves events untagged when the SSR seed already resolved the link as not found", () => {
+      createManager(createNavigationManager({ initialHref: linkedHref }), {
+        locator: "other-user.customization_shared",
+        customization: null,
+      });
+
+      expect(getDataMock).not.toHaveBeenCalledWith(
+        "other-user",
+        "customization_shared"
+      );
+      expect(posthogMock.register_for_session).not.toHaveBeenCalled();
+      expect(posthogMock.identify).not.toHaveBeenCalled();
+      expect(posthogMock.unregister_for_session).toHaveBeenCalledWith(
+        "customization_id"
+      );
+    });
+
+    it("doesn't tag events with a draft the owner is only previewing", async () => {
+      const { manager } = createManager();
+      const created = await manager.create();
+      manager.startEditing(created.id);
+
+      expect(manager.activeCustomization.value?.id).toBe(created.id);
+      expect(posthogMock.register_for_session).not.toHaveBeenCalled();
+    });
+  });
+
   it("initialCustomizationLoadSettled is true immediately with no ?customization= param", () => {
     const { manager } = createManager();
 
@@ -2310,5 +2542,96 @@ describe("CustomizationsManager", () => {
     await manager.loadByLocator("owner.customization_missing");
 
     expect(manager.linkedCustomization.value).toBeNull();
+  });
+
+  describe("system color scheme", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    /** A draft with a Light-based and a Dark-based variant, open in the editor so it counts as active. */
+    async function createLightAndDarkCustomization(
+      manager: ReturnType<typeof createManager>["manager"]
+    ) {
+      const created = await manager.create();
+      manager.startEditing(created.id);
+      const light = created.variants[0]!;
+      manager.applyPresetToEditingVariant(light.id, "light");
+      const dark = manager.addEditingVariant()!;
+      manager.applyPresetToEditingVariant(dark.id, "dark");
+      return { lightVariantId: light.id, darkVariantId: dark.id };
+    }
+
+    it("follows the device between a customization's light and dark variants once the viewer picks System", async () => {
+      const emitChange = stubColorScheme(false);
+      const { manager } = createManager();
+      const { lightVariantId, darkVariantId } =
+        await createLightAndDarkCustomization(manager);
+
+      await manager.selectActiveVariant(SYSTEM_THEME_ID);
+
+      expect(manager.canFollowSystemScheme.value).toBe(true);
+      expect(manager.isFollowingSystemScheme.value).toBe(true);
+      expect(manager.activeVariant.value?.id).toBe(lightVariantId);
+
+      emitChange(true);
+
+      expect(manager.activeVariant.value?.id).toBe(darkVariantId);
+      expect(
+        manager.activeResolvedTheme.value?.variables.readerBackground
+      ).toBe(DARK_THEME.variables.readerBackground);
+    });
+
+    it("applies the scheme-matching variant to a viewer on the System theme who has never picked one here", async () => {
+      stubColorScheme(true);
+      const { manager, theme } = createManager();
+      const { lightVariantId, darkVariantId } =
+        await createLightAndDarkCustomization(manager);
+      manager.setEditingDefaultVariant(lightVariantId);
+      theme.setTheme(SYSTEM_THEME_ID);
+
+      expect(manager.isFollowingSystemScheme.value).toBe(true);
+      expect(manager.activeVariant.value?.id).toBe(darkVariantId);
+    });
+
+    it("keeps an explicitly picked variant even while the app theme is System", async () => {
+      stubColorScheme(true);
+      const { manager, theme } = createManager();
+      const { lightVariantId } = await createLightAndDarkCustomization(manager);
+      theme.setTheme(SYSTEM_THEME_ID);
+
+      await manager.selectActiveVariant(lightVariantId);
+
+      expect(manager.isFollowingSystemScheme.value).toBe(false);
+      expect(manager.activeVariant.value?.id).toBe(lightVariantId);
+    });
+
+    it("cannot follow the device when the customization only covers one color scheme", async () => {
+      stubColorScheme(true);
+      const { manager, theme } = createManager();
+      const created = await manager.create();
+      manager.startEditing(created.id);
+      const only = created.variants[0]!;
+      manager.applyPresetToEditingVariant(only.id, "light");
+      theme.setTheme(SYSTEM_THEME_ID);
+
+      expect(manager.canFollowSystemScheme.value).toBe(false);
+      expect(manager.isFollowingSystemScheme.value).toBe(false);
+      expect(manager.activeVariant.value?.id).toBe(only.id);
+    });
+
+    it("never stores the System id as a variant's base theme", async () => {
+      stubColorScheme(true);
+      const { manager, theme } = createManager();
+      theme.setTheme(SYSTEM_THEME_ID);
+
+      const created = await manager.create();
+      manager.startEditing(created.id);
+      const added = manager.addEditingVariant()!;
+
+      expect(created.variants[0]?.baseTheme).toBe("dark");
+      expect(added.baseTheme).toBe("dark");
+      expect(manager.resolveVariantBaseTheme(added).id).toBe("dark");
+    });
   });
 });
