@@ -1,5 +1,6 @@
 import "./SettingsPage.css";
 import { useComputed, useSignal } from "@preact/signals";
+import { ScriptureLineHeightIcon } from "../icons";
 import type { SeedBibleState } from "../../managers/SeedBibleStateManager";
 import {
   TEXT_FONT_OPTIONS,
@@ -16,12 +17,18 @@ import {
   type UISize,
 } from "../../managers/SettingsManager";
 import {
+  DARK_THEME,
   DEFAULT_HIGHLIGHT_IDS,
+  LIGHT_THEME,
+  SYSTEM_THEME_ID,
   THEME_COLOR_GROUPS,
   type ThemeColorKey,
 } from "../../managers/ThemeManager";
 import type { SeedBibleCustomization } from "../../managers/CustomizationsManager";
-import { openCustomizationEditPane } from "../CustomizationEditPane/CustomizationEditPane";
+import {
+  buildCustomizationTutorialSteps,
+  openCustomizationEditPane,
+} from "../CustomizationEditPane/CustomizationEditPane";
 import { ExtensionSettingsForm } from "../ExtensionSettingsForm/ExtensionSettingsForm";
 import { download, translateTitle } from "../../app/utils";
 import { openProfilePictureModal } from "../../components/ProfilePictureModal/openProfilePictureModal";
@@ -45,15 +52,12 @@ import {
   MaterialIcon,
   ThemeIcon,
 } from "../../components/icons";
-import {
-  handleGridKeyNav,
-  handleMenuTriggerKeyDown,
-  handleVerticalListKeyNav,
-} from "../../app/keyboardNav";
+import { SearchableSelect } from "../SearchableSelect/SearchableSelect";
+import { handleGridKeyNav } from "../../app/keyboardNav";
 import { LazyColorPicker } from "../ColorPicker/LazyColorPicker";
 import { normalizeHex } from "../ColorPicker/color";
-
-import { useEffect, useRef } from "preact/hooks";
+import { buildStaticPagePath } from "../../managers/StaticPagePath";
+import { useEffect } from "preact/hooks";
 import type { RequestedSettingsView } from "../../managers/SidebarManager";
 import {
   ContextMenuItem,
@@ -503,32 +507,6 @@ function AccountSettingsView(props: { state: SeedBibleState }) {
   );
 }
 
-function ScriptureLineHeightIcon({ index }: { index: number }) {
-  const gap = 3.5 + index * 1.5;
-  const startY = 1;
-  return (
-    <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-      <rect x="0" y={startY} width="20" height="2" rx="1" fill="currentColor" />
-      <rect
-        x="0"
-        y={startY + gap}
-        width="20"
-        height="2"
-        rx="1"
-        fill="currentColor"
-      />
-      <rect
-        x="0"
-        y={startY + 2 * gap}
-        width="20"
-        height="2"
-        rx="1"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
-
 /**
  * Built-in theme names are authored in English on the theme object, so they'd
  * otherwise render untranslated. Spelled out as separate `t()` calls (rather
@@ -541,13 +519,43 @@ export function localizedThemeName(
   t: I18nHook["t"],
   theme: { id: string; name: string }
 ): string {
-  if (theme.id === "light") {
+  if (theme.id === LIGHT_THEME.id) {
     return t("theme-light", { defaultValue: theme.name });
   }
-  if (theme.id === "dark") {
+  if (theme.id === DARK_THEME.id) {
     return t("theme-dark", { defaultValue: theme.name });
   }
+  if (theme.id === SYSTEM_THEME_ID) {
+    return t("theme-system", { defaultValue: theme.name });
+  }
   return theme.name;
+}
+
+/**
+ * A theme card's footer: the theme name, plus a check mark when it's the
+ * selected theme. The check is hidden rather than unmounted when unselected, so
+ * the name sits in the same place on every card.
+ */
+function ThemeCardLabel(props: { name: string; isSelected: boolean }) {
+  const { t } = useI18n();
+  return (
+    <div className="sb-theme-ready-label">
+      <span>{props.name}</span>
+      <span
+        className={`material-symbols-outlined sb-theme-ready-check${
+          props.isSelected ? "" : " sb-theme-ready-check-hidden"
+        }`}
+        aria-hidden={!props.isSelected}
+        aria-label={
+          props.isSelected
+            ? t("selected", { defaultValue: "Selected" })
+            : undefined
+        }
+      >
+        check_circle
+      </span>
+    </div>
+  );
 }
 
 function ThemesGallerySection(props: { state: SeedBibleState }) {
@@ -601,26 +609,54 @@ function ThemesGallerySection(props: { state: SeedBibleState }) {
                   style={{ background: vars.tertiaryColor }}
                 />
               </div>
-              <div className="sb-theme-ready-label">
-                <span>{localizedThemeName(t, theme)}</span>
-                {isSelected && (
-                  <span
-                    className="material-symbols-outlined sb-theme-ready-check"
-                    aria-label={t("selected", { defaultValue: "Selected" })}
-                  >
-                    check_circle
-                  </span>
-                )}
-              </div>
+              <ThemeCardLabel
+                name={localizedThemeName(t, theme)}
+                isSelected={isSelected}
+              />
             </button>
           );
         })}
+        <button
+          type="button"
+          className={`sb-theme-ready-card${
+            selectedThemeId.value === SYSTEM_THEME_ID
+              ? " sb-theme-ready-card-selected"
+              : ""
+          }`}
+          onClick={() => setTheme(SYSTEM_THEME_ID)}
+        >
+          <div className="sb-theme-ready-preview sb-theme-ready-preview-system">
+            {[LIGHT_THEME, DARK_THEME].map((half) => (
+              <div
+                key={half.id}
+                className="sb-theme-ready-system-half"
+                style={{
+                  background:
+                    half.variables.readerBackground ??
+                    half.variables.background,
+                }}
+              >
+                <div
+                  className="sb-theme-ready-swatch sb-theme-ready-swatch-a"
+                  style={{ background: half.variables.primaryColor }}
+                />
+              </div>
+            ))}
+          </div>
+          <ThemeCardLabel
+            name={localizedThemeName(t, {
+              id: SYSTEM_THEME_ID,
+              name: "System",
+            })}
+            isSelected={selectedThemeId.value === SYSTEM_THEME_ID}
+          />
+        </button>
       </div>
     </section>
   );
 }
 
-function CustomizationVariantGallery(props: {
+export function CustomizationVariantGallery(props: {
   state: SeedBibleState;
   customization: SeedBibleCustomization;
 }) {
@@ -642,6 +678,7 @@ function CustomizationVariantGallery(props: {
       >
         {customization.variants.map((variant) => {
           const isSelected =
+            !customizations.isFollowingSystemScheme.value &&
             variant.id === customizations.activeVariant.value?.id;
           return (
             <button
@@ -671,22 +708,65 @@ function CustomizationVariantGallery(props: {
                   style={{ background: variant.themes.fontColor }}
                 />
               </div>
-              <div className="sb-theme-ready-label">
-                <span>{variant.name}</span>
-                {isSelected && (
-                  <span
-                    className="material-symbols-outlined sb-theme-ready-check"
-                    aria-label={t("selected", { defaultValue: "Selected" })}
-                  >
-                    check_circle
-                  </span>
-                )}
-              </div>
+              <ThemeCardLabel name={variant.name} isSelected={isSelected} />
             </button>
           );
         })}
+        {customizations.canFollowSystemScheme.value && (
+          <CustomizationSystemCard
+            state={state}
+            customization={customization}
+          />
+        )}
       </div>
     </section>
+  );
+}
+
+/**
+ * Follows the device between a customization's Light-based and Dark-based
+ * variants instead of pinning one. Rendered only when it has both — see
+ * `canFollowSystemScheme`.
+ */
+function CustomizationSystemCard(props: {
+  state: SeedBibleState;
+  customization: SeedBibleCustomization;
+}) {
+  const { customizations } = props.state;
+  const { t } = useI18n();
+  const isSelected = customizations.isFollowingSystemScheme.value;
+  const halves = [LIGHT_THEME.id, DARK_THEME.id].map((presetId) => ({
+    presetId,
+    variant: props.customization.variants.find((v) => v.baseTheme === presetId),
+  }));
+
+  return (
+    <button
+      type="button"
+      className={`sb-theme-ready-card${
+        isSelected ? " sb-theme-ready-card-selected" : ""
+      }`}
+      onClick={() => void customizations.selectActiveVariant(SYSTEM_THEME_ID)}
+    >
+      <div className="sb-theme-ready-preview sb-theme-ready-preview-system">
+        {halves.map(({ presetId, variant }) => (
+          <div
+            key={presetId}
+            className="sb-theme-ready-system-half"
+            style={{ background: variant?.themes.tertiaryColor }}
+          >
+            <div
+              className="sb-theme-ready-swatch sb-theme-ready-swatch-a"
+              style={{ background: variant?.themes.primaryColor }}
+            />
+          </div>
+        ))}
+      </div>
+      <ThemeCardLabel
+        name={localizedThemeName(t, { id: SYSTEM_THEME_ID, name: "System" })}
+        isSelected={isSelected}
+      />
+    </button>
   );
 }
 
@@ -2335,6 +2415,12 @@ function CustomizationsSettingsView(props: { state: SeedBibleState }) {
   const handleCreate = async () => {
     const created = await customizations.create();
     openCustomizationEditPane(state, created.id);
+    // First-time-only overview: the customization name and logo, then a
+    // deep-linked tour of the new theme's editor sections.
+    state.tutorial.startContextual(
+      "customization-created",
+      buildCustomizationTutorialSteps(state, created.defaultVariantId)
+    );
   };
 
   const list = customizations.customizations.value;
@@ -2454,34 +2540,16 @@ function CustomizationsSettingsView(props: { state: SeedBibleState }) {
 
 function SettingsMainView(props: { state: SeedBibleState }) {
   const { state } = props;
+  const { branding } = useAppConfig();
   const { t, language, availableLanguages, setLanguage } = useI18n();
   const isLoggedIn = useComputed(() => state.login.userId.value !== null);
-  const isLanguageMenuOpen = useSignal(false);
-  const languageSearchQuery = useSignal("");
-  const languageTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const languageMenuRef = useRef<HTMLDivElement | null>(null);
 
   const onNavigate = (view: RequestedSettingsView) => {
     state.sidebar.requestedSettingsView.value = view;
   };
+  const disabledSettings = branding?.disabledSettings ?? [];
 
-  const currentLangMeta = LANG_META[language] ?? {
-    cc: "",
-    display: language.toUpperCase(),
-  };
-
-  const filteredLanguages = useComputed(() => {
-    const query = languageSearchQuery.value.trim().toLowerCase();
-    if (!query) return availableLanguages;
-    return availableLanguages.filter((code) => {
-      const meta = LANG_META[code];
-      const display = meta?.display ?? code;
-      return (
-        code.toLowerCase().includes(query) ||
-        display.toLowerCase().includes(query)
-      );
-    });
-  });
+  const isSettingDisabled = (id: string) => disabledSettings.includes(id);
 
   return (
     <div className="sb-settings-page">
@@ -2612,165 +2680,62 @@ function SettingsMainView(props: { state: SeedBibleState }) {
               </button>
             </li>
           )}
-
+          {!isSettingDisabled("about-seed-bible") && (
+            <li>
+              <button
+                className="sb-settings-nav-item"
+                onClick={() => {
+                  state.sidebar.closeSettings();
+                  state.navigation.push(
+                    buildStaticPagePath({
+                      language: state.i18n.language.value,
+                      page: "about",
+                    })
+                  );
+                }}
+              >
+                <span className="sb-settings-nav-icon">
+                  <MaterialIcon>info</MaterialIcon>
+                </span>
+                <span className="sb-settings-nav-label">
+                  {t("about-title", { defaultValue: "About Seed Bible" })}
+                </span>
+                <span className="material-symbols-outlined rtl-mirror">
+                  chevron_right
+                </span>
+              </button>
+            </li>
+          )}
           <li>
             <div className="sb-settings-field-row">
               <span className="sb-settings-field-label">
                 {t("language", { defaultValue: "Language" })}
               </span>
-              <div className="sb-language-picker">
-                <button
-                  ref={languageTriggerRef}
-                  type="button"
-                  id="sb-language-select"
-                  className="sb-settings-language-select sb-language-picker-button"
-                  aria-haspopup="listbox"
-                  aria-expanded={isLanguageMenuOpen.value}
-                  onClick={() => {
-                    isLanguageMenuOpen.value = !isLanguageMenuOpen.value;
-                  }}
-                  onKeyDown={(event) => {
-                    handleMenuTriggerKeyDown(event, {
-                      isOpen: isLanguageMenuOpen.value,
-                      open: () => {
-                        isLanguageMenuOpen.value = true;
-                      },
-                      getMenuContainer: () => languageMenuRef.current,
-                    });
-                  }}
-                >
-                  {currentLangMeta.cc && <FlagImg cc={currentLangMeta.cc} />}
-                  <span>{currentLangMeta.display}</span>
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: "1rem" }}
-                  >
-                    expand_more
-                  </span>
-                </button>
-                {isLanguageMenuOpen.value && (
-                  <>
-                    <div
-                      className="sb-language-picker-overlay"
-                      onClick={() => {
-                        isLanguageMenuOpen.value = false;
-                        languageSearchQuery.value = "";
-                      }}
-                    />
-                    <div
-                      ref={(el) => {
-                        languageMenuRef.current = el;
-                        if (el && !el.contains(document.activeElement)) {
-                          const search = el.querySelector<HTMLInputElement>(
-                            ".sb-language-picker-search-input"
-                          );
-                          if (search) {
-                            search.focus();
-                            return;
-                          }
-                          const selected = el.querySelector<HTMLElement>(
-                            '[role="option"][aria-selected="true"]:not([disabled])'
-                          );
-                          const first = el.querySelector<HTMLElement>(
-                            '[role="option"]:not([disabled])'
-                          );
-                          (selected ?? first)?.focus();
-                        }
-                      }}
-                      className="sb-language-picker-menu"
-                      role="listbox"
-                      onKeyDown={(event) => {
-                        if (event.key === "Escape") {
-                          event.preventDefault();
-                          isLanguageMenuOpen.value = false;
-                          languageSearchQuery.value = "";
-                          languageTriggerRef.current?.focus();
-                          return;
-                        }
-                        const target = event.target as HTMLElement | null;
-                        const isSearchInput = target?.classList.contains(
-                          "sb-language-picker-search-input"
-                        );
-                        if (isSearchInput) {
-                          if (
-                            event.key === "ArrowDown" ||
-                            event.key === "Enter"
-                          ) {
-                            event.preventDefault();
-                            const firstOption =
-                              event.currentTarget.querySelector<HTMLElement>(
-                                '[role="option"]:not([disabled])'
-                              );
-                            firstOption?.focus();
-                          }
-                          return;
-                        }
-                        handleVerticalListKeyNav(event, event.currentTarget);
-                      }}
-                    >
-                      <div className="sb-language-picker-search">
-                        <span
-                          className="material-symbols-outlined sb-language-picker-search-icon"
-                          aria-hidden="true"
-                        >
-                          search
-                        </span>
-                        <input
-                          type="text"
-                          className="sb-language-picker-search-input"
-                          placeholder={t("search-languages", {
-                            defaultValue: "Search languages...",
-                          })}
-                          aria-label={t("search-languages", {
-                            defaultValue: "Search languages...",
-                          })}
-                          value={languageSearchQuery.value}
-                          onInput={(event: Event) => {
-                            languageSearchQuery.value = (
-                              event.currentTarget as HTMLInputElement
-                            ).value;
-                          }}
-                        />
-                      </div>
-                      {filteredLanguages.value.length === 0 ? (
-                        <div className="sb-language-picker-empty">
-                          {t("no-languages-found", {
-                            defaultValue: "No languages found",
-                          })}
-                        </div>
-                      ) : (
-                        filteredLanguages.value.map((languageCode) => {
-                          const meta = LANG_META[languageCode];
-                          const isSelected = languageCode === language;
-                          return (
-                            <button
-                              key={languageCode}
-                              type="button"
-                              role="option"
-                              aria-selected={isSelected}
-                              className={`sb-language-picker-item${
-                                isSelected
-                                  ? " sb-language-picker-item-selected"
-                                  : ""
-                              }`}
-                              onClick={() => {
-                                void setLanguage(languageCode);
-                                isLanguageMenuOpen.value = false;
-                                languageSearchQuery.value = "";
-                              }}
-                            >
-                              {meta?.cc && <FlagImg cc={meta.cc} />}
-                              <span>
-                                {meta?.display ?? languageCode.toUpperCase()}
-                              </span>
-                            </button>
-                          );
-                        })
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
+              <SearchableSelect
+                id="sb-language-select"
+                buttonClassName="sb-settings-language-select"
+                value={language}
+                options={availableLanguages.map((languageCode) => {
+                  const meta = LANG_META[languageCode];
+                  return {
+                    id: languageCode,
+                    label: meta?.display ?? languageCode.toUpperCase(),
+                    leading:
+                      meta?.cc && meta.cc.length > 0 ? (
+                        <FlagImg cc={meta.cc} />
+                      ) : undefined,
+                  };
+                })}
+                onChange={(languageCode) => {
+                  void setLanguage(languageCode);
+                }}
+                searchPlaceholder={t("search-languages", {
+                  defaultValue: "Search languages...",
+                })}
+                emptyLabel={t("no-languages-found", {
+                  defaultValue: "No languages found",
+                })}
+              />
             </div>
           </li>
           <li>

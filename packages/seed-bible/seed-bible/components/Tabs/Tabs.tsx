@@ -759,8 +759,10 @@ export function TabsHeader(props: TabsHeaderProps) {
     closeLayoutMenu,
     setLayout,
   } = props;
-  const { sidebar, settings } = state;
+
+  const { sidebar, settings, customizations } = state;
   const isAwake = settings.settings.value.keepScreenAwake;
+  const activeLogoUrl = customizations.activeCustomization.value?.logoUrl;
   const { t } = useI18n();
   const layoutAnchorRef = useRef<HTMLDivElement | null>(null);
   const { branding } = useAppConfig();
@@ -795,17 +797,30 @@ export function TabsHeader(props: TabsHeaderProps) {
             {effectivelyCollapsed ? "menu" : "menu_open"}
           </span>
         </button>
-        <a
-          href={branding?.websiteUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img
-            src={branding?.logo}
-            alt={branding?.appName}
-            className="sb-sidebar-top-row-icon"
+
+        {activeLogoUrl ? (
+          <span
+            className="sb-sidebar-logo sb-tab-user-icon sb-tab-user-icon-has-image"
+            style={{ backgroundImage: `url(${activeLogoUrl})` }}
+            aria-hidden="true"
           />
-        </a>
+        ) : (
+          branding?.logo &&
+          branding?.websiteUrl && (
+            <a
+              href={branding.websiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={branding.appName || "Brand logo"}
+            >
+              <img
+                src={branding.logo}
+                alt={branding.appName || ""}
+                className="sb-sidebar-branding-logo"
+              />
+            </a>
+          )
+        )}
       </div>
 
       <div className="sb-sidebar-top-actions">

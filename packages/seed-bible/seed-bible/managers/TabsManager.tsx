@@ -3,6 +3,7 @@ import {
   effect,
   signal,
   untracked,
+  type ReadonlySignal,
   type Signal,
 } from "@preact/signals";
 import { debounce } from "es-toolkit";
@@ -13,7 +14,8 @@ import {
   parseReadingPath,
   stripBasePath,
 } from "./ReadingUrlPath";
-import { parseStaticPagePath } from "./StaticPagePath";
+import { isNonReadingPagePath } from "./StaticPagePath";
+import { parsePlaylistPagePath } from "./SharedPagePath";
 import type { BibleReadingSession } from "../managers/SessionsManager";
 import { createChatsManager, type ChatSession } from "./ChatsManager";
 import {
@@ -381,9 +383,9 @@ export interface TabsManager {
    * while sitting on a static page like "/en/about" — the escape hatch the
    * tab-focus effect itself uses internally, exposed for anything else that
    * needs to explicitly leave a static page (e.g. an About-page pane
-   * closing).
+   * closing). Replaces the current history entry unless `push`.
    */
-  leaveStaticPage: () => void;
+  leaveStaticPage: (options?: { push?: boolean }) => void;
 
   /**
    * Applies the tabs saved in `localStorage` by a previous visit, reconciled
@@ -443,7 +445,18 @@ export function createTabs(
   getAnnotationsManager?: () => AnnotationsManager | undefined,
   branding?: BrandingConfig,
   /** Passed through to `createBibleReadingState` — see its parameter of the same name. */
-  settingsManager?: SettingsManager
+  settingsManager?: SettingsManager,
+  /**
+   * The active Customization's chosen default translation (`CustomizationsManager.
+   * activeCustomization.value?.defaultTranslationId`), if any — the same override
+   * `branding?.defaultTranslationId` provides for a whole deployment, but scoped to
+   * whichever Customization is currently active and, unlike branding, only known
+   * asynchronously (a `?customization=...` link resolves over the network, and an
+   * editor draft can change at any time). Passed as a signal, not a plain value,
+   * so the effect below can apply it the moment it becomes available rather than
+   * only at tab-creation time, when it is essentially always still unset.
+   */
+  activeCustomizationDefaultTranslationId?: ReadonlySignal<string | undefined>
 ): TabsManager {
   const defaultTranslation = getDefaultTranslationForLanguage(
     i18nManager.defaultLanguage
@@ -688,6 +701,18 @@ export function createTabs(
       // infer from the language change alone.
       void i18nManager.changeLanguage(requestedLanguage);
     }
+    // A playlist's page or playing path names no chapter, so reading one here
+    // would send the reader to the default Genesis 1. While playing, the
+    // playlist moves the reader to the step itself; racing it with this aborts
+    // that load and strands the reader on Genesis 1.
+    if (
+      parsePlaylistPagePath(
+        navigation.currentUrl.value.pathname,
+        navigation.basePath
+      )
+    ) {
+      return;
+    }
     const readingState = selectedTab.readingState;
 
     const books = readingState.translationBooks.value?.books ?? [];
@@ -772,6 +797,13 @@ export function createTabs(
     // change and re-commit, defeating the prescriptive (one-write-per-nav)
     // design.
     untracked(() => {
+      const tab = selectedTab.peek();
+      // An extension that owns this tab's address (a playing playlist's
+      // `/{lang}/playlist/{locator}/{title}/{step}`) always gets it written,
+      // including over its own page's path: that path is the page the tab
+      // is showing.
+      const pathOverride = tab?.readingState.getUrlPathOverride() ?? null;
+
       // Never overwrite a static page's own URL (e.g. "/en/about") with the
       // reading position. This runs unconditionally on mount and on every
       // UI-language change (see the effects below); without this guard, the
@@ -784,8 +816,9 @@ export function createTabs(
       // this guard and take the user back to the reader — see the tab-focus
       // effect below, the only caller that ever passes it.
       if (
+        !pathOverride &&
         !options.leaveStaticPage &&
-        parseStaticPagePath(
+        isNonReadingPagePath(
           navigation.currentUrl.peek().pathname,
           navigation.basePath
         )
@@ -804,7 +837,6 @@ export function createTabs(
         });
       }
 
-      const tab = selectedTab.peek();
       const nextQueryParams: Record<string, string | null> =
         tab?.readingState.getUrlQueryParams(navigation.currentUrl.peek()) ?? {};
 
@@ -848,7 +880,9 @@ export function createTabs(
         ? dataManager.buildTranslationId(rawTranslationId)
         : null;
 
-      if (bookId && chapter && translationId) {
+      if (pathOverride) {
+        writeUrl(queryUpdate, options.replace, pathOverride);
+      } else if (bookId && chapter && translationId) {
         const pathname = buildReadingPath({
           language: i18nManager.language.peek(),
           translationId,
@@ -912,7 +946,7 @@ export function createTabs(
     // A static page's entry is not showing this reading position, so it must
     // not collect the reader's offset.
     if (
-      parseStaticPagePath(
+      isNonReadingPagePath(
         navigation.currentUrl.peek().pathname,
         navigation.basePath
       )
@@ -1104,6 +1138,59 @@ export function createTabs(
     });
   });
 
+  // Applies the active Customization's chosen default translation to the
+  // selected tab once it becomes known — a share link resolves it over the
+  // network, and an editor draft can set/change it at any time. Lower
+  // priority than a signed-in reader's own saved translation (the profile
+  // effect above always wins when present) and never fights an explicit
+  // deep link, matching how `branding?.defaultTranslationId` only ever
+  // stands in for Seed Bible's own per-language default.
+  // `appliedCustomizationDefaultTranslationId` guards against re-applying the
+  // same id after an unrelated draft edit (e.g. renaming the customization)
+  // changes `activeCustomization`'s identity without actually changing this
+  // field — which would otherwise clobber a translation the previewer picked
+  // manually in the meantime.
+  let appliedCustomizationDefaultTranslationId: string | null = null;
+  effect(() => {
+    const targetTranslationId = activeCustomizationDefaultTranslationId?.value;
+    if (!targetTranslationId) {
+      // No active customization default (deactivated, or cleared) — clear
+      // the guard too, so reactivating the same customization (or another
+      // with the same default) re-applies it instead of being mistaken for
+      // an unrelated identity churn of the still-active one.
+      appliedCustomizationDefaultTranslationId = null;
+      return;
+    }
+
+    untracked(() => {
+      if (hadExplicitInitialUrlTranslation) {
+        return;
+      }
+      if (appliedCustomizationDefaultTranslationId === targetTranslationId) {
+        return;
+      }
+
+      const savedTranslationId = getProfileConfigValue(
+        login.profile.value,
+        PROFILE_TRANSLATION_ID
+      );
+      if (typeof savedTranslationId === "string" && savedTranslationId) {
+        return;
+      }
+
+      const readingState = selectedTab.peek()?.readingState;
+      if (!readingState) {
+        return;
+      }
+      appliedCustomizationDefaultTranslationId = targetTranslationId;
+      if (readingState.translationId.peek() === targetTranslationId) {
+        return;
+      }
+
+      void applySavedTranslation(readingState, targetTranslationId);
+    });
+  });
+
   // Mirrors the selected tab's *verse selection* into `?verse` so it can be
   // shared/restored. This is selection state, not a navigation — consumers that
   // watch the URL for "the reader moved" must ignore this param (see the
@@ -1205,8 +1292,11 @@ export function createTabs(
    * needs to explicitly leave a static page (e.g. an About-page pane
    * closing).
    */
-  const leaveStaticPage = () => {
-    commitSelectedTabToUrl({ replace: true, leaveStaticPage: true });
+  const leaveStaticPage = (options: { push?: boolean } = {}) => {
+    commitSelectedTabToUrl({
+      replace: !options.push,
+      leaveStaticPage: true,
+    });
   };
 
   return {

@@ -197,9 +197,11 @@ function MainBody({
   // size, toolbar customization, disablePanels, theme, etc. Apply the
   // device's real saved config once, right after mount —
   // `SettingsManager`'s own effect() already re-derives `settings` whenever
-  // `login.localConfig` changes, so no change is needed there.
+  // `login.localConfig` changes, so no change is needed there. The device's
+  // color scheme is deferred the same way: the server always renders Light.
   useEffect(() => {
     state.login.hydrateLocalConfig();
+    state.theme.hydrateSystemColorScheme();
   }, []);
 
   // Deferred real read, same reason as the two above: saved tabs and their slot
@@ -249,6 +251,7 @@ function MainContent(props: {
   const webkitClass = isWebKit(renderedAsWebKit) ? "is-webkit" : "";
   const appDirection = isRtl ? "rtl" : "ltr";
   const { theme, selector } = state;
+  const isMinimalEmbed = state.app.isMinimalEmbed.value;
   const sidePane =
     state.app.effectivePanes.value.find((pane) => pane.placement === "side") ??
     null;
@@ -260,7 +263,9 @@ function MainContent(props: {
   return (
     <>
       <div
-        className={`sb-app-root ${webkitClass}`}
+        className={`sb-app-root ${webkitClass}${
+          isMinimalEmbed ? " sb-embed-minimal" : ""
+        }`}
         dir={appDirection}
         onClick={(e) => {
           if (!e.defaultPrevented) {
@@ -284,7 +289,7 @@ function MainContent(props: {
             state.customizations.initialCustomizationLoadSettled
           }
         />
-        <Sidebar state={state} />
+        {!isMinimalEmbed && <Sidebar state={state} />}
 
         <div className="sb-content-row">
           <main className="sb-main-content">
