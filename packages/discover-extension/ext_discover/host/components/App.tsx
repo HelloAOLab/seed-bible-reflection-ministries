@@ -1,6 +1,6 @@
 import "./app.css";
 import { PlaylistSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/DiscoverPane";
-import { AnnotationsSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/AnnotationsSection";
+
 import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
 import type { DiscoverState } from "../managers/discoverManager";
 import { Apologist } from "./Apologist";
@@ -10,6 +10,7 @@ import { type VNode } from "preact";
 import { isDiscoveryOpen, isReflectionTabOpened } from "../extraServices";
 import { useEffect } from "preact/hooks";
 import { effect } from "@preact/signals";
+import { AnnotationsSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/AnnotationsSection";
 
 interface DiscoverProps {
   state: DiscoverState;
@@ -56,6 +57,7 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
             modals={modals}
             toast={toast}
             login={context.login}
+            friends={context.friends}
             tabs={tabs}
             discover={context.discover}
             panes={context.panes}
@@ -97,6 +99,7 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
         modals={modals}
         toast={toast}
         login={context.login}
+        friends={context.friends}
         tabs={tabs}
         discover={context.discover}
         panes={context.panes}

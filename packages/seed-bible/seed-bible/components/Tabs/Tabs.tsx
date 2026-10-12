@@ -44,8 +44,13 @@ import {
 } from "../Avatar/Avatar";
 import { useEffect, useRef } from "preact/hooks";
 import { chatHasOtherPeople } from "../../managers/ChatsManager";
-import { trimmedOrNull } from "../../managers/Utils";
+import { displayNameOf, trimmedOrNull } from "../../managers/Utils";
 import { useAppConfig } from "../../app/appConfig";
+import { SessionQRCode } from "../SessionQRCode/SessionQRCode";
+import {
+  ParticipantFriendButton,
+  rowsWithFriendButton,
+} from "../FriendsPane/ParticipantFriendButton";
 
 interface SidebarProps {
   state: SeedBibleState;
@@ -109,7 +114,8 @@ const HIGHLIGHT_DURATION_OPTIONS: { label: string; value: number | null }[] = [
  * - "End Session" removes the tab (which disposes the session and removes
  *   its registry entry automatically via `wrapSessionLifecycle`).
  *
- * Non-host participants see the current settings but can't change them.
+ * Non-host participants see the current settings and who's there, but can't
+ * change them. Everyone can add the other participants as friends.
  */
 /**
  * localStorage flag: once the host ticks "Don't show this again" in the
@@ -224,6 +230,7 @@ function SessionSettingsModalContent(props: {
       sessionRoleRank(getUserSessionRole(options, a)) -
       sessionRoleRank(getUserSessionRole(options, b))
   );
+  const friendButtonRows = rowsWithFriendButton(participants);
 
   return (
     <div className="sb-session-settings">
@@ -256,6 +263,8 @@ function SessionSettingsModalContent(props: {
             </button>
           </div>
         </div>
+
+        <SessionQRCode url={sessionUrl.href} modals={state.modals} />
 
         {!isHost && (
           <p className="sb-session-settings-note">
@@ -407,7 +416,7 @@ function SessionSettingsModalContent(props: {
           </p>
         </div>
 
-        {isHost && participants.length > 0 && (
+        {participants.length > 0 && (
           <div className="sb-session-settings-section">
             <div className="sb-session-settings-section-title">
               {t("session-settings-section-participants", {
@@ -459,7 +468,14 @@ function SessionSettingsModalContent(props: {
                         </span>
                       )}
                     </span>
-                    {!isHostUser && (
+                    {friendButtonRows.has(user.connectionId) && (
+                      <ParticipantFriendButton
+                        state={state}
+                        userId={user.userId}
+                        displayName={getUserDisplayName(user)}
+                      />
+                    )}
+                    {isHost && !isHostUser && (
                       <button
                         type="button"
                         className={`sb-session-participant-action${isCoHost ? " sb-session-participant-action-active" : ""}`}
@@ -679,6 +695,7 @@ export function openShareSessionModal(
     content: () => (
       <ShareModal
         app={state.app}
+        modals={state.modals}
         session={session}
         hideShareLink
         onClose={() => state.modals.closeModal(modalId)}
@@ -1075,6 +1092,18 @@ interface TabRowProps {
  * currently selected row: it's the affordance for filing the current chapter
  * away, and showing it on every row would clutter the list.
  */
+/**
+ * Whether `tab` is the one whose narration is playing. Only one tab is heard
+ * at a time; marking it lets the reader find narration they left playing in
+ * another tab.
+ */
+function isTabPlayingAudio(state: SeedBibleState, tab: ReaderTab): boolean {
+  return (
+    state.audioPlayback.controllerFor(tab.readingState)?.isPlaying.value ??
+    false
+  );
+}
+
 function TabRow(props: TabRowProps) {
   const { state, tab, isSelected, closeLayoutMenu, panelsEnabled } = props;
 
@@ -1093,6 +1122,7 @@ function TabRow(props: TabRowProps) {
 
   const shortSubTitle = tab.readingState.shortSubTitle.value;
   const title = tab.readingState.title.value;
+  const isPlayingAudio = isTabPlayingAudio(state, tab);
   const connectedUsers = tab.sharedSession?.connectedUsers.value ?? [];
   // Fills the star, and decides whether pressing it files or edits.
   const isChapterSaved = saves.isLocationSaved(
@@ -1132,6 +1162,17 @@ function TabRow(props: TabRowProps) {
             •
           </span>
           <span className="sb-tab-main-translation">{shortSubTitle}</span>
+          {isPlayingAudio && (
+            <MaterialIcon
+              className="sb-tab-audio-icon"
+              role="img"
+              aria-label={t("tab-playing-audio", {
+                defaultValue: "Playing audio",
+              })}
+            >
+              volume_up
+            </MaterialIcon>
+          )}
         </div>
 
         {tab.sharedSession && connectedUsers.length > 0 && (
@@ -2034,6 +2075,15 @@ export function Tabs(props: TabsProps) {
           const shortTitle = tab.readingState.shortTitle.value;
           const session = tab.sharedSession;
           const sessionUsers = session?.connectedUsers.value ?? [];
+          const isPlayingAudio = isTabPlayingAudio(state, tab);
+          const label =
+            session && sessionUsers.length > 0
+              ? t("collapsed-tab-shared-label", {
+                  title: shortTitle,
+                  count: sessionUsers.length,
+                  defaultValue: "{{title}} — shared session, {{count}} present",
+                })
+              : shortTitle;
 
           return (
             <button
@@ -2047,14 +2097,12 @@ export function Tabs(props: TabsProps) {
                 isSelected ? " sb-collapsed-tab-tile-selected" : ""
               }${session ? " sb-collapsed-tab-tile-shared" : ""}`}
               aria-label={
-                session && sessionUsers.length > 0
-                  ? t("collapsed-tab-shared-label", {
-                      title: shortTitle,
-                      count: sessionUsers.length,
-                      defaultValue:
-                        "{{title}} — shared session, {{count}} present",
+                isPlayingAudio
+                  ? t("collapsed-tab-playing-label", {
+                      label,
+                      defaultValue: "{{label}} — playing audio",
                     })
-                  : shortTitle
+                  : label
               }
               title={shortTitle}
             >
@@ -2064,6 +2112,14 @@ export function Tabs(props: TabsProps) {
                 </span>
               )}
               <span className="sb-collapsed-tab-title">{shortTitle}</span>
+              {isPlayingAudio && (
+                <MaterialIcon
+                  className="sb-collapsed-tab-audio-icon"
+                  aria-hidden="true"
+                >
+                  volume_up
+                </MaterialIcon>
+              )}
               {session &&
                 sessionUsers.length > 0 &&
                 (() => {
@@ -2428,8 +2484,10 @@ export function SharedSessionsToasts(props: { state: SeedBibleState }) {
       aria-label={t("shared-sessions", { defaultValue: "Shared sessions" })}
     >
       {entries.map((entry) => {
-        const hostName =
-          entry.hostProfile?.name ?? `User ${entry.hostUserId.slice(0, 8)}`;
+        const hostName = displayNameOf(
+          { userId: entry.hostUserId, name: entry.hostProfile?.name },
+          t
+        );
         // Pure-hash visual keyed by hostUserId — same key every client uses
         // for this host, so everyone sees the same icon+color combo.
         const visual = getUserAnimalVisual(entry.hostUserId);
