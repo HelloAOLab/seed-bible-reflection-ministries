@@ -20,6 +20,7 @@ import { AskKenChat } from "@packages/askKen-extension/ext_askKen/host/component
 import { isDiscoveryOpen } from "@packages/discover-extension/ext_discover/host/extraServices";
 import { askKenOpen } from "@packages/askKen-extension/ext_askKen/host/askKenService";
 import { AskKen } from "@packages/askKen-extension/ext_askKen/host/components/askKen";
+import { revealReadAlongVerse } from "./BibleReader/readerViewport";
 
 interface TabSlotReaderProps {
   slot: TabSlot;
@@ -260,6 +261,38 @@ export function TabSlotReader(props: TabSlotReaderProps) {
           readingState.scrollToVerse.value = null;
           readingState.scrollPosition.value = scroller.scrollTop;
         });
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      dispose();
+    };
+  }, [scroller, readingState]);
+
+  // Keep the verse being read aloud on screen. Reads `chapterData` without
+  // subscribing: new content alone must not replay an earlier request.
+  useEffect(() => {
+    if (!scroller) {
+      return;
+    }
+
+    let frame = 0;
+    const dispose = effect(() => {
+      const request = readingState.readAlongVerse.value;
+      if (!request || !readingState.chapterData.peek()) {
+        return;
+      }
+
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const verse = scroller.querySelector(
+          `.sb-verse[data-verse-number="${request.verse}"]`
+        );
+        if (verse instanceof HTMLElement) {
+          revealReadAlongVerse(verse, scroller);
+        }
       });
     });
 
