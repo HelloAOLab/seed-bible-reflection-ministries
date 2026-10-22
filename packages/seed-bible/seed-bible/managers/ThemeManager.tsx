@@ -6,6 +6,7 @@ import {
   type ReadonlySignal,
   type Signal,
 } from "@preact/signals";
+import { isMinimalEmbedUrl } from "./EmbedMode";
 import type { SettingsManager } from "./SettingsManager";
 
 export interface BibleThemeVariables {
@@ -54,19 +55,9 @@ export interface BibleThemeVariables {
   sidebarFontColor?: string | null;
 
   /**
-   * The background color for the book selector dropdown. This should generally match the readerBackground color to create a seamless look, but can be set to a different color if desired.
-   */
-  bookSelectorBackground?: string | null;
-
-  /**
    * The font family for the book selector. This can be customized independently of the main fontFamily, but should generally be a clean, readable sans-serif font for optimal readability.
    */
   bookSelectorFontFamily?: string | null;
-
-  /**
-   * The font color for the book selector. This can be customized independently of the main fontColor, but should generally have good contrast against the bookSelectorBackground color for readability.
-   */
-  bookSelectorFontColor?: string | null;
 
   /**
    * The background of the reader area where the Bible text is displayed. This should generally be a light color for readability, but can be customized as needed.
@@ -442,6 +433,12 @@ export interface BibleTheme {
   name: string;
   variables: BibleThemeVariables;
   highlightColors: BibleThemeHighlightColors;
+  /**
+   * Fill for each bookmark color, keyed by `BookmarkColorId`. Optional so a
+   * white-label theme that predates bookmarks still type-checks; any id it
+   * leaves out falls back to the `:root` default in `base.inline.css`.
+   */
+  bookmarkColors?: Partial<Record<BookmarkColorId, string>>;
 }
 
 function toKebabCase(value: string): string {
@@ -470,7 +467,16 @@ export function generateThemeCssVariables(variables: BibleTheme): string {
     ])
     .join("\n");
 
-  return cssVariables + "\n" + highlightColorVariables;
+  const bookmarkColorVariables = Object.entries(variables.bookmarkColors ?? {})
+    .filter(([, value]) => value !== undefined)
+    .map(
+      ([key, value]) =>
+        `--sb-bookmark-${key}-color: ${sanitizeCssValue(String(value))};`
+    )
+    .join("\n");
+
+  const css = cssVariables + "\n" + highlightColorVariables;
+  return bookmarkColorVariables ? css + "\n" + bookmarkColorVariables : css;
 }
 
 export function generateThemeCssClasses(theme: BibleTheme): string {
@@ -482,13 +488,17 @@ export function generateThemeCssClasses(theme: BibleTheme): string {
   // `textContent` on every theme change. Nested `&` is valid in a stylesheet
   // file, but assigning it through the CSSOM can make the engine throw out
   // the whole tag — every `--sb-*` color on `body` included.
+  //
+  // The words-of-Jesus rule is a descendant selector: the highlight class sits
+  // on the wrapper around a highlighted verse run, and `.sb-words-of-jesus` on
+  // a span inside it, never on the same element.
   return Object.entries(theme.highlightColors)
     .map(([colorId]) => {
       return [
         `.sb-highlight-${colorId} {`,
         `color: var(--sb-highlight-${colorId}-font-color);`,
         `}`,
-        `.sb-highlight-${colorId}.sb-words-of-jesus {`,
+        `.sb-highlight-${colorId} .sb-words-of-jesus {`,
         `color: var(--sb-highlight-${colorId}-words-of-jesus-font-color);`,
         `}`,
       ].join("\n");
@@ -575,20 +585,16 @@ export const LIGHT_THEME: BibleTheme = {
   id: "light",
   name: "Light",
   variables: {
-    primaryColor: "#2E4879",
+    primaryColor: "#e07b4c",
     primaryFontColor: "#fff",
 
-    secondaryColor: "#2E48791A",
+    secondaryColor: "#faddd1",
     secondaryFontColor: "#333",
 
     tertiaryColor: "#f0f0f0",
 
-    linkColor: "#2E4879",
+    linkColor: "#e07b4c",
     linkVisitedColor: "#8d5a6b",
-
-    tertiaryFontColor: "#666666",
-    tertiaryBorder: "#E1E3EA",
-    tertiaryBackground: "#E8E8E8",
 
     background: "#f8fafc",
 
@@ -600,9 +606,7 @@ export const LIGHT_THEME: BibleTheme = {
     readerFontFamily: "inherit",
     readerFontColor: "#333",
 
-    bookSelectorBackground: "#ffffff",
     bookSelectorFontFamily: "inherit",
-    bookSelectorFontColor: "#333",
 
     fontFamily: "system-ui, sans-serif",
     fontColor: "#333",
@@ -612,59 +616,60 @@ export const LIGHT_THEME: BibleTheme = {
 
     chapterHeadingFontFamily: "Plus Jakarta Sans, sans-serif",
     chapterHeadingFontColor: "#333",
-    chapterHeadingFontStyle: "italic",
+    chapterHeadingFontStyle: "normal",
 
-    verseFontFamily: "Newsreader, serif",
+    verseFontFamily: "Plus Jakarta Sans, sans-serif",
     verseFontColor: "#333",
     verseCursor: "pointer",
 
-    selectedVerseBorderBottom: "2px dashed currentColor",
-    selectedVerseTextDecoration: "none",
+    selectedVerseBorderBottom: "none",
+    selectedVerseTextDecoration: "underline dotted",
     selectedVerseTextDecorationColor: "currentColor",
 
     hebrewSubtitleFontFamily: "Newsreader, serif",
     hebrewSubtitleFontColor: "#333",
     hebrewSubtitleFontStyle: "italic",
 
-    readerToolbarBottom: "18px",
-    readerToolbarGap: "10px",
-    readerToolbarPadding: "8px 20px",
-    readerToolbarBorderRadius: "22px",
+    readerToolbarBottom: "1.125rem",
+    readerToolbarGap: "0.25rem",
+    readerToolbarPadding: "1px 0.3125rem",
+    readerToolbarBorderRadius: "1.25rem",
     readerToolbarBackground: "#ffffff",
     readerToolbarBorder: "1px solid #00000024",
-    readerToolbarBoxShadow: "0 26px 10px #0000001a",
+    readerToolbarBoxShadow:
+      "0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)",
     readerToolbarZIndex: "99",
-    readerToolbarHeight: "50px",
+    readerToolbarHeight: "auto",
 
-    readerToolbarFloatingButtonTop: "-68px",
-    readerToolbarFloatingButtonWidth: "48px",
-    readerToolbarFloatingButtonHeight: "48px",
+    readerToolbarFloatingButtonTop: "-4.25rem",
+    readerToolbarFloatingButtonWidth: "3rem",
+    readerToolbarFloatingButtonHeight: "3rem",
     readerToolbarFloatingButtonBorder: "1px solid #00000024",
-    readerToolbarFloatingButtonBorderRadius: "999px",
+    readerToolbarFloatingButtonBorderRadius: "62.4375rem",
     readerToolbarFloatingButtonBackground: "#ffffff",
     readerToolbarFloatingButtonFontColor: "#333",
     readerToolbarFloatingButtonBoxShadow: "0 10px 24px #0000001a",
 
-    verseToolbarGap: "10px",
-    verseToolbarPadding: "8px 16px",
-    verseToolbarBorderRadius: "10px",
-    verseToolbarBorder: "1px solid #00000024",
-    verseToolbarBoxShadow: "0 26px 10px #0000001a",
+    verseToolbarGap: "0.125rem",
+    verseToolbarPadding: "0.25rem 0.5rem",
+    verseToolbarBorderRadius: "0.625rem",
+    verseToolbarBorder: "1px solid var(--sb-divider-color)",
+    verseToolbarBoxShadow: "0 26px 10px var(--sb-shadow-color)",
     verseToolbarZIndex: "100",
-    verseToolbarMinHeight: "50px",
+    verseToolbarMinHeight: "0",
 
-    readerToolbarMobileLayoutHeight: "70px",
-    readerToolbarMobileLayoutPadding: "10px 14px",
-    readerToolbarMobileLayoutGap: "8px",
-    readerToolbarMobileLayoutItemSize: "44px",
-    readerToolbarMobileLayoutCenterButtonSize: "52px",
-    readerToolbarMobileLayoutButtonBorderRadius: "999px",
-    emptyPaneToolbarButtonBackground: "#2E48791A",
+    readerToolbarMobileLayoutHeight: "auto",
+    readerToolbarMobileLayoutPadding: "0.625rem 2.1875rem",
+    readerToolbarMobileLayoutGap: "1rem",
+    readerToolbarMobileLayoutItemSize: "2.75rem",
+    readerToolbarMobileLayoutCenterButtonWidth: "5.4375rem",
+    readerToolbarMobileLayoutCenterButtonHeight: "2.625rem",
+    readerToolbarMobileLayoutButtonBorderRadius: "2.5rem",
 
-    readerToolbarFloatingButtonSideOffset: "16px",
+    readerToolbarFloatingButtonSideOffset: "1rem",
 
-    verseToolbarToolsGap: "10px",
-    verseToolbarMobileBottom: "18px",
+    verseToolbarToolsGap: "0.125rem",
+    verseToolbarMobileBottom: "1.125rem",
 
     menuBackground: "#ffffff",
     menuFontColor: "#333",
@@ -672,7 +677,7 @@ export const LIGHT_THEME: BibleTheme = {
     toolbarIconInvert: "0",
 
     readerToolbarFontColor: "#333",
-    readerToolbarFontFamily: "Satoshi, system-ui, sans-serif",
+    readerToolbarFontFamily: "system-ui, sans-serif",
 
     dividerColor: "rgba(0, 0, 0, 0.12)",
     shadowColor: "rgba(0, 0, 0, 0.14)",
@@ -689,63 +694,71 @@ export const LIGHT_THEME: BibleTheme = {
     yellow: {
       color: "#fff59d",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#c00",
     },
     green: {
       color: "#a5d6a7",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#a00",
     },
     cyan: {
       color: "#80deea",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#a00",
     },
     blue: {
       color: "#90caf9",
       fontColor: "#333",
-      wordsOfJesusFontColor: "",
-    },
-    pink: {
-      color: "#f48fb1",
-      fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#900",
     },
     red: {
       color: "#ef9a9a",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#c62828",
+      wordsOfJesusFontColor: "#800",
     },
     magenta: {
       color: "#ea80fc",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#700",
+    },
+    pink: {
+      color: "#f48fb1",
+      fontColor: "#333",
+      wordsOfJesusFontColor: "#800",
     },
     purple: {
       color: "#ce93d8",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#700",
     },
     orange: {
-      color: "#2E48791A",
+      color: "#ffcc80",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#b00",
     },
     cream: {
       color: "#fff8e1",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#c00",
     },
     gray: {
       color: "#cfd8dc",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#b00",
     },
     tan: {
       color: "#e0c9a6",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#2E4879",
+      wordsOfJesusFontColor: "#a00",
     },
+  },
+  bookmarkColors: {
+    orange: "#e07b4c",
+    red: "#d14343",
+    yellow: "#d4a106",
+    green: "#3a9a55",
+    blue: "#3474d4",
+    purple: "#8a56cc",
   },
 };
 
@@ -767,15 +780,15 @@ export const DARK_THEME: BibleTheme = {
   id: "dark",
   name: "Dark",
   variables: {
-    primaryColor: "#2E4879",
+    primaryColor: "#e07b4c",
     primaryFontColor: "#111111",
 
-    secondaryColor: "#2E48791A",
+    secondaryColor: "#433228",
     secondaryFontColor: "#f5f5f5",
 
     tertiaryColor: "#1c1c1c",
 
-    linkColor: "#2E4879",
+    linkColor: "#e07b4c",
     linkVisitedColor: "#d99bb0",
 
     background: "#0a0a0a",
@@ -788,9 +801,7 @@ export const DARK_THEME: BibleTheme = {
     readerFontFamily: "inherit",
     readerFontColor: "#e6e6e6",
 
-    bookSelectorBackground: "#181818",
     bookSelectorFontFamily: "inherit",
-    bookSelectorFontColor: "#e6e6e6",
 
     fontFamily: "system-ui, sans-serif",
     fontColor: "#e6e6e6",
@@ -943,6 +954,14 @@ export const DARK_THEME: BibleTheme = {
       wordsOfJesusFontColor: "#ff9e80",
     },
   },
+  bookmarkColors: {
+    orange: "#f29b72",
+    red: "#f07878",
+    yellow: "#f2cc4d",
+    green: "#6ccb85",
+    blue: "#7aaef2",
+    purple: "#b893ee",
+  },
 };
 
 /**
@@ -1010,8 +1029,6 @@ export type ThemeColorKey =
   | "fontColor"
   | "sidebarBackground"
   | "sidebarFontColor"
-  | "bookSelectorBackground"
-  | "bookSelectorFontColor"
   | "readerBackground"
   | "readerFontColor"
   | "bookTitleFontColor"
@@ -1057,7 +1074,6 @@ export const THEME_COLOR_GROUPS: ThemeColorGroup[] = [
       { key: "background", label: "App background" },
       { key: "readerBackground", label: "Reader background" },
       { key: "sidebarBackground", label: "Sidebar background" },
-      { key: "bookSelectorBackground", label: "Book selector background" },
       { key: "readerToolbarBackground", label: "Reader toolbar background" },
       {
         key: "readerToolbarFloatingButtonBackground",
@@ -1073,7 +1089,6 @@ export const THEME_COLOR_GROUPS: ThemeColorGroup[] = [
       { key: "fontColor", label: "Default text" },
       { key: "readerFontColor", label: "Reader text" },
       { key: "sidebarFontColor", label: "Sidebar text" },
-      { key: "bookSelectorFontColor", label: "Book selector text" },
       { key: "bookTitleFontColor", label: "Book title" },
       { key: "chapterHeadingFontColor", label: "Chapter heading" },
       { key: "verseFontColor", label: "Verse" },
@@ -1121,6 +1136,35 @@ export const DEFAULT_HIGHLIGHT_IDS = [
 ] as const;
 
 export type HighlightId = (typeof DEFAULT_HIGHLIGHT_IDS)[number];
+
+/**
+ * The fixed palette a bookmark's color is chosen from. Each id resolves through
+ * `--sb-bookmark-<id>-color`, so a bookmark reads correctly in light and dark
+ * rather than carrying a hex value that only suits one of them.
+ */
+export const BOOKMARK_COLOR_IDS = [
+  "orange",
+  "red",
+  "yellow",
+  "green",
+  "blue",
+  "purple",
+] as const;
+
+export type BookmarkColorId = (typeof BOOKMARK_COLOR_IDS)[number];
+
+export const DEFAULT_BOOKMARK_COLOR_ID: BookmarkColorId = "orange";
+
+/**
+ * CSS color for a stored bookmark color id. An id outside the palette (written
+ * by a newer client, say) shows as the default color instead of nothing.
+ */
+export function bookmarkColorValue(colorId: string): string {
+  const id = (BOOKMARK_COLOR_IDS as readonly string[]).includes(colorId)
+    ? colorId
+    : DEFAULT_BOOKMARK_COLOR_ID;
+  return `var(--sb-bookmark-${id}-color)`;
+}
 
 export type ThemeOverrides = Partial<
   Record<ThemeColorKey | ThemeFontFamilyKey, string>
@@ -1366,15 +1410,25 @@ export function createTheme(
       const text = themeStyleText.value;
       if (skipWrite) {
         skipWrite = false;
-        // Keep the already-painted CSS (it may be dark while `currentTheme`
-        // is still the light default — see the skipWrite comment above),
-        // but copy its --sb-background onto the status-bar meta. The
-        // inline script does this too; doing it here covers a cached
+        // An embed document's theme is already known from the link, and the
+        // tag may still be the visitor's saved theme. Write the link's theme
+        // now. Everywhere else, keep the already-painted CSS (it may be dark
+        // while `currentTheme` is still the light default — see the skipWrite
+        // comment above) and only copy its --sb-background onto the status-bar
+        // meta. The inline script does this too; doing it here covers a cached
         // document whose script predates that update.
-        applyBrowserThemeColorFromCss(
-          document.getElementById("sb-theme-styles")?.textContent ?? ""
-        );
-        return;
+        let embedDocument = false;
+        try {
+          embedDocument = isMinimalEmbedUrl(new URL(window.location.href));
+        } catch {
+          embedDocument = false;
+        }
+        if (!embedDocument) {
+          applyBrowserThemeColorFromCss(
+            document.getElementById("sb-theme-styles")?.textContent ?? ""
+          );
+          return;
+        }
       }
       // A broken compose (empty, or a value that closed `body {` early) would
       // replace the live theme tag and strip every `--sb-*` color until
