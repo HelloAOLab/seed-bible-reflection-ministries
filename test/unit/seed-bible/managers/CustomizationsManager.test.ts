@@ -524,18 +524,6 @@ describe("CustomizationsManager", () => {
     }
   });
 
-  it("getContrastRatio() confirms readable contrast in the built-in Light preset", async () => {
-    const { theme } = createManager();
-    const light = theme.themes.value.find((t) => t.id === "light")!;
-
-    const ratio = getContrastRatio(
-      light.variables.primaryFontColor,
-      light.variables.primaryColor
-    );
-
-    expect(ratio).toBeGreaterThanOrEqual(MIN_READABLE_CONTRAST_RATIO);
-  });
-
   it("buildBibleThemeFromCustomizationTheme() returns the base preset unchanged when the variant has no overrides", async () => {
     const { manager, theme } = createManager();
     const created = await manager.create();

@@ -585,20 +585,16 @@ export const LIGHT_THEME: BibleTheme = {
   id: "light",
   name: "Light",
   variables: {
-    primaryColor: "#2E4879",
+    primaryColor: "#e07b4c",
     primaryFontColor: "#fff",
 
-    secondaryColor: "#2E48791A",
+    secondaryColor: "#faddd1",
     secondaryFontColor: "#333",
 
     tertiaryColor: "#f0f0f0",
 
-    linkColor: "#2E4879",
+    linkColor: "#e07b4c",
     linkVisitedColor: "#8d5a6b",
-
-    tertiaryFontColor: "#666666",
-    tertiaryBorder: "#E1E3EA",
-    tertiaryBackground: "#E8E8E8",
 
     background: "#f8fafc",
 
@@ -620,59 +616,60 @@ export const LIGHT_THEME: BibleTheme = {
 
     chapterHeadingFontFamily: "Plus Jakarta Sans, sans-serif",
     chapterHeadingFontColor: "#333",
-    chapterHeadingFontStyle: "italic",
+    chapterHeadingFontStyle: "normal",
 
-    verseFontFamily: "Newsreader, serif",
+    verseFontFamily: "Plus Jakarta Sans, sans-serif",
     verseFontColor: "#333",
     verseCursor: "pointer",
 
-    selectedVerseBorderBottom: "2px dashed currentColor",
-    selectedVerseTextDecoration: "none",
+    selectedVerseBorderBottom: "none",
+    selectedVerseTextDecoration: "underline dotted",
     selectedVerseTextDecorationColor: "currentColor",
 
     hebrewSubtitleFontFamily: "Newsreader, serif",
     hebrewSubtitleFontColor: "#333",
     hebrewSubtitleFontStyle: "italic",
 
-    readerToolbarBottom: "18px",
-    readerToolbarGap: "10px",
-    readerToolbarPadding: "8px 20px",
-    readerToolbarBorderRadius: "22px",
+    readerToolbarBottom: "1.125rem",
+    readerToolbarGap: "0.25rem",
+    readerToolbarPadding: "1px 0.3125rem",
+    readerToolbarBorderRadius: "1.25rem",
     readerToolbarBackground: "#ffffff",
     readerToolbarBorder: "1px solid #00000024",
-    readerToolbarBoxShadow: "0 26px 10px #0000001a",
+    readerToolbarBoxShadow:
+      "0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)",
     readerToolbarZIndex: "99",
-    readerToolbarHeight: "50px",
+    readerToolbarHeight: "auto",
 
-    readerToolbarFloatingButtonTop: "-68px",
-    readerToolbarFloatingButtonWidth: "48px",
-    readerToolbarFloatingButtonHeight: "48px",
+    readerToolbarFloatingButtonTop: "-4.25rem",
+    readerToolbarFloatingButtonWidth: "3rem",
+    readerToolbarFloatingButtonHeight: "3rem",
     readerToolbarFloatingButtonBorder: "1px solid #00000024",
-    readerToolbarFloatingButtonBorderRadius: "999px",
+    readerToolbarFloatingButtonBorderRadius: "62.4375rem",
     readerToolbarFloatingButtonBackground: "#ffffff",
     readerToolbarFloatingButtonFontColor: "#333",
     readerToolbarFloatingButtonBoxShadow: "0 10px 24px #0000001a",
 
-    verseToolbarGap: "10px",
-    verseToolbarPadding: "8px 16px",
-    verseToolbarBorderRadius: "10px",
-    verseToolbarBorder: "1px solid #00000024",
-    verseToolbarBoxShadow: "0 26px 10px #0000001a",
+    verseToolbarGap: "0.125rem",
+    verseToolbarPadding: "0.25rem 0.5rem",
+    verseToolbarBorderRadius: "0.625rem",
+    verseToolbarBorder: "1px solid var(--sb-divider-color)",
+    verseToolbarBoxShadow: "0 26px 10px var(--sb-shadow-color)",
     verseToolbarZIndex: "100",
-    verseToolbarMinHeight: "50px",
+    verseToolbarMinHeight: "0",
 
-    readerToolbarMobileLayoutHeight: "70px",
-    readerToolbarMobileLayoutPadding: "10px 14px",
-    readerToolbarMobileLayoutGap: "8px",
-    readerToolbarMobileLayoutItemSize: "44px",
-    readerToolbarMobileLayoutCenterButtonSize: "52px",
-    readerToolbarMobileLayoutButtonBorderRadius: "999px",
-    emptyPaneToolbarButtonBackground: "#2E48791A",
+    readerToolbarMobileLayoutHeight: "auto",
+    readerToolbarMobileLayoutPadding: "0.625rem 2.1875rem",
+    readerToolbarMobileLayoutGap: "1rem",
+    readerToolbarMobileLayoutItemSize: "2.75rem",
+    readerToolbarMobileLayoutCenterButtonWidth: "5.4375rem",
+    readerToolbarMobileLayoutCenterButtonHeight: "2.625rem",
+    readerToolbarMobileLayoutButtonBorderRadius: "2.5rem",
 
-    readerToolbarFloatingButtonSideOffset: "16px",
+    readerToolbarFloatingButtonSideOffset: "1rem",
 
-    verseToolbarToolsGap: "10px",
-    verseToolbarMobileBottom: "18px",
+    verseToolbarToolsGap: "0.125rem",
+    verseToolbarMobileBottom: "1.125rem",
 
     menuBackground: "#ffffff",
     menuFontColor: "#333",
@@ -680,7 +677,7 @@ export const LIGHT_THEME: BibleTheme = {
     toolbarIconInvert: "0",
 
     readerToolbarFontColor: "#333",
-    readerToolbarFontFamily: "Satoshi, system-ui, sans-serif",
+    readerToolbarFontFamily: "system-ui, sans-serif",
 
     dividerColor: "rgba(0, 0, 0, 0.12)",
     shadowColor: "rgba(0, 0, 0, 0.14)",
@@ -735,7 +732,7 @@ export const LIGHT_THEME: BibleTheme = {
       wordsOfJesusFontColor: "#700",
     },
     orange: {
-      color: "#2E48791A",
+      color: "#ffcc80",
       fontColor: "#333",
       wordsOfJesusFontColor: "#b00",
     },
@@ -783,15 +780,15 @@ export const DARK_THEME: BibleTheme = {
   id: "dark",
   name: "Dark",
   variables: {
-    primaryColor: "#2E4879",
+    primaryColor: "#e07b4c",
     primaryFontColor: "#111111",
 
-    secondaryColor: "#2E48791A",
+    secondaryColor: "#433228",
     secondaryFontColor: "#f5f5f5",
 
     tertiaryColor: "#1c1c1c",
 
-    linkColor: "#2E4879",
+    linkColor: "#e07b4c",
     linkVisitedColor: "#d99bb0",
 
     background: "#0a0a0a",
