@@ -293,6 +293,40 @@ describe("PlayPlaylistView", () => {
     ).toBe("Genesis 1:1");
   });
 
+  it("follows a scripture item's reference with its note title, when it has one", () => {
+    const playlist = createPlaylist({
+      items: [
+        verseItem({
+          ref: { bookId: "GEN", chapter: 1, verse: 1 },
+          note: "<p>Body</p>",
+          noteTitle: "In the beginning",
+        }),
+        verseItem({ ref: { bookId: "GEN", chapter: 1, verse: 2 } }),
+      ],
+    });
+    const { playlists } = createMockPlaylists(createPlayingState([playlist]));
+    const tabs = createMockTabs(createMockTab([book("GEN", "Genesis")]));
+
+    act(() => {
+      render(
+        <PlayPlaylistView
+          playlists={playlists}
+          tabs={tabs}
+          modals={modals}
+          state={state}
+        />,
+        container
+      );
+    });
+
+    const labels = Array.from(
+      container.querySelectorAll(
+        ".sb-play-playlist-item-button .sb-discover-item-title"
+      )
+    ).map((label) => label.textContent);
+    expect(labels).toEqual(["Genesis 1:1 · In the beginning", "Genesis 1:2"]);
+  });
+
   it("clicking a queue item jumps playback to that item", () => {
     const playlist = createPlaylist({
       items: [
@@ -323,6 +357,42 @@ describe("PlayPlaylistView", () => {
     });
 
     expect(playing.currentIndex.value).toBe(2);
+  });
+
+  it("clicking the current queue item reopens it", () => {
+    const playlist = createPlaylist({
+      items: [
+        { type: "html", title: "Intro", html: "<p>Intro</p>" },
+        verseItem({ ref: { bookId: "GEN", chapter: 2 } }),
+      ],
+    });
+    const playing = createPlayingState([playlist]);
+    const showCurrentItem = vi.fn();
+    const jumpTo = vi.spyOn(playing, "jumpTo");
+    const { playlists } = createMockPlaylists(playing);
+    playlists.showCurrentItem = showCurrentItem;
+    const tabs = createMockTabs();
+
+    act(() => {
+      render(
+        <PlayPlaylistView
+          playlists={playlists}
+          tabs={tabs}
+          modals={modals}
+          state={state}
+        />,
+        container
+      );
+    });
+
+    const buttons = container.querySelectorAll(".sb-play-playlist-item-button");
+    act(() => {
+      buttons[0]?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    expect(showCurrentItem).toHaveBeenCalledTimes(1);
+    expect(jumpTo).not.toHaveBeenCalled();
+    expect(playing.currentIndex.value).toBe(0);
   });
 
   it("shows a leading icon per item type", () => {

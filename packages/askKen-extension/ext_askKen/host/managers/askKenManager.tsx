@@ -305,17 +305,18 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
   if (!context.app.currentReadingState.value) {
     throw new Error("Current reading state is not initialized.");
   }
-
   const readingState =
     context?.app?.currentReadingState?.value.tab.readingState;
 
   const seedBibleContext = context;
-  const InitialQuery = buildExplainQuery(
-    readingState.chapterData.value?.book.name ?? "",
-    readingState.chapterData.value?.chapter.number ?? 1,
-    readingState.selectedVerses.value
+  const InitialQuery = computed(() =>
+    buildExplainQuery(
+      readingState.chapterData.value?.book.name ?? "",
+      readingState.chapterData.value?.chapter.number ?? 1,
+      readingState.selectedVerses.value
+    )
   );
-  const askKenInitialQuery = signal(InitialQuery);
+  const askKenInitialQuery = signal(InitialQuery.value);
   const inMobile = context.app.isMobile.value;
   const isMobile = signal(inMobile);
   const historyInitialized = signal(false);
@@ -374,7 +375,7 @@ export function createAskKenState(context: SeedBibleState): AskKenState {
   const isCleared = signal(false);
   const openActionModal = signal(false);
   const shouldScrollToBottom = signal(false);
-  const openedFromVerse = signal(!!InitialQuery);
+  const openedFromVerse = signal(!!InitialQuery.value);
   const askKenSize: Signal<ModalSize> = signal(
     isMobile.value ? "large" : "mediumSlim"
   );

@@ -6,6 +6,7 @@ import type { ModalManager } from "../../managers/ModalManager";
 import { DiscoverSection } from "../DiscoverPane/DiscoverSection";
 import { playlistItemLabel } from "../playlistItemLabel";
 import { playlistItemIcon } from "../playlistItemIcon";
+import { PlaylistItemNoteTag } from "../PlaylistItemNoteTag/PlaylistItemNoteTag";
 import { useDragReorder } from "../useDragReorder";
 import { MaterialIcon } from "../icons";
 import type { SeedBibleState } from "../../managers/SeedBibleStateManager";
@@ -122,6 +123,10 @@ export function PlayPlaylistView(props: PlayPlaylistViewProps) {
                   className="sb-play-playlist-item-button"
                   aria-current={index === currentIndex}
                   onClick={() => {
+                    if (index === currentIndex) {
+                      playlists.showCurrentItem();
+                      return;
+                    }
                     playing.jumpTo(index);
                   }}
                 >
@@ -130,6 +135,7 @@ export function PlayPlaylistView(props: PlayPlaylistViewProps) {
                   </MaterialIcon>
                   <span className="sb-discover-item-title">
                     {playlistItemLabel(item, t, resolveBookName)}
+                    <PlaylistItemNoteTag item={item} />
                   </span>
                 </button>
               </li>

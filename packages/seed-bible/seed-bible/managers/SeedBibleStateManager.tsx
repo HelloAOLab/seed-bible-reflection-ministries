@@ -22,6 +22,7 @@ import {
 } from "../managers/TodayManager";
 import { isMinimalEmbedUrl } from "../managers/EmbedMode";
 import { TodayPane, TodayPaneTitle } from "../components/TodayPane/TodayPane";
+import { openExtensionConsentModal } from "../components/ExtensionConsentModal/ExtensionConsentModal";
 import { AboutPage, AboutPaneTitle } from "../components/AboutPage/AboutPage";
 import {
   SharedPageLoadFailedModalContent,
@@ -63,6 +64,10 @@ import {
   YourContentPaneTitle,
 } from "../components/YourContentPane/YourContentPane";
 import {
+  buildCustomizationTutorialSteps,
+  openCustomizationEditPane,
+} from "../components/CustomizationEditPane/CustomizationEditPane";
+import {
   PLAYLIST_HISTORY_PANE_ID,
   PlaylistHistoryPane,
   PlaylistHistoryPaneTitle,
@@ -77,6 +82,12 @@ import {
   FriendsPaneTitle,
 } from "../components/FriendsPane/FriendsPane";
 import { setupFriendLinks } from "../components/FriendsPane/FriendLinkPrompts";
+import {
+  EXTENSIONS_PANE_ID,
+  ExtensionsPage,
+  ExtensionsPaneBackButton,
+  ExtensionsPaneTitle,
+} from "../components/ExtensionsPage/ExtensionsPage";
 import {
   createYourContentManager,
   type YourContentManager,
@@ -110,7 +121,7 @@ import type {
 import { createLoginManager } from "../managers/LoginManager";
 import type { LoginManager } from "../managers/LoginManager";
 import { createSidebar } from "../managers/SidebarManager";
-import { createTabs } from "../managers/TabsManager";
+import { createTabs, readInitialReadingParams } from "../managers/TabsManager";
 import type { ReaderTab, TabsManager } from "../managers/TabsManager";
 import {
   writeStoredTabsState,
@@ -631,6 +642,21 @@ export interface SeedBibleState {
   /** Closes Friends (clears `friends` from the URL). */
   closeFriends: () => void;
 
+  /** True when the full-screen Extensions page is showing (desktop). */
+  isExtensionsOpen: ReadonlySignal<boolean>;
+  /**
+   * The extension whose page is open on the Extensions page, or null while
+   * it lists them all.
+   */
+  extensionsPageEntryId: ReadonlySignal<string | null>;
+  /**
+   * Opens the Extensions page, at `extensionId`'s page when given (reflected
+   * in the URL as `?extensions=open&extension=<id>`).
+   */
+  openExtensions: (extensionId?: string | null) => void;
+  /** Closes the Extensions page (clears `extensions` and `extension`). */
+  closeExtensions: () => void;
+
   /** True when the Profile screen is showing. */
   isProfileOpen: ReadonlySignal<boolean>;
   /** Opens the Profile screen (reflected in the URL as `?profile=open`). */
@@ -966,6 +992,13 @@ export function createSeedBibleState(
   );
   const extensions = createExtensionManager(login, {
     defaultExtensions: SEED_BIBLE_EXTENSIONS,
+    requestSandboxConsent: (request) =>
+      openExtensionConsentModal(modals, request, {
+        userId: login.userId,
+        friends,
+      }),
+    records: os,
+    fileRecords: os,
   });
   const extensionSettings = createExtensionSettingsManager(
     os,
@@ -1112,6 +1145,40 @@ export function createSeedBibleState(
     friendsOpen.value = false;
   };
 
+  // The full-screen Extensions page, bound to `?extensions=open` and, while
+  // one extension's page is showing, `?extension=<id>`.
+  const extensionsOpen = signal(
+    import.meta.env.SSR
+      ? false
+      : navigation.currentUrl.value.searchParams.get("extensions") === "open"
+  );
+  const extensionsPageEntry = signal<string | null>(
+    import.meta.env.SSR
+      ? null
+      : navigation.currentUrl.value.searchParams.get("extension")
+  );
+  const isExtensionsOpen = computed(() => extensionsOpen.value);
+  const extensionsPageEntryId = computed(() =>
+    extensionsOpen.value ? extensionsPageEntry.value : null
+  );
+  const openExtensions = (extensionId: string | null = null) => {
+    // Today's URL binding would otherwise turn it straight back on over this
+    // page; see `openProfile` below.
+    if (today.isOpen.peek()) {
+      today.close();
+    }
+    batch(() => {
+      extensionsOpen.value = true;
+      extensionsPageEntry.value = extensionId;
+    });
+  };
+  const closeExtensions = () => {
+    batch(() => {
+      extensionsOpen.value = false;
+      extensionsPageEntry.value = null;
+    });
+  };
+
   // The Profile screen. Two-way bound to `?profile=open` so it can be
   // deep-linked and so the browser's back button leaves it, mirroring Today.
   //
@@ -1186,6 +1253,22 @@ export function createSeedBibleState(
       },
       set value(newValue) {
         friendsOpen.value = newValue === "open";
+      },
+    },
+    extensions: {
+      get value() {
+        return extensionsOpen.value ? "open" : null;
+      },
+      set value(newValue) {
+        extensionsOpen.value = newValue === "open";
+      },
+    },
+    extension: {
+      get value() {
+        return extensionsOpen.value ? extensionsPageEntry.value : null;
+      },
+      set value(newValue) {
+        extensionsPageEntry.value = newValue;
       },
     },
     "edit-profile": {
@@ -2982,9 +3065,12 @@ export function createSeedBibleState(
     return session;
   };
 
-  const handleJoinSharedSession = async (id: string) => {
+  const handleJoinSharedSession = async (
+    id: string,
+    startPosition?: SessionStartPosition
+  ) => {
     closeSidebarAndSettings();
-    const session = await sessions.joinSession(id);
+    const session = await sessions.joinSession(id, startPosition);
     captureEvent("join_session", {
       sessionId: session.id,
     });
@@ -3059,7 +3145,73 @@ export function createSeedBibleState(
       return;
     }
 
-    await handleJoinSharedSession(initialSessionId);
+    const linkedPosition = readInitialReadingParams(
+      navigation.initialUrl,
+      navigation.basePath
+    ).specified;
+    const bootTab = tabs.tabs.peek()[0] ?? null;
+    const startPosition =
+      linkedPosition && bootTab
+        ? getSessionStartPosition(bootTab.readingState)
+        : undefined;
+
+    const whenTabsRestored = (run: () => void) => {
+      if (tabsRestored.peek()) {
+        run();
+        return;
+      }
+      const stopWaiting = tabsRestored.subscribe((restored) => {
+        if (restored) {
+          stopWaiting();
+          run();
+        }
+      });
+    };
+
+    try {
+      await handleJoinSharedSession(initialSessionId, startPosition);
+    } catch (error) {
+      console.error("Failed to join the session from the URL:", error);
+      // Destructured for the translation lint rules, which only recognise a
+      // bare `t` — see the sign-out toast below.
+      const { t } = i18n;
+      toast(
+        t("session-join-failed", {
+          defaultValue: "Couldn't join the shared session",
+        })
+      );
+      // Restoring saved tabs skipped the link's chapter, leaving it for the
+      // session to show. With no session, show it in a normal tab instead.
+      if (startPosition) {
+        whenTabsRestored(() => showLinkedChapter(startPosition));
+      }
+      return;
+    }
+
+    if (!startPosition || !bootTab) {
+      return;
+    }
+
+    whenTabsRestored(() => {
+      if (tabs.tabs.peek().includes(bootTab)) {
+        tabs.removeTab(bootTab.id);
+      }
+    });
+  };
+
+  const showLinkedChapter = (position: SessionStartPosition) => {
+    const tab =
+      tabs.tabs
+        .peek()
+        .find(
+          (candidate) =>
+            !candidate.sharedSession &&
+            candidate.readingState.bookId.peek() === position.initialBookId &&
+            candidate.readingState.chapterNumber.peek() ===
+              position.initialChapterNumber
+        ) ?? tabs.addTab(undefined, position);
+    tabs.selectTab(tab.id);
+    tabsLayout.setSelectedSlotTab(tab.id);
   };
 
   // Tell the user when we signed them out for them. `login.sessionEnded` only fires
@@ -3467,6 +3619,10 @@ export function createSeedBibleState(
     isFriendsOpen,
     openFriends,
     closeFriends,
+    isExtensionsOpen,
+    extensionsPageEntryId,
+    openExtensions,
+    closeExtensions,
     isProfileOpen,
     openProfile,
     closeProfile,
@@ -3847,6 +4003,39 @@ export function createSeedBibleState(
     closeProfile();
     void playlists.createNewPlaylist();
   };
+  // The customization editor is a side pane beside the reader, so the
+  // fullscreen screens above it close first, as for the playlist editor.
+  const editCustomizationFromContent = (customizationId: string) => {
+    closeYourContent();
+    closeProfile();
+    openCustomizationEditPane(state, customizationId);
+  };
+  const createCustomizationFromContent = async () => {
+    closeYourContent();
+    closeProfile();
+    let created;
+    try {
+      created = await customizations.create();
+    } catch (error) {
+      console.error("Error creating customization:", error);
+      // Destructured for the translation lint rules, as in the toast above.
+      const { t } = i18n;
+      toast(
+        t("customization-create-failed", {
+          defaultValue:
+            "Couldn't create your Custom Branding. Please try again.",
+        })
+      );
+      return;
+    }
+    openCustomizationEditPane(state, created.id);
+    // First-time-only overview: the customization name and logo, then a
+    // deep-linked tour of the new theme's editor sections.
+    tutorial.startContextual(
+      "customization-created",
+      buildCustomizationTutorialSteps(state, created.defaultVariantId)
+    );
+  };
   // Both land in the plans pane, opened fullscreen the way the Profile card
   // opens it, and then drill straight into the plan so the user doesn't have
   // to find it in the list a second time.
@@ -3882,6 +4071,8 @@ export function createSeedBibleState(
       onCreatePlaylist={createPlaylistFromContent}
       onOpenReadingPlan={openReadingPlanFromContent}
       onEditReadingPlan={editReadingPlanFromContent}
+      onEditCustomization={editCustomizationFromContent}
+      onCreateCustomization={() => void createCustomizationFromContent()}
     />
   );
   const renderYourContentPaneTitle = () => <YourContentPaneTitle />;
@@ -3968,6 +4159,35 @@ export function createSeedBibleState(
     );
     if (!paneOpen && isFriendsOpen.peek()) {
       closeFriends();
+    }
+  });
+
+  const renderExtensionsPane = () => <ExtensionsPage state={state} />;
+  const renderExtensionsPaneTitle = () => <ExtensionsPaneTitle />;
+  const renderExtensionsPaneLeading = () => (
+    <ExtensionsPaneBackButton state={state} />
+  );
+
+  effect(() => {
+    if (isExtensionsOpen.value) {
+      panes.openPane({
+        id: EXTENSIONS_PANE_ID,
+        placement: "fullscreen",
+        title: renderExtensionsPaneTitle,
+        leading: renderExtensionsPaneLeading,
+        component: renderExtensionsPane,
+      });
+    } else {
+      panes.closePane(EXTENSIONS_PANE_ID); // no-op when already closed
+    }
+  });
+
+  effect(() => {
+    const paneOpen = panes.panes.value.some(
+      (pane) => pane.id === EXTENSIONS_PANE_ID
+    );
+    if (!paneOpen && isExtensionsOpen.peek()) {
+      closeExtensions();
     }
   });
 
