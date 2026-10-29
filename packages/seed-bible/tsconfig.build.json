@@ -6,7 +6,7 @@
     "declaration": true,
     "module": "esnext",
     "moduleResolution": "bundler",
-    "rootDir": "./seed-bible",
+    "rootDir": "..",
     "outDir": "./dist",
     "types": ["node"]
   },
