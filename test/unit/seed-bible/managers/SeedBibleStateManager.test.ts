@@ -6,6 +6,7 @@ import {
 import { TODAY_PANE_ID } from "@packages/seed-bible/seed-bible/managers/TodayManager";
 import { PROFILE_PANE_ID } from "@packages/seed-bible/seed-bible/components/ProfilePane/ProfilePane";
 import { PLAYLIST_HISTORY_PANE_ID } from "@packages/seed-bible/seed-bible/components/PlaylistHistoryPane/PlaylistHistoryPane";
+import { EXTENSIONS_PANE_ID } from "@packages/seed-bible/seed-bible/components/ExtensionsPage/ExtensionsPage";
 import {
   PlaylistPlayHistorySchema,
   PlaylistSchema,
@@ -618,7 +619,10 @@ describe("createSeedBibleState", () => {
 
     const result = await state.app.joinSharedSession("group-abc");
 
-    expect(mockSessionsManager.joinSession).toHaveBeenCalledWith("group-abc");
+    expect(mockSessionsManager.joinSession).toHaveBeenCalledWith(
+      "group-abc",
+      undefined
+    );
     expect(result).toBe(session);
     expect(state.tabs.tabs.value).toHaveLength(previousTabCount + 1);
     expect(state.tabs.tabs.value[previousTabCount]?.readingState).toBe(
@@ -677,12 +681,200 @@ describe("createSeedBibleState", () => {
         () => mockSessionsManager.joinSession.mock.calls.length === 1
       );
 
+      // A link that names no chapter leaves the session wherever it is.
       expect(mockSessionsManager.joinSession).toHaveBeenCalledWith(
-        "url-session-123"
+        "url-session-123",
+        undefined
       );
       expect(state.tabs.tabs.value).toHaveLength(2);
       expect(state.tabs.tabs.value[1]?.sharedSession).toBe(session);
       expect(state.tabs.selectedTabId.value).toBe("tab-2");
+    } finally {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  });
+
+  // Regression (#2020): a link carrying both a session and a chapter used to
+  // open the chapter in a plain tab and the session, at its own position, in a
+  // second one.
+  it("opens a session link's chapter in the session tab alone", async () => {
+    const session = createMockSharedSession("url-session-456");
+    // Held open until the app has loaded, as the real join (a network sync) is.
+    let finishJoin!: (joined: typeof session) => void;
+    mockSessionsManager.joinSession.mockReturnValue(
+      new Promise((resolve) => {
+        finishJoin = resolve;
+      })
+    );
+
+    window.history.replaceState(
+      null,
+      "",
+      "?sessionId=url-session-456&book=EXO&chapter=2&useFreeBibleAPI=true"
+    );
+    try {
+      const state = await createStateWithOptions({});
+      finishJoin(session);
+
+      await waitFor(() =>
+        state.tabs.tabs.value.some((tab) => tab.sharedSession === session)
+      );
+
+      expect(state.tabs.tabs.value).toHaveLength(1);
+      expect(mockSessionsManager.joinSession).toHaveBeenCalledWith(
+        "url-session-456",
+        expect.objectContaining({
+          initialBookId: "EXO",
+          initialChapterNumber: 2,
+        })
+      );
+      expect(state.tabs.tabs.value[0]?.sharedSession).toBe(session);
+      expect(state.tabs.selectedTabId.value).toBe(state.tabs.tabs.value[0]?.id);
+
+      // A tab opened afterwards must not reuse the session tab's id.
+      const nextTab = state.tabs.addTab();
+      expect(nextTab.id).not.toBe(state.tabs.tabs.value[0]?.id);
+    } finally {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  });
+
+  it("leaves a returning visitor's saved tabs where they were when a session link names a chapter", async () => {
+    window.localStorage.setItem(
+      "sb-tabs-state",
+      JSON.stringify({
+        version: 1,
+        tabs: [
+          {
+            id: "tab-1",
+            translationId: "NIV",
+            bookId: "MAT",
+            chapterNumber: 1,
+          },
+        ],
+        selectedTabId: "tab-1",
+        layout: "single",
+        slotTabIds: ["tab-1"],
+        selectedSlotIndex: 0,
+      })
+    );
+    const session = createMockSharedSession("url-session-789");
+    mockSessionsManager.joinSession.mockResolvedValue(session);
+
+    window.history.replaceState(
+      null,
+      "",
+      "?sessionId=url-session-789&book=EXO&chapter=2&useFreeBibleAPI=true"
+    );
+    try {
+      const state = await createStateWithOptions({});
+
+      await waitFor(() =>
+        state.tabs.tabs.value.some((tab) => tab.sharedSession === session)
+      );
+
+      const savedTabs = state.tabs.tabs.value.filter(
+        (tab) => !tab.sharedSession
+      );
+      expect(
+        savedTabs.map((tab) => [
+          tab.readingState.translationId.value,
+          tab.readingState.bookId.value,
+          tab.readingState.chapterNumber.value,
+        ])
+      ).toEqual([["NIV", "MAT", 1]]);
+      expect(state.tabs.selectedTabId.value).toBe(
+        state.tabs.tabs.value.find((tab) => tab.sharedSession === session)?.id
+      );
+    } finally {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  });
+
+  it("opens a session link's chapter in a normal tab when a returning visitor can't join the session", async () => {
+    window.localStorage.setItem(
+      "sb-tabs-state",
+      JSON.stringify({
+        version: 1,
+        tabs: [
+          {
+            id: "tab-1",
+            translationId: "NIV",
+            bookId: "MAT",
+            chapterNumber: 1,
+          },
+        ],
+        selectedTabId: "tab-1",
+        layout: "single",
+        slotTabIds: ["tab-1"],
+        selectedSlotIndex: 0,
+      })
+    );
+    mockSessionsManager.joinSession.mockRejectedValue(
+      new Error("sync timed out")
+    );
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    window.history.replaceState(
+      null,
+      "",
+      "?sessionId=url-session-down&book=EXO&chapter=2&useFreeBibleAPI=true"
+    );
+    try {
+      const state = await createStateWithOptions({});
+
+      await waitFor(
+        () =>
+          state.app.currentToast.value?.message ===
+          "Couldn't join the shared session"
+      );
+
+      const selected = state.tabs.tabs.value.find(
+        (tab) => tab.id === state.tabs.selectedTabId.value
+      );
+      expect(selected?.sharedSession).toBeNull();
+      expect(selected?.readingState.bookId.value).toBe("EXO");
+      expect(selected?.readingState.chapterNumber.value).toBe(2);
+      expect(
+        state.tabs.tabs.value.map((tab) => [
+          tab.readingState.bookId.value,
+          tab.readingState.chapterNumber.value,
+        ])
+      ).toEqual([
+        ["MAT", 1],
+        ["EXO", 2],
+      ]);
+    } finally {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  });
+
+  it("keeps a first-time visitor on a session link's chapter, in one tab, when the join fails", async () => {
+    mockSessionsManager.joinSession.mockRejectedValue(
+      new Error("sync timed out")
+    );
+    vi.spyOn(console, "error").mockImplementation(() => {});
+
+    window.history.replaceState(
+      null,
+      "",
+      "?sessionId=url-session-down&book=EXO&chapter=2&useFreeBibleAPI=true"
+    );
+    try {
+      const state = await createStateWithOptions({});
+
+      await waitFor(
+        () =>
+          state.app.currentToast.value?.message ===
+          "Couldn't join the shared session"
+      );
+
+      expect(state.tabs.tabs.value).toHaveLength(1);
+      const [tab] = state.tabs.tabs.value;
+      expect(tab?.sharedSession).toBeNull();
+      expect(tab?.readingState.bookId.value).toBe("EXO");
+      expect(tab?.readingState.chapterNumber.value).toBe(2);
+      expect(state.tabs.selectedTabId.value).toBe(tab?.id);
     } finally {
       window.history.replaceState(null, "", window.location.pathname);
     }
@@ -1357,7 +1549,7 @@ describe("createSeedBibleState", () => {
     expect(state.selector.isOpen.value).toBe(false);
   });
 
-  it("selecting a side pane on desktop leaves the Settings sidebar open, so the Customization Center's list stays visible behind its editor pane", async () => {
+  it("selecting a side pane on desktop leaves the Settings sidebar open", async () => {
     const state = await createState();
     state.sidebar.openSettings();
     const pane = state.panes.openPane({
@@ -3601,6 +3793,126 @@ describe("opening another screen while Today is up", () => {
     expect(state.isPlaylistHistoryOpen.value).toBe(false);
     expect(state.isProfileOpen.value).toBe(true);
     expect(paneIds(state)).toEqual([PROFILE_PANE_ID]);
+  });
+});
+
+describe("the full-screen Extensions page", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    jsdom.reconfigure({ url: "https://example.com" });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const paneIds = (state: SeedBibleState) =>
+    state.panes.panes.value.map((pane) => pane.id);
+  const query = () => new URL(window.location.href).searchParams;
+
+  /** Renders the pane's back button, returning it (or null when there's none). */
+  const renderBackButton = async (
+    state: SeedBibleState,
+    container: HTMLElement
+  ) => {
+    const pane = state.panes.panes.value.find(
+      (item) => item.id === EXTENSIONS_PANE_ID
+    );
+    const Provider = await realI18nProvider();
+    const Leading = pane?.leading;
+    act(() => {
+      render(
+        h(Provider, {
+          i18n: state.i18n,
+          children: Leading ? h(Leading, {}) : null,
+        }),
+        container
+      );
+    });
+    return container.querySelector(
+      ".sb-extensions-page-back"
+    ) as HTMLButtonElement | null;
+  };
+
+  it("stays up when it's opened over Today", async () => {
+    const state = await createState();
+    state.today.open();
+    await Promise.resolve();
+
+    state.openExtensions();
+    await Promise.resolve();
+
+    expect(state.isExtensionsOpen.value).toBe(true);
+    expect(state.today.isOpen.value).toBe(false);
+    expect(paneIds(state)).toEqual([EXTENSIONS_PANE_ID]);
+    expect(query().get("extensions")).toBe("open");
+  });
+
+  it("puts the open extension's page in the URL", async () => {
+    const state = await createState();
+
+    state.openExtensions("demo-extension");
+    await Promise.resolve();
+
+    expect(state.extensionsPageEntryId.value).toBe("demo-extension");
+    expect(query().get("extensions")).toBe("open");
+    expect(query().get("extension")).toBe("demo-extension");
+  });
+
+  it("opens at an extension's page from a link", async () => {
+    jsdom.reconfigure({
+      url: "https://example.com/?extensions=open&extension=demo-extension",
+    });
+    const state = await createState();
+
+    expect(state.isExtensionsOpen.value).toBe(true);
+    expect(state.extensionsPageEntryId.value).toBe("demo-extension");
+    expect(paneIds(state)).toEqual([EXTENSIONS_PANE_ID]);
+  });
+
+  it("forgets the page when its pane is closed", async () => {
+    const state = await createState();
+    state.openExtensions("demo-extension");
+    await Promise.resolve();
+
+    state.panes.closePane(EXTENSIONS_PANE_ID);
+    await Promise.resolve();
+
+    expect(state.isExtensionsOpen.value).toBe(false);
+    expect(state.extensionsPageEntryId.value).toBeNull();
+    expect(query().get("extensions")).toBeNull();
+    expect(query().get("extension")).toBeNull();
+
+    // Reopened, it lists them all rather than going back to that page.
+    state.openExtensions();
+    await Promise.resolve();
+    expect(state.extensionsPageEntryId.value).toBeNull();
+  });
+
+  it("goes back from an extension's page to the list", async () => {
+    const state = await createState();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    try {
+      state.openExtensions();
+      await Promise.resolve();
+      expect(await renderBackButton(state, container)).toBeNull();
+
+      state.openExtensions("demo-extension");
+      await Promise.resolve();
+      const back = await renderBackButton(state, container);
+      expect(back).not.toBeNull();
+      act(() => {
+        back!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      });
+    } finally {
+      render(null, container);
+      container.remove();
+    }
+
+    expect(state.isExtensionsOpen.value).toBe(true);
+    expect(state.extensionsPageEntryId.value).toBeNull();
+    expect(query().get("extension")).toBeNull();
   });
 });
 

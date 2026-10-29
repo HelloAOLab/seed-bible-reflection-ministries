@@ -177,10 +177,6 @@ export function Apologist(props: ApologistProps) {
                 arrow_back
               </button>
             )}
-
-            <div className="sg-resultCount">
-              {data.value.length} {t("results")}
-            </div>
           </div>
         )}
       </div>

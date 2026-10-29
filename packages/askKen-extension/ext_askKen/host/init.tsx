@@ -14,6 +14,7 @@ export default function initAskKenExtension() {
 
       yield context.tools.registerVerseToolbarTool({
         id: "ext_askKen",
+        preserveSelection: true,
         title: {
           key: "askKen",
           defaultValue: "Ask Ken",
