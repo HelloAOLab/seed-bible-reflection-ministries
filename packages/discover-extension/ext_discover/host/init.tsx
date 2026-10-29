@@ -19,8 +19,8 @@ export default function initDiscoveryExtension() {
         },
         icon: () => <span className="material-symbols-outlined">explore</span>,
         onSelect: () => {
+          context.isDiscoverOpen.value = true;
           const state = createDiscoverState(context);
-
           context.panes.openPane({
             id: "ext_discovery",
             placement: "side",

@@ -151,6 +151,7 @@ import {
   batch,
   computed,
   effect,
+  Signal,
   signal,
   type ReadonlySignal,
 } from "@preact/signals";
@@ -691,6 +692,8 @@ export interface SeedBibleState {
   openCodeOfConduct: () => void;
   /** Closes the Code of Conduct modal (clears `conduct` from the URL). */
   closeCodeOfConduct: () => void;
+  /** When discover is open hide the compact discover*/
+  isDiscoverOpen: Signal<boolean>;
 
   /**
    * Releases what this state has registered outside itself (listeners on the
@@ -824,7 +827,7 @@ export function createSeedBibleState(
   options: CreateSeedBibleStateOptions = {}
 ): SeedBibleState {
   console.log("Creating SeedBibleState with options:", options);
-
+  const isDiscoverOpen = signal(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const features = createFeaturesManager((globalThis as any).posthog ?? null);
   const navigation = createNavigationManager({
@@ -945,7 +948,7 @@ export function createSeedBibleState(
     login,
     i18n
   );
-  const tools = createBibleToolsManager(branding);
+  const tools = createBibleToolsManager(branding, isDiscoverOpen);
   const readingHistory = createReadingHistoryManager(os, login);
 
   const renderedAsMobile = options.config?.renderedAsMobile ?? false;
@@ -3638,6 +3641,7 @@ export function createSeedBibleState(
     isCodeOfConductOpen,
     openCodeOfConduct,
     closeCodeOfConduct,
+    isDiscoverOpen,
     features,
     dispose: () => {
       i18n.dispose();

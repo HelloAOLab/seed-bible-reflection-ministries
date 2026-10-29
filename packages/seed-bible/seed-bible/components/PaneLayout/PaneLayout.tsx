@@ -5,6 +5,7 @@ import type { Pane, PanesManager } from "../../managers/PanesManager";
 import type { SeedBibleState } from "../../managers/SeedBibleStateManager";
 import { UI_SIZE_SCALE_MAP } from "../../managers/SettingsManager";
 import { useEffect, useRef } from "preact/hooks";
+import type { Signal } from "@preact/signals";
 
 interface DragState {
   mode: "move" | "resize";
@@ -36,11 +37,18 @@ interface DragState {
  * if the pane declared one — e.g. to warn about unsaved changes and let the
  * pane close itself once the user confirms. See `Pane.confirmClose`.
  */
-function closePaneFromHeader(panesManager: PanesManager, pane: Pane) {
+function closePaneFromHeader(
+  panesManager: PanesManager,
+  pane: Pane,
+  isDiscoverOpen?: Signal<boolean>
+) {
   if (pane.confirmClose && !pane.confirmClose()) {
     return;
   }
   panesManager.closePane(pane.id, "user");
+  if (isDiscoverOpen?.value) {
+    isDiscoverOpen.value = false;
+  }
 }
 
 function usePaneDrag(state: SeedBibleState) {
@@ -311,7 +319,7 @@ interface SidePaneProps {
  */
 export function SidePane(props: SidePaneProps) {
   const { state, pane } = props;
-  const { app, panes: panesManager } = state;
+  const { app, panes: panesManager, isDiscoverOpen } = state;
   const { startResize, registerPaneElement } = usePaneDrag(state);
 
   return (
@@ -330,7 +338,9 @@ export function SidePane(props: SidePaneProps) {
           icon={pane.icon}
           leading={pane.leading}
           header={pane.header}
-          onClose={() => closePaneFromHeader(panesManager, pane)}
+          onClose={() =>
+            closePaneFromHeader(panesManager, pane, isDiscoverOpen)
+          }
         />
       )}
       <div className="sb-pane-detached-body">
