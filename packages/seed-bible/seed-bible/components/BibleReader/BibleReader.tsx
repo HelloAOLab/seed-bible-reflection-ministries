@@ -2706,6 +2706,7 @@ export function BibleReader(props: BibleReaderProps) {
     mobileChrome,
     sharedSession,
   } = props;
+  console.log(state, "sttt");
   const {
     translationId,
     translation,
@@ -3436,6 +3437,7 @@ export function BibleReader(props: BibleReaderProps) {
   // ) : null;
   const extraContent =
     state &&
+    !state.isDiscoverOpen?.value &&
     !isMinimalEmbed &&
     !state.app.isDiscoverOpen.value &&
     state.settings.settings.value.discoveredContent.showContent ? (

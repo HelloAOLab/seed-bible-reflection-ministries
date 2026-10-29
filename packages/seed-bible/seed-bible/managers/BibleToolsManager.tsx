@@ -6,7 +6,7 @@ import {
 } from "../components/icons";
 import type { JSX, VNode } from "preact";
 import { computed, signal } from "@preact/signals";
-import type { ReadonlySignal } from "@preact/signals";
+import type { ReadonlySignal, Signal } from "@preact/signals";
 import {
   DEFAULT_BOOK_ID,
   resolveTranslationUiLanguage,
@@ -895,7 +895,8 @@ function NowPlayingIcon({
 }
 
 function getDefaultQuickToolbarTools(
-  branding?: BrandingConfig
+  branding?: BrandingConfig,
+  isDiscoverOpen?: Signal<boolean>
 ): ManagedBibleQuickToolbarTool[] {
   const tools: ManagedBibleQuickToolbarTool[] = [
     {
@@ -936,6 +937,7 @@ function getDefaultQuickToolbarTools(
       ),
       isVisible: (c) => {
         if (
+          isDiscoverOpen?.value ||
           c.app?.isMobile?.value ||
           c.app?.isDiscoverOpen?.value ||
           !c.settings.settings.value.discoveredContent.showContent
@@ -1805,7 +1807,8 @@ export function formatSelectedVerses(readingState: BibleReadingState) {
  *   then return tools sorted by ascending priority.
  */
 export function createBibleToolsManager(
-  branding?: BrandingConfig
+  branding?: BrandingConfig,
+  isDiscoverOpen?: Signal<boolean>
 ): ToolsManager {
   const toolbarTools = signal<ManagedBibleToolbarTool[]>(
     getDefaultToolbarTools(branding)
@@ -1820,7 +1823,7 @@ export function createBibleToolsManager(
     getDefaultBelowReaderToolbarTools()
   );
   const quickTools = signal<ManagedBibleQuickToolbarTool[]>(
-    getDefaultQuickToolbarTools(branding)
+    getDefaultQuickToolbarTools(branding, isDiscoverOpen)
   );
 
   const registerToolbarTool = (tool: ManagedBibleToolbarTool) => {
