@@ -41,7 +41,7 @@
         "verseFontColor": "#333",
         "verseCursor": "pointer",
         "selectedVerseBorderBottom": "none",
-        "selectedVerseTextDecoration": "none",
+        "selectedVerseTextDecoration": "underline dotted",
         "selectedVerseTextDecorationColor": "currentColor",
         "hebrewSubtitleFontFamily": "Newsreader, serif",
         "hebrewSubtitleFontColor": "#333",
