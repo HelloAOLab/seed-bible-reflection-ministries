@@ -1,5 +1,6 @@
 .askken-container {
   height: 100%;
+  border-radius: 40px;
 
   background: var(--sb-background, #fff);
 }
@@ -220,6 +221,7 @@
   object-fit: contain;
   flex-shrink: 0;
   margin-top: 4px;
+  background: white;
 }
 
 .askken-bubble {

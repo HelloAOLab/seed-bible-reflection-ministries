@@ -443,9 +443,10 @@ export function AskKen() {
                               return (
                                 <div key={resource.id || index}>
                                   <a
-                                    onClick={() =>
-                                      state.handleOpenLink(resource)
-                                    }
+                                    onClick={() => {
+                                      askKenOpen.value = false;
+                                      state.handleOpenLink(resource);
+                                    }}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
