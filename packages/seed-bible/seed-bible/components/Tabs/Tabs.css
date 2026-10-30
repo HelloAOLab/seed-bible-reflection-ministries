@@ -29,6 +29,8 @@
 .sb-sidebar-branding-logo {
   width: 3.0625rem;
   height: 2.25rem;
+  background-color: white;
+  border-radius: 10px;
 }
 
 .sb-tabs-sidebar-collapsed {

@@ -19,6 +19,12 @@ export default function initDiscoveryExtension() {
         },
         icon: () => <span className="material-symbols-outlined">explore</span>,
         onSelect: () => {
+          // If Discover is already open, close it
+          if (context.isDiscoverOpen.value) {
+            context.panes.closePane("ext_discovery");
+            context.isDiscoverOpen.value = false;
+            return;
+          }
           context.isDiscoverOpen.value = true;
           const state = createDiscoverState(context);
           context.panes.openPane({

@@ -2706,7 +2706,6 @@ export function BibleReader(props: BibleReaderProps) {
     mobileChrome,
     sharedSession,
   } = props;
-  console.log(state, "sttt");
   const {
     translationId,
     translation,
