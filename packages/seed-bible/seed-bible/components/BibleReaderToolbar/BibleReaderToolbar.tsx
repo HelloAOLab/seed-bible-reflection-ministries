@@ -979,6 +979,7 @@ export function BibleReaderToolbar(props: BibleReaderToolbarProps) {
     bookmarks,
     login,
     navigation,
+    isMoreOpenInMobile,
   } = props.state;
   const selectedTab = useComputed(
     () =>
@@ -3221,12 +3222,17 @@ export function BibleReaderToolbar(props: BibleReaderToolbarProps) {
                       type="button"
                       ref={moreButtonRef}
                       onClick={() => {
+                        if (isMoreOpenInMobile.value) {
+                          isMoreOpenInMobile.value = false;
+                        }
+
                         // Opening the More menu should dismiss whatever else is
                         // covering the reader — the search bar, the chat panel,
                         // the settings view, or the tabs/saves drawer — the
                         // same way the other bottom tabs do. Extension panes are
                         // left alone, since those are opened *from* this menu.
                         if (!isMoreMenuOpen.value) {
+                          isMoreOpenInMobile.value = true;
                           sidebar.closeSearchPanel();
                           sidebar.closeChatPanel();
                           sidebar.closeSettings();

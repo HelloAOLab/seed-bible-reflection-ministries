@@ -153,6 +153,7 @@ import {
   effect,
   Signal,
   signal,
+  useSignal,
   type ReadonlySignal,
 } from "@preact/signals";
 import {
@@ -694,6 +695,7 @@ export interface SeedBibleState {
   closeCodeOfConduct: () => void;
   /** When discover is open hide the compact discover*/
   isDiscoverOpen: Signal<boolean>;
+  isMoreOpenInMobile: Signal<boolean>;
 
   /**
    * Releases what this state has registered outside itself (listeners on the
@@ -828,6 +830,7 @@ export function createSeedBibleState(
 ): SeedBibleState {
   console.log("Creating SeedBibleState with options:", options);
   const isDiscoverOpen = signal(false);
+  const isMoreOpenInMobile = signal(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const features = createFeaturesManager((globalThis as any).posthog ?? null);
   const navigation = createNavigationManager({
@@ -3642,6 +3645,7 @@ export function createSeedBibleState(
     openCodeOfConduct,
     closeCodeOfConduct,
     isDiscoverOpen,
+    isMoreOpenInMobile,
     features,
     dispose: () => {
       i18n.dispose();
