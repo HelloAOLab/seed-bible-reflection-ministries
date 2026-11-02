@@ -73,7 +73,9 @@ function clearSwipeTrackInlineStyles(track: HTMLDivElement | null) {
 
 export function TabSlotReader(props: TabSlotReaderProps) {
   const { slot, tab, state } = props;
+
   const readingState = tab.readingState;
+
   // Phone layout, or a compact embed: swipe chapters, mobile header, and
   // the floating chapter nav. Embed is included so a wide iframe still
   // gets the minimal reading chrome rather than the full desktop app.
@@ -818,7 +820,6 @@ export function TabSlotReader(props: TabSlotReaderProps) {
   if (!isCompactReader) {
     clearSwipeTrackInlineStyles(swipeTrackRef.current);
   }
-
   return (
     <div className="sb-pane-reader-outer">
       <div
@@ -833,9 +834,10 @@ export function TabSlotReader(props: TabSlotReaderProps) {
           mobileChrome={mobileChrome}
           sharedSession={tab.sharedSession}
         />
-        {(!isMobileView || isDiscoveryOpen.value) && (
-          <AskKenChat isMobile={isMobileView} />
-        )}
+        {(!isMobileView || isDiscoveryOpen.value) &&
+          !state?.isMoreOpenInMobile?.value && (
+            <AskKenChat isMobile={isMobileView} />
+          )}
         {(isMobileView ? askKenOpen.value : askKenOpen.value) && <AskKen />}
         {!isCompactReader && (
           <BelowReaderToolbar
