@@ -153,7 +153,6 @@ import {
   effect,
   Signal,
   signal,
-  useSignal,
   type ReadonlySignal,
 } from "@preact/signals";
 import {
