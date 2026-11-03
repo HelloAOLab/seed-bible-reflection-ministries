@@ -7,7 +7,7 @@ import { Apologist } from "./Apologist";
 import { useI18n } from "@packages/seed-bible/seed-bible/i18n";
 import { MinistriesTab } from "./Ministries";
 import { type VNode } from "preact";
-import { isDiscoveryOpen, isReflectionTabOpened } from "../extraServices";
+import { isMediaTabOpened, isReflectionTabOpened } from "../extraServices";
 import { useEffect } from "preact/hooks";
 import { effect } from "@preact/signals";
 import { AnnotationsSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/AnnotationsSection";
@@ -30,20 +30,13 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
   useEffect(() => {
     const dispose = effect(() => {
       isReflectionTabOpened.value = state.activeTab.value === "ministries";
+      isMediaTabOpened.value = state.activeTab.value === "media";
     });
 
     return () => {
       dispose();
       isReflectionTabOpened.value = false;
-    };
-  }, []);
-  useEffect(() => {
-    // Discovery opened
-    isDiscoveryOpen.value = true;
-
-    // Discovery closed/unmounted
-    return () => {
-      isDiscoveryOpen.value = false;
+      isMediaTabOpened.value = false;
     };
   }, []);
 
@@ -173,7 +166,7 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
         className="discover-content"
         style={{
           flex: state.activeTab.value === "media" ? 1 : undefined,
-          height: state.activeTab.value === "media" ? "80%" : "100%",
+          height: state.activeTab.value === "media" ? "88%" : "100%",
         }}
       >
         {state.activeTab.value === "media" && <Content />}
