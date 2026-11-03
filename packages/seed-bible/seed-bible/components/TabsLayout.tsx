@@ -17,7 +17,10 @@ import { useI18n } from "../i18n/I18nManager";
 import { translateTitle } from "../app/utils";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { AskKenChat } from "@packages/askKen-extension/ext_askKen/host/components/AskKenChat";
-import { isDiscoveryOpen } from "@packages/discover-extension/ext_discover/host/extraServices";
+import {
+  isMediaTabOpened,
+  isReflectionTabOpened,
+} from "@packages/discover-extension/ext_discover/host/extraServices";
 import { askKenOpen } from "@packages/askKen-extension/ext_askKen/host/askKenService";
 import { AskKen } from "@packages/askKen-extension/ext_askKen/host/components/askKen";
 import { revealReadAlongVerse } from "./BibleReader/readerViewport";
@@ -834,10 +837,9 @@ export function TabSlotReader(props: TabSlotReaderProps) {
           mobileChrome={mobileChrome}
           sharedSession={tab.sharedSession}
         />
-        {(!isMobileView || isDiscoveryOpen.value) &&
-          !state?.isMoreOpenInMobile?.value && (
-            <AskKenChat isMobile={isMobileView} />
-          )}
+        {(!isMobileView || isReflectionTabOpened.value) &&
+          !state?.isMoreOpenInMobile?.value &&
+          !isMediaTabOpened.value && <AskKenChat isMobile={isMobileView} />}
         {(isMobileView ? askKenOpen.value : askKenOpen.value) && <AskKen />}
         {!isCompactReader && (
           <BelowReaderToolbar
