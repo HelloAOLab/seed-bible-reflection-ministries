@@ -25,13 +25,23 @@ export default function initDiscoveryExtension() {
             context.isDiscoverOpen.value = false;
             return;
           }
+
           context.isMoreOpenInMobile.value = false;
           context.isDiscoverOpen.value = true;
+          const selectedTab = context.tabs.tabs.value.find(
+            (tab) => tab.id === context.tabs.selectedTabId.value
+          );
+          const readingState = selectedTab?.readingState;
+          const chapterId = readingState?.bookId.value;
+          const chapterNumber = readingState?.chapterNumber.value;
+          const isMobileView = context?.app.isMobile.value ?? false;
           const state = createDiscoverState(context);
           context.panes.openPane({
             id: "ext_discovery",
             placement: "side",
-            title: "Discover",
+            title: isMobileView
+              ? `Discover ${chapterId} ${chapterNumber}`
+              : "Discover",
             header: () => (
               <DiscoverPaneHeader
                 playlists={context.playlists}
