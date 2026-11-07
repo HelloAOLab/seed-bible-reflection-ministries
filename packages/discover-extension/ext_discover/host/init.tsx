@@ -32,14 +32,12 @@ export default function initDiscoveryExtension() {
             id: "ext_discovery",
             placement: "side",
             title: "Discover",
-
             header: () => (
               <DiscoverPaneHeader
                 playlists={context.playlists}
                 annotations={context.annotations}
               />
             ),
-
             component: () => (
               <DiscoverContent state={state} context={context} />
             ),

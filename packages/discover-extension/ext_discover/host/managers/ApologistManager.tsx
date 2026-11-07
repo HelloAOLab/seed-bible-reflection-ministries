@@ -1332,8 +1332,6 @@ export function createApologistState(props: {
 
     err.value = "";
 
-    data.value = [];
-
     allData.value = [];
 
     openIds.value = new Set<string>();
@@ -1371,7 +1369,6 @@ export function createApologistState(props: {
 
   const fetchResults = async () => {
     loading.value = true;
-
     try {
       const results: ResourceItem[] = [];
 
@@ -1380,7 +1377,7 @@ export function createApologistState(props: {
 
       hasMore.value = results.length > 10;
     } catch {
-      err.value = "Unknown Error";
+      err.value = "Unknown error";
     } finally {
       loading.value = false;
     }
