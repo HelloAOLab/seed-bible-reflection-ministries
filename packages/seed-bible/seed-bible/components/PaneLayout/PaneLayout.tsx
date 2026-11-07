@@ -37,18 +37,11 @@ interface DragState {
  * if the pane declared one — e.g. to warn about unsaved changes and let the
  * pane close itself once the user confirms. See `Pane.confirmClose`.
  */
-function closePaneFromHeader(
-  panesManager: PanesManager,
-  pane: Pane,
-  isDiscoverOpen?: Signal<boolean>
-) {
+function closePaneFromHeader(panesManager: PanesManager, pane: Pane) {
   if (pane.confirmClose && !pane.confirmClose()) {
     return;
   }
   panesManager.closePane(pane.id, "user");
-  if (isDiscoverOpen?.value) {
-    isDiscoverOpen.value = false;
-  }
 }
 
 function usePaneDrag(state: SeedBibleState) {
@@ -319,7 +312,7 @@ interface SidePaneProps {
  */
 export function SidePane(props: SidePaneProps) {
   const { state, pane } = props;
-  const { app, panes: panesManager, isDiscoverOpen } = state;
+  const { app, panes: panesManager } = state;
   const { startResize, registerPaneElement } = usePaneDrag(state);
 
   return (
@@ -338,9 +331,7 @@ export function SidePane(props: SidePaneProps) {
           icon={pane.icon}
           leading={pane.leading}
           header={pane.header}
-          onClose={() =>
-            closePaneFromHeader(panesManager, pane, isDiscoverOpen)
-          }
+          onClose={() => closePaneFromHeader(panesManager, pane)}
         />
       )}
       <div className="sb-pane-detached-body">
