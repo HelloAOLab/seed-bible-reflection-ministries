@@ -25,7 +25,6 @@ export default function initDiscoveryExtension() {
             context.isDiscoverOpen.value = false;
             return;
           }
-
           context.isMoreOpenInMobile.value = false;
           context.isDiscoverOpen.value = true;
           const selectedTab = context.tabs.tabs.value.find(

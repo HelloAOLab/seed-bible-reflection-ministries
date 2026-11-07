@@ -20,6 +20,7 @@ type DiscoverFilter = "all" | "annotations" | "playlists";
 
 export function DiscoverContent({ state, context }: DiscoverProps) {
   const { t } = useI18n("ext_discovery");
+
   const playlists = context.playlists;
   const userPlaylists = playlists.userPlaylists.value;
   const toast = context.app.toast;
@@ -35,6 +36,7 @@ export function DiscoverContent({ state, context }: DiscoverProps) {
 
     return () => {
       dispose();
+      context.isDiscoverOpen.value = false;
       isReflectionTabOpened.value = false;
       isMediaTabOpened.value = false;
     };
