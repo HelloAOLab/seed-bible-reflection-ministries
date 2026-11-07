@@ -5,7 +5,6 @@ import type { Pane, PanesManager } from "../../managers/PanesManager";
 import type { SeedBibleState } from "../../managers/SeedBibleStateManager";
 import { UI_SIZE_SCALE_MAP } from "../../managers/SettingsManager";
 import { useEffect, useRef } from "preact/hooks";
-import type { Signal } from "@preact/signals";
 
 interface DragState {
   mode: "move" | "resize";
