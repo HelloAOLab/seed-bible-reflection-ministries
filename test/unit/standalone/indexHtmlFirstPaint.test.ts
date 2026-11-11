@@ -19,7 +19,6 @@ import {
   UI_SIZE_SCALE_MAP,
 } from "@packages/seed-bible/seed-bible/managers/SettingsManager";
 import {
-  DARK_THEME,
   generateThemeCssVariables,
   LIGHT_THEME,
 } from "@packages/seed-bible/seed-bible/managers/ThemeManager";
