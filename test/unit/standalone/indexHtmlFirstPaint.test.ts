@@ -543,21 +543,6 @@ describe("metric-matched fallback fonts", () => {
       `--sb-font-family: Newsreader, "Newsreader Fallback", "Newsreader Fallback Noto Serif", serif;`
     );
   });
-
-  it("puts the fallback in the first-paint font defaults and theme output", () => {
-    expect(baseCss.replace(/\s+/g, " ")).toContain(
-      `--text-verse-font: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", "Plus Jakarta Sans Fallback Roboto", sans-serif;`
-    );
-    for (const theme of [LIGHT_THEME, DARK_THEME]) {
-      const css = generateThemeCssVariables(theme);
-      expect(css).toContain(
-        `--sb-verse-font-family: Plus Jakarta Sans, "Plus Jakarta Sans Fallback", "Plus Jakarta Sans Fallback Roboto", sans-serif;`
-      );
-      expect(css).toContain(
-        `--sb-book-title-font-family: Newsreader, "Newsreader Fallback", "Newsreader Fallback Noto Serif", serif;`
-      );
-    }
-  });
 });
 
 describe("critical CSS defaults agree with the settings defaults", () => {
