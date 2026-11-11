@@ -1,6 +1,5 @@
 import "./app.css";
-import { PlaylistSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/DiscoverPane";
-
+import { PlaylistSection } from "@packages/seed-bible/seed-bible/components/Discover/DiscoverPane";
 import type { SeedBibleState } from "@packages/seed-bible/seed-bible/managers";
 import type { DiscoverState } from "../managers/discoverManager";
 import { Apologist } from "./Apologist";
@@ -10,7 +9,7 @@ import { type VNode } from "preact";
 import { isMediaTabOpened, isReflectionTabOpened } from "../extraServices";
 import { useEffect } from "preact/hooks";
 import { effect } from "@preact/signals";
-import { AnnotationsSection } from "@packages/seed-bible/seed-bible/components/DiscoverPane/AnnotationsSection";
+import { AnnotationsSection } from "@packages/seed-bible/seed-bible/components/Discover/AnnotationsSection";
 
 interface DiscoverProps {
   state: DiscoverState;

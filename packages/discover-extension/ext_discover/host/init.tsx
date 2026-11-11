@@ -4,7 +4,6 @@ import {
 } from "@packages/seed-bible/seed-bible/managers";
 import { DiscoverContent } from "./components/App";
 import { createDiscoverState } from "./managers/discoverManager";
-import { DiscoverPaneHeader } from "@packages/seed-bible/seed-bible/components/DiscoverPane/DiscoverPane";
 
 export default function initDiscoveryExtension() {
   registerExtension({
@@ -41,12 +40,6 @@ export default function initDiscoveryExtension() {
             title: isMobileView
               ? `Discover ${chapterId} ${chapterNumber}`
               : "Discover",
-            header: () => (
-              <DiscoverPaneHeader
-                playlists={context.playlists}
-                annotations={context.annotations}
-              />
-            ),
             component: () => (
               <DiscoverContent state={state} context={context} />
             ),
