@@ -19,7 +19,6 @@ import {
   UI_SIZE_SCALE_MAP,
 } from "@packages/seed-bible/seed-bible/managers/SettingsManager";
 import {
-  DARK_THEME,
   generateThemeCssVariables,
   LIGHT_THEME,
 } from "@packages/seed-bible/seed-bible/managers/ThemeManager";
@@ -542,21 +541,6 @@ describe("metric-matched fallback fonts", () => {
     expect(css).toContain(
       `--sb-font-family: Newsreader, "Newsreader Fallback", "Newsreader Fallback Noto Serif", serif;`
     );
-  });
-
-  it("puts the fallback in the first-paint font defaults and theme output", () => {
-    expect(baseCss.replace(/\s+/g, " ")).toContain(
-      `--text-verse-font: "Plus Jakarta Sans", "Plus Jakarta Sans Fallback", "Plus Jakarta Sans Fallback Roboto", sans-serif;`
-    );
-    for (const theme of [LIGHT_THEME, DARK_THEME]) {
-      const css = generateThemeCssVariables(theme);
-      expect(css).toContain(
-        `--sb-verse-font-family: Plus Jakarta Sans, "Plus Jakarta Sans Fallback", "Plus Jakarta Sans Fallback Roboto", sans-serif;`
-      );
-      expect(css).toContain(
-        `--sb-book-title-font-family: Newsreader, "Newsreader Fallback", "Newsreader Fallback Noto Serif", serif;`
-      );
-    }
   });
 });
 

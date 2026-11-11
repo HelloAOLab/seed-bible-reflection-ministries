@@ -594,15 +594,18 @@ export const LIGHT_THEME: BibleTheme = {
   id: "light",
   name: "Light",
   variables: {
-    primaryColor: "#e07b4c",
+    primaryColor: "#2E4879",
     primaryFontColor: "#fff",
 
-    secondaryColor: "#faddd1",
+    secondaryColor: "#2E48791A",
     secondaryFontColor: "#333",
 
     tertiaryColor: "#f0f0f0",
+    tertiaryFontColor: "#666666",
+    tertiaryBorder: "#E1E3EA",
+    tertiaryBackground: "#E8E8E8",
 
-    linkColor: "#e07b4c",
+    linkColor: "#2E4879",
     linkVisitedColor: "#8d5a6b",
 
     background: "#f8fafc",
@@ -625,9 +628,9 @@ export const LIGHT_THEME: BibleTheme = {
 
     chapterHeadingFontFamily: "Plus Jakarta Sans, sans-serif",
     chapterHeadingFontColor: "#333",
-    chapterHeadingFontStyle: "normal",
+    chapterHeadingFontStyle: "italic",
 
-    verseFontFamily: "Plus Jakarta Sans, sans-serif",
+    verseFontFamily: "Newsreader, serif",
     verseFontColor: "#333",
     verseCursor: "pointer",
 
@@ -645,8 +648,7 @@ export const LIGHT_THEME: BibleTheme = {
     readerToolbarBorderRadius: "1.25rem",
     readerToolbarBackground: "#ffffff",
     readerToolbarBorder: "1px solid #00000024",
-    readerToolbarBoxShadow:
-      "0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08)",
+    readerToolbarBoxShadow: "0 26px 10px #0000001a",
     readerToolbarZIndex: "99",
     readerToolbarHeight: "auto",
 
@@ -662,8 +664,8 @@ export const LIGHT_THEME: BibleTheme = {
     verseToolbarGap: "0.125rem",
     verseToolbarPadding: "0.25rem 0.5rem",
     verseToolbarBorderRadius: "0.625rem",
-    verseToolbarBorder: "1px solid var(--sb-divider-color)",
-    verseToolbarBoxShadow: "0 26px 10px var(--sb-shadow-color)",
+    verseToolbarBorder: "1px solid #00000024",
+    verseToolbarBoxShadow: "0 26px 10px #0000001a",
     verseToolbarZIndex: "100",
     verseToolbarMinHeight: "0",
 
@@ -671,9 +673,12 @@ export const LIGHT_THEME: BibleTheme = {
     readerToolbarMobileLayoutPadding: "0.625rem 2.1875rem",
     readerToolbarMobileLayoutGap: "1rem",
     readerToolbarMobileLayoutItemSize: "2.75rem",
+    readerToolbarMobileLayoutCenterButtonSize: "52px",
     readerToolbarMobileLayoutCenterButtonWidth: "5.4375rem",
     readerToolbarMobileLayoutCenterButtonHeight: "2.625rem",
     readerToolbarMobileLayoutButtonBorderRadius: "2.5rem",
+
+    emptyPaneToolbarButtonBackground: "#2E48791A",
 
     readerToolbarFloatingButtonSideOffset: "1rem",
 
@@ -684,10 +689,9 @@ export const LIGHT_THEME: BibleTheme = {
     menuFontColor: "#333",
 
     toolbarIconInvert: "0",
-    mapTileFilter: "none",
 
     readerToolbarFontColor: "#333",
-    readerToolbarFontFamily: "system-ui, sans-serif",
+    readerToolbarFontFamily: "Satoshi, system-ui, sans-serif",
 
     dividerColor: "rgba(0, 0, 0, 0.12)",
     shadowColor: "rgba(0, 0, 0, 0.14)",
@@ -700,6 +704,7 @@ export const LIGHT_THEME: BibleTheme = {
     selectedTabBackground: "var(--sb-secondary-color)",
     selectedTabFontColor: "var(--sb-primary-color)",
   },
+
   highlightColors: {
     yellow: {
       color: "#fff59d",
@@ -744,7 +749,7 @@ export const LIGHT_THEME: BibleTheme = {
     orange: {
       color: "#ffcc80",
       fontColor: "#333",
-      wordsOfJesusFontColor: "#b00",
+      wordsOfJesusFontColor: "#660000",
     },
     cream: {
       color: "#fff8e1",
@@ -762,6 +767,7 @@ export const LIGHT_THEME: BibleTheme = {
       wordsOfJesusFontColor: "#a00",
     },
   },
+
   bookmarkColors: {
     orange: "#e07b4c",
     red: "#d14343",
