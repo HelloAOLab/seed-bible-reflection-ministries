@@ -591,7 +591,7 @@
 }
 
 .sg-loadMoreBtn:hover:not(:disabled) {
-  background: rgba(140, 164, 67, 0.15);
+  background: var(--sb-primary-color);
   color: var(--sb-primary-color, #a1bd4f);
 }
 
@@ -748,8 +748,8 @@
 }
 
 .sg-now-playing-close:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--sb-secondary-font-color, #ccc);
+  background: var(--sb-secondary-color);
+  color: var(--sb-secondary-color, #ccc);
 }
 
 .sg-youtubeEmbed {

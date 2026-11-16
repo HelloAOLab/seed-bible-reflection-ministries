@@ -326,7 +326,7 @@
 }
 
 .askken-topbar-icon-btn:hover {
-  background: rgba(128, 128, 128, 0.12);
+  background: var(--sb-secondary-font-color, #ddd);
   color: var(--sb-secondary-font-color, #ddd);
   border-color: var(--sb-tertiary-font-color, #666);
 }
@@ -390,7 +390,7 @@ select {
   z-index: 20;
   display: flex;
   flex-direction: column;
-  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+  box-shadow: -4px 0 16px var(--sb-primary-color, #a1bd4f);
   animation: askken-slideRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
